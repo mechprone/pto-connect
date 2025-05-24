@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import AdminDashboard from './AdminDashboard'; 
+import AdminDashboard from './AdminDashboard';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -34,20 +34,27 @@ export default function DashboardRouter() {
   useEffect(() => {
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      console.log("Session:", session);  // 🐞 Debug
+
       const currentUser = session?.user;
+      console.log("User:", currentUser); // 🐞 Debug
 
       if (currentUser) {
         setUser(currentUser);
+
         const { data, error } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', currentUser.id)
           .single();
 
+        console.log("Profile data:", data);   // 🐞 Debug
+        console.log("Profile error:", error); // 🐞 Debug
+
         if (!error && data?.role) {
           setRole(data.role);
         } else {
-          setRole('Parent'); // default fallback
+          setRole('Parent'); // fallback
         }
       }
 
@@ -56,24 +63,32 @@ export default function DashboardRouter() {
 
     getInitialSession();
 
-    // Listen for future auth changes
-    const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        setUser(session.user);
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log("Auth state change:", event, session); // 🐞 Debug
 
-        if (!error && data?.role) {
-          setRole(data.role);
-        } else {
-          setRole('Parent');
+        if (session?.user) {
+          setUser(session.user);
+
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .single();
+
+          console.log("Profile (live) data:", data);
+          console.log("Profile (live) error:", error);
+
+          if (!error && data?.role) {
+            setRole(data.role);
+          } else {
+            setRole('Parent');
+          }
+
+          setLoading(false);
         }
-        setLoading(false);
       }
-    });
+    );
 
     return () => {
       listener?.subscription.unsubscribe();
