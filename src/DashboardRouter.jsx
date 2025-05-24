@@ -34,13 +34,14 @@ export default function DashboardRouter() {
   useEffect(() => {
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      console.log("Session:", session);  // 🐞 Debug
+      console.log("Initial Session:", session);
 
       const currentUser = session?.user;
-      console.log("User:", currentUser); // 🐞 Debug
+      console.log("Initial User:", currentUser);
 
       if (currentUser) {
         setUser(currentUser);
+        console.log("Fetching profile for user:", currentUser.id);
 
         const { data, error } = await supabase
           .from('profiles')
@@ -48,13 +49,13 @@ export default function DashboardRouter() {
           .eq('id', currentUser.id)
           .single();
 
-        console.log("Profile data:", data);   // 🐞 Debug
-        console.log("Profile error:", error); // 🐞 Debug
+        console.log("Initial Profile data:", data);
+        console.log("Initial Profile error:", error);
 
         if (!error && data?.role) {
           setRole(data.role);
         } else {
-          setRole('Parent'); // fallback
+          setRole('Parent');
         }
       }
 
@@ -65,10 +66,11 @@ export default function DashboardRouter() {
 
     const { data: listener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log("Auth state change:", event, session); // 🐞 Debug
+        console.log("Auth state change:", event, session);
 
         if (session?.user) {
           setUser(session.user);
+          console.log("Fetching profile for user:", session.user.id);
 
           const { data, error } = await supabase
             .from('profiles')
@@ -86,6 +88,8 @@ export default function DashboardRouter() {
           }
 
           setLoading(false);
+        } else {
+          console.log("Session user is missing.");
         }
       }
     );
