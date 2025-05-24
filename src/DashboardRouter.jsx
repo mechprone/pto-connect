@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
+  import.meta.env.VITE_SUPABASE_ANON_KEY,
   {
     auth: {
       persistSession: true,
@@ -34,33 +34,57 @@ export default function DashboardRouter() {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-  const getUserAndProfile = async () => {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    const user = session?.user;
+  useEffect(() => {
+    const getInitialSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const currentUser = session?.user;
 
-    if (user) {
-      setUser(user);
-      const { data, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
+      if (currentUser) {
+        setUser(currentUser);
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', currentUser.id)
+          .single();
 
-      if (!profileError) {
-        setRole(data?.role || 'Parent');
+        if (!error && data?.role) {
+          setRole(data.role);
+        } else {
+          setRole('Parent'); // default fallback
+        }
       }
-    }
 
-    setLoading(false);
-  };
+      setLoading(false);
+    };
 
-  getUserAndProfile();
-}, []);
+    getInitialSession();
+
+    // Listen for future auth changes
+    const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        setUser(session.user);
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+
+        if (!error && data?.role) {
+          setRole(data.role);
+        } else {
+          setRole('Parent');
+        }
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, []);
 
   if (loading) return <LoadingScreen />;
-
-  if (!user || !role) return <h1 className="text-red-500">Access denied or session missing.</h1>;
+  if (!user || !role) return <h1 className="text-red-500">Access denied or no session found.</h1>;
 
   switch (role) {
     case 'Admin':
