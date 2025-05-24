@@ -14,10 +14,6 @@ const supabase = createClient(
   }
 );
 
-function AdminDashboard() {
-  return <h1 className="text-2xl text-green-700">Welcome to the Admin Dashboard</h1>;
-}
-
 function TeacherDashboard() {
   return <h1 className="text-2xl text-blue-700">Welcome to the Teacher Dashboard</h1>;
 }
