@@ -34,28 +34,29 @@ export default function DashboardRouter() {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const getUserAndProfile = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
+useEffect(() => {
+  const getUserAndProfile = async () => {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    const user = session?.user;
 
-      if (user) {
-        setUser(user);
-        const { data, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single();
+    if (user) {
+      setUser(user);
+      const { data, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
 
-        if (!profileError) {
-          setRole(data?.role || 'Parent');
-        }
+      if (!profileError) {
+        setRole(data?.role || 'Parent');
       }
+    }
 
-      setLoading(false);
-    };
+    setLoading(false);
+  };
 
-    getUserAndProfile();
-  }, []);
+  getUserAndProfile();
+}, []);
 
   if (loading) return <LoadingScreen />;
 
