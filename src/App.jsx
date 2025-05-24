@@ -1,8 +1,8 @@
 import React from 'react';
-import AuthPage from './AuthPage';
+import DashboardRouter from './DashboardRouter';
 
 function App() {
-  return <AuthPage />;
+  return <DashboardRouter />;
 }
 
 export default App;
