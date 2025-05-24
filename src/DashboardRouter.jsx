@@ -25,34 +25,34 @@ function LoadingScreen() {
 export default function DashboardRouter() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserAndRole = async () => {
-      const {
-        data: { user }
-      } = await supabase.auth.getUser();
+    const getUserAndProfile = async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
 
       if (user) {
         setUser(user);
-
-        const { data: profile, error } = await supabase
+        const { data, error: profileError } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', user.id)
           .single();
 
-        if (error) {
-          console.error('Error fetching profile:', error);
-        } else {
-          setRole(profile?.role || 'Parent');
+        if (!profileError) {
+          setRole(data?.role || 'Parent');
         }
       }
+
+      setLoading(false);
     };
 
-    fetchUserAndRole();
+    getUserAndProfile();
   }, []);
 
-  if (!user || !role) return <LoadingScreen />;
+  if (loading) return <LoadingScreen />;
+
+  if (!user || !role) return <h1 className="text-red-500">Access denied or session missing.</h1>;
 
   switch (role) {
     case 'Admin':
