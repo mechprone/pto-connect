@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AdminUsersPanel from './AdminUsersPanel';
 
 const navItems = [
   { label: 'Dashboard', key: 'home' },
@@ -11,7 +12,7 @@ const navItems = [
 
 const panels = {
   home: <p className="text-lg">Welcome, Admin! Use the sidebar to manage your PTO tools.</p>,
-  users: <p className="text-lg">User management will appear here.</p>,
+  users: <AdminUsersPanel />,
   events: <p className="text-lg">Event planning tools coming soon.</p>,
   fundraising: <p className="text-lg">Fundraiser tracking will be displayed here.</p>,
   budget: <p className="text-lg">View and edit your budget here.</p>,
