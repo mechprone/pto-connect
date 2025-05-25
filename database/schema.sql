@@ -1,3 +1,4 @@
+
 -- USERS
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -71,7 +72,7 @@ CREATE TABLE messages (
     title TEXT,
     body TEXT,
     send_to_role TEXT[],
-    send_as TEXT CHECK (send_as IN ('email', 'sms', 'in_app'))[],
+    send_as TEXT[],
     created_by UUID REFERENCES users(id),
     created_at TIMESTAMP DEFAULT now()
 );
