@@ -14,6 +14,7 @@ import MessagesDashboard from './pages/MessagesDashboard'
 import UploadDocument from './pages/UploadDocument'
 import DocumentsDashboard from './pages/DocumentsDashboard'
 import SharedLibraryDashboard from './pages/SharedLibraryDashboard'
+import AiEventIdeas from './pages/AiEventIdeas'
 
 export default function App() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
 	<Route path="/documents/upload" element={<UploadDocument />} />
 	<Route path="/documents" element={<DocumentsDashboard />} />
 	<Route path="/shared-library" element={<SharedLibraryDashboard />} />
+	<Route path="/events/ai" element={<AiEventIdeas />} />
       </Routes>
     </Router>
   )
