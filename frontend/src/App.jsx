@@ -8,6 +8,7 @@ import FundraiserDashboard from './pages/FundraiserDashboard'
 import CreateBudgetEntry from './pages/CreateBudgetEntry'
 import BudgetDashboard from './pages/BudgetDashboard'
 import CreateTeacherRequest from './pages/CreateTeacherRequest'
+import TeacherRequestsDashboard from './pages/TeacherRequestsDashboard'
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
 	<Route path="/budget/create" element={<CreateBudgetEntry />} />
 	<Route path="/budget" element={<BudgetDashboard />} />
 	<Route path="/teacher-requests/create" element={<CreateTeacherRequest />} />
+	<Route path="/teacher-requests" element={<TeacherRequestsDashboard />} />
       </Routes>
     </Router>
   )
