@@ -15,8 +15,8 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/events" element={<EventsDashboard />} />
         <Route path="/events/create" element={<CreateEvent />} />
+        <Route path="/fundraisers" element={<FundraiserDashboard />} />
         <Route path="/fundraisers/create" element={<CreateFundraiser />} />
-	<Route path="/fundraisers" element={<FundraiserDashboard />} />
       </Routes>
     </Router>
   )
