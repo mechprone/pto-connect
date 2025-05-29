@@ -10,6 +10,7 @@ import BudgetDashboard from './pages/BudgetDashboard'
 import CreateTeacherRequest from './pages/CreateTeacherRequest'
 import TeacherRequestsDashboard from './pages/TeacherRequestsDashboard'
 import CreateMessage from './pages/CreateMessage'
+import MessagesDashboard from './pages/MessagesDashboard'
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
 	<Route path="/teacher-requests/create" element={<CreateTeacherRequest />} />
 	<Route path="/teacher-requests" element={<TeacherRequestsDashboard />} />
 	<Route path="/messages/create" element={<CreateMessage />} />
+	<Route path="/messages" element={<MessagesDashboard />} />
       </Routes>
     </Router>
   )
