@@ -12,6 +12,7 @@ import TeacherRequestsDashboard from './pages/TeacherRequestsDashboard'
 import CreateMessage from './pages/CreateMessage'
 import MessagesDashboard from './pages/MessagesDashboard'
 import UploadDocument from './pages/UploadDocument'
+import DocumentsDashboard from './pages/DocumentsDashboard'
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
 	<Route path="/messages/create" element={<CreateMessage />} />
 	<Route path="/messages" element={<MessagesDashboard />} />
 	<Route path="/documents/upload" element={<UploadDocument />} />
+	<Route path="/documents" element={<DocumentsDashboard />} />
       </Routes>
     </Router>
   )
