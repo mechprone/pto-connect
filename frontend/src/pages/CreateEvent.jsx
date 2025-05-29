@@ -20,16 +20,18 @@ export default function CreateEvent() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
-    const fieldValue = type === 'checkbox' ? checked : value
-    setForm(prev => ({ ...prev, [name]: fieldValue }))
+    setForm(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }))
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const user = (await supabase.auth.getUser()).data.user
+    const { data: { user } } = await supabase.auth.getUser()
+    const orgId = user?.user_metadata?.org_id || user?.app_metadata?.org_id
+
     const { error } = await supabase
       .from('events')
-      .insert([{ ...form, created_by: user.id }])
+      .insert([{ ...form, created_by: user.id, org_id: orgId }])
+
     if (error) {
       setError(error.message)
       setMessage('')
