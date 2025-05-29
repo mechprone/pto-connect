@@ -6,6 +6,7 @@ import CreateEvent from './pages/CreateEvent'
 import CreateFundraiser from './pages/CreateFundraiser'
 import FundraiserDashboard from './pages/FundraiserDashboard'
 import CreateBudgetEntry from './pages/CreateBudgetEntry'
+import BudgetDashboard from './pages/BudgetDashboard'
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/fundraisers" element={<FundraiserDashboard />} />
         <Route path="/fundraisers/create" element={<CreateFundraiser />} />
 	<Route path="/budget/create" element={<CreateBudgetEntry />} />
+	<Route path="/budget" element={<BudgetDashboard />} />
       </Routes>
     </Router>
   )

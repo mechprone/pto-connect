@@ -1,0 +1,73 @@
+import { useEffect, useState } from 'react'
+import { supabase } from '../supabaseClient'
+import { Link } from 'react-router-dom'
+
+export default function BudgetDashboard() {
+  const [transactions, setTransactions] = useState([])
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    async function fetchTransactions() {
+      const user = (await supabase.auth.getUser()).data.user
+      const orgId = user?.user_metadata?.org_id || user?.app_metadata?.org_id
+
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('org_id', orgId)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        setError('Failed to load transactions.')
+        console.error(error)
+      } else {
+        setTransactions(data)
+      }
+    }
+
+    fetchTransactions()
+  }, [])
+
+  const totalIncome = transactions
+    .filter(t => t.type === 'income')
+    .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0)
+
+  const totalExpense = transactions
+    .filter(t => t.type === 'expense')
+    .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0)
+
+  const balance = totalIncome - totalExpense
+
+  return (
+    <div className="max-w-4xl mx-auto p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">PTO Budget Overview</h1>
+        <Link to="/budget/create" className="bg-blue-600 text-white px-4 py-2 rounded">+ Add Entry</Link>
+      </div>
+
+      <div className="mb-6 p-4 border rounded bg-gray-100">
+        <p className="text-lg font-semibold">Current Balance: ${balance.toFixed(2)}</p>
+        <p className="text-sm text-green-700">Total Income: ${totalIncome.toFixed(2)}</p>
+        <p className="text-sm text-red-700">Total Expenses: ${totalExpense.toFixed(2)}</p>
+      </div>
+
+      {error && <p className="text-red-600">{error}</p>}
+      {transactions.length === 0 && !error && <p>No budget entries found.</p>}
+
+      <ul className="space-y-4">
+        {transactions.map(entry => (
+          <li key={entry.id} className="border p-4 rounded shadow-sm bg-white">
+            <div className="flex justify-between">
+              <h2 className="text-lg font-semibold">{entry.label}</h2>
+              <span className={entry.type === 'income' ? 'text-green-600' : 'text-red-600'}>
+                {entry.type === 'income' ? '+' : '-'}${parseFloat(entry.amount).toFixed(2)}
+              </span>
+            </div>
+            <p className="text-sm text-gray-500">{entry.category || 'Uncategorized'}</p>
+            {entry.related_event_id && <p className="text-sm text-blue-700 mt-1">Event ID: {entry.related_event_id}</p>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
