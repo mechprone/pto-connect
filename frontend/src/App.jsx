@@ -13,6 +13,7 @@ import CreateMessage from './pages/CreateMessage'
 import MessagesDashboard from './pages/MessagesDashboard'
 import UploadDocument from './pages/UploadDocument'
 import DocumentsDashboard from './pages/DocumentsDashboard'
+import SharedLibraryDashboard from './pages/SharedLibraryDashboard'
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
 	<Route path="/messages" element={<MessagesDashboard />} />
 	<Route path="/documents/upload" element={<UploadDocument />} />
 	<Route path="/documents" element={<DocumentsDashboard />} />
+	<Route path="/shared-library" element={<SharedLibraryDashboard />} />
       </Routes>
     </Router>
   )
