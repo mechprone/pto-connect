@@ -12,13 +12,14 @@ export default function AiEventIdeas() {
     setIdeas([])
 
     try {
-      const res = await fetch('/api/generate-event-ideas', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ schoolLevel })
-      })
+      const res = await fetch('https://pto-central-backend.onrender.com/api/generate-event-ideas', {
+  	method: 'POST',
+  	headers: {
+    	'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ schoolLevel })
+})
+
 
       const data = await res.json()
       if (res.ok) {
