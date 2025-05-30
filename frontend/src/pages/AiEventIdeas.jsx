@@ -6,44 +6,48 @@ export default function AiEventIdeas() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  const fetchIdeas = async () => {
+  const handleGenerate = async () => {
     setLoading(true)
     setError(null)
     setIdeas([])
 
     try {
-      const res = await fetch('https://pto-central-backend.onrender.com/api/generate-event-ideas', {
-  	method: 'POST',
-  	headers: {
-    	'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ schoolLevel })
-})
+      const response = await fetch('https://pto-central-backend.onrender.com/generate-event-ideas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ schoolLevel }),
+      })
 
+      const data = await response.json()
 
-      const data = await res.json()
-      if (res.ok) {
-        setIdeas(data.ideas || [])
+      if (data.ideas) {
+        const parsedIdeas = data.ideas
+          .split(/\n?\d+\.\s/)
+          .filter(Boolean)
+          .map(item =>
+            item.trim().replace(/^\*\*/, '').replace(/\*\*$/, '')
+          )
+        setIdeas(parsedIdeas)
       } else {
-        setError(data.error || 'Failed to generate ideas')
+        setError('No ideas returned.')
       }
     } catch (err) {
-      setError('Error contacting the backend.')
+      console.error(err)
+      setError('Error contacting the backend')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h2 className="text-xl font-bold mb-4">AI-Generated Event Ideas</h2>
-
-      <div className="mb-4">
-        <label className="block mb-2 font-medium text-sm">Select school level:</label>
+    <div className="p-6 max-w-2xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">AI Event Idea Generator</h1>
+      <label className="block mb-2">
+        Select School Level:
         <select
           value={schoolLevel}
-          onChange={(e) => setSchoolLevel(e.target.value)}
-          className="border rounded p-2 w-full"
+          onChange={e => setSchoolLevel(e.target.value)}
+          className="block w-full mt-1 p-2 border rounded"
         >
           <option value="elementary">Elementary</option>
           <option value="upper elementary">Upper Elementary</option>
@@ -51,31 +55,25 @@ export default function AiEventIdeas() {
           <option value="junior high">Junior High</option>
           <option value="high school">High School</option>
         </select>
-      </div>
-
+      </label>
       <button
-        onClick={fetchIdeas}
+        onClick={handleGenerate}
         disabled={loading}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+        className="bg-blue-600 text-white px-4 py-2 rounded mt-4"
       >
         {loading ? 'Generating...' : 'Generate Ideas'}
       </button>
 
-      {error && <p className="text-red-600 mt-4">{error}</p>}
+      {error && <p className="text-red-500 mt-4">{error}</p>}
 
       {ideas.length > 0 && (
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-2">Suggested Events:</h3>
-          <ul className="space-y-4">
-            {ideas.map((idea, index) => (
-              <li key={index} className="border p-4 rounded shadow-sm bg-white">
-                <h4 className="font-bold text-blue-700">{idea.title}</h4>
-                <p className="text-sm text-gray-700">{idea.description}</p>
-                <p className="text-xs mt-1 text-gray-500">Tags: {idea.tags?.join(', ')}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ul className="mt-6 space-y-2">
+          {ideas.map((idea, index) => (
+            <li key={index} className="border p-3 rounded bg-gray-50">
+              {idea}
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   )
