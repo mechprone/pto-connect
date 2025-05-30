@@ -36,7 +36,7 @@ export default function App() {
 	<Route path="/documents/upload" element={<UploadDocument />} />
 	<Route path="/documents" element={<DocumentsDashboard />} />
 	<Route path="/shared-library" element={<SharedLibraryDashboard />} />
-	<Route path="/events/ai" element={<AiEventIdeas />} />
+	<Route path="/ai-event-ideas" element={<AiEventIdeas />} />
       </Routes>
     </Router>
   )
