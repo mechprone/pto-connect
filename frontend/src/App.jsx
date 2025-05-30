@@ -20,7 +20,7 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<div className="text-blue-600 p-4">PTO Central is running!</div>} />
+        <Route path="/" element={<div className="text-blue-600 p-4">PTO Connect is running!</div>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/events" element={<EventsDashboard />} />
