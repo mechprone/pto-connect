@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import axios from 'axios'
+import jsPDF from 'jspdf'
 
 export default function CreateEvent() {
   const [form, setForm] = useState({
@@ -70,7 +71,54 @@ export default function CreateEvent() {
   }
 
   const applyAIToForm = () => {
-    alert('This will eventually parse the AI response and populate the form fields. For now, you can copy/paste manually.')
+    try {
+      const aiJson = JSON.parse(aiResult)
+      setForm(prev => ({
+        ...prev,
+        title: aiJson.title || '',
+        description: aiJson.description || '',
+        event_date: aiJson.event_date || '',
+        category: aiJson.category || '',
+        school_level: aiJson.school_level || '',
+        location: aiJson.location || '',
+        estimated_budget: aiJson.estimated_budget || ''
+      }))
+    } catch (err) {
+      alert('Failed to parse AI response. Please review the output and enter manually.')
+      console.error('Parse error:', err)
+    }
+  }
+
+  const handlePrintSummary = () => {
+    try {
+      const parsed = JSON.parse(aiResult)
+      const doc = new jsPDF()
+
+      doc.setFontSize(14)
+      doc.text(parsed.title || 'Event Summary', 10, 20)
+
+      doc.setFontSize(10)
+      doc.text(`Date: ${parsed.event_date || 'TBD'}`, 10, 30)
+      doc.text(`Category: ${parsed.category || 'N/A'}`, 10, 36)
+      doc.text(`School Level: ${parsed.school_level || 'N/A'}`, 10, 42)
+
+      doc.setFontSize(12)
+      doc.text('Description:', 10, 52)
+      doc.setFontSize(10)
+      doc.text(doc.splitTextToSize(parsed.description || '', 180), 10, 58)
+
+      doc.setFontSize(12)
+      doc.text('Planning Tasks:', 10, 100)
+      const tasks = parsed.tasks || []
+      tasks.forEach((task, i) => {
+        doc.text(`- ${task}`, 10, 106 + i * 6)
+      })
+
+      doc.save(`${parsed.title || 'event-summary'}.pdf`)
+    } catch (err) {
+      alert('Unable to print. Please check that the AI returned a valid result.')
+      console.error('Print error:', err)
+    }
   }
 
   return (
@@ -125,9 +173,14 @@ export default function CreateEvent() {
             {aiResult && (
               <div className="border p-4 mt-4 bg-gray-50 rounded">
                 <pre className="whitespace-pre-wrap text-sm">{aiResult}</pre>
-                <button onClick={applyAIToForm} className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                  Use This Event
-                </button>
+                <div className="flex gap-2 mt-2">
+                  <button onClick={applyAIToForm} className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                    Use This Event
+                  </button>
+                  <button onClick={handlePrintSummary} className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">
+                    Print Summary
+                  </button>
+                </div>
               </div>
             )}
           </div>
