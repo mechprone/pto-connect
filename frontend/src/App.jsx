@@ -1,9 +1,10 @@
 import { Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
+import DashboardLayout from './layouts/DashboardLayout';
 
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import Unauthorized from './pages/Unauthorized'; // You'll need to create this simple component
+import Unauthorized from './pages/Unauthorized';
 
 import EventsDashboard from './pages/EventsDashboard';
 import CreateEvent from './pages/CreateEvent';
@@ -31,24 +32,122 @@ export default function App() {
 
       {/* Admin Routes */}
       <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-        <Route path="/events" element={<EventsDashboard />} />
-        <Route path="/events/create" element={<CreateEvent />} />
-        <Route path="/fundraisers" element={<FundraiserDashboard />} />
-        <Route path="/fundraisers/create" element={<CreateFundraiser />} />
-        <Route path="/budget" element={<BudgetDashboard />} />
-        <Route path="/budget/create" element={<CreateBudgetEntry />} />
-        <Route path="/messages" element={<MessagesDashboard />} />
-        <Route path="/messages/create" element={<CreateMessage />} />
-        <Route path="/documents" element={<DocumentsDashboard />} />
-        <Route path="/documents/upload" element={<UploadDocument />} />
-        <Route path="/shared-library" element={<SharedLibraryDashboard />} />
-        <Route path="/ai-event-ideas" element={<AiEventIdeas />} />
+        <Route
+          path="/events"
+          element={
+            <DashboardLayout>
+              <EventsDashboard />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/events/create"
+          element={
+            <DashboardLayout>
+              <CreateEvent />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/fundraisers"
+          element={
+            <DashboardLayout>
+              <FundraiserDashboard />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/fundraisers/create"
+          element={
+            <DashboardLayout>
+              <CreateFundraiser />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/budget"
+          element={
+            <DashboardLayout>
+              <BudgetDashboard />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/budget/create"
+          element={
+            <DashboardLayout>
+              <CreateBudgetEntry />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/messages"
+          element={
+            <DashboardLayout>
+              <MessagesDashboard />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/messages/create"
+          element={
+            <DashboardLayout>
+              <CreateMessage />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/documents"
+          element={
+            <DashboardLayout>
+              <DocumentsDashboard />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/documents/upload"
+          element={
+            <DashboardLayout>
+              <UploadDocument />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/shared-library"
+          element={
+            <DashboardLayout>
+              <SharedLibraryDashboard />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/ai-event-ideas"
+          element={
+            <DashboardLayout>
+              <AiEventIdeas />
+            </DashboardLayout>
+          }
+        />
       </Route>
 
       {/* Teacher Routes */}
       <Route element={<ProtectedRoute allowedRoles={['teacher']} />}>
-        <Route path="/teacher-requests" element={<TeacherRequestsDashboard />} />
-        <Route path="/teacher-requests/create" element={<CreateTeacherRequest />} />
+        <Route
+          path="/teacher-requests"
+          element={
+            <DashboardLayout>
+              <TeacherRequestsDashboard />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/teacher-requests/create"
+          element={
+            <DashboardLayout>
+              <CreateTeacherRequest />
+            </DashboardLayout>
+          }
+        />
       </Route>
     </Routes>
   );
