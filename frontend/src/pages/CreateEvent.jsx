@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import axios from 'axios'
-import jsPDF from 'jspdf'
+import { jsPDF } from 'jspdf'
+
 
 export default function CreateEvent() {
   const [form, setForm] = useState({
