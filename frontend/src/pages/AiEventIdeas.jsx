@@ -12,7 +12,7 @@ export default function AiEventIdeas() {
     setIdeas([])
 
     try {
-      const response = await fetch('https://pto-connect-backend.onrender.com/generate-event-ideas', {
+      const response = await fetch('https://api.ptoconnect.com/generate-event-ideas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ schoolLevel }),
