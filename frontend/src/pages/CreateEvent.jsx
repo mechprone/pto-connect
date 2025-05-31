@@ -67,7 +67,7 @@ export default function CreateEvent() {
         </select>
         <label className="flex items-center space-x-2">
           <input type="checkbox" name="share_public" checked={form.share_public || false} onChange={handleChange} />
-          <span>Share this event (without private details) to the PTO Central Idea Library</span>
+          <span>Share this event (without private details) to the PTO Connect Idea Library</span>
         </label>
         <button className="bg-blue-600 text-white px-4 py-2 rounded" type="submit">Create Event</button>
         {message && <p className="text-green-600">{message}</p>}

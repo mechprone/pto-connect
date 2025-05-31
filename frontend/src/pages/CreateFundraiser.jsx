@@ -46,7 +46,7 @@ export default function CreateFundraiser() {
         <textarea name="description" value={form.description || ''} onChange={handleChange} placeholder="Description" className="w-full border p-2" />
         <label className="flex items-center space-x-2">
           <input type="checkbox" name="share_public" checked={form.share_public || false} onChange={handleChange} />
-          <span>Share this fundraiser (minus sensitive info) to the PTO Central Idea Library</span>
+          <span>Share this fundraiser (minus sensitive info) to the PTO Connect Idea Library</span>
         </label>
         <button className="bg-blue-600 text-white px-4 py-2 rounded" type="submit">Create</button>
         {message && <p className="text-green-600">{message}</p>}
