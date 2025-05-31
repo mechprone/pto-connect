@@ -6,10 +6,11 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-    '/api': {
-      target: 'https://api.ptoconnect.com',
-      changeOrigin: true,
-      secure: true,
+      '/api': {
+        target: 'https://api.ptoconnect.com',
+        changeOrigin: true,
+        secure: true,
+      }
     }
   }
-})
+});
