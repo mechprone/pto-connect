@@ -19,24 +19,18 @@ export default function EventsDashboard() {
         return;
       }
 
-      // 🔄 Get PTO ID from profile
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('pto_id')
-        .eq('id', user.id)
-        .single();
+      const org_id = user?.user_metadata?.org_id || user?.app_metadata?.org_id;
 
-      if (profileError || !profile?.pto_id) {
-        setError('Unable to load profile or PTO ID.');
-        console.error('Profile error:', profileError);
+      if (!org_id) {
+        setError('Unable to load org ID.');
+        console.error('Missing org_id in user metadata');
         return;
       }
 
-      // 🔁 Use pto_id to filter events (matching org_id in events table)
       const { data, error: eventError } = await supabase
         .from('events')
         .select('*')
-        .eq('org_id', profile.pto_id)
+        .eq('org_id', org_id)
         .order('event_date', { ascending: true });
 
       if (eventError) {

@@ -81,3 +81,37 @@ export default function CreateEventPage() {
           <option value="">Select Category</option>
           <option value="Fundraiser">Fundraiser</option>
           <option value="Meeting">Meeting</option>
+          <option value="Celebration">Celebration</option>
+          <option value="Other">Other</option>
+        </select>
+        <select
+          name="school_level"
+          value={form.school_level}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          required
+        >
+          <option value="">Select School Level</option>
+          <option value="Elementary">Elementary</option>
+          <option value="Middle">Middle</option>
+          <option value="High">High</option>
+        </select>
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            name="share_public"
+            checked={form.share_public}
+            onChange={handleChange}
+          />
+          <span>Share Publicly</span>
+        </label>
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        >
+          Submit Event
+        </button>
+      </form>
+    </div>
+  )
+}
