@@ -20,6 +20,7 @@ import UploadDocument from './pages/UploadDocument';
 import DocumentsDashboard from './pages/DocumentsDashboard';
 import SharedLibraryDashboard from './pages/SharedLibraryDashboard';
 import AiEventIdeas from './pages/AiEventIdeas';
+import AdminUsersDashboard from './pages/AdminUsersDashboard';
 
 export default function App() {
   return (
@@ -125,6 +126,14 @@ export default function App() {
           element={
             <DashboardLayout>
               <AiEventIdeas />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <DashboardLayout>
+              <AdminUsersDashboard />
             </DashboardLayout>
           }
         />
