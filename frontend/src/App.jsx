@@ -1,26 +1,29 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ProtectedRoute from './components/ProtectedRoute';
-import DashboardLayout from './layouts/DashboardLayout';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import ProtectedRoute from './components/ProtectedRoute'
+import DashboardLayout from './layouts/DashboardLayout'
 
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Unauthorized from './pages/Unauthorized';
+import Login from './pages/Login'
+import Signup from './pages/Signup'
+import Unauthorized from './pages/Unauthorized'
 
-import EventsDashboard from './pages/EventsDashboard';
-import CreateEvent from './pages/CreateEvent';
-import CreateFundraiser from './pages/CreateFundraiser';
-import FundraiserDashboard from './pages/FundraiserDashboard';
-import CreateBudgetEntry from './pages/CreateBudgetEntry';
-import BudgetDashboard from './pages/BudgetDashboard';
-import CreateTeacherRequest from './pages/CreateTeacherRequest';
-import TeacherRequestsDashboard from './pages/TeacherRequestsDashboard';
-import CreateMessage from './pages/CreateMessage';
-import MessagesDashboard from './pages/MessagesDashboard';
-import UploadDocument from './pages/UploadDocument';
-import DocumentsDashboard from './pages/DocumentsDashboard';
-import SharedLibraryDashboard from './pages/SharedLibraryDashboard';
-import AiEventIdeas from './pages/AiEventIdeas';
-import AdminUsersDashboard from './pages/AdminUsersDashboard';
+import EventsDashboard from './pages/EventsDashboard'
+import CreateEvent from './pages/CreateEvent'
+import EditEventPage from './pages/EditEventPage'
+import EventsCalendarPage from './pages/EventsCalendarPage'
+
+import CreateFundraiser from './pages/CreateFundraiser'
+import FundraiserDashboard from './pages/FundraiserDashboard'
+import CreateBudgetEntry from './pages/CreateBudgetEntry'
+import BudgetDashboard from './pages/BudgetDashboard'
+import CreateTeacherRequest from './pages/CreateTeacherRequest'
+import TeacherRequestsDashboard from './pages/TeacherRequestsDashboard'
+import CreateMessage from './pages/CreateMessage'
+import MessagesDashboard from './pages/MessagesDashboard'
+import UploadDocument from './pages/UploadDocument'
+import DocumentsDashboard from './pages/DocumentsDashboard'
+import SharedLibraryDashboard from './pages/SharedLibraryDashboard'
+import AiEventIdeas from './pages/AiEventIdeas'
+import AdminUsersDashboard from './pages/AdminUsersDashboard'
 
 export default function App() {
   return (
@@ -47,6 +50,22 @@ export default function App() {
             element={
               <DashboardLayout>
                 <CreateEvent />
+              </DashboardLayout>
+            }
+          />
+          <Route
+            path="/events/edit/:id"
+            element={
+              <DashboardLayout>
+                <EditEventPage />
+              </DashboardLayout>
+            }
+          />
+          <Route
+            path="/events/calendar"
+            element={
+              <DashboardLayout>
+                <EventsCalendarPage />
               </DashboardLayout>
             }
           />
@@ -161,5 +180,5 @@ export default function App() {
         </Route>
       </Routes>
     </Router>
-  );
+  )
 }

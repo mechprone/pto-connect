@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.8",
+    "date-fns": "^4.1.0",
     "react": "^18.2.0",
+    "react-big-calendar": "^1.19.2",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.6.1"
   },
