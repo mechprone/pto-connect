@@ -1,24 +1,79 @@
-import { useState } from 'react'
-import { supabase } from '../supabaseClient'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/utils/supabaseClient';
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) setError(error.message)
-    else window.location.href = '/dashboard'
-  }
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    const { data, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (loginError) return setError(loginError.message);
+
+    const userId = data.user.id;
+
+    // Fetch user role from profiles table
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single();
+
+    if (profileError || !profile) {
+      return setError('Unable to determine user role.');
+    }
+
+    const role = profile.role;
+
+    // Redirect based on role
+    switch (role) {
+      case 'admin':
+        navigate('/events');
+        break;
+      case 'teacher':
+        navigate('/teacher-requests');
+        break;
+      default:
+        navigate('/unauthorized');
+    }
+  };
 
   return (
-    <div className="p-6 max-w-md mx-auto">
-      <h1 className="text-xl font-bold mb-4">Login</h1>
-      <input className="border p-2 w-full mb-2" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" />
-      <input className="border p-2 w-full mb-2" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" />
-      <button onClick={handleLogin} className="bg-blue-600 text-white px-4 py-2 rounded">Login</button>
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form onSubmit={handleLogin} className="bg-white p-6 rounded shadow-md w-80">
+        <h2 className="text-xl font-bold mb-4 text-center">PTO Connect Login</h2>
+        {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
+
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full p-2 border rounded mb-2"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-2 border rounded mb-4"
+          required
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        >
+          Log In
+        </button>
+      </form>
     </div>
-  )
+  );
 }
