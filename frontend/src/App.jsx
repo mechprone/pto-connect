@@ -25,6 +25,8 @@ import SharedLibraryDashboard from './pages/SharedLibraryDashboard'
 import AiEventIdeas from './pages/AiEventIdeas'
 import AdminUsersDashboard from './pages/AdminUsersDashboard'
 import BillingPage from './modules/billing/pages/BillingPage'
+import BillingSuccess from './modules/billing/pages/BillingSuccess'
+import BillingCancel from './modules/billing/pages/BillingCancel'
 
 export default function App() {
   return (
@@ -52,7 +54,9 @@ export default function App() {
         <Route path="/shared-library" element={<DashboardLayout><SharedLibraryDashboard /></DashboardLayout>} />
         <Route path="/ai-event-ideas" element={<DashboardLayout><AiEventIdeas /></DashboardLayout>} />
         <Route path="/admin/users" element={<DashboardLayout><AdminUsersDashboard /></DashboardLayout>} />
-        <Route path="/billing" element={<DashboardLayout><BillingPage /></DashboardLayout>} /> {/* ✅ Added */}
+        <Route path="/billing" element={<DashboardLayout><BillingPage /></DashboardLayout>} /> 
+        <Route path="/billing/success" element={<DashboardLayout><BillingSuccess /></DashboardLayout>} />
+        <Route path="/billing/cancel" element={<DashboardLayout><BillingCancel /></DashboardLayout>} />
       </Route>
 
       {/* Teacher Routes */}
