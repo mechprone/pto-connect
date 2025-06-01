@@ -8,20 +8,33 @@ export default function FundraiserDashboard() {
 
   useEffect(() => {
     async function fetchFundraisers() {
-      const user = (await supabase.auth.getUser()).data.user
-      const orgId = user?.user_metadata?.org_id || user?.app_metadata?.org_id
+      const {
+        data: { session },
+        error: sessionError
+      } = await supabase.auth.getSession()
 
-      const { data, error } = await supabase
-        .from('fundraisers')
-        .select('*')
-        .eq('org_id', orgId)
-        .order('deadline', { ascending: true })
+      if (sessionError || !session?.access_token) {
+        setError('Authentication error. Please log in again.')
+        return
+      }
 
-      if (error) {
-        setError('Failed to load fundraisers.')
-        console.error(error)
-      } else {
-        setFundraisers(data)
+      try {
+        const res = await fetch('/api/fundraisers', {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        })
+
+        const result = await res.json()
+
+        if (!res.ok) {
+          setError(result.error || 'Failed to load fundraisers.')
+        } else {
+          setFundraisers(result)
+        }
+      } catch (err) {
+        console.error(err)
+        setError('Error connecting to the server.')
       }
     }
 
@@ -42,9 +55,15 @@ export default function FundraiserDashboard() {
         {fundraisers.map(fundraiser => (
           <li key={fundraiser.id} className="border p-4 rounded shadow-sm bg-white">
             <h2 className="text-xl font-semibold">{fundraiser.title}</h2>
-            <p className="text-sm text-gray-500">Goal: ${fundraiser.goal_amount} • Deadline: {fundraiser.deadline}</p>
+            <p className="text-sm text-gray-500">
+              Goal: ${fundraiser.goal_amount} • Deadline: {fundraiser.deadline}
+            </p>
             <p className="mt-2">{fundraiser.description}</p>
-            {fundraiser.share_public && <span className="text-xs inline-block mt-2 px-2 py-1 bg-green-100 text-green-800 rounded">Shared to Library</span>}
+            {fundraiser.share_public && (
+              <span className="text-xs inline-block mt-2 px-2 py-1 bg-green-100 text-green-800 rounded">
+                Shared to Library
+              </span>
+            )}
           </li>
         ))}
       </ul>
