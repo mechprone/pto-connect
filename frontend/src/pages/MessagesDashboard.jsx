@@ -8,20 +8,32 @@ export default function MessagesDashboard() {
 
   useEffect(() => {
     async function fetchMessages() {
-      const user = (await supabase.auth.getUser()).data.user
-      const orgId = user?.user_metadata?.org_id || user?.app_metadata?.org_id
+      const {
+        data: { session }
+      } = await supabase.auth.getSession()
 
-      const { data, error } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('org_id', orgId)
-        .order('created_at', { ascending: false })
+      if (!session?.access_token) {
+        setError('Authentication required.')
+        return
+      }
 
-      if (error) {
-        setError('Failed to load messages.')
-        console.error(error)
-      } else {
-        setMessages(data)
+      try {
+        const res = await fetch('/api/messages', {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        })
+
+        const data = await res.json()
+
+        if (!res.ok) {
+          setError(data.error || 'Failed to load messages.')
+        } else {
+          setMessages(data)
+        }
+      } catch (err) {
+        console.error('Fetch error:', err)
+        setError('Error connecting to server.')
       }
     }
 
@@ -32,7 +44,9 @@ export default function MessagesDashboard() {
     <div className="max-w-4xl mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">PTO Messages</h1>
-        <Link to="/messages/create" className="bg-blue-600 text-white px-4 py-2 rounded">+ New Message</Link>
+        <Link to="/messages/create" className="bg-blue-600 text-white px-4 py-2 rounded">
+          + New Message
+        </Link>
       </div>
 
       {error && <p className="text-red-600">{error}</p>}

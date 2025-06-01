@@ -19,20 +19,37 @@ export default function CreateTeacherRequest() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const { data: { user } } = await supabase.auth.getUser()
-    const orgId = user?.user_metadata?.org_id || user?.app_metadata?.org_id
+    const {
+      data: { session }
+    } = await supabase.auth.getSession()
 
-    const { error } = await supabase
-      .from('teacher_requests')
-      .insert([{ ...form, created_by: user.id, org_id: orgId }])
+    if (!session?.access_token) {
+      setError('You must be logged in to submit a request.')
+      return
+    }
 
-    if (error) {
-      setError(error.message)
-      setMessage('')
-    } else {
-      setMessage('Request submitted successfully!')
-      setError('')
-      setForm({})
+    try {
+      const res = await fetch('/api/teacher-requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify(form)
+      })
+
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error || 'Failed to submit request')
+        setMessage('')
+      } else {
+        setMessage('Request submitted successfully!')
+        setError('')
+        setForm({})
+      }
+    } catch (err) {
+      console.error('Submit error:', err)
+      setError('Network error or server unavailable')
     }
   }
 

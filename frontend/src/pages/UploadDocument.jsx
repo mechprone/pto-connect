@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../supabaseClient'
+import axios from 'axios'
 
 export default function UploadDocument() {
   const [title, setTitle] = useState('')
@@ -9,38 +10,29 @@ export default function UploadDocument() {
 
   const handleUpload = async (e) => {
     e.preventDefault()
+    if (!file || !title) return setError('Title and file are required.')
 
-    if (!file || !title) {
-      setError('Title and file are required.')
-      return
-    }
+    const { data: { session } } = await supabase.auth.getSession()
+    const token = session?.access_token
+    if (!token) return setError('User not authenticated.')
 
-    const { data: { user } } = await supabase.auth.getUser()
-    const orgId = user?.user_metadata?.org_id || user?.app_metadata?.org_id
+    const formData = new FormData()
+    formData.append('title', title)
+    formData.append('file', file)
 
-    const fileExt = file.name.split('.').pop()
-    const filePath = `documents/${orgId}/${Date.now()}.${fileExt}`
-
-    const { error: uploadError } = await supabase.storage
-      .from('documents')
-      .upload(filePath, file)
-
-    if (uploadError) {
-      setError(uploadError.message)
-      return
-    }
-
-    const { error: insertError } = await supabase
-      .from('documents')
-      .insert([{ title, file_path: filePath, org_id: orgId, uploaded_by: user.id }])
-
-    if (insertError) {
-      setError(insertError.message)
-    } else {
+    try {
+      await axios.post('/api/documents', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      })
       setMessage('Document uploaded successfully.')
-      setError('')
       setTitle('')
       setFile(null)
+    } catch (err) {
+      setError('Upload failed. Check console.')
+      console.error(err)
     }
   }
 

@@ -1,87 +1,58 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/utils/supabaseClient';
+import { useEffect, useState } from 'react'
+import { supabase } from '../supabaseClient'
+import axios from 'axios'
 
 export default function AdminUsersDashboard() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [roles, setRoles] = useState([
-    'admin',
-    'board_member',
-    'committee_lead',
-    'volunteer',
-    'parent_member',
-    'teacher',
-  ]);
+  const [users, setUsers] = useState([])
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    async function fetchUsers() {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (!token) {
+        setError('Not authenticated.')
+        return
+      }
 
-  const fetchUsers = async () => {
-    setLoading(true);
-    const { data, error } = await supabase.from('profiles').select('id, email, full_name, role');
-    if (error) {
-      console.error('Error loading users:', error);
-    } else {
-      setUsers(data);
+      try {
+        const res = await axios.get('/api/admin-users', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        setUsers(res.data)
+      } catch (err) {
+        console.error(err)
+        setError('Failed to load user list.')
+      }
     }
-    setLoading(false);
-  };
 
-  const handleRoleChange = async (userId, newRole) => {
-    const { error } = await supabase
-      .from('profiles')
-      .update({ role: newRole })
-      .eq('id', userId);
-
-    if (error) {
-      alert('Failed to update role: ' + error.message);
-    } else {
-      setUsers((prev) =>
-        prev.map((user) => (user.id === userId ? { ...user, role: newRole } : user))
-      );
-    }
-  };
+    fetchUsers()
+  }, [])
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Manage PTO Users</h1>
-      {loading ? (
-        <p>Loading users...</p>
-      ) : (
-        <table className="w-full bg-white shadow rounded">
-          <thead className="bg-gray-100 text-left">
-            <tr>
-              <th className="p-3">Full Name</th>
-              <th className="p-3">Email</th>
-              <th className="p-3">Role</th>
-              <th className="p-3">Update</th>
+    <div className="max-w-4xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">PTO Members & Roles</h1>
+      {error && <p className="text-red-600">{error}</p>}
+      {users.length === 0 && !error && <p>No users found for this PTO.</p>}
+
+      <table className="w-full table-auto border-collapse">
+        <thead>
+          <tr className="bg-gray-200 text-left">
+            <th className="p-2 border">Name</th>
+            <th className="p-2 border">Email</th>
+            <th className="p-2 border">Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map(user => (
+            <tr key={user.id} className="border-b">
+              <td className="p-2">{user.full_name || '—'}</td>
+              <td className="p-2">{user.email}</td>
+              <td className="p-2 capitalize">{user.role}</td>
             </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id} className="border-t">
-                <td className="p-3">{user.full_name || 'N/A'}</td>
-                <td className="p-3">{user.email}</td>
-                <td className="p-3">
-                  <select
-                    value={user.role}
-                    onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                    className="border rounded p-1"
-                  >
-                    {roles.map((r) => (
-                      <option key={r} value={r}>
-                        {r}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td className="p-3 text-sm text-green-600">Saved automatically</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+          ))}
+        </tbody>
+      </table>
     </div>
-  );
+  )
 }

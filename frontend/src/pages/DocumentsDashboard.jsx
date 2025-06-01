@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
+import axios from 'axios'
 import { Link } from 'react-router-dom'
 
 export default function DocumentsDashboard() {
@@ -8,20 +9,18 @@ export default function DocumentsDashboard() {
 
   useEffect(() => {
     async function fetchDocs() {
-      const user = (await supabase.auth.getUser()).data.user
-      const orgId = user?.user_metadata?.org_id || user?.app_metadata?.org_id
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (!token) return setError('Not authenticated.')
 
-      const { data, error } = await supabase
-        .from('documents')
-        .select('*')
-        .eq('org_id', orgId)
-        .order('created_at', { ascending: false })
-
-      if (error) {
+      try {
+        const res = await axios.get('/api/documents', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        setDocuments(res.data)
+      } catch (err) {
         setError('Failed to load documents.')
-        console.error(error)
-      } else {
-        setDocuments(data)
+        console.error(err)
       }
     }
 

@@ -8,20 +8,32 @@ export default function BudgetDashboard() {
 
   useEffect(() => {
     async function fetchTransactions() {
-      const user = (await supabase.auth.getUser()).data.user
-      const orgId = user?.user_metadata?.org_id || user?.app_metadata?.org_id
+      const {
+        data: { session }
+      } = await supabase.auth.getSession()
 
-      const { data, error } = await supabase
-        .from('transactions')
-        .select('*')
-        .eq('org_id', orgId)
-        .order('created_at', { ascending: false })
+      if (!session?.access_token) {
+        setError('Authentication required.')
+        return
+      }
 
-      if (error) {
-        setError('Failed to load transactions.')
-        console.error(error)
-      } else {
-        setTransactions(data)
+      try {
+        const res = await fetch('/api/budgets', {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        })
+
+        const data = await res.json()
+
+        if (!res.ok) {
+          setError(data.error || 'Failed to load transactions.')
+        } else {
+          setTransactions(data)
+        }
+      } catch (err) {
+        console.error('Budget fetch error:', err)
+        setError('Error connecting to the server.')
       }
     }
 
@@ -64,7 +76,9 @@ export default function BudgetDashboard() {
               </span>
             </div>
             <p className="text-sm text-gray-500">{entry.category || 'Uncategorized'}</p>
-            {entry.related_event_id && <p className="text-sm text-blue-700 mt-1">Event ID: {entry.related_event_id}</p>}
+            {entry.related_event_id && (
+              <p className="text-sm text-blue-700 mt-1">Event ID: {entry.related_event_id}</p>
+            )}
           </li>
         ))}
       </ul>
