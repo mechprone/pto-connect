@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../../supabaseClient'
+import { API_BASE_URL } from '@/utils/api'
 
 export default function BillingPage() {
   const [loading, setLoading] = useState(false)
@@ -11,7 +12,7 @@ export default function BillingPage() {
 
     try {
       const token = (await supabase.auth.getSession()).data.session.access_token
-      const res = await fetch('/api/stripe/create-checkout-session', {
+      const res = await fetch(`${API_BASE_URL}/stripe/create-checkout-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
