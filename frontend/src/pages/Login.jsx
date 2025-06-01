@@ -12,7 +12,10 @@ export default function Login() {
     e.preventDefault()
     setError('')
 
-    const { data, error: loginError } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error: loginError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
 
     if (loginError || !data?.user) {
       return setError(loginError?.message || 'Login failed. Please try again.')
@@ -20,7 +23,7 @@ export default function Login() {
 
     const userId = data.user.id
 
-    // ✅ Get role from profile
+    // ✅ Get user role from profiles table
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
@@ -34,10 +37,22 @@ export default function Login() {
     // ✅ Redirect based on role
     switch (profile.role) {
       case 'admin':
-        navigate('/events')
+        navigate('/dashboard/admin')
         break
       case 'teacher':
-        navigate('/teacher-requests')
+        navigate('/dashboard/teacher')
+        break
+      case 'board_member':
+        navigate('/dashboard/board')
+        break
+      case 'committee_lead':
+        navigate('/dashboard/committee')
+        break
+      case 'volunteer':
+        navigate('/dashboard/volunteer')
+        break
+      case 'parent_member':
+        navigate('/dashboard/parent')
         break
       default:
         navigate('/unauthorized')
