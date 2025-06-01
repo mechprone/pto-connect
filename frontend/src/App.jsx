@@ -24,7 +24,7 @@ import DocumentsDashboard from './pages/DocumentsDashboard'
 import SharedLibraryDashboard from './pages/SharedLibraryDashboard'
 import AiEventIdeas from './pages/AiEventIdeas'
 import AdminUsersDashboard from './pages/AdminUsersDashboard'
-import BillingPage from './pages/BillingPage' // ✅ Added BillingPage
+import BillingPage from './modules/billing/pages/BillingPage'
 
 export default function App() {
   return (
