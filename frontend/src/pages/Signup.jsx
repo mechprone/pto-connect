@@ -4,37 +4,34 @@ import { supabase } from '../supabaseClient'
 export default function Signup() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [orgId, setOrgId] = useState('') // New field for org ID input
+  const [orgId, setOrgId] = useState('')
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
 
-const handleSignup = async () => {
-  if (!orgId) {
-    setError('Organization ID is required.')
-    return
-  }
-
-  const { error } = await supabase.auth.signUp({
-    credentials: {
-      email,
-      password
-    },
-    options: {
-      data: {
-        org_id: orgId
-      }
+  const handleSignup = async () => {
+    if (!orgId) {
+      setError('Organization ID is required.')
+      return
     }
-  })
 
-  if (error) {
-    setError(error.message)
-    setMessage('')
-  } else {
-    setMessage('Signup successful! You can now log in.')
-    setError('')
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          org_id: orgId
+        }
+      }
+    })
+
+    if (error) {
+      setError(error.message)
+      setMessage('')
+    } else {
+      setMessage('Signup successful! You can now log in.')
+      setError('')
+    }
   }
-}
-
 
   return (
     <div className="p-6 max-w-md mx-auto">

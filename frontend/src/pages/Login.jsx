@@ -1,48 +1,48 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/utils/supabaseClient';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '@/utils/supabaseClient'
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
+    e.preventDefault()
+    setError('')
 
-    const { data, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error: loginError } = await supabase.auth.signInWithPassword({ email, password })
 
-    if (loginError) return setError(loginError.message);
+    if (loginError || !data?.user) {
+      return setError(loginError?.message || 'Login failed. Please try again.')
+    }
 
-    const userId = data.user.id;
+    const userId = data.user.id
 
-    // Fetch user role from profiles table
+    // ✅ Get role from profile
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', userId)
-      .single();
+      .single()
 
     if (profileError || !profile) {
-      return setError('Unable to determine user role.');
+      return setError('Unable to determine user role.')
     }
 
-    const role = profile.role;
-
-    // Redirect based on role
-    switch (role) {
+    // ✅ Redirect based on role
+    switch (profile.role) {
       case 'admin':
-        navigate('/events');
-        break;
+        navigate('/events')
+        break
       case 'teacher':
-        navigate('/teacher-requests');
-        break;
+        navigate('/teacher-requests')
+        break
       default:
-        navigate('/unauthorized');
+        navigate('/unauthorized')
     }
-  };
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -75,5 +75,5 @@ export default function Login() {
         </button>
       </form>
     </div>
-  );
+  )
 }
