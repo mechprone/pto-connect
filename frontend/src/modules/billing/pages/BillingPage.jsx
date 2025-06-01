@@ -47,8 +47,8 @@ export default function BillingPage() {
           value={plan}
           onChange={(e) => setPlan(e.target.value)}
         >
-          <option value="monthly">Monthly - $19/month</option>
-          <option value="annual">Annual - $199/year</option>
+          <option value="monthly">Monthly - $29/month</option>
+          <option value="annual">Annual - $299/year</option>
         </select>
       </div>
 
