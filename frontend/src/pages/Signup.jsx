@@ -14,7 +14,7 @@ export default function Signup() {
       return
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -30,6 +30,7 @@ export default function Signup() {
     } else {
       setMessage('Signup successful! You can now log in.')
       setError('')
+      console.log('✅ Supabase signup response:', data)
     }
   }
 
