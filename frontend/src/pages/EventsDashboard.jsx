@@ -18,34 +18,72 @@ export default function EventsDashboard() {
         return
       }
 
-      const res = await fetch('/api/events', {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
+      try {
+        const res = await fetch('/api/events', {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        })
+
+        const result = await res.json()
+
+        if (!res.ok) {
+          setError(result.error || 'Failed to load events')
+        } else {
+          setEvents(result)
         }
-      })
-
-      if (!res.ok) {
-        const { error } = await res.json()
-        setError(error || 'Failed to load events')
-        return
+      } catch (err) {
+        console.error('Fetch error:', err)
+        setError('Failed to connect to server.')
       }
-
-      const data = await res.json()
-      setEvents(data)
     }
 
     fetchEvents()
   }, [])
+
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm('Are you sure you want to delete this event?')
+    if (!confirmed) return
+
+    const {
+      data: { session }
+    } = await supabase.auth.getSession()
+
+    if (!session?.access_token) {
+      alert('You must be logged in to delete events.')
+      return
+    }
+
+    const res = await fetch(`/api/events/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${session.access_token}`
+      }
+    })
+
+    if (!res.ok) {
+      alert('Failed to delete event.')
+      console.error('Delete error:', await res.text())
+    } else {
+      setEvents((prev) => prev.filter((e) => e.id !== id))
+    }
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-4">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4">
         <h1 className="text-2xl font-bold">PTO-Wide Events</h1>
         <div className="flex gap-2">
-          <Link to="/events/calendar" className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">
+          <Link
+            to="/events/calendar"
+            className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"
+          >
             📅 View Calendar
           </Link>
-          <Link to="/events/create" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          <Link
+            to="/events/create"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
             + Create Event
           </Link>
         </div>
@@ -60,8 +98,18 @@ export default function EventsDashboard() {
             <div className="flex justify-between items-center mb-1">
               <h2 className="text-xl font-semibold">{event.title}</h2>
               <div className="flex gap-2 text-sm">
-                <Link to={`/events/edit/${event.id}`} className="text-blue-600 hover:underline">✏️ Edit</Link>
-                <button className="text-red-600 hover:underline">🗑️ Delete</button>
+                <Link
+                  to={`/events/edit/${event.id}`}
+                  className="text-blue-600 hover:underline"
+                >
+                  ✏️ Edit
+                </Link>
+                <button
+                  onClick={() => handleDelete(event.id)}
+                  className="text-red-600 hover:underline"
+                >
+                  🗑️ Delete
+                </button>
               </div>
             </div>
             <p className="text-sm text-gray-500">

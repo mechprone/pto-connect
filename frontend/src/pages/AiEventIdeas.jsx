@@ -1,32 +1,57 @@
 import { useState } from 'react'
+import { supabase } from '../supabaseClient'
 
 export default function AiEventIdeas() {
-  const [schoolLevel, setSchoolLevel] = useState('elementary')
+  const [form, setForm] = useState({
+    type: '',
+    season: '',
+    audience: '',
+    theme: '',
+    goal: ''
+  })
+
   const [ideas, setIdeas] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setForm(prev => ({ ...prev, [name]: value }))
+  }
 
   const handleGenerate = async () => {
     setLoading(true)
     setError(null)
     setIdeas([])
 
+    const {
+      data: { session },
+      error: sessionError
+    } = await supabase.auth.getSession()
+
+    if (sessionError || !session?.access_token) {
+      setError('Authentication required.')
+      setLoading(false)
+      return
+    }
+
     try {
-      const response = await fetch('https://api.ptoconnect.com/generate-event-ideas', {
+      const response = await fetch('/api/ai/generate-event', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schoolLevel }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify(form)
       })
 
       const data = await response.json()
 
-      if (data.ideas) {
-        const parsedIdeas = data.ideas
+      if (data.result) {
+        const parsedIdeas = data.result
           .split(/\n?\d+\.\s/)
           .filter(Boolean)
-          .map(item =>
-            item.trim().replace(/^\*\*/, '').replace(/\*\*$/, '')
-          )
+          .map(item => item.trim().replace(/^\*\*/, '').replace(/\*\*$/, ''))
         setIdeas(parsedIdeas)
       } else {
         setError('No ideas returned.')
@@ -42,24 +67,49 @@ export default function AiEventIdeas() {
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">AI Event Idea Generator</h1>
-      <label className="block mb-2">
-        Select School Level:
-        <select
-          value={schoolLevel}
-          onChange={e => setSchoolLevel(e.target.value)}
-          className="block w-full mt-1 p-2 border rounded"
-        >
-          <option value="elementary">Elementary</option>
-          <option value="upper elementary">Upper Elementary</option>
-          <option value="middle school">Middle School</option>
-          <option value="junior high">Junior High</option>
-          <option value="high school">High School</option>
-        </select>
-      </label>
+
+      <div className="grid gap-4 mb-4">
+        <input
+          name="type"
+          value={form.type}
+          onChange={handleChange}
+          placeholder="Event Type (e.g. Family Night)"
+          className="w-full border p-2 rounded"
+        />
+        <input
+          name="season"
+          value={form.season}
+          onChange={handleChange}
+          placeholder="Season or Month (e.g. Spring, October)"
+          className="w-full border p-2 rounded"
+        />
+        <input
+          name="audience"
+          value={form.audience}
+          onChange={handleChange}
+          placeholder="Audience (e.g. students, families)"
+          className="w-full border p-2 rounded"
+        />
+        <input
+          name="theme"
+          value={form.theme}
+          onChange={handleChange}
+          placeholder="Theme (e.g. carnival, STEM)"
+          className="w-full border p-2 rounded"
+        />
+        <input
+          name="goal"
+          value={form.goal}
+          onChange={handleChange}
+          placeholder="Goal (e.g. raise funds, build community)"
+          className="w-full border p-2 rounded"
+        />
+      </div>
+
       <button
         onClick={handleGenerate}
         disabled={loading}
-        className="bg-blue-600 text-white px-4 py-2 rounded mt-4"
+        className="bg-blue-600 text-white px-4 py-2 rounded"
       >
         {loading ? 'Generating...' : 'Generate Ideas'}
       </button>
