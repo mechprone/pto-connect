@@ -12,7 +12,7 @@ export default function BillingPage() {
 
     try {
       const token = (await supabase.auth.getSession()).data.session.access_token
-      const res = await fetch('/api/stripe/create-checkout-session', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/stripe/create-checkout-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
