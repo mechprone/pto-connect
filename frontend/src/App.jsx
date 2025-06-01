@@ -2,42 +2,29 @@ import { Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import DashboardLayout from './layouts/DashboardLayout'
 
-// Auth
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Unauthorized from './pages/Unauthorized'
 
-// Events
 import EventsDashboard from './pages/EventsDashboard'
 import CreateEvent from './pages/CreateEvent'
 import EditEventPage from './pages/EditEventPage'
 import EventsCalendarPage from './pages/EventsCalendarPage'
 
-// Fundraisers
 import CreateFundraiser from './pages/CreateFundraiser'
 import FundraiserDashboard from './pages/FundraiserDashboard'
-
-// Budget
 import CreateBudgetEntry from './pages/CreateBudgetEntry'
 import BudgetDashboard from './pages/BudgetDashboard'
-
-// Messages
+import CreateTeacherRequest from './pages/CreateTeacherRequest'
+import TeacherRequestsDashboard from './pages/TeacherRequestsDashboard'
 import CreateMessage from './pages/CreateMessage'
 import MessagesDashboard from './pages/MessagesDashboard'
-
-// Documents
 import UploadDocument from './pages/UploadDocument'
 import DocumentsDashboard from './pages/DocumentsDashboard'
-
-// Other
 import SharedLibraryDashboard from './pages/SharedLibraryDashboard'
 import AiEventIdeas from './pages/AiEventIdeas'
 import AdminUsersDashboard from './pages/AdminUsersDashboard'
-import TeacherRequestsDashboard from './pages/TeacherRequestsDashboard'
-import CreateTeacherRequest from './pages/CreateTeacherRequest'
-
-// Stripe Billing
-import BillingPage from './modules/billing/pages/BillingPage'
+import BillingPage from './pages/BillingPage' // ✅ Added BillingPage
 
 export default function App() {
   return (
@@ -65,7 +52,7 @@ export default function App() {
         <Route path="/shared-library" element={<DashboardLayout><SharedLibraryDashboard /></DashboardLayout>} />
         <Route path="/ai-event-ideas" element={<DashboardLayout><AiEventIdeas /></DashboardLayout>} />
         <Route path="/admin/users" element={<DashboardLayout><AdminUsersDashboard /></DashboardLayout>} />
-        <Route path="/billing" element={<DashboardLayout><BillingPage /></DashboardLayout>} />
+        <Route path="/billing" element={<DashboardLayout><BillingPage /></DashboardLayout>} /> {/* ✅ Added */}
       </Route>
 
       {/* Teacher Routes */}
