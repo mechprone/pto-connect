@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { supabase } from '../../../supabaseClient'
 
 export default function BillingPage() {
@@ -11,8 +11,16 @@ export default function BillingPage() {
     setError('')
 
     try {
-      const token = (await supabase.auth.getSession()).data.session.access_token
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/stripe/create-checkout-session`, {
+      const session = await supabase.auth.getSession()
+      const token = session.data.session?.access_token
+
+      if (!token) {
+        setError('User session not found.')
+        setLoading(false)
+        return
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/stripe/create-checkout-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -21,14 +29,20 @@ export default function BillingPage() {
         body: JSON.stringify({ plan })
       })
 
-      const data = await res.json()
-      if (data.url) {
+      if (!response.ok) {
+        const errorBody = await response.text()
+        console.error('Stripe error response:', errorBody)
+        throw new Error('Stripe request failed.')
+      }
+
+      const data = await response.json()
+      if (data?.url) {
         window.location.href = data.url
       } else {
         setError('Checkout session failed to start.')
       }
     } catch (err) {
-      console.error(err)
+      console.error('Checkout error:', err)
       setError('An error occurred during checkout.')
     } finally {
       setLoading(false)
