@@ -27,7 +27,7 @@ import UploadDocument from './modules/documents/pages/UploadDocument'
 
 import SharedLibraryDashboard from './modules/sharedLibrary/pages/SharedLibraryDashboard'
 import AiEventIdeas from './modules/ai/pages/AiEventIdeas'
-import AdminUsersDashboard from './modules/adminUsers/pages/AdminUsersDashboard'
+import AdminDashboard from './modules/admin/pages/AdminDashboard'
 
 import TeacherRequestsDashboard from './modules/teacherRequests/pages/TeacherRequestsDashboard'
 import CreateTeacherRequest from './modules/teacherRequests/pages/CreateTeacherRequest'
@@ -65,7 +65,7 @@ export default function App() {
 
           <Route path="/shared-library" element={<SharedLibraryDashboard />} />
           <Route path="/ai-event-ideas" element={<AiEventIdeas />} />
-          <Route path="/admin/users" element={<AdminUsersDashboard />} />
+          <Route path="/dashboard/admin" element={<AdminDashboard />} />
           <Route path="/billing" element={<BillingPage />} />
         </Route>
       </Route>

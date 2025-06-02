@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/utils/supabaseClient'
 import axios from 'axios'
 
-export default function AdminUsersDashboard() {
+export default function AdminDashboard() {
   const [users, setUsers] = useState([])
   const [error, setError] = useState('')
 
