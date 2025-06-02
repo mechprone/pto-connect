@@ -19,8 +19,8 @@ import CreateFundraiser from './modules/fundraisers/pages/CreateFundraiser'
 import BudgetDashboard from './modules/budgets/pages/BudgetDashboard'
 import CreateBudgetEntry from './modules/budgets/pages/CreateBudgetEntry'
 
-import MessagesDashboard from './modules/messages/pages/MessagesDashboard'
-import CreateMessage from './modules/messages/pages/CreateMessage'
+import CommunicationsDashboard from './modules/communications/pages/CommunicationsDashboard'
+import CreateCommunication from './modules/communications/pages/CreateCommunication'
 
 import DocumentsDashboard from './modules/documents/pages/DocumentsDashboard'
 import UploadDocument from './modules/documents/pages/UploadDocument'
@@ -57,8 +57,8 @@ export default function App() {
           <Route path="/budget" element={<BudgetDashboard />} />
           <Route path="/budget/create" element={<CreateBudgetEntry />} />
 
-          <Route path="/messages" element={<MessagesDashboard />} />
-          <Route path="/messages/create" element={<CreateMessage />} />
+          <Route path="/communications" element={<CommunicationsDashboard />} />
+          <Route path="/communications/create" element={<CreateCommunication />} />
 
           <Route path="/documents" element={<DocumentsDashboard />} />
           <Route path="/documents/upload" element={<UploadDocument />} />

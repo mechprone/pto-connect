@@ -5,7 +5,7 @@ const navItems = [
   { to: '/events', label: 'Events', roles: ['admin', 'teacher', 'parent_member'] },
   { to: '/fundraisers', label: 'Fundraisers', roles: ['admin', 'treasurer'] },
   { to: '/budget', label: 'Budget', roles: ['admin', 'treasurer'] },
-  { to: '/messages', label: 'Messages', roles: ['admin', 'committee_lead', 'teacher'] },
+  { to: '/communications', label: 'Communications', roles: ['admin', 'committee_lead', 'teacher'] },
   { to: '/teacher-requests', label: 'Teacher Requests', roles: ['admin', 'teacher'] },
   { to: '/billing', label: 'Billing', roles: ['admin'] },
 ]
