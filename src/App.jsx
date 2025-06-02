@@ -21,6 +21,10 @@ import CreateBudgetEntry from './modules/budgets/pages/CreateBudgetEntry'
 
 import CommunicationsDashboard from './modules/communications/pages/CommunicationsDashboard'
 import CreateCommunication from './modules/communications/pages/CreateCommunication'
+import EmailComposer from './modules/communications/pages/EmailComposer'
+import SmsComposer from './modules/communications/pages/SmsComposer'
+import SocialPostComposer from './modules/communications/pages/SocialPostComposer'
+import AiContentAssistant from './modules/communications/pages/AiContentAssistant'
 
 import DocumentsDashboard from './modules/documents/pages/DocumentsDashboard'
 import UploadDocument from './modules/documents/pages/UploadDocument'
@@ -59,6 +63,10 @@ export default function App() {
 
           <Route path="/communications" element={<CommunicationsDashboard />} />
           <Route path="/communications/create" element={<CreateCommunication />} />
+          <Route path="/communications/email" element={<EmailComposer />} />
+          <Route path="/communications/sms" element={<SmsComposer />} />
+          <Route path="/communications/social" element={<SocialPostComposer />} />
+          <Route path="/communications/ai" element={<AiContentAssistant />} />
 
           <Route path="/documents" element={<DocumentsDashboard />} />
           <Route path="/documents/upload" element={<UploadDocument />} />
