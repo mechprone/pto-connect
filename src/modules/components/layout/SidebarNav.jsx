@@ -4,19 +4,19 @@ const navItems = [
   { to: '/dashboard/admin', label: 'Dashboard', roles: ['admin'] },
   { to: '/events', label: 'Events', roles: ['admin', 'teacher', 'parent_member'] },
   { to: '/fundraisers', label: 'Fundraisers', roles: ['admin', 'treasurer'] },
-  { to: '/budgets', label: 'Budget', roles: ['admin', 'treasurer'] },
+  { to: '/budget', label: 'Budget', roles: ['admin', 'treasurer'] },
   { to: '/messages', label: 'Messages', roles: ['admin', 'committee_lead', 'teacher'] },
   { to: '/teacher-requests', label: 'Teacher Requests', roles: ['admin', 'teacher'] },
-  { to: '/admin-users', label: 'Admin Tools', roles: ['admin'] }
+  { to: '/billing', label: 'Billing', roles: ['admin'] },
 ]
 
 export default function SidebarNav({ role }) {
   const location = useLocation()
 
-  const filtered = navItems.filter((item) => item.roles.includes(role))
+  const filtered = navItems.filter(item => item.roles.includes(role))
 
   return (
-    <aside className="w-64 bg-white shadow-md hidden md:block">
+    <aside className="w-64 bg-white border-r shadow-sm hidden md:block">
       <nav className="px-4 py-6 space-y-2">
         {filtered.map((item) => (
           <Link

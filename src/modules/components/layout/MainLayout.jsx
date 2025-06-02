@@ -11,7 +11,7 @@ export default function MainLayout() {
   const [role, setRole] = useState(null)
 
   useEffect(() => {
-    const fetchUser = async () => {
+    async function fetchUser() {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
 
@@ -27,27 +27,29 @@ export default function MainLayout() {
     fetchUser()
   }, [])
 
-  if (!user || !role) return null // Optional: add loading spinner
+  if (!user || !role) return null // or loading spinner
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
-      <SidebarNav role={role} />
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      {/* Top header (full width) */}
+      <header className="bg-white shadow-sm px-6 py-4 flex justify-between items-center w-full">
+        <span className="text-xl font-bold text-blue-700">PTO Connect</span>
+        <div className="flex items-center gap-4">
+          <NotificationBell />
+          <LogoutButton />
+        </div>
+      </header>
 
-      <div className="flex flex-col flex-1">
-        <header className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-          <span className="text-xl font-bold text-blue-700">PTO Connect</span>
-          <div className="flex items-center gap-4">
-            <NotificationBell />
-            <LogoutButton />
-          </div>
-        </header>
+      {/* Sidebar + Main content area */}
+      <div className="flex flex-1">
+        <SidebarNav role={role} />
 
-        <main className="flex-1 px-6 py-6">
+        <main className="flex-1 p-6">
           <Outlet />
         </main>
-
-        <Footer />
       </div>
+
+      <Footer />
     </div>
   )
 }
