@@ -1,37 +1,77 @@
-import { useState } from 'react';
-import { supabase } from '@/utils/supabaseClient';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '@/utils/supabaseClient'
 
-export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+export default function Login() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
+    e.preventDefault()
+    setError('')
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error: loginError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
 
-    if (error) {
-      setError(error.message);
-    } else {
-      navigate('/dashboard'); // Auto-routes based on role if logic is added there
+    if (loginError || !data?.user) {
+      return setError(loginError?.message || 'Login failed. Please try again.')
     }
-  };
+
+    const userId = data.user.id
+
+    // ✅ Get user role from profiles table
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single()
+
+    if (profileError || !profile) {
+      return setError('Unable to determine user role.')
+    }
+
+    // ✅ Redirect based on role
+    switch (profile.role) {
+      case 'admin':
+        navigate('/dashboard/admin')
+        break
+      case 'teacher':
+        navigate('/dashboard/teacher')
+        break
+      case 'board_member':
+        navigate('/dashboard/board')
+        break
+      case 'committee_lead':
+        navigate('/dashboard/committee')
+        break
+      case 'volunteer':
+        navigate('/dashboard/volunteer')
+        break
+      case 'parent_member':
+        navigate('/dashboard/parent')
+        break
+      default:
+        navigate('/unauthorized')
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <form onSubmit={handleLogin} className="bg-white p-6 rounded shadow-md w-80">
-        <h2 className="text-xl font-bold mb-4">PTO Connect Login</h2>
+        <h2 className="text-xl font-bold mb-4 text-center">PTO Connect Login</h2>
         {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
+
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full p-2 border rounded mb-2"
+          required
         />
         <input
           type="password"
@@ -39,7 +79,9 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full p-2 border rounded mb-4"
+          required
         />
+
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
@@ -48,5 +90,5 @@ export default function LoginPage() {
         </button>
       </form>
     </div>
-  );
+  )
 }

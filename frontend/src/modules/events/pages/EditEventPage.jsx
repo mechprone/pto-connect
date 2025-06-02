@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { supabase } from '@/supabaseClient'
+import { supabase } from '@/utils/supabaseClient'
 
 export default function EditEventPage() {
   const [form, setForm] = useState(null)
