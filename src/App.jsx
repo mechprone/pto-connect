@@ -38,6 +38,8 @@ import CreateTeacherRequest from './modules/teacherRequests/pages/CreateTeacherR
 
 import BillingPage from './modules/billing/pages/BillingPage'
 
+import EmailComposer from './modules/communications/pages/EmailComposer'
+
 export default function App() {
   return (
     <Routes>
@@ -75,6 +77,7 @@ export default function App() {
           <Route path="/ai-event-ideas" element={<AiEventIdeas />} />
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
           <Route path="/billing" element={<BillingPage />} />
+          <Route path="/communications/email" element={<EmailComposer />} />
         </Route>
       </Route>
 
