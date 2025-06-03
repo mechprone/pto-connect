@@ -20,18 +20,20 @@ export default function SignupPage() {
       return
     }
 
+    // Step 1: Sign up user
     const { data, error: signupError } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           org_id: orgId,
-          role
-        }
-      }
+          role,
+        },
+      },
     })
 
     if (signupError || !data?.user) {
+      console.error('Signup error:', signupError)
       setError(signupError?.message || 'Signup failed.')
       return
     }
@@ -39,17 +41,19 @@ export default function SignupPage() {
     const user = data.user
     const approved = !elevatedRoles.includes(role)
 
+    // Step 2: Insert user profile
     const { error: profileError } = await supabase.from('profiles').insert([
       {
         id: user.id,
         email,
         org_id: orgId,
         role,
-        approved
-      }
+        approved,
+      },
     ])
 
     if (profileError) {
+      console.error('Profile insert error:', profileError)
       setError('Signup successful, but failed to save profile.')
     } else {
       const approvalMsg = approved
