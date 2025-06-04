@@ -20,11 +20,11 @@ export default function SignupPage() {
       return
     }
 
-    // Step 1: Lookup PTO org by code
+    // Step 1: Lookup PTO by code (case-insensitive)
     const { data: org, error: orgError } = await supabase
       .from('ptos')
       .select('id')
-      .eq('code', ptoCode)
+      .ilike('code', ptoCode)
       .single()
 
     if (orgError || !org?.id) {
@@ -35,16 +35,16 @@ export default function SignupPage() {
 
     const orgId = org.id
 
-    // Step 2: Sign up user
+    // Step 2: Create user in Supabase Auth
     const { data, error: signupError } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           org_id: orgId,
-          role
-        }
-      }
+          role,
+        },
+      },
     })
 
     if (signupError || !data?.user) {
@@ -56,15 +56,28 @@ export default function SignupPage() {
     const user = data.user
     const approved = !elevatedRoles.includes(role)
 
-    // Step 3: Save user profile
+    // Step 3: Check if profile already exists
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    if (existingProfile) {
+      console.warn('Profile already exists, skipping insert.')
+      setMessage('Signup successful! You can now log in.')
+      return
+    }
+
+    // Step 4: Insert new profile if not found
     const { error: profileError } = await supabase.from('profiles').insert([
       {
         id: user.id,
         email,
         org_id: orgId,
         role,
-        approved
-      }
+        approved,
+      },
     ])
 
     if (profileError) {
