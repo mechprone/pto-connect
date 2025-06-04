@@ -2,23 +2,34 @@ import { Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import MainLayout from '@/modules/components/layout/MainLayout'
 
-// ✅ Modular Auth Pages
+// Auth
 import LoginPage from '@/modules/auth/pages/LoginPage'
 import SignupPage from '@/modules/auth/pages/SignupPage'
 import UnauthorizedPage from '@/modules/auth/pages/UnauthorizedPage'
 
-// ✅ Modular Dashboards and Feature Pages
+// Dashboard Pages (Add as Needed)
+import AdminDashboard from './modules/admin/pages/AdminDashboard'
+import BoardDashboard from './modules/dashboard/pages/BoardDashboard'
+import CommitteeDashboard from './modules/dashboard/pages/CommitteeDashboard'
+import VolunteerDashboard from './modules/dashboard/pages/VolunteerDashboard'
+import ParentDashboard from './modules/dashboard/pages/ParentDashboard'
+import TeacherDashboard from './modules/dashboard/pages/TeacherDashboard'
+
+// Events
 import EventsDashboard from './modules/events/pages/EventsDashboard'
 import CreateEvent from './modules/events/pages/CreateEvent'
 import EditEventPage from './modules/events/pages/EditEventPage'
 import EventsCalendarPage from './modules/events/pages/EventsCalendarPage'
 
+// Fundraisers
 import FundraiserDashboard from './modules/fundraisers/pages/FundraiserDashboard'
 import CreateFundraiser from './modules/fundraisers/pages/CreateFundraiser'
 
+// Budget
 import BudgetDashboard from './modules/budgets/pages/BudgetDashboard'
 import CreateBudgetEntry from './modules/budgets/pages/CreateBudgetEntry'
 
+// Communications
 import CommunicationsDashboard from './modules/communications/pages/CommunicationsDashboard'
 import CreateCommunication from './modules/communications/pages/CreateCommunication'
 import EmailComposer from './modules/communications/pages/EmailComposer'
@@ -26,16 +37,19 @@ import SmsComposer from './modules/communications/pages/SmsComposer'
 import SocialPostComposer from './modules/communications/pages/SocialPostComposer'
 import AiContentAssistant from './modules/communications/pages/AiContentAssistant'
 
+// Documents
 import DocumentsDashboard from './modules/documents/pages/DocumentsDashboard'
 import UploadDocument from './modules/documents/pages/UploadDocument'
 
+// Shared Library & AI
 import SharedLibraryDashboard from './modules/sharedLibrary/pages/SharedLibraryDashboard'
 import AiEventIdeas from './modules/ai/pages/AiEventIdeas'
-import AdminDashboard from './modules/admin/pages/AdminDashboard'
 
+// Teacher
 import TeacherRequestsDashboard from './modules/teacherRequests/pages/TeacherRequestsDashboard'
 import CreateTeacherRequest from './modules/teacherRequests/pages/CreateTeacherRequest'
 
+// Billing
 import BillingPage from './modules/billing/pages/BillingPage'
 
 export default function App() {
@@ -47,9 +61,12 @@ export default function App() {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-      {/* Admin Routes with MainLayout */}
+      {/* Admin Routes */}
       <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
         <Route element={<MainLayout />}>
+          <Route path="/dashboard/admin" element={<AdminDashboard />} />
+          <Route path="/billing" element={<BillingPage />} />
+
           <Route path="/events" element={<EventsDashboard />} />
           <Route path="/events/create" element={<CreateEvent />} />
           <Route path="/events/edit/:id" element={<EditEventPage />} />
@@ -73,16 +90,40 @@ export default function App() {
 
           <Route path="/shared-library" element={<SharedLibraryDashboard />} />
           <Route path="/ai-event-ideas" element={<AiEventIdeas />} />
-          <Route path="/dashboard/admin" element={<AdminDashboard />} />
-          <Route path="/billing" element={<BillingPage />} />
         </Route>
       </Route>
 
-      {/* Teacher Routes with MainLayout */}
+      {/* Teacher Routes */}
       <Route element={<ProtectedRoute allowedRoles={['teacher']} />}>
         <Route element={<MainLayout />}>
+          <Route path="/dashboard/teacher" element={<TeacherDashboard />} />
           <Route path="/teacher-requests" element={<TeacherRequestsDashboard />} />
           <Route path="/teacher-requests/create" element={<CreateTeacherRequest />} />
+        </Route>
+      </Route>
+
+      {/* Additional Role Dashboards */}
+      <Route element={<ProtectedRoute allowedRoles={['board_member']} />}>
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard/board" element={<BoardDashboard />} />
+        </Route>
+      </Route>
+
+      <Route element={<ProtectedRoute allowedRoles={['committee_lead']} />}>
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard/committee" element={<CommitteeDashboard />} />
+        </Route>
+      </Route>
+
+      <Route element={<ProtectedRoute allowedRoles={['volunteer']} />}>
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard/volunteer" element={<VolunteerDashboard />} />
+        </Route>
+      </Route>
+
+      <Route element={<ProtectedRoute allowedRoles={['parent_member']} />}>
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard/parent" element={<ParentDashboard />} />
         </Route>
       </Route>
     </Routes>

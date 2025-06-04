@@ -1,16 +1,21 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/utils/supabaseClient'
+import { getDashboardRouteForRole } from '@/utils/roleRoutes'
 
-export default function Login() {
+export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
-  const handleLogin = async (e) => {
-    e.preventDefault()
+  const handleLogin = async () => {
     setError('')
+
+    if (!email || !password) {
+      setError('Email and password are required.')
+      return
+    }
 
     const { data, error: loginError } = await supabase.auth.signInWithPassword({
       email,
@@ -18,77 +23,52 @@ export default function Login() {
     })
 
     if (loginError || !data?.user) {
-      return setError(loginError?.message || 'Login failed. Please try again.')
+      console.error('Login error:', loginError)
+      setError(loginError?.message || 'Login failed.')
+      return
     }
 
-    const userId = data.user.id
+    const user = data.user
+    const role = user?.user_metadata?.role
 
-    // ✅ Get user role from profiles table
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', userId)
-      .single()
-
-    if (profileError || !profile) {
-      return setError('Unable to determine user role.')
+    if (!role) {
+      setError('Your account does not have a role assigned.')
+      return
     }
 
-    // ✅ Redirect based on role
-    switch (profile.role) {
-      case 'admin':
-        navigate('/dashboard/admin')
-        break
-      case 'teacher':
-        navigate('/dashboard/teacher')
-        break
-      case 'board_member':
-        navigate('/dashboard/board')
-        break
-      case 'committee_lead':
-        navigate('/dashboard/committee')
-        break
-      case 'volunteer':
-        navigate('/dashboard/volunteer')
-        break
-      case 'parent_member':
-        navigate('/dashboard/parent')
-        break
-      default:
-        navigate('/unauthorized')
-    }
+    const dashboardPath = getDashboardRouteForRole(role)
+    navigate(dashboardPath)
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={handleLogin} className="bg-white p-6 rounded shadow-md w-80">
-        <h2 className="text-xl font-bold mb-4 text-center">PTO Connect Login</h2>
-        {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
+    <div className="p-6 max-w-md mx-auto">
+      <h1 className="text-xl font-bold mb-4">Log In</h1>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-2 border rounded mb-2"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 border rounded mb-4"
-          required
-        />
+      <input
+        className="border p-2 w-full mb-2"
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+        required
+      />
+      <input
+        className="border p-2 w-full mb-4"
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+        required
+      />
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
-          Log In
-        </button>
-      </form>
+      <button
+        onClick={handleLogin}
+        className="bg-blue-600 text-white px-4 py-2 rounded w-full"
+      >
+        Log In
+      </button>
+
+      {error && <p className="text-red-500 mt-2">{error}</p>}
     </div>
   )
 }
