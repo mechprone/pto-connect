@@ -6,7 +6,7 @@ const elevatedRoles = ['admin', 'treasurer', 'board_member']
 export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [orgId, setOrgId] = useState('')
+  const [ptoCode, setPtoCode] = useState('')
   const [role, setRole] = useState('parent_member')
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
@@ -15,21 +15,36 @@ export default function SignupPage() {
     setError('')
     setMessage('')
 
-    if (!email || !password || !orgId || !role) {
+    if (!email || !password || !ptoCode || !role) {
       setError('All fields are required.')
       return
     }
 
-    // Step 1: Sign up user
+    // Step 1: Lookup PTO org by code
+    const { data: org, error: orgError } = await supabase
+      .from('ptos')
+      .select('id')
+      .eq('code', ptoCode)
+      .single()
+
+    if (orgError || !org?.id) {
+      console.error('PTO code lookup failed:', orgError)
+      setError('Invalid PTO code. Please check with your organization.')
+      return
+    }
+
+    const orgId = org.id
+
+    // Step 2: Sign up user
     const { data, error: signupError } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           org_id: orgId,
-          role,
-        },
-      },
+          role
+        }
+      }
     })
 
     if (signupError || !data?.user) {
@@ -41,15 +56,15 @@ export default function SignupPage() {
     const user = data.user
     const approved = !elevatedRoles.includes(role)
 
-    // Step 2: Insert user profile
+    // Step 3: Save user profile
     const { error: profileError } = await supabase.from('profiles').insert([
       {
         id: user.id,
         email,
         org_id: orgId,
         role,
-        approved,
-      },
+        approved
+      }
     ])
 
     if (profileError) {
@@ -63,7 +78,7 @@ export default function SignupPage() {
       setMessage(approvalMsg)
       setEmail('')
       setPassword('')
-      setOrgId('')
+      setPtoCode('')
       setRole('parent_member')
     }
   }
@@ -91,9 +106,9 @@ export default function SignupPage() {
       <input
         className="border p-2 w-full mb-2"
         type="text"
-        value={orgId}
-        onChange={(e) => setOrgId(e.target.value)}
-        placeholder="Organization ID (required)"
+        value={ptoCode}
+        onChange={(e) => setPtoCode(e.target.value)}
+        placeholder="PTO Code (e.g. abc123xy)"
         required
       />
       <select
