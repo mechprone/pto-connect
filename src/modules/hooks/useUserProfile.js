@@ -1,31 +1,122 @@
-import { useEffect, useState } from 'react'
-import { supabase } from '@/utils/supabaseClient'
+import { useState, useEffect } from 'react';
+import { supabase } from '@/utils/supabaseClient';
 
-export default function useUserProfile() {
-  const [user, setUser] = useState(null)
-  const [profile, setProfile] = useState(null)
-  const [loading, setLoading] = useState(true)
+export function useUserProfile() {
+  const [profile, setProfile] = useState(null);
+  const [organization, setOrganization] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchUserAndProfile = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+    const fetchUserProfile = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      setUser(user)
+        // Get current user
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError) throw userError;
+        if (!user) {
+          setProfile(null);
+          setOrganization(null);
+          setLoading(false);
+          return;
+        }
 
+        // Get user profile with organization data
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select(`
+            *,
+            organizations (
+              id,
+              name,
+              slug,
+              subscription_status,
+              trial_ends_at,
+              settings
+            )
+          `)
+          .eq('id', user.id)
+          .single();
+
+        if (profileError) throw profileError;
+
+        setProfile(profileData);
+        setOrganization(profileData?.organizations);
+      } catch (err) {
+        console.error('Error fetching user profile:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        setProfile(null);
+        setOrganization(null);
+      } else if (event === 'SIGNED_IN' && session) {
+        fetchUserProfile();
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const updateProfile = async (updates) => {
+    try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single()
+        .update(updates)
+        .eq('id', profile.id)
+        .select()
+        .single();
 
-      setProfile(data)
-      setLoading(false)
+      if (error) throw error;
+
+      setProfile(prev => ({ ...prev, ...data }));
+      return { data, error: null };
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      return { data: null, error: err.message };
     }
+  };
 
-    fetchUserAndProfile()
-  }, [])
+  const hasRole = (requiredRole) => {
+    return profile?.role === requiredRole;
+  };
 
-  return { user, profile, role: profile?.role, loading }
+  const hasAnyRole = (roles) => {
+    return roles.includes(profile?.role);
+  };
+
+  const isSubscriptionActive = () => {
+    if (!organization) return false;
+    
+    const { subscription_status, trial_ends_at } = organization;
+    
+    if (subscription_status === 'active') return true;
+    if (subscription_status === 'trial' && trial_ends_at) {
+      return new Date(trial_ends_at) > new Date();
+    }
+    
+    return false;
+  };
+
+  return {
+    profile,
+    organization,
+    loading,
+    error,
+    updateProfile,
+    hasRole,
+    hasAnyRole,
+    isSubscriptionActive,
+    isAuthenticated: !!profile,
+  };
 }

@@ -1,40 +1,33 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/utils/supabaseClient';
+import { useUserProfile } from '@/modules/hooks/useUserProfile';
 
 export default function ProtectedRoute({ allowedRoles }) {
-  const [authState, setAuthState] = useState({ loading: true, user: null, role: null });
+  const { profile, organization, loading, isAuthenticated, isSubscriptionActive } = useUserProfile();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single();
+  // Redirect to login if not authenticated
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
-        setAuthState({ loading: false, user, role: profile?.role });
-      } else {
-        setAuthState({ loading: false, user: null, role: null });
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  if (authState.loading) return <div className="p-4">Loading...</div>;
-
-  if (!authState.user) return <Navigate to="/login" replace />;
-
-  if (allowedRoles && !allowedRoles.includes(authState.role)) {
+  // Check if user has required role
+  if (allowedRoles && !allowedRoles.includes(profile.role)) {
     return <Navigate to="/unauthorized" replace />;
   }
 
+  // Check subscription status (except for billing page)
+  if (!isSubscriptionActive() && window.location.pathname !== '/billing') {
+    return <Navigate to="/billing" replace />;
+  }
+
+  // All checks passed, render the protected content
   return <Outlet />;
 }
