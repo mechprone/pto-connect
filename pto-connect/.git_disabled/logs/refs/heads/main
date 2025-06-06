@@ -1,0 +1,9 @@
+0000000000000000000000000000000000000000 dc5ea4788ef3ce05f08f0b31af1d0675466efd8d mechprone <mvalzan@gmail.com> 1748987713 -0500	clone: from https://github.com/mechprone/pto-connect.git
+dc5ea4788ef3ce05f08f0b31af1d0675466efd8d 97be18d4612eb45e42b6f21ee693931032d96fd0 mechprone <mvalzan@gmail.com> 1748991934 -0500	commit: Update SignupPage with enhanced error logging
+97be18d4612eb45e42b6f21ee693931032d96fd0 6f67ab42aa4c6ac11388bed88c88ac0da3bd3b1f mechprone <mvalzan@gmail.com> 1749043000 -0500	commit: Update SignupPage.jsx
+6f67ab42aa4c6ac11388bed88c88ac0da3bd3b1f 55e91c460060feac4622cf4318cdb09d8fcbd11c mechprone <mvalzan@gmail.com> 1749043858 -0500	commit: Update SignupPage.jsx
+55e91c460060feac4622cf4318cdb09d8fcbd11c e2d4048331af0b337d98944b31340aa9c1992dd8 mechprone <mvalzan@gmail.com> 1749044834 -0500	commit: Update to App and Login, plus added Dashboard skeletons
+e2d4048331af0b337d98944b31340aa9c1992dd8 e91150f72085bd45a8cc7858c9f96497960ec015 mechprone <mvalzan@gmail.com> 1749059395 -0500	commit: Create CreatePtoPage.jsx
+e91150f72085bd45a8cc7858c9f96497960ec015 fb376c59c1d03117a12a7e41e4071200241bc051 mechprone <mvalzan@gmail.com> 1749059539 -0500	commit: Update PricingPage.jsx
+fb376c59c1d03117a12a7e41e4071200241bc051 e3634ed76b206d70bbc0801718e64de5c9ca9c9b mechprone <mvalzan@gmail.com> 1749221882 -0500	commit: Fix critical architecture issues and implement multi-tenant database schema
+e3634ed76b206d70bbc0801718e64de5c9ca9c9b c954866658ac7b04c7bf48b664d2a125bdb2e40e mechprone <mvalzan@gmail.com> 1749221941 -0500	commit (merge): ﻿Merge branch 'main' of https://github.com/mechprone/pto-connect
