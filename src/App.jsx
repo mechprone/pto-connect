@@ -51,6 +51,15 @@ import CreateTeacherRequest from './modules/teacherRequests/pages/CreateTeacherR
 
 // Billing
 import BillingPage from './modules/billing/pages/BillingPage'
+import BillingSuccess from './modules/billing/pages/BillingSuccess'
+import BillingCancel from './modules/billing/pages/BillingCancel'
+
+// Onboarding
+import CreatePtoPage from './modules/onboarding/pages/CreatePtoPage'
+import PricingPage from './modules/onboarding/pages/PricingPage'
+import CompleteSignupPage from './modules/onboarding/pages/CompleteSignupPage'
+import SimpleSignupPage from './modules/onboarding/pages/SimpleSignupPage'
+import NextStepPage from './modules/onboarding/pages/NextStepPage'
 
 export default function App() {
   return (
@@ -60,6 +69,17 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      
+      {/* Onboarding Routes */}
+      <Route path="/onboarding/create-pto" element={<CreatePtoPage />} />
+      <Route path="/onboarding/pricing" element={<PricingPage />} />
+      <Route path="/onboarding/complete-signup" element={<CompleteSignupPage />} />
+      <Route path="/onboarding/simple-signup" element={<SimpleSignupPage />} />
+      <Route path="/onboarding/next-steps" element={<NextStepPage />} />
+      
+      {/* Billing Success/Cancel Routes */}
+      <Route path="/billing/success" element={<BillingSuccess />} />
+      <Route path="/billing/cancel" element={<BillingCancel />} />
 
       {/* Admin Routes */}
       <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
