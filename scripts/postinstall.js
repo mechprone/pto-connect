@@ -76,3 +76,10 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 console.log('Postinstall setup completed!');
+
+// Run the ESM fix
+try {
+  require('./fix-react-esm.js');
+} catch (error) {
+  console.error('Failed to run ESM fix:', error.message);
+}

@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import path from 'path';
 
 export default defineConfig({
-  // NO PLUGINS - we'll use esbuild's JSX transform
+  // No plugins needed - we have ESM wrappers
   esbuild: {
     jsx: 'transform',
     jsxFactory: 'React.createElement',
