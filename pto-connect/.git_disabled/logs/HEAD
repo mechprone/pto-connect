@@ -8,3 +8,8 @@ e91150f72085bd45a8cc7858c9f96497960ec015 fb376c59c1d03117a12a7e41e4071200241bc05
 fb376c59c1d03117a12a7e41e4071200241bc051 e3634ed76b206d70bbc0801718e64de5c9ca9c9b mechprone <mvalzan@gmail.com> 1749221882 -0500	commit: Fix critical architecture issues and implement multi-tenant database schema
 e3634ed76b206d70bbc0801718e64de5c9ca9c9b c954866658ac7b04c7bf48b664d2a125bdb2e40e mechprone <mvalzan@gmail.com> 1749221941 -0500	commit (merge): ﻿Merge branch 'main' of https://github.com/mechprone/pto-connect
 c954866658ac7b04c7bf48b664d2a125bdb2e40e 2b8074eb7af6a4970c675cfba2176d36c1f439f5 mechprone <mvalzan@gmail.com> 1749244274 -0500	commit (merge): Trigger redeployment: Ensure all onboarding routes are included
+2b8074eb7af6a4970c675cfba2176d36c1f439f5 0a6034a4a389352ec3139c260d8561be050b7950 mechprone <mvalzan@gmail.com> 1749259730 -0500	commit: fix: Update root route to show login page instead of basic message
+0a6034a4a389352ec3139c260d8561be050b7950 1e076a1e0db5eca6414ccd56c9d55ad40ac33c43 mechprone <mvalzan@gmail.com> 1749260404 -0500	commit: feat: Add enhanced dashboard system with login page fix
+1e076a1e0db5eca6414ccd56c9d55ad40ac33c43 4764c5d6b4668810d9809074e8163ef0838bdcc0 mechprone <mvalzan@gmail.com> 1749265333 -0500	commit: 🤖 STELLA AI ASSISTANT COMPLETE IMPLEMENTATION
+4764c5d6b4668810d9809074e8163ef0838bdcc0 46c530979358ae52bfce2443fc9328c1fa39506b mechprone <mvalzan@gmail.com> 1749266213 -0500	commit: 🔧 FIX: Login page functionality
+46c530979358ae52bfce2443fc9328c1fa39506b ce5875b2da8e1c6e08b6313865aa89fea5782d78 mechprone <mvalzan@gmail.com> 1749266510 -0500	commit: 🔧 FIX: Vercel deployment configuration
