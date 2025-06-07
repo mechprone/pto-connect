@@ -2,7 +2,6 @@ import { defineConfig } from 'vite';
 import path from 'path';
 
 export default defineConfig({
-  // No plugins needed - we have ESM wrappers
   esbuild: {
     jsx: 'transform',
     jsxFactory: 'React.createElement',
@@ -13,15 +12,14 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
-  optimizeDeps: {
-    include: ['react', 'react-dom'],
-  },
   build: {
     rollupOptions: {
+      external: ['react', 'react-dom', 'react-dom/client'],
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom']
+        globals: {
+          'react': 'React',
+          'react-dom': 'ReactDOM',
+          'react-dom/client': 'ReactDOM'
         }
       }
     }
