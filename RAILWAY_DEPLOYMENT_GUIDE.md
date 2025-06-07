@@ -40,7 +40,7 @@ In Railway dashboard, add these environment variables:
 NODE_ENV=production
 VITE_SUPABASE_URL=https://xvnfynjnxvmcxhfguqmj.supabase.co
 VITE_SUPABASE_ANON_KEY=[your anon key]
-VITE_API_URL=https://pto-connect-backend.onrender.com
+VITE_API_URL=https://api.ptoconnect.com
 ```
 
 ### Step 4: Deploy
