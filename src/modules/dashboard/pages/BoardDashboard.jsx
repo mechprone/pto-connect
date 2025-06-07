@@ -1,3 +1,4 @@
+import React from 'react';
 export default function BoardDashboard() {
   return (
     <div className="p-6">

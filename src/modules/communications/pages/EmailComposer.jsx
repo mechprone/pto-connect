@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect, useRef, useState } from 'react'
 import EmailEditor from 'react-email-editor'
 import { supabase } from '@/utils/supabaseClient'
