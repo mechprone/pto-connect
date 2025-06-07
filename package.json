@@ -11,8 +11,7 @@
     "build:swc": "vite build --config vite.config.swc.js",
     "build:minimal": "node scripts/fix-imports.js && vite build --config vite.config.minimal.js",
     "preview": "vite preview",
-    "test:build": "node scripts/test-build.js",
-    "postinstall": "node scripts/postinstall.js"
+    "test:build": "node scripts/test-build.js"
   },
   "dependencies": {
     "@babel/plugin-transform-react-jsx": "^7.25.9",

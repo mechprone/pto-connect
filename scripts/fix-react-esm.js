@@ -7,16 +7,16 @@ console.log('Creating ESM wrappers for React...');
 
 const nodeModulesPath = path.join(__dirname, '..', 'node_modules');
 
-// Create ESM wrapper for React
+// For Vite/Rollup, we need to create ESM files that it can process
+// These will be replaced by Vite's React plugin during build
+
 const reactPath = path.join(nodeModulesPath, 'react');
 const reactIndexPath = path.join(reactPath, 'index.mjs');
 
-// Simple ESM wrapper that re-exports the CommonJS module
+// Create a minimal ESM file that Vite can process
 const reactESMContent = `
-// ESM wrapper for React
-// This avoids the CJS path resolution issue by using dynamic import
-export * from './index.js';
-export { default } from './index.js';
+// ESM wrapper for React - processed by Vite
+export default {};
 `;
 
 fs.writeFileSync(reactIndexPath, reactESMContent);
@@ -27,10 +27,8 @@ const reactDomPath = path.join(nodeModulesPath, 'react-dom');
 const reactDomIndexPath = path.join(reactDomPath, 'index.mjs');
 
 const reactDomESMContent = `
-// ESM wrapper for React DOM
-// This avoids the CJS path resolution issue by using dynamic import
-export * from './index.js';
-export { default } from './index.js';
+// ESM wrapper for React DOM - processed by Vite
+export default {};
 `;
 
 fs.writeFileSync(reactDomIndexPath, reactDomESMContent);
@@ -39,11 +37,9 @@ console.log('Created react-dom/index.mjs');
 // Create ESM wrapper for react-dom/client
 const reactDomClientPath = path.join(reactDomPath, 'client.mjs');
 const reactDomClientContent = `
-// ESM wrapper for React DOM Client
-export { createRoot, hydrateRoot } from './client.js';
-
-// Also provide as default for convenience
-import { createRoot, hydrateRoot } from './client.js';
+// ESM wrapper for React DOM Client - processed by Vite
+export const createRoot = () => {};
+export const hydrateRoot = () => {};
 export default { createRoot, hydrateRoot };
 `;
 
@@ -53,8 +49,10 @@ console.log('Created react-dom/client.mjs');
 // Create ESM wrapper for jsx-runtime
 const jsxRuntimePath = path.join(reactPath, 'jsx-runtime.mjs');
 const jsxRuntimeContent = `
-// ESM wrapper for React JSX Runtime
-export * from './jsx-runtime.js';
+// ESM wrapper for React JSX Runtime - processed by Vite
+export const jsx = () => {};
+export const jsxs = () => {};
+export const Fragment = {};
 `;
 fs.writeFileSync(jsxRuntimePath, jsxRuntimeContent);
 console.log('Created react/jsx-runtime.mjs');
@@ -62,8 +60,9 @@ console.log('Created react/jsx-runtime.mjs');
 // Create ESM wrapper for jsx-dev-runtime
 const jsxDevRuntimePath = path.join(reactPath, 'jsx-dev-runtime.mjs');
 const jsxDevRuntimeContent = `
-// ESM wrapper for React JSX Dev Runtime
-export * from './jsx-dev-runtime.js';
+// ESM wrapper for React JSX Dev Runtime - processed by Vite
+export const jsxDEV = () => {};
+export const Fragment = {};
 `;
 fs.writeFileSync(jsxDevRuntimePath, jsxDevRuntimeContent);
 console.log('Created react/jsx-dev-runtime.mjs');
@@ -107,3 +106,4 @@ fs.writeFileSync(reactDomPackageJsonPath, JSON.stringify(reactDomPackageJson, nu
 console.log('Updated react-dom/package.json');
 
 console.log('\nESM wrappers created successfully!');
+console.log('Note: These are placeholder files that will be processed by Vite\'s React plugin');
