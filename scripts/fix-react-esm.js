@@ -50,6 +50,24 @@ export default { createRoot, hydrateRoot };
 fs.writeFileSync(reactDomClientPath, reactDomClientContent);
 console.log('Created react-dom/client.mjs');
 
+// Create ESM wrapper for jsx-runtime
+const jsxRuntimePath = path.join(reactPath, 'jsx-runtime.mjs');
+const jsxRuntimeContent = `
+// ESM wrapper for React JSX Runtime
+export * from './jsx-runtime.js';
+`;
+fs.writeFileSync(jsxRuntimePath, jsxRuntimeContent);
+console.log('Created react/jsx-runtime.mjs');
+
+// Create ESM wrapper for jsx-dev-runtime
+const jsxDevRuntimePath = path.join(reactPath, 'jsx-dev-runtime.mjs');
+const jsxDevRuntimeContent = `
+// ESM wrapper for React JSX Dev Runtime
+export * from './jsx-dev-runtime.js';
+`;
+fs.writeFileSync(jsxDevRuntimePath, jsxDevRuntimeContent);
+console.log('Created react/jsx-dev-runtime.mjs');
+
 // Update package.json files to include ESM exports
 const reactPackageJsonPath = path.join(reactPath, 'package.json');
 const reactPackageJson = JSON.parse(fs.readFileSync(reactPackageJsonPath, 'utf8'));
@@ -58,8 +76,14 @@ reactPackageJson.exports = {
     'import': './index.mjs',
     'require': './index.js'
   },
-  './jsx-runtime': './jsx-runtime.js',
-  './jsx-dev-runtime': './jsx-dev-runtime.js',
+  './jsx-runtime': {
+    'import': './jsx-runtime.mjs',
+    'require': './jsx-runtime.js'
+  },
+  './jsx-dev-runtime': {
+    'import': './jsx-dev-runtime.mjs',
+    'require': './jsx-dev-runtime.js'
+  },
   './package.json': './package.json'
 };
 fs.writeFileSync(reactPackageJsonPath, JSON.stringify(reactPackageJson, null, 2));

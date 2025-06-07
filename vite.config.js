@@ -14,12 +14,14 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['react', 'react-dom', 'react-dom/client'],
+      external: ['react', 'react-dom', 'react-dom/client', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
       output: {
         globals: {
           'react': 'React',
           'react-dom': 'ReactDOM',
-          'react-dom/client': 'ReactDOM'
+          'react-dom/client': 'ReactDOM',
+          'react/jsx-runtime': 'React',
+          'react/jsx-dev-runtime': 'React'
         }
       }
     }
