@@ -6,7 +6,8 @@ export default defineConfig({
   esbuild: {
     jsx: 'transform',
     jsxFactory: 'React.createElement',
-    jsxFragment: 'React.Fragment'
+    jsxFragment: 'React.Fragment',
+    jsxInject: `import React from 'react'`
   },
   resolve: {
     alias: {
