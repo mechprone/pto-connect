@@ -20,6 +20,7 @@ import TeacherDashboard from './modules/dashboard/pages/TeacherDashboard'
 
 // Events
 import EventsDashboard from './modules/events/pages/EventsDashboard'
+import EnhancedEventsDashboard from './modules/events/pages/EnhancedEventsDashboard'
 import CreateEvent from './modules/events/pages/CreateEvent'
 import EditEventPage from './modules/events/pages/EditEventPage'
 import EventsCalendarPage from './modules/events/pages/EventsCalendarPage'
@@ -30,10 +31,12 @@ import CreateFundraiser from './modules/fundraisers/pages/CreateFundraiser'
 
 // Budget
 import BudgetDashboard from './modules/budgets/pages/BudgetDashboard'
+import EnhancedBudgetDashboard from './modules/budgets/pages/EnhancedBudgetDashboard'
 import CreateBudgetEntry from './modules/budgets/pages/CreateBudgetEntry'
 
 // Communications
 import CommunicationsDashboard from './modules/communications/pages/CommunicationsDashboard'
+import EnhancedCommunicationsDashboard from './modules/communications/pages/EnhancedCommunicationsDashboard'
 import CreateCommunication from './modules/communications/pages/CreateCommunication'
 import EmailComposer from './modules/communications/pages/EmailComposer'
 import SmsComposer from './modules/communications/pages/SmsComposer'
@@ -47,6 +50,8 @@ import UploadDocument from './modules/documents/pages/UploadDocument'
 // Shared Library & AI
 import SharedLibraryDashboard from './modules/sharedLibrary/pages/SharedLibraryDashboard'
 import AiEventIdeas from './modules/ai/pages/AiEventIdeas'
+import EventWorkflowOrchestratorPage from './modules/ai/pages/EventWorkflowOrchestratorPage'
+import AdvancedDesignStudioPage from './modules/communications/pages/AdvancedDesignStudioPage'
 
 // Teacher
 import TeacherRequestsDashboard from './modules/teacherRequests/pages/TeacherRequestsDashboard'
@@ -97,7 +102,8 @@ export default function App() {
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
           <Route path="/billing" element={<BillingPage />} />
 
-          <Route path="/events" element={<EventsDashboard />} />
+          <Route path="/events" element={<EnhancedEventsDashboard />} />
+          <Route path="/events/legacy" element={<EventsDashboard />} />
           <Route path="/events/create" element={<CreateEvent />} />
           <Route path="/events/edit/:id" element={<EditEventPage />} />
           <Route path="/events/calendar" element={<EventsCalendarPage />} />
@@ -105,21 +111,25 @@ export default function App() {
           <Route path="/fundraisers" element={<FundraiserDashboard />} />
           <Route path="/fundraisers/create" element={<CreateFundraiser />} />
 
-          <Route path="/budget" element={<BudgetDashboard />} />
+          <Route path="/budget" element={<EnhancedBudgetDashboard />} />
+          <Route path="/budget/legacy" element={<BudgetDashboard />} />
           <Route path="/budget/create" element={<CreateBudgetEntry />} />
 
-          <Route path="/communications" element={<CommunicationsDashboard />} />
+          <Route path="/communications" element={<EnhancedCommunicationsDashboard />} />
+          <Route path="/communications/legacy" element={<CommunicationsDashboard />} />
           <Route path="/communications/create" element={<CreateCommunication />} />
           <Route path="/communications/email" element={<EmailComposer />} />
           <Route path="/communications/sms" element={<SmsComposer />} />
           <Route path="/communications/social" element={<SocialPostComposer />} />
           <Route path="/communications/ai" element={<AiContentAssistant />} />
+          <Route path="/communications/design-studio" element={<AdvancedDesignStudioPage />} />
 
           <Route path="/documents" element={<DocumentsDashboard />} />
           <Route path="/documents/upload" element={<UploadDocument />} />
 
           <Route path="/shared-library" element={<SharedLibraryDashboard />} />
           <Route path="/ai-event-ideas" element={<AiEventIdeas />} />
+          <Route path="/ai-workflow-orchestrator" element={<EventWorkflowOrchestratorPage />} />
         </Route>
       </Route>
 
