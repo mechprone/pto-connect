@@ -47,10 +47,10 @@ try {
   console.error('Prebuild failed:', error);
 }
 
-// Run the build
+// Run the build with Vercel-specific config
 try {
-  console.log('Running Vite build...');
-  execSync('npx vite build', { 
+  console.log('Running Vite build with Vercel configuration...');
+  execSync('npx vite build --config vite.config.vercel.js', { 
     stdio: 'inherit',
     cwd: path.join(__dirname, '..'),
     env: { ...process.env }
@@ -58,5 +58,18 @@ try {
   console.log('Build completed successfully!');
 } catch (error) {
   console.error('Build failed:', error);
-  process.exit(1);
+  
+  // If Vercel config fails, try with regular config
+  console.log('\nRetrying with standard configuration...');
+  try {
+    execSync('npx vite build', { 
+      stdio: 'inherit',
+      cwd: path.join(__dirname, '..'),
+      env: { ...process.env }
+    });
+    console.log('Build completed successfully with standard config!');
+  } catch (retryError) {
+    console.error('Build failed with both configurations:', retryError);
+    process.exit(1);
+  }
 }

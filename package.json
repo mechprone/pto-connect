@@ -8,7 +8,8 @@
     "build": "npm run prebuild && vite build",
     "build:vercel": "node scripts/vercel-build.js",
     "preview": "vite preview",
-    "test:build": "node scripts/test-build.js"
+    "test:build": "node scripts/test-build.js",
+    "postinstall": "node scripts/postinstall.js"
   },
   "dependencies": {
     "@babel/plugin-transform-react-jsx": "^7.25.9",
