@@ -11,46 +11,12 @@ const nodeModulesPath = path.join(__dirname, '..', 'node_modules');
 const reactPath = path.join(nodeModulesPath, 'react');
 const reactIndexPath = path.join(reactPath, 'index.mjs');
 
+// Simple ESM wrapper that re-exports the CommonJS module
 const reactESMContent = `
 // ESM wrapper for React
-import * as ReactCJS from './cjs/react.production.min.js';
-export default ReactCJS.default || ReactCJS;
-export const {
-  Children,
-  Component,
-  Fragment,
-  Profiler,
-  PureComponent,
-  StrictMode,
-  Suspense,
-  cloneElement,
-  createContext,
-  createElement,
-  createFactory,
-  createRef,
-  forwardRef,
-  isValidElement,
-  lazy,
-  memo,
-  startTransition,
-  unstable_act,
-  useCallback,
-  useContext,
-  useDebugValue,
-  useDeferredValue,
-  useEffect,
-  useId,
-  useImperativeHandle,
-  useInsertionEffect,
-  useLayoutEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-  useSyncExternalStore,
-  useTransition,
-  version
-} = ReactCJS.default || ReactCJS;
+// This avoids the CJS path resolution issue by using dynamic import
+export * from './index.js';
+export { default } from './index.js';
 `;
 
 fs.writeFileSync(reactIndexPath, reactESMContent);
@@ -62,26 +28,27 @@ const reactDomIndexPath = path.join(reactDomPath, 'index.mjs');
 
 const reactDomESMContent = `
 // ESM wrapper for React DOM
-import * as ReactDOMCJS from './cjs/react-dom.production.min.js';
-const ReactDOM = ReactDOMCJS.default || ReactDOMCJS;
-export default ReactDOM;
-export const {
-  createPortal,
-  createRoot,
-  findDOMNode,
-  flushSync,
-  hydrate,
-  hydrateRoot,
-  render,
-  unmountComponentAtNode,
-  unstable_batchedUpdates,
-  unstable_renderSubtreeIntoContainer,
-  version
-} = ReactDOM;
+// This avoids the CJS path resolution issue by using dynamic import
+export * from './index.js';
+export { default } from './index.js';
 `;
 
 fs.writeFileSync(reactDomIndexPath, reactDomESMContent);
 console.log('Created react-dom/index.mjs');
+
+// Create ESM wrapper for react-dom/client
+const reactDomClientPath = path.join(reactDomPath, 'client.mjs');
+const reactDomClientContent = `
+// ESM wrapper for React DOM Client
+export { createRoot, hydrateRoot } from './client.js';
+
+// Also provide as default for convenience
+import { createRoot, hydrateRoot } from './client.js';
+export default { createRoot, hydrateRoot };
+`;
+
+fs.writeFileSync(reactDomClientPath, reactDomClientContent);
+console.log('Created react-dom/client.mjs');
 
 // Update package.json files to include ESM exports
 const reactPackageJsonPath = path.join(reactPath, 'package.json');
@@ -105,7 +72,10 @@ reactDomPackageJson.exports = {
     'import': './index.mjs',
     'require': './index.js'
   },
-  './client': './client.js',
+  './client': {
+    'import': './client.mjs',
+    'require': './client.js'
+  },
   './server': './server.js',
   './package.json': './package.json'
 };
