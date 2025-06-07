@@ -7,6 +7,9 @@ import LoginPage from '@/modules/auth/pages/LoginPage'
 import SignupPage from '@/modules/auth/pages/SignupPage'
 import UnauthorizedPage from '@/modules/auth/pages/UnauthorizedPage'
 
+// Enhanced Dashboard
+import EnhancedDashboard from './components/dashboard/EnhancedDashboard'
+
 // Dashboard Pages (Add as Needed)
 import AdminDashboard from './modules/admin/pages/AdminDashboard'
 import BoardDashboard from './modules/dashboard/pages/BoardDashboard'
@@ -80,6 +83,13 @@ export default function App() {
       {/* Billing Success/Cancel Routes */}
       <Route path="/billing/success" element={<BillingSuccess />} />
       <Route path="/billing/cancel" element={<BillingCancel />} />
+
+      {/* Enhanced Dashboard Route - Available to all authenticated users */}
+      <Route element={<ProtectedRoute allowedRoles={['admin', 'board_member', 'committee_lead', 'volunteer', 'parent_member', 'teacher']} />}>
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<EnhancedDashboard />} />
+        </Route>
+      </Route>
 
       {/* Admin Routes */}
       <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
