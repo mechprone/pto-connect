@@ -35,11 +35,24 @@ if (!fs.existsSync(jsxRuntimePath) && fs.existsSync(cjsJsxRuntimePath)) {
   }
 }
 
+// Run prebuild first
+try {
+  console.log('Running prebuild script...');
+  execSync('node scripts/prebuild.js', { 
+    stdio: 'inherit',
+    cwd: path.join(__dirname, '..'),
+    env: { ...process.env }
+  });
+} catch (error) {
+  console.error('Prebuild failed:', error);
+}
+
 // Run the build
 try {
   console.log('Running Vite build...');
   execSync('npx vite build', { 
     stdio: 'inherit',
+    cwd: path.join(__dirname, '..'),
     env: { ...process.env }
   });
   console.log('Build completed successfully!');
