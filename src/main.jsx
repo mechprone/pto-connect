@@ -1,6 +1,5 @@
-// React and ReactDOM are loaded from CDN in index.html
-const React = window.React;
-const ReactDOM = window.ReactDOM;
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
