@@ -1,8 +1,17 @@
 {
+  "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
   "installCommand": "npm install --legacy-peer-deps",
+  "env": {
+    "NODE_VERSION": "18"
+  },
+  "functions": {
+    "app/**": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/" }
   ]
