@@ -51,12 +51,6 @@ export default function LoginPage() {
     setLoading(false)
   }
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleLogin(e)
-    }
-  }
-
   return (
     <div className="p-6 max-w-md mx-auto">
       <h1 className="text-xl font-bold mb-4">Log In</h1>
@@ -67,20 +61,20 @@ export default function LoginPage() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          onKeyPress={handleKeyPress}
           placeholder="Email"
           required
           disabled={loading}
+          autoComplete="email"
         />
         <input
           className="border p-2 w-full rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          onKeyPress={handleKeyPress}
           placeholder="Password"
           required
           disabled={loading}
+          autoComplete="current-password"
         />
 
         <button
