@@ -26,9 +26,16 @@ export function useUserProfile() {
 
         // Get user profile with organization data
         const { data: profileData, error: profileError } = await supabase
-          .from('users')
+          .from('profiles')
           .select(`
-            *
+            *,
+            organizations (
+              id,
+              name,
+              type,
+              subscription_status,
+              trial_ends_at
+            )
           `)
           .eq('id', user.id)
           .single();
@@ -63,7 +70,7 @@ export function useUserProfile() {
   const updateProfile = async (updates) => {
     try {
       const { data, error } = await supabase
-        .from('users')
+        .from('profiles')
         .update(updates)
         .eq('id', profile.id)
         .select()
