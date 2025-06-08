@@ -1,3 +1,4 @@
+import React from 'react';
 export default function SmsComposer() {
   return (
     <div className="p-4">

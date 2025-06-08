@@ -1,3 +1,4 @@
+import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'
 import { CheckCircle, Copy, Users, Settings, Calendar } from 'lucide-react'
 import { useState } from 'react'

@@ -1,9 +1,0 @@
-{
-  "buildCommand": "cd pto-connect && npm run build",
-  "outputDirectory": "pto-connect/dist",
-  "installCommand": "cd pto-connect && npm install --legacy-peer-deps",
-  "framework": "vite",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
-  ]
-}

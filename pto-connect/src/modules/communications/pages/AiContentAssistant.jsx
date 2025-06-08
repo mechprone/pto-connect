@@ -1,3 +1,4 @@
+import React from 'react';
 export default function AiContentAssistant() {
   return (
     <div className="p-4">

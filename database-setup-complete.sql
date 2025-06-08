@@ -65,11 +65,11 @@ CREATE TABLE IF NOT EXISTS events (
 CREATE TABLE IF NOT EXISTS event_rsvps (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     event_id UUID REFERENCES events(id) ON DELETE CASCADE,
-    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
     status TEXT CHECK (status IN ('yes', 'no', 'maybe')) NOT NULL,
     notes TEXT,
     created_at TIMESTAMP DEFAULT now(),
-    UNIQUE(event_id, user_id)
+    UNIQUE(event_id, profile_id)
 );
 
 -- BUDGET TRANSACTIONS
@@ -358,7 +358,7 @@ CREATE POLICY "Users can view RSVPs for events in their org" ON event_rsvps
 
 DROP POLICY IF EXISTS "Users can manage their own RSVPs" ON event_rsvps;
 CREATE POLICY "Users can manage their own RSVPs" ON event_rsvps
-  FOR ALL USING (user_id = auth.uid());
+  FOR ALL USING (profile_id = auth.uid());
 
 -- =====================================================
 -- TRANSACTIONS POLICIES

@@ -1,3 +1,4 @@
+import React from 'react';
 export default function BillingSuccess() {
   return (
     <div className="max-w-xl mx-auto p-6 text-center">

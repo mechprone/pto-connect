@@ -6,17 +6,24 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      '@': path.resolve(__dirname, './src'),
     },
   },
   server: {
-    port: 3000,
-    proxy: {
-      '/api': {
-        target: 'https://api.ptoconnect.com',
-        changeOrigin: true,
-        secure: true,
-        rewrite: path => path.replace(/^\/api/, '')
+    port: 5173,
+    host: true,
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['@material-tailwind/react', 'framer-motion', 'lucide-react'],
+          'data-vendor': ['@tanstack/react-query', '@tanstack/react-table', 'axios'],
+          'supabase': ['@supabase/supabase-js'],
+        },
       },
     },
   },
