@@ -16,7 +16,21 @@ RUN npm install --legacy-peer-deps
 # Copy source code
 COPY . .
 
-# Build the application
+# Declare build arguments for environment variables
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_ANON_KEY
+ARG VITE_BACKEND_URL
+ARG VITE_CLIENT_URL
+ARG VITE_STRIPE_PUBLISHABLE_KEY
+
+# Set environment variables for build
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
+ENV VITE_CLIENT_URL=$VITE_CLIENT_URL
+ENV VITE_STRIPE_PUBLISHABLE_KEY=$VITE_STRIPE_PUBLISHABLE_KEY
+
+# Build the application with environment variables
 RUN npm run build
 
 # Install serve globally
