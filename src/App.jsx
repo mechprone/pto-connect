@@ -13,6 +13,7 @@ import EnhancedDashboard from './components/dashboard/EnhancedDashboard'
 
 // Dashboard Pages (Add as Needed)
 import AdminDashboard from './modules/admin/pages/AdminDashboard'
+import PermissionManagement from './modules/admin/pages/PermissionManagement'
 import BoardDashboard from './modules/dashboard/pages/BoardDashboard'
 import CommitteeDashboard from './modules/dashboard/pages/CommitteeDashboard'
 import VolunteerDashboard from './modules/dashboard/pages/VolunteerDashboard'
@@ -101,6 +102,9 @@ export default function App() {
       <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
         <Route element={<MainLayout />}>
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
+          <Route path="/admin/permissions" element={<PermissionManagement />} />
+          <Route path="/admin/users" element={<AdminDashboard />} />
+          <Route path="/admin/settings" element={<AdminDashboard />} />
           <Route path="/billing" element={<BillingPage />} />
 
           <Route path="/events" element={<EnhancedEventsDashboard />} />
