@@ -26,9 +26,13 @@ export function useUserProfile() {
 
         // Get user profile with organization data
         const { data: profileData, error: profileError } = await supabase
-          .from('users')
+          .from('profiles')
           .select(`
-            *
+            *,
+            organizations (
+              id,
+              name
+            )
           `)
           .eq('id', user.id)
           .single();
@@ -63,7 +67,7 @@ export function useUserProfile() {
   const updateProfile = async (updates) => {
     try {
       const { data, error } = await supabase
-        .from('users')
+        .from('profiles')
         .update(updates)
         .eq('id', profile.id)
         .select()
@@ -88,16 +92,9 @@ export function useUserProfile() {
   };
 
   const isSubscriptionActive = () => {
-    if (!organization) return false;
-    
-    const { subscription_status, trial_ends_at } = organization;
-    
-    if (subscription_status === 'active') return true;
-    if (subscription_status === 'trial' && trial_ends_at) {
-      return new Date(trial_ends_at) > new Date();
-    }
-    
-    return false;
+    // For now, return true since we don't have subscription columns yet
+    // This will be implemented in future phases
+    return true;
   };
 
   return {

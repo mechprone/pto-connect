@@ -1,13 +1,7 @@
 # Dependencies
 node_modules/
 */node_modules/
-
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+**/node_modules/
 
 # Build outputs
 dist/
@@ -15,12 +9,21 @@ build/
 */dist/
 */build/
 
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+*/.env
+*/.env.local
+*/.env.development
+*/.env.production
+
 # Logs
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
+*.log
 
 # Runtime data
 pids
@@ -73,45 +76,48 @@ jspm_packages/
 .cache/
 public
 
-# Storybook build outputs
-.out
-.storybook-out
+# Vite
+.vite
+
+# Rollup cache
+.rollup.cache
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
 
 # Temporary folders
 tmp/
 temp/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
 # OS generated files
-Thumbs.db
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
 ehthumbs.db
-Desktop.ini
+Thumbs.db
 
-# Vercel
-.vercel
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# Local development
-*.local
-
-# Database
-*.db
-*.sqlite
-
-# Sensitive files
-*.pem
-*.key
-*.crt
-
-# Backup files
-*.backup
-*.bak
+# Archive folders (keep these but ignore their contents if they have node_modules)
+Development Archive/node_modules/
+Development Archive/*/node_modules/
+Development Archive/**/node_modules/

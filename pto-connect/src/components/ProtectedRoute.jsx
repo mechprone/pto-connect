@@ -20,7 +20,7 @@ export default function ProtectedRoute({ allowedRoles }) {
   }
 
   // Check if user has required role
-  if (allowedRoles && !allowedRoles.includes(profile.role)) {
+  if (allowedRoles && !allowedRoles.includes(profile?.role)) {
     return <Navigate to="/unauthorized" replace />;
   }
 
