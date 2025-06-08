@@ -1,5 +1,5 @@
-# Use Node.js 18 Alpine for smaller image
-FROM node:18-alpine
+# Use Node.js 20 Alpine for latest features
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
@@ -7,8 +7,10 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production=false
+# Clean install dependencies and clear npm cache
+RUN rm -rf node_modules package-lock.json && \
+    npm install && \
+    npm cache clean --force
 
 # Copy source code
 COPY . .
