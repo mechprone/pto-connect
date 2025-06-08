@@ -1,15 +1,19 @@
-FROM node:20-alpine
+FROM node:20-slim
 
 WORKDIR /app
+
+# Install system dependencies for native modules
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package*.json ./
 
-# Clean install with explicit Rollup module for Alpine
-RUN rm -rf node_modules package-lock.json || true && \
-    npm cache clean --force && \
-    npm install --no-optional && \
-    npm install @rollup/rollup-linux-x64-musl --save-optional
+# Clean install with proper architecture modules
+RUN npm ci --only=production
 
 # Copy source code
 COPY . .
