@@ -1,11 +1,11 @@
 [phases.setup]
-nixPkgs = ["nodejs-18_x", "npm-9_x"]
+nixPkgs = ['nodejs_20', 'npm']
 
 [phases.install]
-cmds = ["npm install --legacy-peer-deps"]
+cmds = ['npm ci --include=optional']
 
 [phases.build]
-cmds = ["npm run build"]
+cmds = ['npm run build']
 
 [start]
-cmd = "npx serve dist -s -l 3000"
+cmd = 'npx serve dist -s -l 10000'
