@@ -1,16 +1,12 @@
-# Use Node.js 20 Alpine for latest features
+# Use Node.js 20 Alpine
 FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Install dependencies first (better caching)
 COPY package*.json ./
-
-# Clean install dependencies and clear npm cache
-RUN rm -rf node_modules package-lock.json && \
-    npm install && \
-    npm cache clean --force
+RUN npm ci --only=production=false
 
 # Copy source code
 COPY . .
@@ -18,8 +14,8 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Install serve to serve static files
-RUN npm install -g serve
+# Install serve globally
+RUN npm install -g serve@14.2.0
 
 # Expose port
 EXPOSE 3000
