@@ -6,7 +6,12 @@ WORKDIR /app
 
 # Install dependencies first (better caching)
 COPY package*.json ./
-RUN npm ci --only=production=false
+
+# Clear npm cache and remove lock file to fix rollup issue
+RUN rm -f package-lock.json && npm cache clean --force
+
+# Install dependencies with legacy peer deps to avoid rollup conflicts
+RUN npm install --legacy-peer-deps
 
 # Copy source code
 COPY . .
