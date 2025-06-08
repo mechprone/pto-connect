@@ -31,10 +31,7 @@ export function useUserProfile() {
             *,
             organizations (
               id,
-              name,
-              type,
-              subscription_status,
-              trial_ends_at
+              name
             )
           `)
           .eq('id', user.id)
@@ -95,16 +92,9 @@ export function useUserProfile() {
   };
 
   const isSubscriptionActive = () => {
-    if (!organization) return false;
-    
-    const { subscription_status, trial_ends_at } = organization;
-    
-    if (subscription_status === 'active') return true;
-    if (subscription_status === 'trial' && trial_ends_at) {
-      return new Date(trial_ends_at) > new Date();
-    }
-    
-    return false;
+    // For now, return true since we don't have subscription columns yet
+    // This will be implemented in future phases
+    return true;
   };
 
   return {
