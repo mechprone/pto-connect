@@ -5,6 +5,17 @@ import { useUserProfile } from '@/modules/hooks/useUserProfile';
 export default function ProtectedRoute({ allowedRoles }) {
   const { profile, organization, loading, isAuthenticated, isSubscriptionActive } = useUserProfile();
 
+  // Debug logging
+  console.log('ProtectedRoute Debug:', {
+    profile,
+    organization,
+    loading,
+    isAuthenticated,
+    allowedRoles,
+    userRole: profile?.role,
+    hasRole: allowedRoles ? allowedRoles.includes(profile?.role) : 'No role check'
+  });
+
   // Show loading spinner while checking authentication
   if (loading) {
     return (
@@ -16,11 +27,17 @@ export default function ProtectedRoute({ allowedRoles }) {
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
+    console.log('Not authenticated, redirecting to login');
     return <Navigate to="/login" replace />;
   }
 
   // Check if user has required role
-  if (allowedRoles && !allowedRoles.includes(profile.role)) {
+  if (allowedRoles && !allowedRoles.includes(profile?.role)) {
+    console.log('Role check failed:', {
+      userRole: profile?.role,
+      allowedRoles,
+      profileData: profile
+    });
     return <Navigate to="/unauthorized" replace />;
   }
 
