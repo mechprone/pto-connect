@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy all source code first to ensure proper context
 COPY . .
 
+# Debug: List files to see what was copied
+RUN ls -la /app && echo "=== Checking for package.json ===" && ls -la /app/package.json || echo "package.json NOT FOUND"
+
 # Clear npm cache and remove lock file to fix rollup issue
 RUN rm -f package-lock.json && npm cache clean --force
 
