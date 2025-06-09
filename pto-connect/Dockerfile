@@ -4,17 +4,14 @@ FROM node:20-alpine
 # Set working directory
 WORKDIR /app
 
-# Install dependencies first (better caching)
-COPY package*.json ./
+# Copy all source code first to ensure proper context
+COPY . .
 
 # Clear npm cache and remove lock file to fix rollup issue
 RUN rm -f package-lock.json && npm cache clean --force
 
 # Install dependencies with legacy peer deps to avoid rollup conflicts
 RUN npm install --legacy-peer-deps
-
-# Copy source code
-COPY . .
 
 # Declare build arguments for environment variables
 ARG VITE_SUPABASE_URL
