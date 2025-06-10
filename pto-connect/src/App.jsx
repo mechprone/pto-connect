@@ -26,6 +26,7 @@ import EnhancedEventsDashboard from './modules/events/pages/EnhancedEventsDashbo
 import CreateEvent from './modules/events/pages/CreateEvent'
 import EditEventPage from './modules/events/pages/EditEventPage'
 import EventsCalendarPage from './modules/events/pages/EventsCalendarPage'
+import RSVPTestPage from './modules/events/pages/RSVPTestPage'
 
 // Fundraisers
 import FundraiserDashboard from './modules/fundraisers/pages/FundraiserDashboard'
@@ -79,6 +80,10 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      
+      {/* Temporary Testing Routes - Remove in Production */}
+      <Route path="/test-event-wizard" element={<CreateEvent />} />
+      <Route path="/test-rsvp-system" element={<RSVPTestPage />} />
       
       {/* Onboarding Routes */}
       <Route path="/onboarding/create-pto" element={<CreatePtoPage />} />
