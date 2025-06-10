@@ -8,15 +8,15 @@ import {
   MagnifyingGlassIcon,
   FunnelIcon
 } from '@heroicons/react/24/outline';
-import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { useUserProfile } from '../../modules/hooks/useUserProfile';
+import { supabase } from '../../utils/supabaseClient';
 import { useNavigate } from 'react-router-dom';
-import LoadingSpinner from '../Common/LoadingSpinner';
-import ErrorMessage from '../Common/ErrorMessage';
+import LoadingSpinner from '../common/LoadingSpinner';
+import ErrorMessage from '../common/ErrorMessage';
 import EmailTemplateBuilder from './EmailTemplateBuilder';
 
 const EmailTemplateManager = () => {
-  const { user, organization } = useAuth();
+  const { profile, organization } = useUserProfile();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
