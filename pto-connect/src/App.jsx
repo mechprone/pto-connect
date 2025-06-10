@@ -46,6 +46,12 @@ import SmsComposer from './modules/communications/pages/SmsComposer'
 import SocialPostComposer from './modules/communications/pages/SocialPostComposer'
 import AiContentAssistant from './modules/communications/pages/AiContentAssistant'
 
+// Phase 4 Communication Components
+import CommunicationDashboard from './components/Communication/CommunicationDashboard'
+import EmailTemplateBuilder from './components/Communication/EmailTemplateBuilder'
+import SMSCampaignManager from './components/Communication/SMSCampaignManager'
+import EmailTemplateManager from './components/Communication/EmailTemplateManager'
+
 // Documents
 import DocumentsDashboard from './modules/documents/pages/DocumentsDashboard'
 import UploadDocument from './modules/documents/pages/UploadDocument'
@@ -133,6 +139,14 @@ export default function App() {
           <Route path="/communications/social" element={<SocialPostComposer />} />
           <Route path="/communications/ai" element={<AiContentAssistant />} />
           <Route path="/communications/design-studio" element={<AdvancedDesignStudioPage />} />
+          
+          {/* New Phase 4 Communication Routes */}
+          <Route path="/communications/dashboard" element={<CommunicationDashboard />} />
+          <Route path="/communications/email-templates" element={<EmailTemplateManager />} />
+          <Route path="/communications/email-templates/create" element={<EmailTemplateBuilder />} />
+          <Route path="/communications/email-templates/edit/:id" element={<EmailTemplateBuilder />} />
+          <Route path="/communications/sms-campaigns" element={<SMSCampaignManager />} />
+          <Route path="/communications/sms-campaigns/create" element={<SMSCampaignManager />} />
 
           <Route path="/documents" element={<DocumentsDashboard />} />
           <Route path="/documents/upload" element={<UploadDocument />} />
