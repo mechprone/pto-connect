@@ -27,6 +27,7 @@ import CreateEvent from './modules/events/pages/CreateEvent'
 import EditEventPage from './modules/events/pages/EditEventPage'
 import EventsCalendarPage from './modules/events/pages/EventsCalendarPage'
 import RSVPTestPage from './modules/events/pages/RSVPTestPage'
+import EventDetails from './modules/events/pages/EventDetails'
 
 // Fundraisers
 import FundraiserDashboard from './modules/fundraisers/pages/FundraiserDashboard'
@@ -54,6 +55,7 @@ import AiContentAssistant from './modules/communications/pages/AiContentAssistan
 import CommunicationAnalytics from './modules/communications/pages/CommunicationAnalytics'
 import CommunicationSchedule from './modules/communications/pages/CommunicationSchedule'
 import CommunicationAudiences from './modules/communications/pages/CommunicationAudiences'
+import CommunicationDetails from './modules/communications/pages/CommunicationDetails'
 
 // Phase 4 Communication Components
 import CommunicationDashboard from './components/Communication/CommunicationDashboard'
@@ -131,6 +133,7 @@ export default function App() {
           <Route path="/events/legacy" element={<EventsDashboard />} />
           <Route path="/events/create" element={<CreateEvent />} />
           <Route path="/events/edit/:id" element={<EditEventPage />} />
+          <Route path="/events/details/:id" element={<EventDetails />} />
           <Route path="/events/calendar" element={<EventsCalendarPage />} />
 
           <Route path="/fundraisers" element={<FundraiserDashboard />} />
@@ -155,9 +158,13 @@ export default function App() {
           <Route path="/communications" element={<EnhancedCommunicationsDashboard />} />
           <Route path="/communications/legacy" element={<CommunicationsDashboard />} />
           <Route path="/communications/create" element={<CreateCommunication />} />
+          <Route path="/communications/details/:id" element={<CommunicationDetails />} />
           <Route path="/communications/email" element={<EmailComposer />} />
+          <Route path="/communications/email/edit/:id" element={<EmailComposer />} />
           <Route path="/communications/sms" element={<SmsComposer />} />
+          <Route path="/communications/sms/edit/:id" element={<SmsComposer />} />
           <Route path="/communications/social" element={<SocialPostComposer />} />
+          <Route path="/communications/social/edit/:id" element={<SocialPostComposer />} />
           <Route path="/communications/ai" element={<AiContentAssistant />} />
           <Route path="/communications/analytics" element={<CommunicationAnalytics />} />
           <Route path="/communications/schedule" element={<CommunicationSchedule />} />

@@ -154,11 +154,17 @@ const EnhancedCommunicationsDashboard = () => {
 
           {/* Action Buttons */}
           <div className="flex space-x-2">
-            <button className="flex-1 flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button 
+              onClick={() => navigate(`/communications/details/${communication.id}`)}
+              className="flex-1 flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
               <Eye className="w-4 h-4 mr-2" />
               View
             </button>
-            <button className="flex-1 flex items-center justify-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+            <button 
+              onClick={() => navigate(`/communications/${communication.type === 'newsletter' ? 'email' : communication.type}/edit/${communication.id}`)}
+              className="flex-1 flex items-center justify-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
               <Edit className="w-4 h-4 mr-2" />
               Edit
             </button>

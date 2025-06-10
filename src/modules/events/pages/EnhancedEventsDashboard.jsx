@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Calendar, Plus, Search, Filter, Grid, List, 
   Sparkles, User, Clock, DollarSign, Users,
@@ -7,6 +8,7 @@ import {
 import AIAssistanceToggle from '../../../components/common/AIAssistanceToggle';
 
 const EnhancedEventsDashboard = () => {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('grid');
   const [creationMode, setCreationMode] = useState('manual');
   const [searchTerm, setSearchTerm] = useState('');
@@ -124,11 +126,17 @@ const EnhancedEventsDashboard = () => {
 
         {/* Action Buttons */}
         <div className="flex space-x-2">
-          <button className="flex-1 flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button 
+            onClick={() => navigate(`/events/details/${event.id}`)}
+            className="flex-1 flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
             <Eye className="w-4 h-4 mr-2" />
             View
           </button>
-          <button className="flex-1 flex items-center justify-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+          <button 
+            onClick={() => navigate(`/events/edit/${event.id}`)}
+            className="flex-1 flex items-center justify-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
             <Edit className="w-4 h-4 mr-2" />
             Edit
           </button>
@@ -176,10 +184,16 @@ const EnhancedEventsDashboard = () => {
         </div>
         
         <div className="flex items-center space-x-2">
-          <button className="p-2 text-blue-600 hover:bg-blue-50 rounded">
+          <button 
+            onClick={() => navigate(`/events/details/${event.id}`)}
+            className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+          >
             <Eye className="w-4 h-4" />
           </button>
-          <button className="p-2 text-gray-600 hover:bg-gray-50 rounded">
+          <button 
+            onClick={() => navigate(`/events/edit/${event.id}`)}
+            className="p-2 text-gray-600 hover:bg-gray-50 rounded"
+          >
             <Edit className="w-4 h-4" />
           </button>
           <button className="p-2 text-red-600 hover:bg-red-50 rounded">
@@ -210,7 +224,10 @@ const EnhancedEventsDashboard = () => {
             <li>• Manual budget planning</li>
             <li>• Individual task assignment</li>
           </ul>
-          <button className="w-full py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+          <button 
+            onClick={() => navigate('/events/create')}
+            className="w-full py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
             Create Manually
           </button>
         </div>
