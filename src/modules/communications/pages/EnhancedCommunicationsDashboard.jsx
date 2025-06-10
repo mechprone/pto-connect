@@ -226,13 +226,13 @@ const EnhancedCommunicationsDashboard = () => {
             </div>
           </div>
           <div className="space-y-3 mb-4">
-            <button className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+            <button onClick={() => navigate('/communications/social')} className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
               Manual Creation
             </button>
-            <button className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm">
+            <button onClick={() => navigate('/communications/social?mode=assisted')} className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm">
               Let Stella Help
             </button>
-            <button className="w-full py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm">
+            <button onClick={() => navigate('/communications/social?mode=auto')} className="w-full py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm">
               Stella Auto-Generate
             </button>
           </div>
@@ -248,13 +248,13 @@ const EnhancedCommunicationsDashboard = () => {
             </div>
           </div>
           <div className="space-y-3 mb-4">
-            <button className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+            <button onClick={() => navigate('/communications/sms')} className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
               Manual Creation
             </button>
-            <button className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm">
+            <button onClick={() => navigate('/communications/sms?mode=assisted')} className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm">
               Let Stella Help
             </button>
-            <button className="w-full py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm">
+            <button onClick={() => navigate('/communications/sms?mode=auto')} className="w-full py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm">
               Stella Auto-Generate
             </button>
           </div>
