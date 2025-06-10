@@ -26,6 +26,7 @@ import EnhancedEventsDashboard from './modules/events/pages/EnhancedEventsDashbo
 import CreateEvent from './modules/events/pages/CreateEvent'
 import EditEventPage from './modules/events/pages/EditEventPage'
 import EventsCalendarPage from './modules/events/pages/EventsCalendarPage'
+import RSVPTestPage from './modules/events/pages/RSVPTestPage'
 
 // Fundraisers
 import FundraiserDashboard from './modules/fundraisers/pages/FundraiserDashboard'
@@ -44,6 +45,12 @@ import EmailComposer from './modules/communications/pages/EmailComposer'
 import SmsComposer from './modules/communications/pages/SmsComposer'
 import SocialPostComposer from './modules/communications/pages/SocialPostComposer'
 import AiContentAssistant from './modules/communications/pages/AiContentAssistant'
+
+// Phase 4 Communication Components
+import CommunicationDashboard from './components/Communication/CommunicationDashboard'
+import EmailTemplateBuilder from './components/Communication/EmailTemplateBuilder'
+import SMSCampaignManager from './components/Communication/SMSCampaignManager'
+import EmailTemplateManager from './components/Communication/EmailTemplateManager'
 
 // Documents
 import DocumentsDashboard from './modules/documents/pages/DocumentsDashboard'
@@ -79,6 +86,10 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      
+      {/* Temporary Testing Routes - Remove in Production */}
+      <Route path="/test-event-wizard" element={<CreateEvent />} />
+      <Route path="/test-rsvp-system" element={<RSVPTestPage />} />
       
       {/* Onboarding Routes */}
       <Route path="/onboarding/create-pto" element={<CreatePtoPage />} />
@@ -128,6 +139,14 @@ export default function App() {
           <Route path="/communications/social" element={<SocialPostComposer />} />
           <Route path="/communications/ai" element={<AiContentAssistant />} />
           <Route path="/communications/design-studio" element={<AdvancedDesignStudioPage />} />
+          
+          {/* New Phase 4 Communication Routes */}
+          <Route path="/communications/dashboard" element={<CommunicationDashboard />} />
+          <Route path="/communications/email-templates" element={<EmailTemplateManager />} />
+          <Route path="/communications/email-templates/create" element={<EmailTemplateBuilder />} />
+          <Route path="/communications/email-templates/edit/:id" element={<EmailTemplateBuilder />} />
+          <Route path="/communications/sms-campaigns" element={<SMSCampaignManager />} />
+          <Route path="/communications/sms-campaigns/create" element={<SMSCampaignManager />} />
 
           <Route path="/documents" element={<DocumentsDashboard />} />
           <Route path="/documents/upload" element={<UploadDocument />} />
