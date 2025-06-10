@@ -36,6 +36,8 @@ import CreateFundraiser from './modules/fundraisers/pages/CreateFundraiser'
 import BudgetDashboard from './modules/budgets/pages/BudgetDashboard'
 import EnhancedBudgetDashboard from './modules/budgets/pages/EnhancedBudgetDashboard'
 import CreateBudgetEntry from './modules/budgets/pages/CreateBudgetEntry'
+import BudgetCategoryDetails from './modules/budgets/pages/BudgetCategoryDetails'
+import CreateEditBudgetCategory from './modules/budgets/pages/CreateEditBudgetCategory'
 
 // Communications
 import CommunicationsDashboard from './modules/communications/pages/CommunicationsDashboard'
@@ -45,6 +47,9 @@ import EmailComposer from './modules/communications/pages/EmailComposer'
 import SmsComposer from './modules/communications/pages/SmsComposer'
 import SocialPostComposer from './modules/communications/pages/SocialPostComposer'
 import AiContentAssistant from './modules/communications/pages/AiContentAssistant'
+import CommunicationAnalytics from './modules/communications/pages/CommunicationAnalytics'
+import CommunicationSchedule from './modules/communications/pages/CommunicationSchedule'
+import CommunicationAudiences from './modules/communications/pages/CommunicationAudiences'
 
 // Phase 4 Communication Components
 import CommunicationDashboard from './components/Communication/CommunicationDashboard'
@@ -130,6 +135,12 @@ export default function App() {
           <Route path="/budget" element={<EnhancedBudgetDashboard />} />
           <Route path="/budget/legacy" element={<BudgetDashboard />} />
           <Route path="/budget/create" element={<CreateBudgetEntry />} />
+          
+          {/* Budget Child Pages */}
+          <Route path="/budget/category/:id" element={<BudgetCategoryDetails />} />
+          <Route path="/budget/category/create" element={<CreateEditBudgetCategory />} />
+          <Route path="/budget/category/edit/:id" element={<CreateEditBudgetCategory />} />
+          <Route path="/budget/category/optimize/:id" element={<CreateEditBudgetCategory />} />
 
           <Route path="/communications" element={<EnhancedCommunicationsDashboard />} />
           <Route path="/communications/legacy" element={<CommunicationsDashboard />} />
@@ -138,6 +149,9 @@ export default function App() {
           <Route path="/communications/sms" element={<SmsComposer />} />
           <Route path="/communications/social" element={<SocialPostComposer />} />
           <Route path="/communications/ai" element={<AiContentAssistant />} />
+          <Route path="/communications/analytics" element={<CommunicationAnalytics />} />
+          <Route path="/communications/schedule" element={<CommunicationSchedule />} />
+          <Route path="/communications/audiences" element={<CommunicationAudiences />} />
           <Route path="/communications/design-studio" element={<AdvancedDesignStudioPage />} />
           
           {/* New Phase 4 Communication Routes */}

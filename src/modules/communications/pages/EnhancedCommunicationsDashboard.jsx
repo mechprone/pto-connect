@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Mail, MessageSquare, Megaphone, Calendar, Users, 
   Sparkles, User, BarChart3, Send, Eye, Edit, 
@@ -8,6 +9,7 @@ import {
 import AIAssistanceToggle from '../../../components/common/AIAssistanceToggle';
 
 const EnhancedCommunicationsDashboard = () => {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('grid');
   const [creationMode, setCreationMode] = useState('manual');
   const [searchTerm, setSearchTerm] = useState('');
@@ -187,13 +189,22 @@ const EnhancedCommunicationsDashboard = () => {
             </div>
           </div>
           <div className="space-y-3 mb-4">
-            <button className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+            <button 
+              onClick={() => navigate('/communications/email')}
+              className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+            >
               Manual Creation
             </button>
-            <button className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm">
+            <button 
+              onClick={() => navigate('/communications/email?mode=assisted')}
+              className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm"
+            >
               Let Stella Help
             </button>
-            <button className="w-full py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm">
+            <button 
+              onClick={() => navigate('/communications/email?mode=auto')}
+              className="w-full py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm"
+            >
               Stella Auto-Generate
             </button>
           </div>
@@ -310,25 +321,37 @@ const EnhancedCommunicationsDashboard = () => {
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <button className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors">
+        <button 
+          onClick={() => navigate('/communications/ai')}
+          className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
+        >
           <Sparkles className="w-6 h-6 text-purple-600 mb-2" />
           <span className="text-sm font-medium">Ask Stella</span>
           <span className="text-xs text-gray-500">Get content ideas</span>
         </button>
         
-        <button className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors">
+        <button 
+          onClick={() => navigate('/communications/analytics')}
+          className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors"
+        >
           <BarChart3 className="w-6 h-6 text-green-600 mb-2" />
           <span className="text-sm font-medium">Analytics</span>
           <span className="text-xs text-gray-500">View performance</span>
         </button>
         
-        <button className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-yellow-300 hover:bg-yellow-50 transition-colors">
+        <button 
+          onClick={() => navigate('/communications/schedule')}
+          className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-yellow-300 hover:bg-yellow-50 transition-colors"
+        >
           <Clock className="w-6 h-6 text-yellow-600 mb-2" />
           <span className="text-sm font-medium">Schedule</span>
           <span className="text-xs text-gray-500">Plan campaigns</span>
         </button>
         
-        <button className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors">
+        <button 
+          onClick={() => navigate('/communications/audiences')}
+          className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
+        >
           <Users className="w-6 h-6 text-blue-600 mb-2" />
           <span className="text-sm font-medium">Audiences</span>
           <span className="text-xs text-gray-500">Manage lists</span>

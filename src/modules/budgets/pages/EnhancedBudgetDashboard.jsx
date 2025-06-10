@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   DollarSign, TrendingUp, TrendingDown, AlertTriangle, 
   Sparkles, User, Calculator, PieChart, BarChart3,
@@ -8,6 +9,7 @@ import {
 import AIAssistanceToggle from '../../../components/common/AIAssistanceToggle';
 
 const EnhancedBudgetDashboard = () => {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('overview');
   const [creationMode, setCreationMode] = useState('manual');
   const [selectedPeriod, setSelectedPeriod] = useState('current');
@@ -297,16 +299,25 @@ const EnhancedBudgetDashboard = () => {
               </div>
               
               <div className="flex space-x-2 mt-4">
-                <button className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                <button 
+                  onClick={() => navigate(`/budget/category/${category.id}`)}
+                  className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                >
                   <Eye className="w-4 h-4 mr-2" />
                   View Details
                 </button>
-                <button className="flex items-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm">
+                <button 
+                  onClick={() => navigate(`/budget/category/edit/${category.id}`)}
+                  className="flex items-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                >
                   <Edit className="w-4 h-4 mr-2" />
                   Edit
                 </button>
                 {category.createdBy === 'manual' && (
-                  <button className="flex items-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm">
+                  <button 
+                    onClick={() => navigate(`/budget/category/optimize/${category.id}`)}
+                    className="flex items-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
+                  >
                     <Sparkles className="w-4 h-4 mr-2" />
                     Ask Stella to Optimize
                   </button>
@@ -337,7 +348,10 @@ const EnhancedBudgetDashboard = () => {
             <li>• Detailed line items</li>
             <li>• Manual calculations</li>
           </ul>
-          <button className="w-full py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+          <button 
+            onClick={() => navigate('/budget/category/create')}
+            className="w-full py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
             Create Manually
           </button>
         </div>
