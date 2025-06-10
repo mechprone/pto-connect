@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   EnvelopeIcon, 
   ChatBubbleLeftRightIcon, 
@@ -15,6 +16,7 @@ import LoadingSpinner from '../common/LoadingSpinner';
 import ErrorMessage from '../common/ErrorMessage';
 
 const CommunicationDashboard = () => {
+  const navigate = useNavigate();
   const { profile, organization } = useUserProfile();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -182,14 +184,14 @@ const CommunicationDashboard = () => {
           </div>
           <div className="flex space-x-3">
             <button
-              onClick={() => window.location.href = '/communications/email-templates/create'}
+              onClick={() => navigate('/communications/email-templates/create')}
               className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center space-x-2"
             >
               <PlusIcon className="h-5 w-5" />
               <span>New Template</span>
             </button>
             <button
-              onClick={() => window.location.href = '/communications/sms-campaigns/create'}
+              onClick={() => navigate('/communications/sms-campaigns/create')}
               className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 flex items-center space-x-2"
             >
               <PaperAirplaneIcon className="h-5 w-5" />
@@ -262,7 +264,7 @@ const CommunicationDashboard = () => {
                 className={`relative p-4 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-colors ${
                   channel.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-md'
                 }`}
-                onClick={() => !channel.disabled && (window.location.href = channel.href)}
+                onClick={() => !channel.disabled && navigate(channel.href)}
               >
                 <div className="flex items-center space-x-3">
                   <div className={`p-2 rounded-lg ${channel.color}`}>
@@ -301,7 +303,7 @@ const CommunicationDashboard = () => {
                 <div
                   key={action.name}
                   className="flex items-center p-3 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer transition-all"
-                  onClick={() => window.location.href = action.href}
+                  onClick={() => navigate(action.href)}
                 >
                   <div className={`p-2 rounded-lg ${action.color}`}>
                     <IconComponent className="h-5 w-5 text-white" />

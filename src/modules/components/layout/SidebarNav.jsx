@@ -17,13 +17,13 @@ export default function SidebarNav({ role }) {
   const filtered = navItems.filter(item => item.roles.includes(role))
 
   return (
-    <aside className="w-64 bg-white border-r shadow-sm hidden md:block">
+    <aside className="w-64 bg-white border-r shadow-sm hidden md:block sticky top-0 h-screen overflow-y-auto">
       <nav className="px-4 py-6 space-y-2">
         {filtered.map((item) => (
           <Link
             key={item.to}
             to={item.to}
-            className={`block px-3 py-2 rounded text-sm font-medium ${
+            className={`block px-3 py-2 rounded text-sm font-medium transition-colors duration-200 ${
               location.pathname === item.to
                 ? 'bg-blue-100 text-blue-700'
                 : 'text-gray-700 hover:bg-gray-100'
