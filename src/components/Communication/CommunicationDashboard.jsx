@@ -9,13 +9,13 @@ import {
   EyeIcon,
   PaperAirplaneIcon
 } from '@heroicons/react/24/outline';
-import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
-import LoadingSpinner from '../Common/LoadingSpinner';
-import ErrorMessage from '../Common/ErrorMessage';
+import { useUserProfile } from '@/modules/hooks/useUserProfile';
+import { supabase } from '../../utils/supabaseClient';
+import LoadingSpinner from '../common/LoadingSpinner';
+import ErrorMessage from '../common/ErrorMessage';
 
 const CommunicationDashboard = () => {
-  const { user, organization } = useAuth();
+  const { profile, organization } = useUserProfile();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [stats, setStats] = useState({

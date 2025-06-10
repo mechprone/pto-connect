@@ -10,13 +10,13 @@ import {
   DevicePhoneMobileIcon,
   ComputerDesktopIcon
 } from '@heroicons/react/24/outline';
-import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
-import LoadingSpinner from '../Common/LoadingSpinner';
-import ErrorMessage from '../Common/ErrorMessage';
+import { useUserProfile } from '@/modules/hooks/useUserProfile';
+import { supabase } from '../../utils/supabaseClient';
+import LoadingSpinner from '../common/LoadingSpinner';
+import ErrorMessage from '../common/ErrorMessage';
 
 const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
-  const { user, organization } = useAuth();
+  const { profile, organization } = useUserProfile();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
