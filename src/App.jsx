@@ -38,6 +38,10 @@ import EnhancedBudgetDashboard from './modules/budgets/pages/EnhancedBudgetDashb
 import CreateBudgetEntry from './modules/budgets/pages/CreateBudgetEntry'
 import BudgetCategoryDetails from './modules/budgets/pages/BudgetCategoryDetails'
 import CreateEditBudgetCategory from './modules/budgets/pages/CreateEditBudgetCategory'
+import BudgetSubcategoryDetails from './modules/budgets/pages/BudgetSubcategoryDetails'
+import CreateEditBudgetSubcategory from './modules/budgets/pages/CreateEditBudgetSubcategory'
+import TransactionDetails from './modules/budgets/pages/TransactionDetails'
+import CreateEditTransaction from './modules/budgets/pages/CreateEditTransaction'
 
 // Communications
 import CommunicationsDashboard from './modules/communications/pages/CommunicationsDashboard'
@@ -141,6 +145,12 @@ export default function App() {
           <Route path="/budget/category/create" element={<CreateEditBudgetCategory />} />
           <Route path="/budget/category/edit/:id" element={<CreateEditBudgetCategory />} />
           <Route path="/budget/category/optimize/:id" element={<CreateEditBudgetCategory />} />
+          <Route path="/budget/subcategory/:id" element={<BudgetSubcategoryDetails />} />
+          <Route path="/budget/subcategory/create" element={<CreateEditBudgetSubcategory />} />
+          <Route path="/budget/subcategory/edit/:id" element={<CreateEditBudgetSubcategory />} />
+          <Route path="/budget/transaction/:id" element={<TransactionDetails />} />
+          <Route path="/budget/transaction/create" element={<CreateEditTransaction />} />
+          <Route path="/budget/transaction/edit/:id" element={<CreateEditTransaction />} />
 
           <Route path="/communications" element={<EnhancedCommunicationsDashboard />} />
           <Route path="/communications/legacy" element={<CommunicationsDashboard />} />
