@@ -456,11 +456,6 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       
       setShowTemplateLibrary(false);
       
-      // Show success message
-      setTimeout(() => {
-        alert(`Template "${selectedTemplate.name}" applied successfully! All ${convertedBlocks.length} blocks loaded.`);
-      }, 100);
-      
       console.log('✅ DEBUG: Template selection completed successfully');
       
     } catch (error) {
@@ -612,16 +607,14 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     }
   }, [template, isInitialized, templateId]);
 
-  // Clear saved state when component unmounts or when template is saved
+  // Clear saved state only when explicitly saving or canceling
   useEffect(() => {
     return () => {
-      // Only clear if we're not editing an existing template
-      if (!templateId) {
-        console.log('Clearing saved template state on unmount');
-        localStorage.removeItem('emailTemplateBuilder_state');
-      }
+      // Don't automatically clear localStorage on unmount
+      // This allows users to switch windows/tabs without losing work
+      console.log('Component unmounting - preserving saved template state');
     };
-  }, [templateId]);
+  }, []);
 
   const fetchTemplate = async () => {
     try {
