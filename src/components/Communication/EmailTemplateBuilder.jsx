@@ -1962,6 +1962,30 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
               <ArrowDownIcon className="h-4 w-4" />
               <span>Export</span>
             </button>
+
+            <button
+              onClick={() => {
+                if (confirm('Are you sure you want to clear all content and start over? This cannot be undone.')) {
+                  setTemplate(prev => ({
+                    ...prev,
+                    name: '',
+                    subject: '',
+                    design_json: {
+                      ...prev.design_json,
+                      blocks: []
+                    }
+                  }));
+                  setSelectedBlock(null);
+                  // Clear saved state
+                  localStorage.removeItem('emailTemplateBuilder_state');
+                }
+              }}
+              className="flex items-center space-x-2 px-3 py-2 border border-red-300 text-red-600 rounded-md hover:bg-red-50"
+              title="Clear All Content"
+            >
+              <TrashIcon className="h-4 w-4" />
+              <span>Clear</span>
+            </button>
             
             <button
               onClick={onCancel}
