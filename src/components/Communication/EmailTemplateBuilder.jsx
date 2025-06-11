@@ -2160,6 +2160,574 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
             )}
           </div>
         </div>
+
+        {/* Right-Side Properties Panel */}
+        {selectedBlock && (
+          <div className="w-80 bg-white border-l border-gray-200 p-4 overflow-y-auto">
+            <div className="mb-4">
+              <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                <PaintBrushIcon className="h-5 w-5 mr-2 text-blue-600" />
+                Block Properties
+              </h3>
+              <div className="text-sm text-gray-600 mb-4">
+                Editing: {blockTypes.find(bt => bt.type === template.design_json.blocks.find(b => b.id === selectedBlock)?.type)?.name || 'Block'}
+              </div>
+            </div>
+
+            {(() => {
+              const block = template.design_json.blocks.find(b => b.id === selectedBlock);
+              if (!block) return null;
+
+              const { content } = block;
+
+              return (
+                <div className="space-y-4">
+                  {/* Common Properties for All Blocks */}
+                  {(block.type === 'header' || block.type === 'text' || block.type === 'announcement') && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Text Content</label>
+                        <textarea
+                          value={content.text || content.title || content.message || ''}
+                          onChange={(e) => {
+                            const key = content.text !== undefined ? 'text' : 
+                                       content.title !== undefined ? 'title' : 'message';
+                            updateBlock(selectedBlock, { [key]: e.target.value });
+                          }}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          rows={3}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Font Size</label>
+                          <select
+                            value={content.fontSize || '16px'}
+                            onChange={(e) => updateBlock(selectedBlock, { fontSize: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          >
+                            <option value="12px">12px</option>
+                            <option value="14px">14px</option>
+                            <option value="16px">16px</option>
+                            <option value="18px">18px</option>
+                            <option value="20px">20px</option>
+                            <option value="24px">24px</option>
+                            <option value="28px">28px</option>
+                            <option value="32px">32px</option>
+                            <option value="36px">36px</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Font Weight</label>
+                          <select
+                            value={content.fontWeight || 'normal'}
+                            onChange={(e) => updateBlock(selectedBlock, { fontWeight: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          >
+                            <option value="normal">Normal</option>
+                            <option value="bold">Bold</option>
+                            <option value="600">Semi-Bold</option>
+                            <option value="300">Light</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Text Alignment</label>
+                        <div className="flex space-x-2">
+                          {['left', 'center', 'right'].map(align => (
+                            <button
+                              key={align}
+                              onClick={() => updateBlock(selectedBlock, { textAlign: align })}
+                              className={`px-3 py-2 text-sm border rounded-md ${
+                                (content.textAlign || 'left') === align 
+                                  ? 'bg-blue-100 border-blue-300 text-blue-700' 
+                                  : 'border-gray-300 hover:bg-gray-50'
+                              }`}
+                            >
+                              {align.charAt(0).toUpperCase() + align.slice(1)}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Text Color</label>
+                        <input
+                          type="color"
+                          value={content.color || content.titleColor || '#374151'}
+                          onChange={(e) => {
+                            const key = content.color !== undefined ? 'color' : 'titleColor';
+                            updateBlock(selectedBlock, { [key]: e.target.value });
+                          }}
+                          className="w-full h-10 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Background Color for All Blocks */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Background Color</label>
+                    <input
+                      type="color"
+                      value={content.backgroundColor || '#ffffff'}
+                      onChange={(e) => updateBlock(selectedBlock, { backgroundColor: e.target.value })}
+                      className="w-full h-10 border border-gray-300 rounded-md"
+                    />
+                  </div>
+
+                  {/* Padding Control */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Padding</label>
+                    <input
+                      type="text"
+                      value={content.padding || '20px'}
+                      onChange={(e) => updateBlock(selectedBlock, { padding: e.target.value })}
+                      placeholder="e.g., 20px or 10px 20px"
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                    />
+                  </div>
+
+                  {/* Image-specific properties */}
+                  {block.type === 'image' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                        <input
+                          type="url"
+                          value={content.src || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { src: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          placeholder="https://example.com/image.jpg"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Alt Text</label>
+                        <input
+                          type="text"
+                          value={content.alt || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { alt: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          placeholder="Describe the image"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Width</label>
+                        <select
+                          value={content.width || '100%'}
+                          onChange={(e) => updateBlock(selectedBlock, { width: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        >
+                          <option value="100%">Full Width</option>
+                          <option value="75%">75%</option>
+                          <option value="50%">50%</option>
+                          <option value="25%">25%</option>
+                          <option value="300px">300px</option>
+                          <option value="400px">400px</option>
+                          <option value="500px">500px</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Button-specific properties */}
+                  {block.type === 'button' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Button Text</label>
+                        <input
+                          type="text"
+                          value={content.text || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { text: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Link URL</label>
+                        <input
+                          type="url"
+                          value={content.href || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { href: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          placeholder="https://example.com"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Button Color</label>
+                          <input
+                            type="color"
+                            value={content.backgroundColor || '#3b82f6'}
+                            onChange={(e) => updateBlock(selectedBlock, { backgroundColor: e.target.value })}
+                            className="w-full h-10 border border-gray-300 rounded-md"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Text Color</label>
+                          <input
+                            type="color"
+                            value={content.color || '#ffffff'}
+                            onChange={(e) => updateBlock(selectedBlock, { color: e.target.value })}
+                            className="w-full h-10 border border-gray-300 rounded-md"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Border Radius</label>
+                        <select
+                          value={content.borderRadius || '6px'}
+                          onChange={(e) => updateBlock(selectedBlock, { borderRadius: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        >
+                          <option value="0px">Square</option>
+                          <option value="4px">Slightly Rounded</option>
+                          <option value="6px">Rounded</option>
+                          <option value="12px">Very Rounded</option>
+                          <option value="50px">Pill Shape</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Donation-specific properties */}
+                  {block.type === 'donation' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Campaign Title</label>
+                        <input
+                          type="text"
+                          value={content.title || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { title: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea
+                          value={content.description || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { description: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Current Amount</label>
+                          <input
+                            type="number"
+                            value={content.currentAmount || 0}
+                            onChange={(e) => updateBlock(selectedBlock, { currentAmount: Number(e.target.value) })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Goal Amount</label>
+                          <input
+                            type="number"
+                            value={content.goalAmount || 10000}
+                            onChange={(e) => updateBlock(selectedBlock, { goalAmount: Number(e.target.value) })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Progress Bar Color</label>
+                        <input
+                          type="color"
+                          value={content.progressColor || '#f59e0b'}
+                          onChange={(e) => updateBlock(selectedBlock, { progressColor: e.target.value })}
+                          className="w-full h-10 border border-gray-300 rounded-md"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Button Text</label>
+                        <input
+                          type="text"
+                          value={content.buttonText || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { buttonText: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Volunteer-specific properties */}
+                  {block.type === 'volunteer' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                        <input
+                          type="text"
+                          value={content.title || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { title: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea
+                          value={content.description || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { description: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          rows={2}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Opportunities (one per line)</label>
+                        <textarea
+                          value={content.opportunities?.join('\n') || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { 
+                            opportunities: e.target.value.split('\n').filter(line => line.trim()) 
+                          })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          rows={3}
+                          placeholder="Event Setup&#10;Bake Sale&#10;Clean Up"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Button Text</label>
+                        <input
+                          type="text"
+                          value={content.buttonText || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { buttonText: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Event-specific properties */}
+                  {block.type === 'event' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Event Title</label>
+                        <input
+                          type="text"
+                          value={content.title || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { title: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                          <input
+                            type="date"
+                            value={content.date || ''}
+                            onChange={(e) => updateBlock(selectedBlock, { date: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
+                          <input
+                            type="text"
+                            value={content.time || ''}
+                            onChange={(e) => updateBlock(selectedBlock, { time: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                            placeholder="10:00 AM - 4:00 PM"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                        <input
+                          type="text"
+                          value={content.location || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { location: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea
+                          value={content.description || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { description: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          rows={3}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Event Image URL</label>
+                        <input
+                          type="url"
+                          value={content.image || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { image: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          placeholder="https://example.com/event-image.jpg"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Divider-specific properties */}
+                  {block.type === 'divider' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Line Style</label>
+                        <select
+                          value={content.style || 'solid'}
+                          onChange={(e) => updateBlock(selectedBlock, { style: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        >
+                          <option value="solid">Solid</option>
+                          <option value="dashed">Dashed</option>
+                          <option value="dotted">Dotted</option>
+                        </select>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Thickness</label>
+                          <select
+                            value={content.thickness || '2px'}
+                            onChange={(e) => updateBlock(selectedBlock, { thickness: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          >
+                            <option value="1px">1px</option>
+                            <option value="2px">2px</option>
+                            <option value="3px">3px</option>
+                            <option value="4px">4px</option>
+                            <option value="5px">5px</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Width</label>
+                          <select
+                            value={content.width || '80%'}
+                            onChange={(e) => updateBlock(selectedBlock, { width: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          >
+                            <option value="100%">Full Width</option>
+                            <option value="80%">80%</option>
+                            <option value="60%">60%</option>
+                            <option value="40%">40%</option>
+                            <option value="20%">20%</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Line Color</label>
+                        <input
+                          type="color"
+                          value={content.color || '#e5e7eb'}
+                          onChange={(e) => updateBlock(selectedBlock, { color: e.target.value })}
+                          className="w-full h-10 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Spacer-specific properties */}
+                  {block.type === 'spacer' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Height</label>
+                      <select
+                        value={content.height || '30px'}
+                        onChange={(e) => updateBlock(selectedBlock, { height: e.target.value })}
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                      >
+                        <option value="10px">10px</option>
+                        <option value="20px">20px</option>
+                        <option value="30px">30px</option>
+                        <option value="40px">40px</option>
+                        <option value="50px">50px</option>
+                        <option value="60px">60px</option>
+                        <option value="80px">80px</option>
+                        <option value="100px">100px</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {/* Quote-specific properties */}
+                  {block.type === 'quote' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Quote Text</label>
+                        <textarea
+                          value={content.text || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { text: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          rows={3}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Author</label>
+                        <input
+                          type="text"
+                          value={content.author || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { author: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Quote Color</label>
+                          <input
+                            type="color"
+                            value={content.textColor || '#475569'}
+                            onChange={(e) => updateBlock(selectedBlock, { textColor: e.target.value })}
+                            className="w-full h-10 border border-gray-300 rounded-md"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Border Color</label>
+                          <input
+                            type="color"
+                            value={content.borderColor || '#3b82f6'}
+                            onChange={(e) => updateBlock(selectedBlock, { borderColor: e.target.value })}
+                            className="w-full h-10 border border-gray-300 rounded-md"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Delete Block Button */}
+                  <div className="pt-4 border-t border-gray-200">
+                    <button
+                      onClick={() => {
+                        deleteBlock(selectedBlock);
+                        setSelectedBlock(null);
+                      }}
+                      className="w-full flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                    >
+                      <TrashIcon className="h-4 w-4 mr-2" />
+                      Delete Block
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        )}
       </div>
 
       {/* Template Library Modal */}
