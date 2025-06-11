@@ -408,23 +408,44 @@ const EnhancedCommunicationsDashboard = () => {
 
         {/* Compact Stella Insights & Create Options Row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-          {/* Stella Insights - Compact */}
+          {/* Stella Insights - Expanded to match height */}
           <div className="lg:col-span-1">
-            <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-4">
+            <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-4 h-full">
               <div className="flex items-center space-x-2 mb-3">
                 <Sparkles className="w-5 h-5 text-purple-600" />
                 <h3 className="text-sm font-semibold text-purple-900">Stella's Insights</h3>
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-2 mb-3">
                 <div className="bg-white rounded p-2">
                   <div className="text-xs text-purple-600">Best Send Time</div>
                   <div className="text-sm font-semibold text-purple-900">Tuesday 10 AM</div>
+                  <div className="text-xs text-purple-700">85% open rate</div>
                 </div>
                 
                 <div className="bg-white rounded p-2">
                   <div className="text-xs text-purple-600">Top Performing</div>
                   <div className="text-sm font-semibold text-purple-900">Event Announcements</div>
+                  <div className="text-xs text-purple-700">78% avg engagement</div>
+                </div>
+                
+                <div className="bg-white rounded p-2">
+                  <div className="text-xs text-purple-600">This Week's Goal</div>
+                  <div className="text-sm font-semibold text-purple-900">Volunteer Recruitment</div>
+                  <div className="text-xs text-purple-700">Fall Festival needs</div>
+                </div>
+                
+                <div className="bg-white rounded p-2">
+                  <div className="text-xs text-purple-600">Engagement Trend</div>
+                  <div className="text-sm font-semibold text-green-700">↗ +12% This Month</div>
+                  <div className="text-xs text-purple-700">Great improvement!</div>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded p-2">
+                <div className="text-xs text-purple-900 font-medium mb-1">💡 Quick Tip</div>
+                <div className="text-xs text-purple-800">
+                  "Add emojis to subject lines for 15% higher open rates!"
                 </div>
               </div>
             </div>
@@ -432,7 +453,7 @@ const EnhancedCommunicationsDashboard = () => {
 
           {/* Create Communication Options - Compact 2x2 Grid */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 h-full">
               <h3 className="text-sm font-semibold text-gray-900 mb-3">Create New Communication</h3>
               
               <div className="grid grid-cols-2 gap-3">
@@ -451,6 +472,12 @@ const EnhancedCommunicationsDashboard = () => {
                       className="w-full py-1 bg-gray-100 text-gray-700 rounded text-xs hover:bg-gray-200 transition-colors"
                     >
                       Manual
+                    </button>
+                    <button 
+                      onClick={() => navigate('/communications/email?mode=assisted')}
+                      className="w-full py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors"
+                    >
+                      Stella Assist
                     </button>
                     <button 
                       onClick={() => navigate('/communications/email?mode=auto')}
@@ -478,6 +505,12 @@ const EnhancedCommunicationsDashboard = () => {
                       Manual
                     </button>
                     <button 
+                      onClick={() => navigate('/communications/social?mode=assisted')}
+                      className="w-full py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors"
+                    >
+                      Stella Assist
+                    </button>
+                    <button 
                       onClick={() => navigate('/communications/social?mode=auto')}
                       className="w-full py-1 bg-purple-100 text-purple-700 rounded text-xs hover:bg-purple-200 transition-colors"
                     >
@@ -503,6 +536,12 @@ const EnhancedCommunicationsDashboard = () => {
                       Manual
                     </button>
                     <button 
+                      onClick={() => navigate('/communications/sms?mode=assisted')}
+                      className="w-full py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors"
+                    >
+                      Stella Assist
+                    </button>
+                    <button 
                       onClick={() => navigate('/communications/sms?mode=auto')}
                       className="w-full py-1 bg-purple-100 text-purple-700 rounded text-xs hover:bg-purple-200 transition-colors"
                     >
@@ -521,10 +560,22 @@ const EnhancedCommunicationsDashboard = () => {
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <button className="w-full py-1 bg-gray-100 text-gray-700 rounded text-xs hover:bg-gray-200 transition-colors">
+                    <button 
+                      onClick={() => navigate('/communications/newsletter')}
+                      className="w-full py-1 bg-gray-100 text-gray-700 rounded text-xs hover:bg-gray-200 transition-colors"
+                    >
                       Manual
                     </button>
-                    <button className="w-full py-1 bg-purple-100 text-purple-700 rounded text-xs hover:bg-purple-200 transition-colors">
+                    <button 
+                      onClick={() => navigate('/communications/newsletter?mode=assisted')}
+                      className="w-full py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors"
+                    >
+                      Stella Assist
+                    </button>
+                    <button 
+                      onClick={() => navigate('/communications/newsletter?mode=auto')}
+                      className="w-full py-1 bg-purple-100 text-purple-700 rounded text-xs hover:bg-purple-200 transition-colors"
+                    >
                       Stella Auto
                     </button>
                   </div>

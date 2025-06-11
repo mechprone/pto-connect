@@ -18,12 +18,15 @@ import {
   CalendarIcon,
   UserGroupIcon,
   ClockIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  ArrowUpIcon,
+  ArrowDownIcon
 } from '@heroicons/react/24/outline';
 import { useUserProfile } from '@/modules/hooks/useUserProfile';
 import { supabase } from '../../utils/supabaseClient';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ErrorMessage from '../common/ErrorMessage';
+import TemplateLibraryModal from './TemplateLibraryModal';
 
 const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
   const { profile, organization } = useUserProfile();
@@ -51,8 +54,9 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
 
   const [draggedBlock, setDraggedBlock] = useState(null);
   const [selectedBlock, setSelectedBlock] = useState(null);
-  const [autoSaveStatus, setAutoSaveStatus] = useState('saved'); // 'saving', 'saved', 'error'
+  const [autoSaveStatus, setAutoSaveStatus] = useState('saved');
   const [lastSaved, setLastSaved] = useState(null);
+  const [showTemplateLibrary, setShowTemplateLibrary] = useState(false);
   const canvasRef = useRef(null);
   const autoSaveTimeoutRef = useRef(null);
 
@@ -145,64 +149,6 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       }
     },
     {
-      type: 'card',
-      name: 'Info Card',
-      icon: DocumentDuplicateIcon,
-      category: 'enhanced',
-      defaultContent: {
-        title: 'Event Title',
-        description: 'Event description goes here...',
-        backgroundColor: '#ffffff',
-        borderColor: '#e5e7eb',
-        borderRadius: '8px',
-        padding: '20px',
-        margin: '15px',
-        titleColor: '#1f2937',
-        textColor: '#374151'
-      }
-    },
-    {
-      type: 'social',
-      name: 'Social Links',
-      icon: UserGroupIcon,
-      category: 'enhanced',
-      defaultContent: {
-        platforms: ['facebook', 'instagram', 'twitter'],
-        backgroundColor: '#f8fafc',
-        padding: '20px',
-        textAlign: 'center'
-      }
-    },
-    {
-      type: 'countdown',
-      name: 'Event Countdown',
-      icon: ClockIcon,
-      category: 'enhanced',
-      defaultContent: {
-        eventName: 'Fall Festival',
-        eventDate: '2024-11-15',
-        backgroundColor: '#fef3c7',
-        textColor: '#92400e',
-        padding: '20px',
-        textAlign: 'center'
-      }
-    },
-    {
-      type: 'testimonial',
-      name: 'Testimonial',
-      icon: HeartIcon,
-      category: 'enhanced',
-      defaultContent: {
-        quote: 'This PTO has made such a difference in our school community!',
-        author: 'Parent Name',
-        role: 'Parent of 3rd Grader',
-        backgroundColor: '#f0f9ff',
-        textColor: '#1e40af',
-        padding: '25px',
-        textAlign: 'center'
-      }
-    },
-    {
       type: 'donation',
       name: 'Donation Call',
       icon: GiftIcon,
@@ -241,7 +187,6 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       defaultContent: {
         title: 'Important Announcement',
         message: 'Please mark your calendars for our upcoming meeting.',
-        priority: 'high',
         backgroundColor: '#fef2f2',
         titleColor: '#dc2626',
         textColor: '#991b1b',
@@ -263,20 +208,6 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
         padding: '20px'
       }
     }
-  ];
-
-  // Background patterns and templates
-  const backgroundPatterns = [
-    { name: 'Solid White', value: '#ffffff' },
-    { name: 'Light Gray', value: '#f8fafc' },
-    { name: 'School Blue', value: '#dbeafe' },
-    { name: 'Warm Yellow', value: '#fef3c7' },
-    { name: 'Soft Green', value: '#ecfdf5' },
-    { name: 'Gentle Purple', value: '#faf5ff' },
-    { name: 'Gradient Blue', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-    { name: 'Gradient Sunset', value: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-    { name: 'Gradient Forest', value: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-    { name: 'School Pattern', value: 'repeating-linear-gradient(45deg, #f8fafc, #f8fafc 10px, #e2e8f0 10px, #e2e8f0 20px)' }
   ];
 
   const prebuiltTemplates = [
@@ -362,6 +293,24 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     'meetings'
   ];
 
+  // Handle template selection from library
+  const handleTemplateSelect = (selectedTemplate) => {
+    setTemplate(prev => ({
+      ...prev,
+      name: selectedTemplate.name,
+      category: selectedTemplate.category,
+      design_json: {
+        ...prev.design_json,
+        blocks: selectedTemplate.blocks.map((block, index) => ({
+          id: `${Date.now()}-${index}`,
+          type: block.type,
+          content: block.content
+        }))
+      }
+    }));
+    setShowTemplateLibrary(false);
+  };
+
   // Auto-save functionality
   const autoSave = useCallback(async () => {
     if (!template.name || saving) return;
@@ -407,7 +356,6 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       clearTimeout(autoSaveTimeoutRef.current);
     }
     
-    // Auto-save after 3 seconds of inactivity
     autoSaveTimeoutRef.current = setTimeout(() => {
       autoSave();
     }, 3000);
@@ -418,31 +366,6 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       }
     };
   }, [template, autoSave]);
-
-  // Save before window unload
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (autoSaveStatus !== 'saved') {
-        e.preventDefault();
-        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
-        return e.returnValue;
-      }
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.hidden && autoSaveStatus !== 'saved') {
-        autoSave();
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [autoSaveStatus, autoSave]);
 
   useEffect(() => {
     if (templateId) {
@@ -547,6 +470,145 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     }));
   };
 
+  const renderBlock = (block) => {
+    const { content } = block;
+    
+    switch (block.type) {
+      case 'header':
+        return (
+          <div style={{ backgroundColor: content.backgroundColor, padding: content.padding, textAlign: content.textAlign }}>
+            <h1 style={{ margin: 0, fontSize: content.fontSize, fontWeight: content.fontWeight, color: content.color }}>
+              {content.text}
+            </h1>
+          </div>
+        );
+      case 'text':
+        return (
+          <div style={{ padding: content.padding, textAlign: content.textAlign }}>
+            <p style={{ margin: 0, fontSize: content.fontSize, fontWeight: content.fontWeight, color: content.color }}>
+              {content.text}
+            </p>
+          </div>
+        );
+      case 'image':
+        return (
+          <div style={{ padding: content.padding, textAlign: content.textAlign }}>
+            <img src={content.src} alt={content.alt} style={{ width: content.width, height: 'auto', display: 'block', margin: '0 auto' }} />
+          </div>
+        );
+      case 'button':
+        return (
+          <div style={{ padding: content.padding, textAlign: content.textAlign }}>
+            <a 
+              href={content.href} 
+              style={{ 
+                backgroundColor: content.backgroundColor, 
+                color: content.color, 
+                padding: content.padding, 
+                borderRadius: content.borderRadius, 
+                fontSize: content.fontSize, 
+                fontWeight: content.fontWeight, 
+                textDecoration: 'none',
+                display: 'inline-block'
+              }}
+            >
+              {content.text}
+            </a>
+          </div>
+        );
+      case 'divider':
+        return (
+          <div style={{ margin: content.margin }}>
+            <hr style={{ border: 'none', height: content.height, backgroundColor: content.backgroundColor }} />
+          </div>
+        );
+      case 'hero':
+        return (
+          <div style={{ background: content.backgroundImage, padding: content.padding, textAlign: content.textAlign }}>
+            <h1 style={{ margin: '0 0 10px 0', fontSize: '32px', fontWeight: 'bold', color: content.titleColor }}>
+              {content.title}
+            </h1>
+            <p style={{ margin: 0, fontSize: '18px', color: content.subtitleColor }}>
+              {content.subtitle}
+            </p>
+          </div>
+        );
+      case 'donation':
+        const progressPercentage = (content.currentAmount / content.goalAmount) * 100;
+        return (
+          <div style={{ backgroundColor: content.backgroundColor, padding: content.padding }}>
+            <h3 style={{ margin: '0 0 15px 0', fontSize: '24px', fontWeight: 'bold' }}>
+              {content.title}
+            </h3>
+            <p style={{ margin: '0 0 20px 0', fontSize: '16px' }}>
+              {content.description}
+            </p>
+            <div style={{ backgroundColor: '#e5e7eb', borderRadius: '10px', height: '20px', marginBottom: '15px' }}>
+              <div style={{ backgroundColor: content.buttonColor, height: '100%', borderRadius: '10px', width: `${progressPercentage}%` }}></div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <span>${content.currentAmount.toLocaleString()} raised</span>
+              <span>Goal: ${content.goalAmount.toLocaleString()}</span>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <a href="#" style={{ backgroundColor: content.buttonColor, color: '#ffffff', padding: '12px 24px', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold', display: 'inline-block' }}>
+                {content.buttonText}
+              </a>
+            </div>
+          </div>
+        );
+      case 'volunteer':
+        return (
+          <div style={{ backgroundColor: content.backgroundColor, padding: content.padding }}>
+            <h3 style={{ margin: '0 0 15px 0', fontSize: '24px', fontWeight: 'bold', color: content.textColor }}>
+              {content.title}
+            </h3>
+            <p style={{ margin: '0 0 20px 0', fontSize: '16px', color: content.textColor }}>
+              {content.description}
+            </p>
+            <div style={{ marginBottom: '20px' }}>
+              {content.opportunities.map((opportunity, index) => (
+                <div key={index} style={{ backgroundColor: '#ffffff', padding: '10px', margin: '5px 0', borderRadius: '4px', border: '1px solid #e5e7eb' }}>
+                  • {opportunity}
+                </div>
+              ))}
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <a href="#" style={{ backgroundColor: content.textColor, color: '#ffffff', padding: '12px 24px', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold', display: 'inline-block' }}>
+                {content.buttonText}
+              </a>
+            </div>
+          </div>
+        );
+      case 'announcement':
+        return (
+          <div style={{ backgroundColor: content.backgroundColor, padding: content.padding }}>
+            <h3 style={{ margin: '0 0 15px 0', fontSize: '22px', fontWeight: 'bold', color: content.titleColor }}>
+              📢 {content.title}
+            </h3>
+            <p style={{ margin: 0, fontSize: '16px', color: content.textColor }}>
+              {content.message}
+            </p>
+          </div>
+        );
+      case 'calendar':
+        return (
+          <div style={{ backgroundColor: content.backgroundColor, padding: content.padding }}>
+            <h3 style={{ margin: '0 0 15px 0', fontSize: '22px', fontWeight: 'bold', color: content.textColor }}>
+              📅 {content.eventTitle}
+            </h3>
+            <div style={{ fontSize: '16px', color: content.textColor }}>
+              <p style={{ margin: '5px 0' }}><strong>Date:</strong> {new Date(content.eventDate).toLocaleDateString()}</p>
+              <p style={{ margin: '5px 0' }}><strong>Time:</strong> {content.eventTime}</p>
+              <p style={{ margin: '5px 0' }}><strong>Location:</strong> {content.location}</p>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   const generateHTML = () => {
     const { blocks, styles } = template.design_json;
     
@@ -557,24 +619,10 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>${template.subject || 'Email Template'}</title>
           <style>
-            body { 
-              margin: 0; 
-              padding: 0; 
-              font-family: ${styles.fontFamily}; 
-              background-color: ${styles.backgroundColor}; 
-            }
-            .email-container { 
-              max-width: 600px; 
-              margin: 0 auto; 
-              background-color: #ffffff; 
-            }
+            body { margin: 0; padding: 0; font-family: ${styles.fontFamily}; background-color: ${styles.backgroundColor}; }
+            .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
             .block { margin: 0; }
-            .button { 
-              display: inline-block; 
-              text-decoration: none; 
-              border: none; 
-              cursor: pointer; 
-            }
+            .button { display: inline-block; text-decoration: none; border: none; cursor: pointer; }
           </style>
         </head>
         <body>
@@ -582,51 +630,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     `;
 
     blocks.forEach(block => {
-      const { content } = block;
-      
-      switch (block.type) {
-        case 'header':
-          html += `
-            <div class="block" style="background-color: ${content.backgroundColor}; padding: ${content.padding}; text-align: ${content.textAlign};">
-              <h1 style="margin: 0; font-size: ${content.fontSize}; font-weight: ${content.fontWeight}; color: ${content.color};">
-                ${content.text}
-              </h1>
-            </div>
-          `;
-          break;
-        case 'text':
-          html += `
-            <div class="block" style="padding: ${content.padding}; text-align: ${content.textAlign};">
-              <p style="margin: 0; font-size: ${content.fontSize}; font-weight: ${content.fontWeight}; color: ${content.color};">
-                ${content.text}
-              </p>
-            </div>
-          `;
-          break;
-        case 'image':
-          html += `
-            <div class="block" style="padding: ${content.padding}; text-align: ${content.textAlign};">
-              <img src="${content.src}" alt="${content.alt}" style="width: ${content.width}; height: auto; display: block; margin: 0 auto;">
-            </div>
-          `;
-          break;
-        case 'button':
-          html += `
-            <div class="block" style="padding: ${content.padding}; text-align: ${content.textAlign};">
-              <a href="${content.href}" class="button" style="background-color: ${content.backgroundColor}; color: ${content.color}; padding: ${content.padding}; border-radius: ${content.borderRadius}; font-size: ${content.fontSize}; font-weight: ${content.fontWeight}; text-decoration: none;">
-                ${content.text}
-              </a>
-            </div>
-          `;
-          break;
-        case 'divider':
-          html += `
-            <div class="block" style="margin: ${content.margin};">
-              <hr style="border: none; height: ${content.height}; background-color: ${content.backgroundColor};">
-            </div>
-          `;
-          break;
-      }
+      html += `<div class="block">${renderBlock(block)}</div>`;
     });
 
     html += `
@@ -754,7 +758,6 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
           </div>
         </div>
 
-        {/* Subject Line */}
         <div className="mt-4">
           <input
             type="text"
@@ -773,7 +776,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       )}
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Enhanced Block Library */}
+        {/* Block Library */}
         <div className="w-64 bg-white border-r border-gray-200 p-4 overflow-y-auto">
           {/* Auto-save Status */}
           <div className="mb-4 p-2 bg-gray-50 rounded-lg">
@@ -834,588 +837,11 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* Block Categories */}
-          <div className="mb-6">
-            <h3 className="font-semibold text-gray-900 mb-3">Content Blocks</h3>
             
-            {/* Basic Blocks */}
-            <div className="mb-4">
-              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Basic</h4>
-              <div className="space-y-1">
-                {blockTypes.filter(block => block.category === 'basic').map((blockType) => {
-                  const IconComponent = blockType.icon;
-                  return (
-                    <div
-                      key={blockType.type}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, blockType)}
-                      className="flex items-center space-x-2 p-2 border border-gray-200 rounded cursor-move hover:border-blue-300 hover:bg-blue-50 transition-colors"
-                    >
-                      <IconComponent className="h-4 w-4 text-gray-600" />
-                      <span className="text-xs font-medium text-gray-900">{blockType.name}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Enhanced Blocks */}
-            <div className="mb-4">
-              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Enhanced</h4>
-              <div className="space-y-1">
-                {blockTypes.filter(block => block.category === 'enhanced').map((blockType) => {
-                  const IconComponent = blockType.icon;
-                  return (
-                    <div
-                      key={blockType.type}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, blockType)}
-                      className="flex items-center space-x-2 p-2 border border-purple-200 rounded cursor-move hover:border-purple-300 hover:bg-purple-50 transition-colors"
-                    >
-                      <IconComponent className="h-4 w-4 text-purple-600" />
-                      <span className="text-xs font-medium text-purple-900">{blockType.name}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Specialized Blocks */}
-            <div className="mb-4">
-              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Specialized</h4>
-              <div className="space-y-1">
-                {blockTypes.filter(block => ['fundraising', 'volunteers', 'communication', 'events'].includes(block.category)).map((blockType) => {
-                  const IconComponent = blockType.icon;
-                  return (
-                    <div
-                      key={blockType.type}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, blockType)}
-                      className="flex items-center space-x-2 p-2 border border-green-200 rounded cursor-move hover:border-green-300 hover:bg-green-50 transition-colors"
-                    >
-                      <IconComponent className="h-4 w-4 text-green-600" />
-                      <span className="text-xs font-medium text-green-900">{blockType.name}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Background Patterns */}
-          <div className="mb-6">
-            <h3 className="font-semibold text-gray-900 mb-3">Backgrounds</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {backgroundPatterns.map((pattern, index) => (
-                <button
-                  key={index}
-                  onClick={() => setTemplate(prev => ({
-                    ...prev,
-                    design_json: {
-                      ...prev.design_json,
-                      styles: {
-                        ...prev.design_json.styles,
-                        backgroundColor: pattern.value
-                      }
-                    }
-                  }))}
-                  className="p-2 border border-gray-200 rounded text-xs hover:border-gray-300 transition-colors"
-                  style={{ 
-                    background: pattern.value.includes('gradient') || pattern.value.includes('repeating') 
-                      ? pattern.value 
-                      : pattern.value,
-                    color: pattern.value === '#ffffff' ? '#000' : '#fff'
-                  }}
-                  title={pattern.name}
-                >
-                  {pattern.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Style Controls */}
-          <div className="mt-6">
-            <h3 className="font-semibold text-gray-900 mb-3">Template Styles</h3>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Primary Color
-                </label>
-                <input
-                  type="color"
-                  value={template.design_json.styles.primaryColor}
-                  onChange={(e) => setTemplate(prev => ({
-                    ...prev,
-                    design_json: {
-                      ...prev.design_json,
-                      styles: {
-                        ...prev.design_json.styles,
-                        primaryColor: e.target.value
-                      }
-                    }
-                  }))}
-                  className="w-full h-8 border border-gray-300 rounded"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Font Family
-                </label>
-                <select
-                  value={template.design_json.styles.fontFamily}
-                  onChange={(e) => setTemplate(prev => ({
-                    ...prev,
-                    design_json: {
-                      ...prev.design_json,
-                      styles: {
-                        ...prev.design_json.styles,
-                        fontFamily: e.target.value
-                      }
-                    }
-                  }))}
-                  className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
-                >
-                  <option value="Arial, sans-serif">Arial</option>
-                  <option value="Georgia, serif">Georgia</option>
-                  <option value="'Times New Roman', serif">Times New Roman</option>
-                  <option value="Helvetica, sans-serif">Helvetica</option>
-                  <option value="'Comic Sans MS', cursive">Comic Sans (Fun)</option>
-                  <option value="'Courier New', monospace">Courier New</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Canvas */}
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div
-            ref={canvasRef}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            className={`mx-auto bg-white shadow-lg rounded-lg overflow-hidden ${
-              previewMode === 'mobile' ? 'max-w-sm' : 'max-w-2xl'
-            }`}
-            style={{ minHeight: '600px' }}
-          >
-            {template.design_json.blocks.length === 0 ? (
-              <div className="flex items-center justify-center h-96 border-2 border-dashed border-gray-300">
-                <div className="text-center">
-                  <PlusIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-500">Drag blocks here to start building your email</p>
-                </div>
-              </div>
-            ) : (
-              template.design_json.blocks.map((block, index) => (
-                <EmailBlock
-                  key={block.id}
-                  block={block}
-                  isSelected={selectedBlock === block.id}
-                  onSelect={() => setSelectedBlock(block.id)}
-                  onUpdate={(content) => updateBlock(block.id, content)}
-                  onDelete={() => deleteBlock(block.id)}
-                  onMoveUp={() => moveBlock(block.id, 'up')}
-                  onMoveDown={() => moveBlock(block.id, 'down')}
-                  canMoveUp={index > 0}
-                  canMoveDown={index < template.design_json.blocks.length - 1}
-                />
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Properties Panel */}
-        {selectedBlock && (
-          <BlockPropertiesPanel
-            block={template.design_json.blocks.find(b => b.id === selectedBlock)}
-            onUpdate={(content) => updateBlock(selectedBlock, content)}
-            onClose={() => setSelectedBlock(null)}
-          />
-        )}
-      </div>
-
-      {/* Preview Modal */}
-      {showPreview && (
-        <EmailPreviewModal
-          html={generateHTML()}
-          subject={template.subject}
-          onClose={() => setShowPreview(false)}
-        />
-      )}
-    </div>
-  );
-};
-
-// Email Block Component
-const EmailBlock = ({ 
-  block, 
-  isSelected, 
-  onSelect, 
-  onUpdate, 
-  onDelete, 
-  onMoveUp, 
-  onMoveDown, 
-  canMoveUp, 
-  canMoveDown 
-}) => {
-  const { content } = block;
-
-  const renderBlock = () => {
-    switch (block.type) {
-      case 'header':
-        return (
-          <div 
-            style={{ 
-              backgroundColor: content.backgroundColor, 
-              padding: content.padding, 
-              textAlign: content.textAlign 
-            }}
-          >
-            <h1 
-              style={{ 
-                margin: 0, 
-                fontSize: content.fontSize, 
-                fontWeight: content.fontWeight, 
-                color: content.color 
-              }}
-            >
-              {content.text}
-            </h1>
-          </div>
-        );
-      case 'text':
-        return (
-          <div style={{ padding: content.padding, textAlign: content.textAlign }}>
-            <p 
-              style={{ 
-                margin: 0, 
-                fontSize: content.fontSize, 
-                fontWeight: content.fontWeight, 
-                color: content.color 
-              }}
-            >
-              {content.text}
-            </p>
-          </div>
-        );
-      case 'image':
-        return (
-          <div style={{ padding: content.padding, textAlign: content.textAlign }}>
-            <img 
-              src={content.src} 
-              alt={content.alt} 
-              style={{ width: content.width, height: 'auto', display: 'block', margin: '0 auto' }}
-            />
-          </div>
-        );
-      case 'button':
-        return (
-          <div style={{ padding: content.padding, textAlign: content.textAlign }}>
-            <a 
-              href={content.href}
-              style={{ 
-                backgroundColor: content.backgroundColor, 
-                color: content.color, 
-                padding: content.padding, 
-                borderRadius: content.borderRadius, 
-                fontSize: content.fontSize, 
-                fontWeight: content.fontWeight, 
-                textDecoration: 'none',
-                display: 'inline-block'
-              }}
-            >
-              {content.text}
-            </a>
-          </div>
-        );
-      case 'divider':
-        return (
-          <div style={{ margin: content.margin }}>
-            <hr 
-              style={{ 
-                border: 'none', 
-                height: content.height, 
-                backgroundColor: content.backgroundColor 
-              }} 
-            />
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div
-      className={`relative group ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
-      onClick={onSelect}
-    >
-      {renderBlock()}
-      
-      {/* Block Controls */}
-      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="flex space-x-1 bg-white shadow-lg rounded-md p-1">
-          {canMoveUp && (
             <button
-              onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
-              className="p-1 hover:bg-gray-100 rounded"
+              onClick={() => setShowTemplateLibrary(true)}
+              className="w-full mt-3 p-3 border-2 border-dashed border-purple-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-center"
             >
-              ↑
-            </button>
-          )}
-          {canMoveDown && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
-              className="p-1 hover:bg-gray-100 rounded"
-            >
-              ↓
-            </button>
-          )}
-          <button
-            onClick={(e) => { e.stopPropagation(); onDelete(); }}
-            className="p-1 hover:bg-red-100 rounded text-red-600"
-          >
-            <TrashIcon className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Block Properties Panel Component
-const BlockPropertiesPanel = ({ block, onUpdate, onClose }) => {
-  if (!block) return null;
-
-  const { content } = block;
-
-  return (
-    <div className="w-80 bg-white border-l border-gray-200 p-4 overflow-y-auto">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-gray-900">Block Properties</h3>
-        <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-          ×
-        </button>
-      </div>
-
-      <div className="space-y-4">
-        {block.type === 'header' && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
-              <input
-                type="text"
-                value={content.text}
-                onChange={(e) => onUpdate({ text: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Font Size</label>
-              <input
-                type="text"
-                value={content.fontSize}
-                onChange={(e) => onUpdate({ fontSize: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Text Color</label>
-              <input
-                type="color"
-                value={content.color}
-                onChange={(e) => onUpdate({ color: e.target.value })}
-                className="w-full h-10 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
-              <input
-                type="color"
-                value={content.backgroundColor}
-                onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
-                className="w-full h-10 border border-gray-300 rounded-md"
-              />
-            </div>
-          </>
-        )}
-
-        {block.type === 'text' && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
-              <textarea
-                value={content.text}
-                onChange={(e) => onUpdate({ text: e.target.value })}
-                rows={4}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Font Size</label>
-              <input
-                type="text"
-                value={content.fontSize}
-                onChange={(e) => onUpdate({ fontSize: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Text Color</label>
-              <input
-                type="color"
-                value={content.color}
-                onChange={(e) => onUpdate({ color: e.target.value })}
-                className="w-full h-10 border border-gray-300 rounded-md"
-              />
-            </div>
-          </>
-        )}
-
-        {block.type === 'image' && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-              <input
-                type="url"
-                value={content.src}
-                onChange={(e) => onUpdate({ src: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Alt Text</label>
-              <input
-                type="text"
-                value={content.alt}
-                onChange={(e) => onUpdate({ alt: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Width</label>
-              <input
-                type="text"
-                value={content.width}
-                onChange={(e) => onUpdate({ width: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-          </>
-        )}
-
-        {block.type === 'button' && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
-              <input
-                type="text"
-                value={content.text}
-                onChange={(e) => onUpdate({ text: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Link URL</label>
-              <input
-                type="url"
-                value={content.href}
-                onChange={(e) => onUpdate({ href: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
-              <input
-                type="color"
-                value={content.backgroundColor}
-                onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
-                className="w-full h-10 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Text Color</label>
-              <input
-                type="color"
-                value={content.color}
-                onChange={(e) => onUpdate({ color: e.target.value })}
-                className="w-full h-10 border border-gray-300 rounded-md"
-              />
-            </div>
-          </>
-        )}
-
-        {block.type === 'divider' && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
-              <input
-                type="color"
-                value={content.backgroundColor}
-                onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
-                className="w-full h-10 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Height</label>
-              <input
-                type="text"
-                value={content.height}
-                onChange={(e) => onUpdate({ height: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// Email Preview Modal Component
-const EmailPreviewModal = ({ html, subject, onClose }) => {
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">Email Preview</h3>
-            <p className="text-sm text-gray-500">Subject: {subject || 'No subject'}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <span className="sr-only">Close</span>
-            ×
-          </button>
-        </div>
-        
-        <div className="p-4 overflow-y-auto max-h-[calc(90vh-120px)]">
-          <div className="border border-gray-300 rounded-lg overflow-hidden">
-            <iframe
-              srcDoc={html}
-              className="w-full h-96 border-none"
-              title="Email Preview"
-            />
-          </div>
-        </div>
-        
-        <div className="flex justify-end space-x-3 p-4 border-t border-gray-200">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default EmailTemplateBuilder;
+              <SparklesIcon className="h-5 w-5 text-purple-600 mx-auto mb-1" />
+              <div className="text-sm font-medium text-purple-700">Other Templates</div>
+              <div className="text-xs text-purple
