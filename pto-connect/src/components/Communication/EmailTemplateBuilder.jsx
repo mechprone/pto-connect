@@ -24,7 +24,8 @@ import {
   BuildingOfficeIcon,
   DocumentTextIcon,
   PresentationChartLineIcon,
-  TrophyIcon
+  TrophyIcon,
+  ChevronDownIcon
 } from '@heroicons/react/24/outline';
 import { useUserProfile } from '@/modules/hooks/useUserProfile';
 import { supabase } from '../../utils/supabaseClient';
@@ -61,6 +62,16 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
   const [autoSaveStatus, setAutoSaveStatus] = useState('saved');
   const [lastSaved, setLastSaved] = useState(null);
   const [showTemplateLibrary, setShowTemplateLibrary] = useState(false);
+  const [collapsedCategories, setCollapsedCategories] = useState({
+    basic: true,
+    design: true,
+    fundraising: true,
+    events: true,
+    volunteers: true,
+    announcements: true,
+    interactive: true,
+    academic: true,
+  });
   const canvasRef = useRef(null);
   const autoSaveTimeoutRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -379,6 +390,24 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
         padding: '25px'
       }
     }
+  ];
+
+  const toggleCategory = (categoryId) => {
+    setCollapsedCategories(prev => ({
+      ...prev,
+      [categoryId]: !prev[categoryId]
+    }));
+  };
+
+  const designElementCategories = [
+    { id: 'basic', name: 'Basic Content', icon: Bars3Icon, color: 'blue-500' },
+    { id: 'design', name: 'Design & Pizzazz', icon: PaintBrushIcon, color: 'purple-500' },
+    { id: 'fundraising', name: 'Fundraising', icon: GiftIcon, color: 'green-500' },
+    { id: 'events', name: 'Events', icon: CalendarIcon, color: 'orange-500' },
+    { id: 'volunteers', name: 'Volunteers', icon: UserGroupIcon, color: 'indigo-500' },
+    { id: 'announcements', name: 'Announcements', icon: MegaphoneIcon, color: 'red-500' },
+    { id: 'interactive', name: 'Interactive', icon: HeartIcon, color: 'pink-500' },
+    { id: 'academic', name: 'Academic', icon: AcademicCapIcon, color: 'teal-500' },
   ];
 
   const prebuiltTemplates = [
@@ -1934,18 +1963,6 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
             </div>
 
             <button
-              onClick={() => setShowTemplateLibrary(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 shadow-lg transition-all duration-200 transform hover:scale-105"
-              title="Browse Professional Templates"
-            >
-              <SparklesIcon className="h-5 w-5" />
-              <span className="font-semibold">Professional Templates</span>
-              <div className="bg-white/20 px-2 py-1 rounded text-xs font-bold">
-                40+
-              </div>
-            </button>
-            
-            <button
               onClick={() => setShowPreview(!showPreview)}
               className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
               title="Preview Email"
@@ -2130,172 +2147,40 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
               Design Elements
             </h3>
             
-            {/* Basic Content Blocks */}
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <Bars3Icon className="h-4 w-4 mr-1 text-blue-500" />
-                Basic Content
-              </h4>
-              <div className="space-y-1">
-                {blockTypes.filter(block => block.category === 'basic').map((blockType) => (
-                  <div
-                    key={blockType.type}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, blockType)}
-                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-blue-300 hover:bg-blue-50 transition-colors group"
+            <div className="space-y-2">
+              {designElementCategories.map(category => (
+                <div key={category.id} className="border-b border-gray-200 last:border-b-0">
+                  <button
+                    onClick={() => toggleCategory(category.id)}
+                    className="w-full flex items-center justify-between p-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md"
                   >
-                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-blue-500" />
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-blue-700">{blockType.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Design & Pizzazz Elements */}
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <PaintBrushIcon className="h-4 w-4 mr-1 text-purple-500" />
-                Design & Pizzazz
-              </h4>
-              <div className="space-y-1">
-                {blockTypes.filter(block => block.category === 'design').map((blockType) => (
-                  <div
-                    key={blockType.type}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, blockType)}
-                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-purple-300 hover:bg-purple-50 transition-colors group"
-                  >
-                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-purple-500" />
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700">{blockType.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* PTO-Specific Blocks */}
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <GiftIcon className="h-4 w-4 mr-1 text-green-500" />
-                Fundraising
-              </h4>
-              <div className="space-y-1">
-                {blockTypes.filter(block => block.category === 'fundraising').map((blockType) => (
-                  <div
-                    key={blockType.type}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, blockType)}
-                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-green-300 hover:bg-green-50 transition-colors group"
-                  >
-                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-green-500" />
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-green-700">{blockType.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Events */}
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <CalendarIcon className="h-4 w-4 mr-1 text-orange-500" />
-                Events
-              </h4>
-              <div className="space-y-1">
-                {blockTypes.filter(block => block.category === 'events').map((blockType) => (
-                  <div
-                    key={blockType.type}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, blockType)}
-                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-orange-300 hover:bg-orange-50 transition-colors group"
-                  >
-                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-orange-500" />
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-orange-700">{blockType.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Volunteers */}
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <UserGroupIcon className="h-4 w-4 mr-1 text-indigo-500" />
-                Volunteers
-              </h4>
-              <div className="space-y-1">
-                {blockTypes.filter(block => block.category === 'volunteers').map((blockType) => (
-                  <div
-                    key={blockType.type}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, blockType)}
-                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-indigo-300 hover:bg-indigo-50 transition-colors group"
-                  >
-                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-indigo-500" />
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-indigo-700">{blockType.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Announcements */}
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <MegaphoneIcon className="h-4 w-4 mr-1 text-red-500" />
-                Announcements
-              </h4>
-              <div className="space-y-1">
-                {blockTypes.filter(block => block.category === 'announcements').map((blockType) => (
-                  <div
-                    key={blockType.type}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, blockType)}
-                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-red-300 hover:bg-red-50 transition-colors group"
-                  >
-                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-red-500" />
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-red-700">{blockType.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Interactive Elements */}
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <HeartIcon className="h-4 w-4 mr-1 text-pink-500" />
-                Interactive
-              </h4>
-              <div className="space-y-1">
-                {blockTypes.filter(block => block.category === 'interactive').map((blockType) => (
-                  <div
-                    key={blockType.type}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, blockType)}
-                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-pink-300 hover:bg-pink-50 transition-colors group"
-                  >
-                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-pink-500" />
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-pink-700">{blockType.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Academic & School Elements */}
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <AcademicCapIcon className="h-4 w-4 mr-1 text-teal-500" />
-                Academic
-              </h4>
-              <div className="space-y-1">
-                {blockTypes.filter(block => block.category === 'academic').map((blockType) => (
-                  <div
-                    key={blockType.type}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, blockType)}
-                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-teal-300 hover:bg-teal-50 transition-colors group"
-                  >
-                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-teal-500" />
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-teal-700">{blockType.name}</span>
-                  </div>
-                ))}
-              </div>
+                    <div className="flex items-center">
+                      <category.icon className={`h-4 w-4 mr-2 text-${category.color}`} />
+                      <span>{category.name}</span>
+                    </div>
+                    <ChevronDownIcon
+                      className={`h-5 w-5 text-gray-500 transform transition-transform duration-200 ${
+                        collapsedCategories[category.id] ? '' : 'rotate-180'
+                      }`}
+                    />
+                  </button>
+                  {!collapsedCategories[category.id] && (
+                    <div className="p-2 space-y-1">
+                      {blockTypes.filter(block => block.category === category.id).map((blockType) => (
+                        <div
+                          key={blockType.type}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, blockType)}
+                          className={`flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-${category.color.split('-')[0]}-300 hover:bg-${category.color.split('-')[0]}-50 transition-colors group`}
+                        >
+                          <blockType.icon className={`h-4 w-4 text-gray-500 mr-2 group-hover:text-${category.color}`} />
+                          <span className={`text-sm font-medium text-gray-700 group-hover:text-${category.color.split('-')[0]}-700`}>{blockType.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>
