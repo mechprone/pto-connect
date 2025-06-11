@@ -160,18 +160,17 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
   const handleTemplateSelect = (selectedTemplate) => {
     console.log('Template selected:', selectedTemplate);
     
-    // Convert template blocks to our format
-    const convertedBlocks = selectedTemplate.blocks.map((block, index) => {
-      let convertedBlock = {
-        id: `${Date.now()}-${index}`,
-        type: block.type,
-        content: { ...block.content }
-      };
-
+    // Convert template blocks to our format - handle ALL blocks from the template
+    const convertedBlocks = [];
+    
+    selectedTemplate.blocks.forEach((block, index) => {
+      const blockId = `${Date.now()}-${index}`;
+      
       // Convert different block types to our standard format
       if (block.type === 'hero') {
-        convertedBlock = {
-          id: `${Date.now()}-${index}`,
+        // Add hero header block
+        convertedBlocks.push({
+          id: blockId,
           type: 'header',
           content: {
             text: block.content.title,
@@ -180,12 +179,57 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
             textAlign: 'center',
             color: block.content.titleColor || '#ffffff',
             backgroundColor: block.content.backgroundImage || '#3b82f6',
-            padding: block.content.padding || '40px'
+            padding: '40px'
           }
-        };
+        });
+        
+        // Add subtitle block if it exists
+        if (block.content.subtitle) {
+          convertedBlocks.push({
+            id: `${blockId}-subtitle`,
+            type: 'text',
+            content: {
+              text: block.content.subtitle,
+              fontSize: '18px',
+              fontWeight: 'normal',
+              textAlign: 'center',
+              color: block.content.subtitleColor || '#6b7280',
+              backgroundColor: '#ffffff',
+              padding: '15px'
+            }
+          });
+        }
+      } else if (block.type === 'header') {
+        convertedBlocks.push({
+          id: blockId,
+          type: 'header',
+          content: {
+            text: block.content.text,
+            fontSize: block.content.fontSize || '24px',
+            fontWeight: block.content.fontWeight || 'bold',
+            textAlign: block.content.textAlign || 'center',
+            color: block.content.color || '#1f2937',
+            backgroundColor: block.content.backgroundColor || '#f9fafb',
+            padding: block.content.padding || '20px'
+          }
+        });
+      } else if (block.type === 'text') {
+        convertedBlocks.push({
+          id: blockId,
+          type: 'text',
+          content: {
+            text: block.content.text,
+            fontSize: block.content.fontSize || '16px',
+            fontWeight: block.content.fontWeight || 'normal',
+            textAlign: block.content.textAlign || 'left',
+            color: block.content.color || '#374151',
+            backgroundColor: block.content.backgroundColor || '#ffffff',
+            padding: block.content.padding || '15px'
+          }
+        });
       } else if (block.type === 'calendar') {
-        convertedBlock = {
-          id: `${Date.now()}-${index}`,
+        convertedBlocks.push({
+          id: blockId,
           type: 'text',
           content: {
             text: `📅 ${block.content.eventTitle}\n🕐 ${block.content.eventTime}\n📍 ${block.content.location}`,
@@ -196,38 +240,39 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
             backgroundColor: block.content.backgroundColor || '#f9fafb',
             padding: '20px'
           }
-        };
+        });
       } else if (block.type === 'donation') {
-        convertedBlock = {
-          id: `${Date.now()}-${index}`,
+        const progressPercentage = Math.round((block.content.currentAmount / block.content.goalAmount) * 100);
+        convertedBlocks.push({
+          id: blockId,
           type: 'text',
           content: {
-            text: `${block.content.title}\n\n${block.content.description}\n\nGoal: $${block.content.goalAmount?.toLocaleString()}\nRaised: $${block.content.currentAmount?.toLocaleString()}`,
+            text: `${block.content.title}\n\n${block.content.description}\n\nGoal: $${block.content.goalAmount?.toLocaleString()}\nRaised: $${block.content.currentAmount?.toLocaleString()} (${progressPercentage}%)`,
             fontSize: '16px',
             fontWeight: 'normal',
             textAlign: 'left',
             color: '#374151',
-            backgroundColor: block.content.backgroundColor || '#ffffff',
+            backgroundColor: block.content.backgroundColor || '#f0f9ff',
             padding: '20px'
           }
-        };
+        });
       } else if (block.type === 'volunteer') {
-        convertedBlock = {
-          id: `${Date.now()}-${index}`,
+        convertedBlocks.push({
+          id: blockId,
           type: 'text',
           content: {
             text: `${block.content.title}\n\n${block.content.description}\n\nOpportunities:\n• ${block.content.opportunities?.join('\n• ') || 'Various volunteer opportunities available'}`,
             fontSize: '16px',
             fontWeight: 'normal',
             textAlign: 'left',
-            color: block.content.textColor || '#374151',
-            backgroundColor: block.content.backgroundColor || '#ffffff',
+            color: block.content.textColor || '#7c3aed',
+            backgroundColor: block.content.backgroundColor || '#faf5ff',
             padding: '20px'
           }
-        };
+        });
       } else if (block.type === 'announcement') {
-        convertedBlock = {
-          id: `${Date.now()}-${index}`,
+        convertedBlocks.push({
+          id: blockId,
           type: 'text',
           content: {
             text: `${block.content.title}\n\n${block.content.message}`,
@@ -238,10 +283,15 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
             backgroundColor: block.content.backgroundColor || '#fef2f2',
             padding: '25px'
           }
-        };
+        });
+      } else {
+        // Default handling for any other block types
+        convertedBlocks.push({
+          id: blockId,
+          type: block.type,
+          content: { ...block.content }
+        });
       }
-
-      return convertedBlock;
     });
 
     // Update the template with the selected template data
@@ -266,7 +316,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     
     // Show success message
     setTimeout(() => {
-      alert(`Template "${selectedTemplate.name}" applied successfully!`);
+      alert(`Template "${selectedTemplate.name}" applied successfully! All ${convertedBlocks.length} blocks loaded.`);
     }, 100);
   };
 

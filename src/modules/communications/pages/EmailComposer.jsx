@@ -515,14 +515,50 @@ export default function EmailComposer() {
   const [showAiModal, setShowAiModal] = useState(false);
   const [aiMode, setAiMode] = useState(null);
   const [currentTemplate, setCurrentTemplate] = useState(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
+  // Load saved state from sessionStorage on component mount
   useEffect(() => {
+    const savedState = sessionStorage.getItem('emailComposer_state');
+    if (savedState) {
+      try {
+        const parsedState = JSON.parse(savedState);
+        setCurrentTemplate(parsedState.currentTemplate);
+        setHasUnsavedChanges(parsedState.hasUnsavedChanges || false);
+      } catch (error) {
+        console.error('Error loading saved state:', error);
+      }
+    }
+
     const mode = searchParams.get('mode');
     if (mode === 'auto' || mode === 'assisted') {
       setAiMode(mode);
       setShowAiModal(true);
     }
   }, [searchParams]);
+
+  // Save state to sessionStorage whenever it changes
+  useEffect(() => {
+    if (currentTemplate || hasUnsavedChanges) {
+      const stateToSave = {
+        currentTemplate,
+        hasUnsavedChanges,
+        timestamp: Date.now()
+      };
+      sessionStorage.setItem('emailComposer_state', JSON.stringify(stateToSave));
+    }
+  }, [currentTemplate, hasUnsavedChanges]);
+
+  // Clear saved state when component unmounts (user navigates away intentionally)
+  useEffect(() => {
+    return () => {
+      // Only clear if user is navigating to a different section
+      const currentPath = window.location.pathname;
+      if (!currentPath.includes('/communications/email-composer')) {
+        sessionStorage.removeItem('emailComposer_state');
+      }
+    };
+  }, []);
 
   const handleAiGenerate = ({ subject, designJson }) => {
     // Convert the AI-generated content to our template format
