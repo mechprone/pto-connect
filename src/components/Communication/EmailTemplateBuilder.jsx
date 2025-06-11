@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   PlusIcon, 
   TrashIcon, 
@@ -8,7 +8,17 @@ import {
   Bars3Icon,
   PaintBrushIcon,
   DevicePhoneMobileIcon,
-  ComputerDesktopIcon
+  ComputerDesktopIcon,
+  StarIcon,
+  HeartIcon,
+  SparklesIcon,
+  GiftIcon,
+  AcademicCapIcon,
+  MegaphoneIcon,
+  CalendarIcon,
+  UserGroupIcon,
+  ClockIcon,
+  CheckCircleIcon
 } from '@heroicons/react/24/outline';
 import { useUserProfile } from '@/modules/hooks/useUserProfile';
 import { supabase } from '../../utils/supabaseClient';
@@ -41,13 +51,18 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
 
   const [draggedBlock, setDraggedBlock] = useState(null);
   const [selectedBlock, setSelectedBlock] = useState(null);
+  const [autoSaveStatus, setAutoSaveStatus] = useState('saved'); // 'saving', 'saved', 'error'
+  const [lastSaved, setLastSaved] = useState(null);
   const canvasRef = useRef(null);
+  const autoSaveTimeoutRef = useRef(null);
 
+  // Enhanced block types with more variety
   const blockTypes = [
     {
       type: 'header',
       name: 'Header',
       icon: Bars3Icon,
+      category: 'basic',
       defaultContent: {
         text: 'Your PTO Header',
         fontSize: '24px',
@@ -62,6 +77,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       type: 'text',
       name: 'Text Block',
       icon: Bars3Icon,
+      category: 'basic',
       defaultContent: {
         text: 'Add your message here...',
         fontSize: '16px',
@@ -75,6 +91,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       type: 'image',
       name: 'Image',
       icon: PhotoIcon,
+      category: 'basic',
       defaultContent: {
         src: 'https://via.placeholder.com/600x300?text=Add+Your+Image',
         alt: 'Email Image',
@@ -87,6 +104,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       type: 'button',
       name: 'Button',
       icon: PlusIcon,
+      category: 'basic',
       defaultContent: {
         text: 'Click Here',
         href: '#',
@@ -103,11 +121,234 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       type: 'divider',
       name: 'Divider',
       icon: Bars3Icon,
+      category: 'basic',
       defaultContent: {
         height: '1px',
         backgroundColor: '#e5e7eb',
         margin: '20px 0'
       }
+    },
+    // Enhanced content blocks
+    {
+      type: 'hero',
+      name: 'Hero Section',
+      icon: StarIcon,
+      category: 'enhanced',
+      defaultContent: {
+        title: 'Welcome to Our PTO!',
+        subtitle: 'Building stronger communities together',
+        backgroundImage: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        titleColor: '#ffffff',
+        subtitleColor: '#e2e8f0',
+        padding: '60px 20px',
+        textAlign: 'center'
+      }
+    },
+    {
+      type: 'card',
+      name: 'Info Card',
+      icon: DocumentDuplicateIcon,
+      category: 'enhanced',
+      defaultContent: {
+        title: 'Event Title',
+        description: 'Event description goes here...',
+        backgroundColor: '#ffffff',
+        borderColor: '#e5e7eb',
+        borderRadius: '8px',
+        padding: '20px',
+        margin: '15px',
+        titleColor: '#1f2937',
+        textColor: '#374151'
+      }
+    },
+    {
+      type: 'social',
+      name: 'Social Links',
+      icon: UserGroupIcon,
+      category: 'enhanced',
+      defaultContent: {
+        platforms: ['facebook', 'instagram', 'twitter'],
+        backgroundColor: '#f8fafc',
+        padding: '20px',
+        textAlign: 'center'
+      }
+    },
+    {
+      type: 'countdown',
+      name: 'Event Countdown',
+      icon: ClockIcon,
+      category: 'enhanced',
+      defaultContent: {
+        eventName: 'Fall Festival',
+        eventDate: '2024-11-15',
+        backgroundColor: '#fef3c7',
+        textColor: '#92400e',
+        padding: '20px',
+        textAlign: 'center'
+      }
+    },
+    {
+      type: 'testimonial',
+      name: 'Testimonial',
+      icon: HeartIcon,
+      category: 'enhanced',
+      defaultContent: {
+        quote: 'This PTO has made such a difference in our school community!',
+        author: 'Parent Name',
+        role: 'Parent of 3rd Grader',
+        backgroundColor: '#f0f9ff',
+        textColor: '#1e40af',
+        padding: '25px',
+        textAlign: 'center'
+      }
+    },
+    {
+      type: 'donation',
+      name: 'Donation Call',
+      icon: GiftIcon,
+      category: 'fundraising',
+      defaultContent: {
+        title: 'Support Our School',
+        description: 'Your donation helps fund amazing programs for our students.',
+        goalAmount: 5000,
+        currentAmount: 2500,
+        buttonText: 'Donate Now',
+        buttonColor: '#10b981',
+        backgroundColor: '#ecfdf5',
+        padding: '25px'
+      }
+    },
+    {
+      type: 'volunteer',
+      name: 'Volunteer Signup',
+      icon: AcademicCapIcon,
+      category: 'volunteers',
+      defaultContent: {
+        title: 'We Need Your Help!',
+        description: 'Join our amazing volunteer team and make a difference.',
+        opportunities: ['Event Setup', 'Classroom Helper', 'Fundraising'],
+        buttonText: 'Sign Up',
+        backgroundColor: '#fef7ff',
+        textColor: '#7c3aed',
+        padding: '20px'
+      }
+    },
+    {
+      type: 'announcement',
+      name: 'Announcement',
+      icon: MegaphoneIcon,
+      category: 'communication',
+      defaultContent: {
+        title: 'Important Announcement',
+        message: 'Please mark your calendars for our upcoming meeting.',
+        priority: 'high',
+        backgroundColor: '#fef2f2',
+        titleColor: '#dc2626',
+        textColor: '#991b1b',
+        padding: '20px'
+      }
+    },
+    {
+      type: 'calendar',
+      name: 'Calendar Event',
+      icon: CalendarIcon,
+      category: 'events',
+      defaultContent: {
+        eventTitle: 'PTO Meeting',
+        eventDate: '2024-11-01',
+        eventTime: '7:00 PM',
+        location: 'School Library',
+        backgroundColor: '#eff6ff',
+        textColor: '#1d4ed8',
+        padding: '20px'
+      }
+    }
+  ];
+
+  // Background patterns and templates
+  const backgroundPatterns = [
+    { name: 'Solid White', value: '#ffffff' },
+    { name: 'Light Gray', value: '#f8fafc' },
+    { name: 'School Blue', value: '#dbeafe' },
+    { name: 'Warm Yellow', value: '#fef3c7' },
+    { name: 'Soft Green', value: '#ecfdf5' },
+    { name: 'Gentle Purple', value: '#faf5ff' },
+    { name: 'Gradient Blue', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+    { name: 'Gradient Sunset', value: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
+    { name: 'Gradient Forest', value: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
+    { name: 'School Pattern', value: 'repeating-linear-gradient(45deg, #f8fafc, #f8fafc 10px, #e2e8f0 10px, #e2e8f0 20px)' }
+  ];
+
+  const prebuiltTemplates = [
+    {
+      name: 'Event Announcement',
+      category: 'events',
+      blocks: [
+        {
+          type: 'hero',
+          content: {
+            title: 'Fall Festival 2024',
+            subtitle: 'Join us for a day of fun, food, and community!',
+            backgroundImage: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            titleColor: '#ffffff',
+            subtitleColor: '#fce7f3'
+          }
+        },
+        {
+          type: 'calendar',
+          content: {
+            eventTitle: 'Fall Festival',
+            eventDate: '2024-11-15',
+            eventTime: '10:00 AM - 4:00 PM',
+            location: 'School Playground'
+          }
+        }
+      ]
+    },
+    {
+      name: 'Fundraising Campaign',
+      category: 'fundraising',
+      blocks: [
+        {
+          type: 'header',
+          content: {
+            text: 'Help Us Reach Our Goal!',
+            backgroundColor: '#10b981',
+            color: '#ffffff'
+          }
+        },
+        {
+          type: 'donation',
+          content: {
+            title: 'Support Our Technology Fund',
+            description: 'Help us bring new computers and tablets to every classroom.',
+            goalAmount: 10000,
+            currentAmount: 6500
+          }
+        }
+      ]
+    },
+    {
+      name: 'Volunteer Recruitment',
+      category: 'volunteers',
+      blocks: [
+        {
+          type: 'hero',
+          content: {
+            title: 'We Need Amazing Volunteers!',
+            subtitle: 'Join our team and make a difference in our school community',
+            backgroundImage: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+          }
+        },
+        {
+          type: 'volunteer',
+          content: {
+            title: 'Volunteer Opportunities',
+            description: 'Choose from various ways to help our school thrive.',
+            opportunities: ['Event Planning', 'Classroom Support', 'Fundraising', 'Communications']
+          }
+        }
+      ]
     }
   ];
 
@@ -120,6 +361,88 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     'volunteers',
     'meetings'
   ];
+
+  // Auto-save functionality
+  const autoSave = useCallback(async () => {
+    if (!template.name || saving) return;
+    
+    try {
+      setAutoSaveStatus('saving');
+      
+      const templateData = {
+        ...template,
+        html_content: generateHTML()
+      };
+
+      const url = templateId 
+        ? `${import.meta.env.VITE_API_URL}/api/communications/templates/${templateId}`
+        : `${import.meta.env.VITE_API_URL}/api/communications/templates`;
+      
+      const method = templateId ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(templateData)
+      });
+
+      if (response.ok) {
+        setAutoSaveStatus('saved');
+        setLastSaved(new Date());
+      } else {
+        setAutoSaveStatus('error');
+      }
+    } catch (err) {
+      console.error('Auto-save error:', err);
+      setAutoSaveStatus('error');
+    }
+  }, [template, templateId, saving]);
+
+  // Trigger auto-save when template changes
+  useEffect(() => {
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+    
+    // Auto-save after 3 seconds of inactivity
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      autoSave();
+    }, 3000);
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [template, autoSave]);
+
+  // Save before window unload
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (autoSaveStatus !== 'saved') {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+        return e.returnValue;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden && autoSaveStatus !== 'saved') {
+        autoSave();
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [autoSaveStatus, autoSave]);
 
   useEffect(() => {
     if (templateId) {
@@ -450,32 +773,175 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       )}
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Block Library */}
+        {/* Enhanced Block Library */}
         <div className="w-64 bg-white border-r border-gray-200 p-4 overflow-y-auto">
-          <h3 className="font-semibold text-gray-900 mb-4">Email Blocks</h3>
-          <div className="space-y-2">
-            {blockTypes.map((blockType) => {
-              const IconComponent = blockType.icon;
-              return (
-                <div
-                  key={blockType.type}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, blockType)}
-                  className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg cursor-move hover:border-blue-300 hover:bg-blue-50"
+          {/* Auto-save Status */}
+          <div className="mb-4 p-2 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-gray-600">Auto-save:</span>
+              <div className="flex items-center space-x-1">
+                {autoSaveStatus === 'saving' && (
+                  <>
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+                    <span className="text-yellow-600">Saving...</span>
+                  </>
+                )}
+                {autoSaveStatus === 'saved' && (
+                  <>
+                    <CheckCircleIcon className="w-3 h-3 text-green-500" />
+                    <span className="text-green-600">Saved</span>
+                  </>
+                )}
+                {autoSaveStatus === 'error' && (
+                  <>
+                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                    <span className="text-red-600">Error</span>
+                  </>
+                )}
+              </div>
+            </div>
+            {lastSaved && (
+              <div className="text-xs text-gray-500 mt-1">
+                Last saved: {lastSaved.toLocaleTimeString()}
+              </div>
+            )}
+          </div>
+
+          {/* Quick Templates */}
+          <div className="mb-6">
+            <h3 className="font-semibold text-gray-900 mb-3">Quick Start Templates</h3>
+            <div className="space-y-2">
+              {prebuiltTemplates.map((template, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setTemplate(prev => ({
+                      ...prev,
+                      design_json: {
+                        ...prev.design_json,
+                        blocks: template.blocks.map((block, blockIndex) => ({
+                          id: `${Date.now()}-${blockIndex}`,
+                          type: block.type,
+                          content: block.content
+                        }))
+                      }
+                    }));
+                  }}
+                  className="w-full text-left p-2 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors"
                 >
-                  <IconComponent className="h-5 w-5 text-gray-600" />
-                  <span className="text-sm font-medium text-gray-900">{blockType.name}</span>
-                </div>
-              );
-            })}
+                  <div className="text-sm font-medium text-gray-900">{template.name}</div>
+                  <div className="text-xs text-gray-500 capitalize">{template.category}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Block Categories */}
+          <div className="mb-6">
+            <h3 className="font-semibold text-gray-900 mb-3">Content Blocks</h3>
+            
+            {/* Basic Blocks */}
+            <div className="mb-4">
+              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Basic</h4>
+              <div className="space-y-1">
+                {blockTypes.filter(block => block.category === 'basic').map((blockType) => {
+                  const IconComponent = blockType.icon;
+                  return (
+                    <div
+                      key={blockType.type}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, blockType)}
+                      className="flex items-center space-x-2 p-2 border border-gray-200 rounded cursor-move hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                    >
+                      <IconComponent className="h-4 w-4 text-gray-600" />
+                      <span className="text-xs font-medium text-gray-900">{blockType.name}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Enhanced Blocks */}
+            <div className="mb-4">
+              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Enhanced</h4>
+              <div className="space-y-1">
+                {blockTypes.filter(block => block.category === 'enhanced').map((blockType) => {
+                  const IconComponent = blockType.icon;
+                  return (
+                    <div
+                      key={blockType.type}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, blockType)}
+                      className="flex items-center space-x-2 p-2 border border-purple-200 rounded cursor-move hover:border-purple-300 hover:bg-purple-50 transition-colors"
+                    >
+                      <IconComponent className="h-4 w-4 text-purple-600" />
+                      <span className="text-xs font-medium text-purple-900">{blockType.name}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Specialized Blocks */}
+            <div className="mb-4">
+              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Specialized</h4>
+              <div className="space-y-1">
+                {blockTypes.filter(block => ['fundraising', 'volunteers', 'communication', 'events'].includes(block.category)).map((blockType) => {
+                  const IconComponent = blockType.icon;
+                  return (
+                    <div
+                      key={blockType.type}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, blockType)}
+                      className="flex items-center space-x-2 p-2 border border-green-200 rounded cursor-move hover:border-green-300 hover:bg-green-50 transition-colors"
+                    >
+                      <IconComponent className="h-4 w-4 text-green-600" />
+                      <span className="text-xs font-medium text-green-900">{blockType.name}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Background Patterns */}
+          <div className="mb-6">
+            <h3 className="font-semibold text-gray-900 mb-3">Backgrounds</h3>
+            <div className="grid grid-cols-2 gap-2">
+              {backgroundPatterns.map((pattern, index) => (
+                <button
+                  key={index}
+                  onClick={() => setTemplate(prev => ({
+                    ...prev,
+                    design_json: {
+                      ...prev.design_json,
+                      styles: {
+                        ...prev.design_json.styles,
+                        backgroundColor: pattern.value
+                      }
+                    }
+                  }))}
+                  className="p-2 border border-gray-200 rounded text-xs hover:border-gray-300 transition-colors"
+                  style={{ 
+                    background: pattern.value.includes('gradient') || pattern.value.includes('repeating') 
+                      ? pattern.value 
+                      : pattern.value,
+                    color: pattern.value === '#ffffff' ? '#000' : '#fff'
+                  }}
+                  title={pattern.name}
+                >
+                  {pattern.name}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Style Controls */}
-          <div className="mt-8">
-            <h3 className="font-semibold text-gray-900 mb-4">Template Styles</h3>
-            <div className="space-y-4">
+          <div className="mt-6">
+            <h3 className="font-semibold text-gray-900 mb-3">Template Styles</h3>
+            <div className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Primary Color
                 </label>
                 <input
@@ -491,12 +957,12 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
                       }
                     }
                   }))}
-                  className="w-full h-10 border border-gray-300 rounded-md"
+                  className="w-full h-8 border border-gray-300 rounded"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Font Family
                 </label>
                 <select
@@ -511,12 +977,14 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
                       }
                     }
                   }))}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                  className="w-full border border-gray-300 rounded px-2 py-1 text-xs"
                 >
                   <option value="Arial, sans-serif">Arial</option>
                   <option value="Georgia, serif">Georgia</option>
                   <option value="'Times New Roman', serif">Times New Roman</option>
                   <option value="Helvetica, sans-serif">Helvetica</option>
+                  <option value="'Comic Sans MS', cursive">Comic Sans (Fun)</option>
+                  <option value="'Courier New', monospace">Courier New</option>
                 </select>
               </div>
             </div>
