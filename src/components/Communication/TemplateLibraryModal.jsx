@@ -705,15 +705,43 @@ const TemplateLibraryModal = ({ isOpen, onClose, onSelectTemplate }) => {
                   >
                     {/* Preview Image */}
                     <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
-                      <img
-                        src={template.preview}
-                        alt={template.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                      />
-                      <div className="absolute top-2 left-2">
-                        <CategoryIcon className="w-5 h-5 text-white bg-black bg-opacity-50 rounded p-1" />
+                      {/* Generate a visual preview based on template style */}
+                      <div className={`w-full h-full flex items-center justify-center text-white font-bold text-lg ${
+                        template.style === 'festive' ? 'bg-gradient-to-br from-orange-400 to-red-500' :
+                        template.style === 'bright' ? 'bg-gradient-to-br from-green-400 to-blue-500' :
+                        template.style === 'elegant' ? 'bg-gradient-to-br from-blue-500 to-purple-600' :
+                        template.style === 'formal' ? 'bg-gradient-to-br from-purple-600 to-indigo-700' :
+                        template.style === 'creative' ? 'bg-gradient-to-br from-pink-500 to-rose-600' :
+                        template.style === 'modern' ? 'bg-gradient-to-br from-indigo-500 to-blue-600' :
+                        template.style === 'playful' ? 'bg-gradient-to-br from-yellow-400 to-orange-500' :
+                        template.style === 'academic' ? 'bg-gradient-to-br from-green-500 to-teal-600' :
+                        template.style === 'professional' ? 'bg-gradient-to-br from-gray-600 to-gray-700' :
+                        template.style === 'urgent' ? 'bg-gradient-to-br from-red-500 to-red-600' :
+                        template.style === 'grateful' ? 'bg-gradient-to-br from-pink-400 to-purple-500' :
+                        'bg-gradient-to-br from-blue-400 to-blue-600'
+                      } group-hover:scale-105 transition-transform duration-200`}>
+                        <div className="text-center">
+                          <CategoryIcon className="w-8 h-8 mx-auto mb-2 opacity-80" />
+                          <div className="text-sm font-medium opacity-90">{template.name}</div>
+                        </div>
                       </div>
-                      <div className="absolute top-2 right-2">
+                      
+                      {/* Preview Icon */}
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // TODO: Open full preview modal
+                            alert('Full preview coming soon!');
+                          }}
+                          className="p-2 bg-white bg-opacity-90 rounded-full shadow-lg hover:bg-opacity-100 transition-all"
+                          title="Preview Template"
+                        >
+                          <PhotoIcon className="w-4 h-4 text-gray-700" />
+                        </button>
+                      </div>
+                      
+                      <div className="absolute top-2 left-2">
                         <span className="px-2 py-1 bg-black bg-opacity-50 text-white text-xs rounded">
                           {template.style}
                         </span>

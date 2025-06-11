@@ -590,23 +590,18 @@ export default function EmailComposer() {
                   <span>Back to Communications</span>
                 </button>
                 <div className="h-6 w-px bg-gray-300"></div>
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Mail className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
-                      <span>Professional Email Designer</span>
-                      <Sparkles className="h-6 w-6 text-purple-500" />
-                    </h1>
-                    <div className="flex items-center space-x-2 text-sm">
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-green-700 font-medium">Design Studio Active</span>
-                      </div>
-                      <span className="text-gray-400">•</span>
-                      <span className="text-gray-600">Drag & drop email builder with PTO templates</span>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
+                    <span>Professional Email Designer</span>
+                    <Sparkles className="h-6 w-6 text-purple-500" />
+                  </h1>
+                  <div className="flex items-center space-x-2 text-sm">
+                    <div className="flex items-center space-x-1">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-green-700 font-medium">Design Studio Active</span>
                     </div>
+                    <span className="text-gray-400">•</span>
+                    <span className="text-gray-600">Drag & drop email builder with PTO templates</span>
                   </div>
                 </div>
               </div>

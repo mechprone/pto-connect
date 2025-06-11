@@ -158,20 +158,116 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
 
   // Handle template selection from library
   const handleTemplateSelect = (selectedTemplate) => {
+    console.log('Template selected:', selectedTemplate);
+    
+    // Convert template blocks to our format
+    const convertedBlocks = selectedTemplate.blocks.map((block, index) => {
+      let convertedBlock = {
+        id: `${Date.now()}-${index}`,
+        type: block.type,
+        content: { ...block.content }
+      };
+
+      // Convert different block types to our standard format
+      if (block.type === 'hero') {
+        convertedBlock = {
+          id: `${Date.now()}-${index}`,
+          type: 'header',
+          content: {
+            text: block.content.title,
+            fontSize: '32px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            color: block.content.titleColor || '#ffffff',
+            backgroundColor: block.content.backgroundImage || '#3b82f6',
+            padding: block.content.padding || '40px'
+          }
+        };
+      } else if (block.type === 'calendar') {
+        convertedBlock = {
+          id: `${Date.now()}-${index}`,
+          type: 'text',
+          content: {
+            text: `📅 ${block.content.eventTitle}\n🕐 ${block.content.eventTime}\n📍 ${block.content.location}`,
+            fontSize: '16px',
+            fontWeight: 'normal',
+            textAlign: 'center',
+            color: block.content.textColor || '#374151',
+            backgroundColor: block.content.backgroundColor || '#f9fafb',
+            padding: '20px'
+          }
+        };
+      } else if (block.type === 'donation') {
+        convertedBlock = {
+          id: `${Date.now()}-${index}`,
+          type: 'text',
+          content: {
+            text: `${block.content.title}\n\n${block.content.description}\n\nGoal: $${block.content.goalAmount?.toLocaleString()}\nRaised: $${block.content.currentAmount?.toLocaleString()}`,
+            fontSize: '16px',
+            fontWeight: 'normal',
+            textAlign: 'left',
+            color: '#374151',
+            backgroundColor: block.content.backgroundColor || '#ffffff',
+            padding: '20px'
+          }
+        };
+      } else if (block.type === 'volunteer') {
+        convertedBlock = {
+          id: `${Date.now()}-${index}`,
+          type: 'text',
+          content: {
+            text: `${block.content.title}\n\n${block.content.description}\n\nOpportunities:\n• ${block.content.opportunities?.join('\n• ') || 'Various volunteer opportunities available'}`,
+            fontSize: '16px',
+            fontWeight: 'normal',
+            textAlign: 'left',
+            color: block.content.textColor || '#374151',
+            backgroundColor: block.content.backgroundColor || '#ffffff',
+            padding: '20px'
+          }
+        };
+      } else if (block.type === 'announcement') {
+        convertedBlock = {
+          id: `${Date.now()}-${index}`,
+          type: 'text',
+          content: {
+            text: `${block.content.title}\n\n${block.content.message}`,
+            fontSize: '18px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            color: block.content.titleColor || '#dc2626',
+            backgroundColor: block.content.backgroundColor || '#fef2f2',
+            padding: '25px'
+          }
+        };
+      }
+
+      return convertedBlock;
+    });
+
+    // Update the template with the selected template data
     setTemplate(prev => ({
       ...prev,
-      name: selectedTemplate.name,
-      category: selectedTemplate.category,
+      name: selectedTemplate.name || 'New Template',
+      category: selectedTemplate.category || 'general',
+      subject: `${selectedTemplate.name} - ${new Date().toLocaleDateString()}`,
       design_json: {
         ...prev.design_json,
-        blocks: selectedTemplate.blocks.map((block, index) => ({
-          id: `${Date.now()}-${index}`,
-          type: block.type,
-          content: block.content
-        }))
+        blocks: convertedBlocks,
+        styles: {
+          backgroundColor: '#ffffff',
+          fontFamily: 'Arial, sans-serif',
+          primaryColor: '#3b82f6',
+          secondaryColor: '#6b7280'
+        }
       }
     }));
+    
     setShowTemplateLibrary(false);
+    
+    // Show success message
+    setTimeout(() => {
+      alert(`Template "${selectedTemplate.name}" applied successfully!`);
+    }, 100);
   };
 
   // Auto-save functionality
