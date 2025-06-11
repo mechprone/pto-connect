@@ -140,6 +140,23 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
         buttonColor: '#f59e0b',
         padding: '20px'
       }
+    },
+    {
+      type: 'volunteer',
+      name: 'Volunteer Call',
+      icon: UserGroupIcon,
+      category: 'volunteers',
+      defaultContent: {
+        title: 'We Need Volunteers!',
+        description: 'Help make our next event a success.',
+        opportunities: ['Event Setup', 'Bake Sale', 'Clean Up'],
+        backgroundColor: '#f0f9ff',
+        titleColor: '#1e40af',
+        textColor: '#374151',
+        buttonText: 'Sign Up to Volunteer',
+        buttonColor: '#2563eb',
+        padding: '20px'
+      }
     }
   ];
 
@@ -250,19 +267,10 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       } else if (block.type === 'calendar') {
         convertedBlocks.push({
           id: blockId,
-          type: 'text',
-          content: {
-            text: `📅 ${block.content.eventTitle}\n🕐 ${block.content.eventTime}\n📍 ${block.content.location}`,
-            fontSize: '16px',
-            fontWeight: 'normal',
-            textAlign: 'center',
-            color: block.content.textColor || '#374151',
-            backgroundColor: block.content.backgroundColor || '#f9fafb',
-            padding: '20px'
-          }
+          type: 'calendar',
+          content: { ...block.content }
         });
       } else if (block.type === 'donation') {
-        const progressPercentage = Math.round((block.content.currentAmount / block.content.goalAmount) * 100);
         convertedBlocks.push({
           id: blockId,
           type: 'donation',
@@ -271,30 +279,14 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       } else if (block.type === 'volunteer') {
         convertedBlocks.push({
           id: blockId,
-          type: 'text',
-          content: {
-            text: `${block.content.title}\n\n${block.content.description}\n\nOpportunities:\n• ${block.content.opportunities?.join('\n• ') || 'Various volunteer opportunities available'}`,
-            fontSize: '16px',
-            fontWeight: 'normal',
-            textAlign: 'left',
-            color: block.content.textColor || '#7c3aed',
-            backgroundColor: block.content.backgroundColor || '#faf5ff',
-            padding: '20px'
-          }
+          type: 'volunteer',
+          content: { ...block.content }
         });
       } else if (block.type === 'announcement') {
         convertedBlocks.push({
           id: blockId,
-          type: 'text',
-          content: {
-            text: `${block.content.title}\n\n${block.content.message}`,
-            fontSize: '18px',
-            fontWeight: 'bold',
-            textAlign: 'center',
-            color: block.content.titleColor || '#dc2626',
-            backgroundColor: block.content.backgroundColor || '#fef2f2',
-            padding: '25px'
-          }
+          type: 'announcement',
+          content: { ...block.content }
         });
       } else {
         // Default handling for any other block types
@@ -648,6 +640,191 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
                 {content.buttonText}
               </a>
             </div>
+          </div>
+        );
+      case 'volunteer':
+        return (
+          <div style={{ 
+            padding: content.padding, 
+            backgroundColor: content.backgroundColor,
+            borderRadius: '8px',
+            margin: '10px',
+            textAlign: 'center'
+          }}>
+            <h2 style={{ 
+              margin: '0 0 10px 0', 
+              fontSize: '22px', 
+              fontWeight: 'bold', 
+              color: content.titleColor 
+            }}>
+              {content.title}
+            </h2>
+            <p style={{ 
+              margin: '0 0 15px 0', 
+              fontSize: '16px', 
+              color: content.textColor 
+            }}>
+              {content.description}
+            </p>
+            <h3 style={{
+              margin: '20px 0 10px 0',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: content.titleColor,
+              textAlign: 'left'
+            }}>
+              Volunteer Opportunities:
+            </h3>
+            <ul style={{
+              margin: '0 0 20px 0',
+              paddingLeft: '20px',
+              listStyleType: 'disc',
+              textAlign: 'left',
+              color: content.textColor
+            }}>
+              {content.opportunities?.map((opp, i) => <li key={i} style={{ marginBottom: '5px' }}>{opp}</li>)}
+            </ul>
+            <a 
+              href="#volunteer" 
+              style={{ 
+                backgroundColor: content.buttonColor, 
+                color: '#ffffff', 
+                padding: '12px 24px', 
+                borderRadius: '6px', 
+                fontSize: '16px', 
+                fontWeight: 'bold', 
+                textDecoration: 'none',
+                display: 'inline-block'
+              }}
+            >
+              {content.buttonText}
+            </a>
+          </div>
+        );
+      case 'announcement':
+        return (
+          <div style={{ 
+            padding: content.padding || '20px', 
+            backgroundColor: content.backgroundColor || '#f0f9ff',
+            borderRadius: '8px',
+            margin: '10px',
+            textAlign: 'center'
+          }}>
+            <h2 style={{ 
+              margin: '0 0 15px 0', 
+              fontSize: content.titleSize || '24px', 
+              fontWeight: 'bold', 
+              color: content.titleColor || '#1e40af'
+            }}>
+              {content.title || 'Important Announcement'}
+            </h2>
+            <p style={{ 
+              margin: '0 0 20px 0', 
+              fontSize: content.textSize || '16px', 
+              color: content.textColor || '#374151',
+              lineHeight: '1.6'
+            }}>
+              {content.message || content.text || 'Your announcement message here.'}
+            </p>
+            {content.buttonText && (
+              <a 
+                href={content.buttonLink || '#'} 
+                style={{ 
+                  backgroundColor: content.buttonColor || '#2563eb', 
+                  color: '#ffffff', 
+                  padding: '12px 24px', 
+                  borderRadius: '6px', 
+                  fontSize: '16px', 
+                  fontWeight: 'bold', 
+                  textDecoration: 'none',
+                  display: 'inline-block'
+                }}
+              >
+                {content.buttonText}
+              </a>
+            )}
+          </div>
+        );
+      case 'calendar':
+        return (
+          <div style={{ 
+            padding: content.padding || '20px', 
+            backgroundColor: content.backgroundColor || '#fef3c7',
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            <h2 style={{ 
+              margin: '0 0 15px 0', 
+              fontSize: content.titleSize || '22px', 
+              fontWeight: 'bold', 
+              color: content.titleColor || '#92400e',
+              textAlign: 'center'
+            }}>
+              {content.title || 'Upcoming Events'}
+            </h2>
+            {content.events?.map((event, i) => (
+              <div key={i} style={{
+                backgroundColor: '#ffffff',
+                padding: '15px',
+                marginBottom: '10px',
+                borderRadius: '6px',
+                borderLeft: `4px solid ${content.accentColor || '#f59e0b'}`
+              }}>
+                <h3 style={{
+                  margin: '0 0 8px 0',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  color: content.eventTitleColor || '#1f2937'
+                }}>
+                  {event.title}
+                </h3>
+                <p style={{
+                  margin: '0 0 5px 0',
+                  fontSize: '14px',
+                  color: content.dateColor || '#6b7280',
+                  fontWeight: 'bold'
+                }}>
+                  📅 {event.date} {event.time && `• ⏰ ${event.time}`}
+                </p>
+                {event.location && (
+                  <p style={{
+                    margin: '0 0 5px 0',
+                    fontSize: '14px',
+                    color: content.locationColor || '#6b7280'
+                  }}>
+                    📍 {event.location}
+                  </p>
+                )}
+                {event.description && (
+                  <p style={{
+                    margin: '5px 0 0 0',
+                    fontSize: '14px',
+                    color: content.textColor || '#374151'
+                  }}>
+                    {event.description}
+                  </p>
+                )}
+              </div>
+            ))}
+            {content.buttonText && (
+              <div style={{ textAlign: 'center', marginTop: '15px' }}>
+                <a 
+                  href={content.buttonLink || '#'} 
+                  style={{ 
+                    backgroundColor: content.buttonColor || '#f59e0b', 
+                    color: '#ffffff', 
+                    padding: '12px 24px', 
+                    borderRadius: '6px', 
+                    fontSize: '16px', 
+                    fontWeight: 'bold', 
+                    textDecoration: 'none',
+                    display: 'inline-block'
+                  }}
+                >
+                  {content.buttonText}
+                </a>
+              </div>
+            )}
           </div>
         );
       default:
