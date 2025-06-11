@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import EmailEditor from 'react-email-editor';
 import { supabase } from '@/utils/supabaseClient';
 import axios from 'axios';
-import { Sparkles, X, Loader2, Wand2, FileText } from 'lucide-react';
+import { Sparkles, X, Loader2, Wand2, FileText, Mail, Send, Save, ArrowLeft } from 'lucide-react';
+import EmailTemplateBuilder from '../../../components/Communication/EmailTemplateBuilder';
 
 const AiWizardModal = ({ mode, onGenerate, onClose }) => {
   const [autoPrompt, setAutoPrompt] = useState('');
@@ -510,16 +510,11 @@ Please create a complete, professional email that looks like it came from a prem
 };
 
 export default function EmailComposer() {
-  const editorRef = useRef(null);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [status, setStatus] = useState('Ready');
   const [showAiModal, setShowAiModal] = useState(false);
   const [aiMode, setAiMode] = useState(null);
-  const [formData, setFormData] = useState({
-    subject: '',
-    recipients: '',
-  });
+  const [currentTemplate, setCurrentTemplate] = useState(null);
 
   useEffect(() => {
     const mode = searchParams.get('mode');
@@ -530,31 +525,45 @@ export default function EmailComposer() {
   }, [searchParams]);
 
   const handleAiGenerate = ({ subject, designJson }) => {
-    setFormData(prev => ({ ...prev, subject }));
-    
-    // Load the professionally designed email template
-    editorRef.current?.editor.loadDesign(designJson);
-    setStatus('✨ Professional AI email loaded! Review and customize as needed.');
+    // Convert the AI-generated content to our template format
+    const template = {
+      name: 'AI Generated Email',
+      subject: subject,
+      category: 'general',
+      design_json: {
+        blocks: [
+          {
+            id: '1',
+            type: 'header',
+            content: {
+              text: 'Your PTO',
+              fontSize: '24px',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              color: '#2c5aa0',
+              backgroundColor: '#f8f9fa',
+              padding: '20px'
+            }
+          }
+        ],
+        styles: {
+          backgroundColor: '#ffffff',
+          fontFamily: 'Arial, sans-serif',
+          primaryColor: '#2c5aa0',
+          secondaryColor: '#6b7280'
+        }
+      }
+    };
+    setCurrentTemplate(template);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleTemplateSave = (template) => {
+    console.log('Template saved:', template);
+    navigate('/communications');
   };
 
-  const handleSave = () => {
-    editorRef.current?.editor.saveDesign(design => {
-      console.log('Saving design:', design);
-      setStatus('Draft saved to console.');
-    });
-  };
-
-  const handleSend = () => {
-    editorRef.current?.editor.exportHtml(data => {
-      console.log('HTML to send:', data.html);
-      setStatus('Email "sent" to console.');
-      alert('Email sent! (Check console for HTML output)');
-    });
+  const handleCancel = () => {
+    navigate('/communications');
   };
 
   return (
@@ -566,43 +575,70 @@ export default function EmailComposer() {
           onGenerate={handleAiGenerate}
         />
       )}
-      <div className="px-6 py-8 max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Email Composer</h1>
-            <p className="text-sm text-gray-500">{status}</p>
-          </div>
-          <div className="space-x-3">
-            <button onClick={handleSave} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
-              Save Draft
-            </button>
-            <button onClick={handleSend} className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700">
-              Send Email
-            </button>
+      
+      <div className="min-h-screen bg-gray-50">
+        {/* Enhanced Header */}
+        <div className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => navigate('/communications')}
+                  className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                  <span>Back to Communications</span>
+                </button>
+                <div className="h-6 w-px bg-gray-300"></div>
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    <Mail className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
+                      <span>Professional Email Designer</span>
+                      <Sparkles className="h-6 w-6 text-purple-500" />
+                    </h1>
+                    <div className="flex items-center space-x-2 text-sm">
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-green-700 font-medium">Design Studio Active</span>
+                      </div>
+                      <span className="text-gray-400">•</span>
+                      <span className="text-gray-600">Drag & drop email builder with PTO templates</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => setShowAiModal(true)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  <span>Ask Stella</span>
+                </button>
+                <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                  <Save className="h-4 w-4" />
+                  <span>Save Draft</span>
+                </button>
+                <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                  <Send className="h-4 w-4" />
+                  <span>Send Email</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6 space-y-4">
-          <input
-            type="text"
-            name="recipients"
-            value={formData.recipients}
-            onChange={handleInputChange}
-            placeholder="To: (e.g., All Families, Board Members)"
-            className="w-full p-2 border-b border-gray-300 focus:border-blue-500 outline-none"
+        {/* Email Template Builder */}
+        <div className="max-w-7xl mx-auto">
+          <EmailTemplateBuilder
+            templateId={currentTemplate?.id}
+            onSave={handleTemplateSave}
+            onCancel={handleCancel}
           />
-          <input
-            type="text"
-            name="subject"
-            value={formData.subject}
-            onChange={handleInputChange}
-            placeholder="Subject"
-            className="w-full p-2 border-b border-gray-300 focus:border-blue-500 outline-none font-medium"
-          />
-        </div>
-
-        <div className="border rounded-lg shadow-md overflow-hidden h-[700px]">
-          <EmailEditor ref={editorRef} />
         </div>
       </div>
     </>
