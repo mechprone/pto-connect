@@ -195,149 +195,279 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
 
   // Handle template selection from library
   const handleTemplateSelect = (selectedTemplate) => {
-    console.log('Template selected:', selectedTemplate);
+    console.log('🔍 DEBUG: Template selected:', selectedTemplate);
     
-    // Convert template blocks to our format - handle ALL blocks from the template
-    const convertedBlocks = [];
-    
-    selectedTemplate.blocks.forEach((block, index) => {
-      const blockId = `${Date.now()}-${index}`;
-      
-      // Convert different block types to our standard format
-      if (block.type === 'hero') {
-        // Add hero header block
-        convertedBlocks.push({
-          id: blockId,
-          type: 'header',
-          content: {
-            text: block.content.title,
-            fontSize: '32px',
-            fontWeight: 'bold',
-            textAlign: 'center',
-            color: block.content.titleColor || '#ffffff',
-            backgroundColor: block.content.backgroundImage || '#3b82f6',
-            padding: '40px'
-          }
-        });
-        
-        // Add subtitle block if it exists
-        if (block.content.subtitle) {
-          convertedBlocks.push({
-            id: `${blockId}-subtitle`,
-            type: 'text',
-            content: {
-              text: block.content.subtitle,
-              fontSize: '18px',
-              fontWeight: 'normal',
-              textAlign: 'center',
-              color: block.content.subtitleColor || '#6b7280',
-              backgroundColor: '#ffffff',
-              padding: '15px'
-            }
-          });
-        }
-      } else if (block.type === 'header') {
-        convertedBlocks.push({
-          id: blockId,
-          type: 'header',
-          content: {
-            text: block.content.text,
-            fontSize: block.content.fontSize || '24px',
-            fontWeight: block.content.fontWeight || 'bold',
-            textAlign: block.content.textAlign || 'center',
-            color: block.content.color || '#1f2937',
-            backgroundColor: block.content.backgroundColor || '#f9fafb',
-            padding: block.content.padding || '20px'
-          }
-        });
-      } else if (block.type === 'text') {
-        convertedBlocks.push({
-          id: blockId,
-          type: 'text',
-          content: {
-            text: block.content.text,
-            fontSize: block.content.fontSize || '16px',
-            fontWeight: block.content.fontWeight || 'normal',
-            textAlign: block.content.textAlign || 'left',
-            color: block.content.color || '#374151',
-            backgroundColor: block.content.backgroundColor || '#ffffff',
-            padding: block.content.padding || '15px'
-          }
-        });
-      } else if (block.type === 'calendar') {
-        // Convert calendar block to proper format
-        const calendarContent = {
-          title: block.content.eventTitle || 'Upcoming Events',
-          backgroundColor: block.content.backgroundColor || '#fef3c7',
-          titleColor: block.content.textColor || '#92400e',
-          textColor: block.content.textColor || '#92400e',
-          padding: '20px',
-          events: [{
-            title: block.content.eventTitle || 'Event',
-            date: block.content.eventDate ? new Date(block.content.eventDate).toLocaleDateString() : 'TBD',
-            time: block.content.eventTime || '',
-            location: block.content.location || '',
-            description: block.content.description || ''
-          }]
-        };
-        
-        convertedBlocks.push({
-          id: blockId,
-          type: 'calendar',
-          content: calendarContent
-        });
-      } else if (block.type === 'donation') {
-        convertedBlocks.push({
-          id: blockId,
-          type: 'donation',
-          content: { ...block.content }
-        });
-      } else if (block.type === 'volunteer') {
-        convertedBlocks.push({
-          id: blockId,
-          type: 'volunteer',
-          content: { ...block.content }
-        });
-      } else if (block.type === 'announcement') {
-        convertedBlocks.push({
-          id: blockId,
-          type: 'announcement',
-          content: { ...block.content }
-        });
-      } else {
-        // Default handling for any other block types
-        convertedBlocks.push({
-          id: blockId,
-          type: block.type,
-          content: { ...block.content }
-        });
+    try {
+      // Validate template structure
+      if (!selectedTemplate || typeof selectedTemplate !== 'object') {
+        console.error('❌ DEBUG: Invalid template object:', selectedTemplate);
+        alert('Error: Invalid template data received');
+        return;
       }
-    });
 
-    // Update the template with the selected template data
-    setTemplate(prev => ({
-      ...prev,
-      name: selectedTemplate.name || 'New Template',
-      category: selectedTemplate.category || 'general',
-      subject: `${selectedTemplate.name} - ${new Date().toLocaleDateString()}`,
-      design_json: {
-        ...prev.design_json,
-        blocks: convertedBlocks,
-        styles: {
-          backgroundColor: '#ffffff',
-          fontFamily: 'Arial, sans-serif',
-          primaryColor: '#3b82f6',
-          secondaryColor: '#6b7280'
-        }
+      if (!selectedTemplate.blocks || !Array.isArray(selectedTemplate.blocks)) {
+        console.error('❌ DEBUG: Template missing blocks array:', selectedTemplate);
+        alert('Error: Template has no blocks to convert');
+        return;
       }
-    }));
-    
-    setShowTemplateLibrary(false);
-    
-    // Show success message
-    setTimeout(() => {
-      alert(`Template "${selectedTemplate.name}" applied successfully! All ${convertedBlocks.length} blocks loaded.`);
-    }, 100);
+
+      console.log('✅ DEBUG: Template validation passed, converting blocks...');
+      
+      // Convert template blocks to our format - handle ALL blocks from the template
+      const convertedBlocks = [];
+      
+      selectedTemplate.blocks.forEach((block, index) => {
+        console.log(`🔄 DEBUG: Converting block ${index}:`, block);
+        
+        try {
+          const blockId = `${Date.now()}-${index}`;
+          
+          // Validate block structure
+          if (!block || typeof block !== 'object' || !block.type) {
+            console.warn(`⚠️ DEBUG: Invalid block at index ${index}:`, block);
+            return; // Skip invalid blocks
+          }
+
+          if (!block.content || typeof block.content !== 'object') {
+            console.warn(`⚠️ DEBUG: Block missing content at index ${index}:`, block);
+            return; // Skip blocks without content
+          }
+          
+          // Convert different block types to our standard format
+          if (block.type === 'hero') {
+            console.log('🎨 DEBUG: Converting hero block');
+            // Add hero header block
+            convertedBlocks.push({
+              id: blockId,
+              type: 'header',
+              content: {
+                text: block.content.title || 'Hero Title',
+                fontSize: '32px',
+                fontWeight: 'bold',
+                textAlign: 'center',
+                color: block.content.titleColor || '#ffffff',
+                backgroundColor: block.content.backgroundImage || '#3b82f6',
+                padding: '40px'
+              }
+            });
+            
+            // Add subtitle block if it exists
+            if (block.content.subtitle) {
+              convertedBlocks.push({
+                id: `${blockId}-subtitle`,
+                type: 'text',
+                content: {
+                  text: block.content.subtitle,
+                  fontSize: '18px',
+                  fontWeight: 'normal',
+                  textAlign: 'center',
+                  color: block.content.subtitleColor || '#6b7280',
+                  backgroundColor: '#ffffff',
+                  padding: '15px'
+                }
+              });
+            }
+          } else if (block.type === 'header') {
+            console.log('📝 DEBUG: Converting header block');
+            convertedBlocks.push({
+              id: blockId,
+              type: 'header',
+              content: {
+                text: block.content.text || 'Header Text',
+                fontSize: block.content.fontSize || '24px',
+                fontWeight: block.content.fontWeight || 'bold',
+                textAlign: block.content.textAlign || 'center',
+                color: block.content.color || '#1f2937',
+                backgroundColor: block.content.backgroundColor || '#f9fafb',
+                padding: block.content.padding || '20px'
+              }
+            });
+          } else if (block.type === 'text') {
+            console.log('📄 DEBUG: Converting text block');
+            convertedBlocks.push({
+              id: blockId,
+              type: 'text',
+              content: {
+                text: block.content.text || 'Text content',
+                fontSize: block.content.fontSize || '16px',
+                fontWeight: block.content.fontWeight || 'normal',
+                textAlign: block.content.textAlign || 'left',
+                color: block.content.color || '#374151',
+                backgroundColor: block.content.backgroundColor || '#ffffff',
+                padding: block.content.padding || '15px'
+              }
+            });
+          } else if (block.type === 'calendar') {
+            console.log('📅 DEBUG: Converting calendar block');
+            // Convert calendar block to proper format
+            const calendarContent = {
+              title: block.content.eventTitle || 'Upcoming Events',
+              backgroundColor: block.content.backgroundColor || '#fef3c7',
+              titleColor: block.content.textColor || '#92400e',
+              textColor: block.content.textColor || '#92400e',
+              padding: '20px',
+              events: [{
+                title: block.content.eventTitle || 'Event',
+                date: block.content.eventDate ? (() => {
+                  try {
+                    return new Date(block.content.eventDate).toLocaleDateString();
+                  } catch (e) {
+                    console.warn('⚠️ DEBUG: Invalid date format:', block.content.eventDate);
+                    return 'TBD';
+                  }
+                })() : 'TBD',
+                time: block.content.eventTime || '',
+                location: block.content.location || '',
+                description: block.content.description || ''
+              }]
+            };
+            
+            convertedBlocks.push({
+              id: blockId,
+              type: 'calendar',
+              content: calendarContent
+            });
+          } else if (block.type === 'donation') {
+            console.log('💰 DEBUG: Converting donation block');
+            // Ensure donation block has required fields
+            const donationContent = {
+              title: block.content.title || 'Support Our Cause',
+              description: block.content.description || 'Help us reach our goal',
+              currentAmount: Number(block.content.currentAmount) || 0,
+              goalAmount: Number(block.content.goalAmount) || 10000,
+              backgroundColor: block.content.backgroundColor || '#f0f9ff',
+              titleColor: block.content.titleColor || '#1e40af',
+              textColor: block.content.textColor || '#374151',
+              progressColor: block.content.progressColor || '#3b82f6',
+              buttonText: block.content.buttonText || 'Donate Now',
+              buttonColor: block.content.buttonColor || '#3b82f6',
+              padding: block.content.padding || '20px'
+            };
+            
+            convertedBlocks.push({
+              id: blockId,
+              type: 'donation',
+              content: donationContent
+            });
+          } else if (block.type === 'volunteer') {
+            console.log('🤝 DEBUG: Converting volunteer block');
+            const volunteerContent = {
+              title: block.content.title || 'We Need Volunteers!',
+              description: block.content.description || 'Join our team',
+              opportunities: Array.isArray(block.content.opportunities) ? block.content.opportunities : ['General Volunteering'],
+              backgroundColor: block.content.backgroundColor || '#f0f9ff',
+              titleColor: block.content.titleColor || '#1e40af',
+              textColor: block.content.textColor || '#374151',
+              buttonText: block.content.buttonText || 'Sign Up',
+              buttonColor: block.content.buttonColor || '#2563eb',
+              padding: block.content.padding || '20px'
+            };
+            
+            convertedBlocks.push({
+              id: blockId,
+              type: 'volunteer',
+              content: volunteerContent
+            });
+          } else if (block.type === 'announcement') {
+            console.log('📢 DEBUG: Converting announcement block');
+            const announcementContent = {
+              title: block.content.title || 'Important Announcement',
+              message: block.content.message || block.content.text || 'Important information',
+              backgroundColor: block.content.backgroundColor || '#f0f9ff',
+              titleColor: block.content.titleColor || '#1e40af',
+              textColor: block.content.textColor || '#374151',
+              buttonText: block.content.buttonText || '',
+              buttonLink: block.content.buttonLink || '#',
+              buttonColor: block.content.buttonColor || '#2563eb',
+              padding: block.content.padding || '20px'
+            };
+            
+            convertedBlocks.push({
+              id: blockId,
+              type: 'announcement',
+              content: announcementContent
+            });
+          } else {
+            console.log(`🔧 DEBUG: Converting generic block type: ${block.type}`);
+            // Default handling for any other block types
+            const safeContent = {};
+            
+            // Safely copy content properties
+            Object.keys(block.content).forEach(key => {
+              try {
+                const value = block.content[key];
+                // Only copy serializable values
+                if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || Array.isArray(value)) {
+                  safeContent[key] = value;
+                }
+              } catch (e) {
+                console.warn(`⚠️ DEBUG: Skipping non-serializable property ${key}:`, e);
+              }
+            });
+            
+            convertedBlocks.push({
+              id: blockId,
+              type: block.type,
+              content: safeContent
+            });
+          }
+          
+          console.log(`✅ DEBUG: Successfully converted block ${index}`);
+        } catch (blockError) {
+          console.error(`❌ DEBUG: Error converting block ${index}:`, blockError);
+          console.error('Block data:', block);
+        }
+      });
+
+      console.log(`✅ DEBUG: Conversion complete. ${convertedBlocks.length} blocks converted:`, convertedBlocks);
+
+      // Validate converted blocks
+      const invalidBlocks = convertedBlocks.filter(block => !block.id || !block.type || !block.content);
+      if (invalidBlocks.length > 0) {
+        console.error('❌ DEBUG: Found invalid converted blocks:', invalidBlocks);
+        alert('Error: Some template blocks could not be converted properly');
+        return;
+      }
+
+      // Create the new template object
+      const newTemplate = {
+        name: selectedTemplate.name || 'New Template',
+        category: selectedTemplate.category || 'general',
+        subject: `${selectedTemplate.name || 'Template'} - ${new Date().toLocaleDateString()}`,
+        design_json: {
+          blocks: convertedBlocks,
+          styles: {
+            backgroundColor: '#ffffff',
+            fontFamily: 'Arial, sans-serif',
+            primaryColor: '#3b82f6',
+            secondaryColor: '#6b7280'
+          }
+        }
+      };
+
+      console.log('🎯 DEBUG: Final template object:', newTemplate);
+
+      // Update the template with the selected template data
+      setTemplate(prev => ({
+        ...prev,
+        ...newTemplate
+      }));
+      
+      setShowTemplateLibrary(false);
+      
+      // Show success message
+      setTimeout(() => {
+        alert(`Template "${selectedTemplate.name}" applied successfully! All ${convertedBlocks.length} blocks loaded.`);
+      }, 100);
+      
+      console.log('✅ DEBUG: Template selection completed successfully');
+      
+    } catch (error) {
+      console.error('❌ DEBUG: Critical error in handleTemplateSelect:', error);
+      console.error('Error stack:', error.stack);
+      console.error('Template data that caused error:', selectedTemplate);
+      alert(`Error applying template: ${error.message}`);
+    }
   };
 
   // Auto-save functionality
