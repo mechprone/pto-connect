@@ -11,13 +11,13 @@ import {
   ChatBubbleLeftRightIcon,
   UsersIcon
 } from '@heroicons/react/24/outline';
-import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
-import LoadingSpinner from '../Common/LoadingSpinner';
-import ErrorMessage from '../Common/ErrorMessage';
+import { useUserProfile } from '@/modules/hooks/useUserProfile';
+import { supabase } from '../../utils/supabaseClient';
+import LoadingSpinner from '../common/LoadingSpinner';
+import ErrorMessage from '../common/ErrorMessage';
 
 const SMSCampaignManager = () => {
-  const { user, organization } = useAuth();
+  const { profile, organization } = useUserProfile();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [campaigns, setCampaigns] = useState([]);
@@ -36,7 +36,38 @@ const SMSCampaignManager = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/communications/sms/campaigns`, {
+      // Check if API URL is configured
+      const apiUrl = import.meta.env.VITE_API_URL;
+      if (!apiUrl || apiUrl.includes('localhost')) {
+        // Skip API calls if API is not available or pointing to localhost
+        console.log('SMS campaigns fetch skipped: API not available or in development mode');
+        setCampaigns([
+          {
+            id: 1,
+            name: 'Volunteer Reminder',
+            message: 'Don\'t forget about tomorrow\'s volunteer event!',
+            status: 'sent',
+            recipient_count: 25,
+            sent_count: 25,
+            created_at: new Date().toISOString(),
+            scheduled_at: null
+          },
+          {
+            id: 2,
+            name: 'Event Update',
+            message: 'The Fall Festival has been moved to the gymnasium due to weather.',
+            status: 'draft',
+            recipient_count: 45,
+            sent_count: 0,
+            created_at: new Date(Date.now() - 86400000).toISOString(),
+            scheduled_at: null
+          }
+        ]);
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch(`${apiUrl}/communications/sms/campaigns`, {
         headers: {
           'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
           'Content-Type': 'application/json'

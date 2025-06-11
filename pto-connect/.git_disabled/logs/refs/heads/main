@@ -79,3 +79,36 @@ f09076b8db42c71f0cab4f3f0062617dcb58dae8 c35b7659b93cddeb521c4dd04410a2fe44d1a07
 c35b7659b93cddeb521c4dd04410a2fe44d1a074 d43261279b8daecc346f336724f090ff35ad7e51 mechprone <mvalzan@gmail.com> 1749411233 -0500	commit: Add debugging to ProtectedRoute for role checking
 d43261279b8daecc346f336724f090ff35ad7e51 95781f858fc57bf079c4d17fca91dca1c51fab4d mechprone <mvalzan@gmail.com> 1749411623 -0500	commit: Remove debugging code from ProtectedRoute
 95781f858fc57bf079c4d17fca91dca1c51fab4d 0e4182dffd262d76ed5a07f8c55531677661745d mechprone <mvalzan@gmail.com> 1749418461 -0500	commit: Add admin permission management routes to App.jsx - Phase 1C Sprint 3
+0e4182dffd262d76ed5a07f8c55531677661745d b14873431a2e987f012750e115af341652161201 mechprone <mvalzan@gmail.com> 1749567770 -0500	commit: Phase 4 Advanced Communication System - Frontend Components
+b14873431a2e987f012750e115af341652161201 f46347ae4e1ebfe86c4c23e9640d9dfb3b26828c mechprone <mvalzan@gmail.com> 1749577983 -0500	commit: Fix: Resolve build errors in Communication components
+f46347ae4e1ebfe86c4c23e9640d9dfb3b26828c b0aeb2781cd42e2c460f8c26e450c41fcfeae4c5 mechprone <mvalzan@gmail.com> 1749578148 -0500	commit: Phase 4: Communication system fixes and components
+b0aeb2781cd42e2c460f8c26e450c41fcfeae4c5 578f92accae38d5e03680b1b240f3e7e880a17b2 mechprone <mvalzan@gmail.com> 1749583081 -0500	commit: Phase 4: Fix import issues in communication components - build successful
+578f92accae38d5e03680b1b240f3e7e880a17b2 fcd06314dd15e5ec594cd9528dad48fdaf1c26fe mechprone <mvalzan@gmail.com> 1749585482 -0500	commit: Fix UI/UX issues: sticky sidebar and React Router navigation
+fcd06314dd15e5ec594cd9528dad48fdaf1c26fe 990d4ee531d3d58a8566058816f77355d38c5168 mechprone <mvalzan@gmail.com> 1749594065 -0500	commit: Added child pages
+990d4ee531d3d58a8566058816f77355d38c5168 ffa54b79073b3ff9737ef5de3398eda64b43d77c mechprone <mvalzan@gmail.com> 1749595358 -0500	commit: Build out complete budget module child pages`
+ffa54b79073b3ff9737ef5de3398eda64b43d77c e3d5f666e8297dcf0b3d8f0c032479c6ed591e94 mechprone <mvalzan@gmail.com> 1749595985 -0500	commit: Communications and Events child page build out
+e3d5f666e8297dcf0b3d8f0c032479c6ed591e94 4874c99f81845d1c44cc02e8bf94b7dbae5fd3ee mechprone <mvalzan@gmail.com> 1749598410 -0500	commit: Implement AI wizard for content creation
+4874c99f81845d1c44cc02e8bf94b7dbae5fd3ee 0b48c7b376b0946fd2c8aeda9880355d4721b507 mechprone <mvalzan@gmail.com> 1749603421 -0500	commit: Update EmailComposer.jsx
+0b48c7b376b0946fd2c8aeda9880355d4721b507 77cc06ed3680d0e250f8536557ef3f4d250b5fbc mechprone <mvalzan@gmail.com> 1749603953 -0500	commit: Improvements to comms AI
+77cc06ed3680d0e250f8536557ef3f4d250b5fbc 93a85560d09de976288ddc7684db08fc46c58ce5 mechprone <mvalzan@gmail.com> 1749606128 -0500	commit: Ask Stella implemented throughout the app
+93a85560d09de976288ddc7684db08fc46c58ce5 f6676e67747134b38e3a38426d459b9e87bdf83b mechprone <mvalzan@gmail.com> 1749610498 -0500	commit: UI optimization
+f6676e67747134b38e3a38426d459b9e87bdf83b d8a5459ec8b9dc6b3352a3f7922b02d6cdd487ab mechprone <mvalzan@gmail.com> 1749611419 -0500	commit: Update EmailTemplateBuilder.jsx
+d8a5459ec8b9dc6b3352a3f7922b02d6cdd487ab 50556b8127d8250e04f57997c8665e273ca8e014 mechprone <mvalzan@gmail.com> 1749613900 -0500	commit: Enhanced budget and email composer
+50556b8127d8250e04f57997c8665e273ca8e014 4306e10138babea35f46a0bb5944426a48b998c2 mechprone <mvalzan@gmail.com> 1749639718 -0500	commit: EMAIL TEMPLATE BUILDER ENHANCEMENT
+4306e10138babea35f46a0bb5944426a48b998c2 27b704358edfbaa856657c798da0025ba8b2c912 mechprone <mvalzan@gmail.com> 1749640231 -0500	commit: Fix: Replace invalid Heroicons imports in TemplateLibraryModal
+27b704358edfbaa856657c798da0025ba8b2c912 0a1536de640f5053c73db9215e94ec19c6c91501 mechprone <mvalzan@gmail.com> 1749640696 -0500	commit: Fix: Email Template Builder enhancements
+0a1536de640f5053c73db9215e94ec19c6c91501 77b72604e47c5370e13ff04f89f9d12a891928bb mechprone <mvalzan@gmail.com> 1749648089 -0500	commit: Fix: Complete Email Template Builder fixes
+77b72604e47c5370e13ff04f89f9d12a891928bb 5e9a8ccfddc18ed1055c468b984a064006862f73 mechprone <mvalzan@gmail.com> 1749648556 -0500	commit: Implement: Full Template Preview Modal
+5e9a8ccfddc18ed1055c468b984a064006862f73 fdff8dba483ee4191cbadc12749982311480b876 mechprone <mvalzan@gmail.com> 1749649665 -0500	commit: Correcting email template system
+fdff8dba483ee4191cbadc12749982311480b876 bd2aade21d0b17902e42a2b596a263adacb4a42c mechprone <mvalzan@gmail.com> 1749650532 -0500	commit: Update EmailTemplateBuilder.jsx
+bd2aade21d0b17902e42a2b596a263adacb4a42c 0910d5e81fdec9a95bbf576a6b941fbaae632322 mechprone <mvalzan@gmail.com> 1749651387 -0500	commit: Update EmailTemplateBuilder.jsx
+0910d5e81fdec9a95bbf576a6b941fbaae632322 57cec6db87293a37f2aa0b6f7bdd5f19ad280711 mechprone <mvalzan@gmail.com> 1749657470 -0500	commit: Update EmailTemplateBuilder.jsx
+57cec6db87293a37f2aa0b6f7bdd5f19ad280711 8c5c35458c6798eab589af43441736554153171f mechprone <mvalzan@gmail.com> 1749658071 -0500	commit: Update EmailTemplateBuilder.jsx
+8c5c35458c6798eab589af43441736554153171f 22dd124bd8c74fdfef1731bbae75ce34aec1e7c6 mechprone <mvalzan@gmail.com> 1749658727 -0500	commit: Further email composer corrections
+22dd124bd8c74fdfef1731bbae75ce34aec1e7c6 98d688655d0639944e3c45b149e4d1ff52c980ea mechprone <mvalzan@gmail.com> 1749659647 -0500	commit: Update EmailTemplateBuilder.jsx
+98d688655d0639944e3c45b149e4d1ff52c980ea 39d2be19198e60afcd59ebbc3a90e1a0b2fad256 mechprone <mvalzan@gmail.com> 1749660009 -0500	commit: Update EmailTemplateBuilder.jsx
+39d2be19198e60afcd59ebbc3a90e1a0b2fad256 9fcf5c7f657284a8cceca625f3804bcce43ce0bf mechprone <mvalzan@gmail.com> 1749660669 -0500	commit: Update EmailTemplateBuilder.jsx
+9fcf5c7f657284a8cceca625f3804bcce43ce0bf 0e2113a440fb196f2cfaf47fa5af38271c95797a mechprone <mvalzan@gmail.com> 1749661548 -0500	commit: Update EmailTemplateBuilder.jsx
+0e2113a440fb196f2cfaf47fa5af38271c95797a 627e091c5bed558e025960b360f487ac1295b011 mechprone <mvalzan@gmail.com> 1749663377 -0500	commit: Update EmailTemplateBuilder.jsx
+627e091c5bed558e025960b360f487ac1295b011 c4f065a84f55f1d0b238d368964d60bc90f5e81a mechprone <mvalzan@gmail.com> 1749665033 -0500	commit: Update EmailTemplateBuilder.jsx
+c4f065a84f55f1d0b238d368964d60bc90f5e81a a43b8e11d856b2625db36f535cb8c635f0837e71 mechprone <mvalzan@gmail.com> 1749665854 -0500	commit: Update EmailTemplateBuilder.jsx

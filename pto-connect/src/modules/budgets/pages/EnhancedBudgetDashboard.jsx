@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   DollarSign, TrendingUp, TrendingDown, AlertTriangle, 
   Sparkles, User, Calculator, PieChart, BarChart3,
@@ -8,6 +9,7 @@ import {
 import AIAssistanceToggle from '../../../components/common/AIAssistanceToggle';
 
 const EnhancedBudgetDashboard = () => {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('overview');
   const [creationMode, setCreationMode] = useState('manual');
   const [selectedPeriod, setSelectedPeriod] = useState('current');
@@ -222,62 +224,62 @@ const EnhancedBudgetDashboard = () => {
   );
 
   const CategoryBreakdown = () => (
-    <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold text-gray-900">Budget Categories</h3>
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-semibold text-gray-900">Budget Categories</h3>
         <div className="flex items-center space-x-2">
-          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+          <button className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs hover:bg-gray-200 transition-colors">
             Manual Entry
           </button>
-          <button className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm">
+          <button className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs hover:bg-purple-200 transition-colors">
             Ask Stella
           </button>
         </div>
       </div>
       
-      <div className="space-y-6">
+      <div className="space-y-4">
         {budgetData.categories.map(category => {
           const progressPercentage = (category.spent / category.budgeted) * 100;
           const isOverBudget = progressPercentage > 100;
           
           return (
-            <div key={category.id} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <h4 className="font-semibold text-gray-900">{category.name}</h4>
+            <div key={category.id} className="border border-gray-200 rounded-lg p-3">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center space-x-2">
+                  <h4 className="text-sm font-semibold text-gray-900">{category.name}</h4>
                   {category.createdBy === 'stella' && (
-                    <Sparkles className="w-4 h-4 text-purple-500" title="Optimized by Stella" />
+                    <Sparkles className="w-3 h-3 text-purple-500" title="Optimized by Stella" />
                   )}
-                  <div className={`flex items-center space-x-1 text-sm ${
+                  <div className={`flex items-center space-x-1 text-xs ${
                     category.trend === 'up' ? 'text-green-600' : 
                     category.trend === 'down' ? 'text-red-600' : 'text-gray-600'
                   }`}>
-                    {category.trend === 'up' && <ArrowUp className="w-4 h-4" />}
-                    {category.trend === 'down' && <ArrowDown className="w-4 h-4" />}
+                    {category.trend === 'up' && <ArrowUp className="w-3 h-3" />}
+                    {category.trend === 'down' && <ArrowDown className="w-3 h-3" />}
                     <span className="capitalize">{category.trend}</span>
                   </div>
                 </div>
                 
                 <div className="text-right">
-                  <div className="text-lg font-semibold text-gray-900">
+                  <div className="text-sm font-semibold text-gray-900">
                     ${category.spent.toLocaleString()} / ${category.budgeted.toLocaleString()}
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-xs text-gray-600">
                     ${category.remaining.toLocaleString()} remaining
                   </div>
                 </div>
               </div>
               
-              <div className="mb-4">
-                <div className="flex items-center justify-between text-sm mb-1">
+              <div className="mb-3">
+                <div className="flex items-center justify-between text-xs mb-1">
                   <span className="text-gray-600">Progress</span>
                   <span className={`font-medium ${isOverBudget ? 'text-red-600' : 'text-gray-900'}`}>
                     {Math.round(progressPercentage)}%
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-3">
+                <div className="w-full bg-gray-200 rounded-full h-2">
                   <div 
-                    className={`h-3 rounded-full transition-all duration-300 ${
+                    className={`h-2 rounded-full transition-all duration-300 ${
                       isOverBudget ? 'bg-red-500' : 'bg-blue-600'
                     }`}
                     style={{ width: `${Math.min(progressPercentage, 100)}%` }}
@@ -285,10 +287,10 @@ const EnhancedBudgetDashboard = () => {
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
                 {category.subcategories.map((sub, index) => (
-                  <div key={index} className="bg-gray-50 rounded p-3">
-                    <div className="text-sm font-medium text-gray-900">{sub.name}</div>
+                  <div key={index} className="bg-gray-50 rounded p-2">
+                    <div className="text-xs font-medium text-gray-900 truncate">{sub.name}</div>
                     <div className="text-xs text-gray-600">
                       ${sub.spent.toLocaleString()} / ${sub.budgeted.toLocaleString()}
                     </div>
@@ -296,19 +298,28 @@ const EnhancedBudgetDashboard = () => {
                 ))}
               </div>
               
-              <div className="flex space-x-2 mt-4">
-                <button className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                  <Eye className="w-4 h-4 mr-2" />
-                  View Details
+              <div className="flex space-x-1">
+                <button 
+                  onClick={() => navigate(`/budget/category/${category.id}`)}
+                  className="flex items-center px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition-colors"
+                >
+                  <Eye className="w-3 h-3 mr-1" />
+                  View
                 </button>
-                <button className="flex items-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm">
-                  <Edit className="w-4 h-4 mr-2" />
+                <button 
+                  onClick={() => navigate(`/budget/category/edit/${category.id}`)}
+                  className="flex items-center px-2 py-1 bg-gray-600 text-white rounded text-xs hover:bg-gray-700 transition-colors"
+                >
+                  <Edit className="w-3 h-3 mr-1" />
                   Edit
                 </button>
                 {category.createdBy === 'manual' && (
-                  <button className="flex items-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm">
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Ask Stella to Optimize
+                  <button 
+                    onClick={() => navigate(`/budget/category/optimize/${category.id}`)}
+                    className="flex items-center px-2 py-1 bg-purple-600 text-white rounded text-xs hover:bg-purple-700 transition-colors"
+                  >
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    Optimize
                   </button>
                 )}
               </div>
@@ -337,7 +348,10 @@ const EnhancedBudgetDashboard = () => {
             <li>• Detailed line items</li>
             <li>• Manual calculations</li>
           </ul>
-          <button className="w-full py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+          <button 
+            onClick={() => navigate('/budget/category/create')}
+            className="w-full py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
             Create Manually
           </button>
         </div>
@@ -382,43 +396,43 @@ const EnhancedBudgetDashboard = () => {
   );
 
   const RecentTransactions = () => (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold text-gray-900">Recent Transactions</h3>
-        <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          <Download className="w-4 h-4 mr-2" />
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-semibold text-gray-900">Recent Transactions</h3>
+        <button className="flex items-center px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition-colors">
+          <Download className="w-3 h-3 mr-1" />
           Export
         </button>
       </div>
       
-      <div className="space-y-4">
+      <div className="space-y-2">
         {budgetData.recentTransactions.map(transaction => (
-          <div key={transaction.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-            <div className="flex items-center space-x-4">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+          <div key={transaction.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
                 transaction.type === 'income' ? 'bg-green-100' : 'bg-red-100'
               }`}>
                 {transaction.type === 'income' ? (
-                  <ArrowUp className="w-5 h-5 text-green-600" />
+                  <ArrowUp className="w-3 h-3 text-green-600" />
                 ) : (
-                  <ArrowDown className="w-5 h-5 text-red-600" />
+                  <ArrowDown className="w-3 h-3 text-red-600" />
                 )}
               </div>
               
-              <div>
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center space-x-2">
-                  <h4 className="font-medium text-gray-900">{transaction.description}</h4>
+                  <h4 className="text-sm font-medium text-gray-900 truncate">{transaction.description}</h4>
                   {transaction.createdBy === 'stella' && (
-                    <Sparkles className="w-4 h-4 text-purple-500" title="Processed by Stella" />
+                    <Sparkles className="w-3 h-3 text-purple-500 flex-shrink-0" title="Processed by Stella" />
                   )}
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="text-xs text-gray-600">
                   {transaction.category} • {new Date(transaction.date).toLocaleDateString()}
                 </div>
               </div>
             </div>
             
-            <div className={`text-lg font-semibold ${
+            <div className={`text-sm font-semibold flex-shrink-0 ${
               transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
             }`}>
               {transaction.type === 'income' ? '+' : ''}${Math.abs(transaction.amount).toLocaleString()}
@@ -430,41 +444,166 @@ const EnhancedBudgetDashboard = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        {/* Compact Header */}
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Budget Dashboard</h1>
-            <p className="text-gray-600">Manage your PTO finances with Stella's intelligent insights</p>
+            <h1 className="text-2xl font-bold text-gray-900">Budget Dashboard</h1>
+            <p className="text-sm text-gray-600">Manage your PTO finances with intelligent insights</p>
           </div>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
             <select
               value={selectedPeriod}
               onChange={(e) => setSelectedPeriod(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="current">Current Year</option>
               <option value="previous">Previous Year</option>
               <option value="quarter">This Quarter</option>
             </select>
+            <button 
+              onClick={() => navigate('/budget/analytics')}
+              className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+            >
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Analytics
+            </button>
           </div>
         </div>
 
-        {/* Budget Overview */}
-        <BudgetOverview />
+        {/* Compact Overview & Insights Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+          {/* Budget Overview - Compact 2x2 Grid */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 h-full">
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">Budget Overview</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="text-center p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-center justify-center space-x-1 mb-1">
+                    <DollarSign className="w-4 h-4 text-blue-600" />
+                    <span className="text-xs text-blue-600">Total Budget</span>
+                  </div>
+                  <div className="text-lg font-bold text-blue-600">
+                    ${budgetData.totalBudget.toLocaleString()}
+                  </div>
+                </div>
 
-        {/* Stella's Insights */}
-        <StellaInsights />
+                <div className="text-center p-3 bg-red-50 rounded-lg">
+                  <div className="flex items-center justify-center space-x-1 mb-1">
+                    <TrendingDown className="w-4 h-4 text-red-600" />
+                    <span className="text-xs text-red-600">Total Spent</span>
+                  </div>
+                  <div className="text-lg font-bold text-red-600">
+                    ${budgetData.totalSpent.toLocaleString()}
+                  </div>
+                </div>
 
-        {/* Create Budget Options */}
-        <CreateBudgetOptions />
+                <div className="text-center p-3 bg-green-50 rounded-lg">
+                  <div className="flex items-center justify-center space-x-1 mb-1">
+                    <TrendingUp className="w-4 h-4 text-green-600" />
+                    <span className="text-xs text-green-600">Remaining</span>
+                  </div>
+                  <div className="text-lg font-bold text-green-600">
+                    ${budgetData.totalRemaining.toLocaleString()}
+                  </div>
+                </div>
 
-        {/* Category Breakdown */}
+                <div className="text-center p-3 bg-purple-50 rounded-lg">
+                  <div className="flex items-center justify-center space-x-1 mb-1">
+                    <Target className="w-4 h-4 text-purple-600" />
+                    <span className="text-xs text-purple-600">Projected</span>
+                  </div>
+                  <div className="text-lg font-bold text-purple-600">
+                    ${budgetData.projectedIncome.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Stella Insights - Compact */}
+          <div className="lg:col-span-1">
+            <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-4 h-full">
+              <div className="flex items-center space-x-2 mb-3">
+                <Sparkles className="w-5 h-5 text-purple-600" />
+                <h3 className="text-sm font-semibold text-purple-900">Stella's Insights</h3>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="bg-white rounded p-2">
+                  <div className="text-xs text-purple-600">Budget Health</div>
+                  <div className="text-sm font-semibold text-green-700">Excellent</div>
+                </div>
+                
+                <div className="bg-white rounded p-2">
+                  <div className="text-xs text-purple-600">Opportunity</div>
+                  <div className="text-sm font-semibold text-purple-900">Fall Festival</div>
+                </div>
+                
+                <div className="bg-white rounded p-2">
+                  <div className="text-xs text-purple-600">Savings Found</div>
+                  <div className="text-sm font-semibold text-purple-900">$1,200</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Create Budget Options - Compact */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
+          <h3 className="text-sm font-semibold text-gray-900 mb-3">Create New Budget Item</h3>
+          
+          <div className="grid grid-cols-3 gap-3">
+            <div className="border border-gray-200 rounded-lg p-3 hover:border-gray-300 transition-colors">
+              <div className="flex items-center space-x-2 mb-2">
+                <Calculator className="w-5 h-5 text-gray-600" />
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-900">Manual</h4>
+                  <p className="text-xs text-gray-600">Full control</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => navigate('/budget/category/create')}
+                className="w-full py-1.5 bg-gray-100 text-gray-700 rounded text-xs hover:bg-gray-200 transition-colors"
+              >
+                Create Manually
+              </button>
+            </div>
+
+            <div className="border border-blue-200 rounded-lg p-3 hover:border-blue-300 transition-colors bg-blue-50">
+              <div className="flex items-center space-x-2 mb-2">
+                <Sparkles className="w-5 h-5 text-blue-600" />
+                <div>
+                  <h4 className="text-sm font-semibold text-blue-900">Assisted</h4>
+                  <p className="text-xs text-blue-700">Smart suggestions</p>
+                </div>
+              </div>
+              <button className="w-full py-1.5 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors">
+                Get Help
+              </button>
+            </div>
+
+            <div className="border border-purple-200 rounded-lg p-3 hover:border-purple-300 transition-colors bg-purple-50">
+              <div className="flex items-center space-x-2 mb-2">
+                <Sparkles className="w-5 h-5 text-purple-600" />
+                <div>
+                  <h4 className="text-sm font-semibold text-purple-900">Auto</h4>
+                  <p className="text-xs text-purple-700">AI-powered</p>
+                </div>
+              </div>
+              <button className="w-full py-1.5 bg-purple-100 text-purple-700 rounded text-xs hover:bg-purple-200 transition-colors">
+                Auto-Generate
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Category Breakdown - Compact */}
         <CategoryBreakdown />
 
-        {/* Recent Transactions */}
+        {/* Recent Transactions - Compact */}
         <RecentTransactions />
       </div>
     </div>

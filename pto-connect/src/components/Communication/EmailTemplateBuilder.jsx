@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   PlusIcon, 
   TrashIcon, 
@@ -8,15 +8,32 @@ import {
   Bars3Icon,
   PaintBrushIcon,
   DevicePhoneMobileIcon,
-  ComputerDesktopIcon
+  ComputerDesktopIcon,
+  StarIcon,
+  HeartIcon,
+  SparklesIcon,
+  GiftIcon,
+  AcademicCapIcon,
+  MegaphoneIcon,
+  CalendarIcon,
+  UserGroupIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
+  BuildingOfficeIcon,
+  DocumentTextIcon,
+  PresentationChartLineIcon,
+  TrophyIcon
 } from '@heroicons/react/24/outline';
-import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
-import LoadingSpinner from '../Common/LoadingSpinner';
-import ErrorMessage from '../Common/ErrorMessage';
+import { useUserProfile } from '@/modules/hooks/useUserProfile';
+import { supabase } from '../../utils/supabaseClient';
+import LoadingSpinner from '../common/LoadingSpinner';
+import ErrorMessage from '../common/ErrorMessage';
+import TemplateLibraryModal from './TemplateLibraryModal';
 
 const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
-  const { user, organization } = useAuth();
+  const { profile, organization } = useUserProfile();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -41,13 +58,21 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
 
   const [draggedBlock, setDraggedBlock] = useState(null);
   const [selectedBlock, setSelectedBlock] = useState(null);
+  const [autoSaveStatus, setAutoSaveStatus] = useState('saved');
+  const [lastSaved, setLastSaved] = useState(null);
+  const [showTemplateLibrary, setShowTemplateLibrary] = useState(false);
   const canvasRef = useRef(null);
+  const autoSaveTimeoutRef = useRef(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // Enhanced block types with professional design elements
   const blockTypes = [
+    // Basic Content Blocks
     {
       type: 'header',
       name: 'Header',
       icon: Bars3Icon,
+      category: 'basic',
       defaultContent: {
         text: 'Your PTO Header',
         fontSize: '24px',
@@ -62,6 +87,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       type: 'text',
       name: 'Text Block',
       icon: Bars3Icon,
+      category: 'basic',
       defaultContent: {
         text: 'Add your message here...',
         fontSize: '16px',
@@ -75,6 +101,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       type: 'image',
       name: 'Image',
       icon: PhotoIcon,
+      category: 'basic',
       defaultContent: {
         src: 'https://via.placeholder.com/600x300?text=Add+Your+Image',
         alt: 'Email Image',
@@ -87,6 +114,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       type: 'button',
       name: 'Button',
       icon: PlusIcon,
+      category: 'basic',
       defaultContent: {
         text: 'Click Here',
         href: '#',
@@ -99,15 +127,280 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
         fontWeight: '600'
       }
     },
+
+    // Design Elements & Pizzazz
     {
       type: 'divider',
-      name: 'Divider',
+      name: 'Divider Line',
       icon: Bars3Icon,
+      category: 'design',
       defaultContent: {
-        height: '1px',
-        backgroundColor: '#e5e7eb',
-        margin: '20px 0'
+        style: 'solid',
+        color: '#e5e7eb',
+        thickness: '2px',
+        width: '80%',
+        margin: '20px auto'
       }
+    },
+    {
+      type: 'spacer',
+      name: 'Spacer',
+      icon: ArrowUpIcon,
+      category: 'design',
+      defaultContent: {
+        height: '30px',
+        backgroundColor: 'transparent'
+      }
+    },
+    {
+      type: 'quote',
+      name: 'Quote Block',
+      icon: SparklesIcon,
+      category: 'design',
+      defaultContent: {
+        text: '"Education is the most powerful weapon which you can use to change the world."',
+        author: 'Nelson Mandela',
+        backgroundColor: '#f8fafc',
+        textColor: '#475569',
+        authorColor: '#64748b',
+        borderColor: '#3b82f6',
+        padding: '25px',
+        fontSize: '18px',
+        fontStyle: 'italic'
+      }
+    },
+    {
+      type: 'highlight',
+      name: 'Highlight Box',
+      icon: StarIcon,
+      category: 'design',
+      defaultContent: {
+        title: 'Important Notice',
+        text: 'This is an important message that stands out from the rest of the content.',
+        backgroundColor: '#fef3c7',
+        titleColor: '#92400e',
+        textColor: '#78350f',
+        borderColor: '#f59e0b',
+        padding: '20px',
+        borderRadius: '8px'
+      }
+    },
+    {
+      type: 'stats',
+      name: 'Statistics',
+      icon: PresentationChartLineIcon,
+      category: 'design',
+      defaultContent: {
+        title: 'Our Impact This Year',
+        stats: [
+          { number: '250', label: 'Students Served' },
+          { number: '$15K', label: 'Funds Raised' },
+          { number: '50', label: 'Volunteers' }
+        ],
+        backgroundColor: '#f0f9ff',
+        titleColor: '#1e40af',
+        numberColor: '#3b82f6',
+        labelColor: '#64748b',
+        padding: '25px'
+      }
+    },
+
+    // PTO-Specific Blocks
+    {
+      type: 'donation',
+      name: 'Donation Progress',
+      icon: GiftIcon,
+      category: 'fundraising',
+      defaultContent: {
+        title: 'Help Us Reach Our Goal!',
+        description: 'Support our fundraising campaign',
+        currentAmount: 15000,
+        goalAmount: 25000,
+        backgroundColor: '#fef3c7',
+        titleColor: '#92400e',
+        textColor: '#374151',
+        progressColor: '#f59e0b',
+        buttonText: 'Donate Now',
+        buttonColor: '#f59e0b',
+        padding: '20px'
+      }
+    },
+    {
+      type: 'volunteer',
+      name: 'Volunteer Call',
+      icon: UserGroupIcon,
+      category: 'volunteers',
+      defaultContent: {
+        title: 'We Need Volunteers!',
+        description: 'Help make our next event a success.',
+        opportunities: ['Event Setup', 'Bake Sale', 'Clean Up'],
+        backgroundColor: '#f0f9ff',
+        titleColor: '#1e40af',
+        textColor: '#374151',
+        buttonText: 'Sign Up to Volunteer',
+        buttonColor: '#2563eb',
+        padding: '20px'
+      }
+    },
+    {
+      type: 'event',
+      name: 'Event Card',
+      icon: CalendarIcon,
+      category: 'events',
+      defaultContent: {
+        title: 'Fall Festival 2024',
+        date: '2024-11-15',
+        time: '10:00 AM - 4:00 PM',
+        location: 'School Playground',
+        description: 'Join us for a day of fun, food, and community!',
+        image: 'https://via.placeholder.com/400x200?text=Event+Image',
+        backgroundColor: '#fef3c7',
+        titleColor: '#92400e',
+        textColor: '#374151',
+        buttonText: 'RSVP Now',
+        buttonColor: '#f59e0b',
+        padding: '20px'
+      }
+    },
+    {
+      type: 'announcement',
+      name: 'Announcement',
+      icon: MegaphoneIcon,
+      category: 'announcements',
+      defaultContent: {
+        title: 'Important Announcement',
+        message: 'We have important news to share with our school community.',
+        backgroundColor: '#fef2f2',
+        titleColor: '#dc2626',
+        textColor: '#991b1b',
+        buttonText: 'Learn More',
+        buttonColor: '#dc2626',
+        padding: '20px'
+      }
+    },
+
+    // Interactive Elements
+    {
+      type: 'social',
+      name: 'Social Media',
+      icon: HeartIcon,
+      category: 'interactive',
+      defaultContent: {
+        title: 'Follow Us on Social Media',
+        platforms: [
+          { name: 'Facebook', url: '#', icon: '📘' },
+          { name: 'Instagram', url: '#', icon: '📷' },
+          { name: 'Twitter', url: '#', icon: '🐦' }
+        ],
+        backgroundColor: '#f8fafc',
+        titleColor: '#1e293b',
+        padding: '20px'
+      }
+    },
+    {
+      type: 'contact',
+      name: 'Contact Info',
+      icon: BuildingOfficeIcon,
+      category: 'interactive',
+      defaultContent: {
+        title: 'Contact Us',
+        email: 'pto@school.edu',
+        phone: '(555) 123-4567',
+        address: '123 School Street, City, State 12345',
+        backgroundColor: '#f1f5f9',
+        titleColor: '#334155',
+        textColor: '#64748b',
+        padding: '20px'
+      }
+    },
+    {
+      type: 'countdown',
+      name: 'Event Countdown',
+      icon: ClockIcon,
+      category: 'interactive',
+      defaultContent: {
+        title: 'Event Starts In:',
+        eventDate: '2024-12-01',
+        backgroundColor: '#fef3c7',
+        titleColor: '#92400e',
+        numberColor: '#f59e0b',
+        labelColor: '#78350f',
+        padding: '25px'
+      }
+    },
+
+    // Academic & School Elements
+    {
+      type: 'grade',
+      name: 'Grade Level Info',
+      icon: AcademicCapIcon,
+      category: 'academic',
+      defaultContent: {
+        title: 'Kindergarten News',
+        teacher: 'Mrs. Johnson',
+        content: 'This week in Kindergarten, we are learning about letters and numbers!',
+        backgroundColor: '#f0fdf4',
+        titleColor: '#166534',
+        textColor: '#374151',
+        padding: '20px'
+      }
+    },
+    {
+      type: 'achievement',
+      name: 'Student Achievement',
+      icon: TrophyIcon,
+      category: 'academic',
+      defaultContent: {
+        title: '🏆 Student Achievements',
+        achievements: [
+          'Math Olympiad Winners',
+          'Perfect Attendance Awards',
+          'Reading Challenge Champions'
+        ],
+        backgroundColor: '#fefce8',
+        titleColor: '#a16207',
+        textColor: '#374151',
+        padding: '20px'
+      }
+    },
+    {
+      type: 'newsletter',
+      name: 'Newsletter Section',
+      icon: DocumentTextIcon,
+      category: 'academic',
+      defaultContent: {
+        title: 'Principal\'s Message',
+        content: 'Dear families, I hope this message finds you well. This month has been filled with exciting learning opportunities...',
+        author: 'Dr. Smith, Principal',
+        backgroundColor: '#f8fafc',
+        titleColor: '#1e293b',
+        textColor: '#475569',
+        authorColor: '#64748b',
+        padding: '25px'
+      }
+    }
+  ];
+
+  const prebuiltTemplates = [
+    {
+      name: 'Event Announcement',
+      category: 'events',
+      blocks: [
+        {
+          type: 'header',
+          content: {
+            text: 'Fall Festival 2024',
+            backgroundColor: '#3b82f6',
+            color: '#ffffff'
+          }
+        },
+        {
+          type: 'text',
+          content: {
+            text: 'Join us for a day of fun, food, and community!'
+          }
+        }
+      ]
     }
   ];
 
@@ -121,16 +414,442 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     'meetings'
   ];
 
+  // Handle template selection from library
+  const handleTemplateSelect = (selectedTemplate) => {
+    console.log('🔍 DEBUG: Template selected:', selectedTemplate);
+    
+    try {
+      // Validate template structure
+      if (!selectedTemplate || typeof selectedTemplate !== 'object') {
+        console.error('❌ DEBUG: Invalid template object:', selectedTemplate);
+        alert('Error: Invalid template data received');
+        return;
+      }
+
+      if (!selectedTemplate.blocks || !Array.isArray(selectedTemplate.blocks)) {
+        console.error('❌ DEBUG: Template missing blocks array:', selectedTemplate);
+        alert('Error: Template has no blocks to convert');
+        return;
+      }
+
+      console.log('✅ DEBUG: Template validation passed, converting blocks...');
+      
+      // Convert template blocks to our format - handle ALL blocks from the template
+      const convertedBlocks = [];
+      
+      selectedTemplate.blocks.forEach((block, index) => {
+        console.log(`🔄 DEBUG: Converting block ${index}:`, block);
+        
+        try {
+          const blockId = `${Date.now()}-${index}`;
+          
+          // Validate block structure
+          if (!block || typeof block !== 'object' || !block.type) {
+            console.warn(`⚠️ DEBUG: Invalid block at index ${index}:`, block);
+            return; // Skip invalid blocks
+          }
+
+          if (!block.content || typeof block.content !== 'object') {
+            console.warn(`⚠️ DEBUG: Block missing content at index ${index}:`, block);
+            return; // Skip blocks without content
+          }
+          
+          // Convert different block types to our standard format
+          if (block.type === 'hero') {
+            console.log('🎨 DEBUG: Converting hero block');
+            // Add hero header block
+            convertedBlocks.push({
+              id: blockId,
+              type: 'header',
+              content: {
+                text: block.content.title || 'Hero Title',
+                fontSize: '32px',
+                fontWeight: 'bold',
+                textAlign: 'center',
+                color: block.content.titleColor || '#ffffff',
+                backgroundImage: block.content.backgroundImage || 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                backgroundColor: block.content.backgroundColor || '#3b82f6',
+                padding: '40px'
+              }
+            });
+            
+            // Add subtitle block if it exists
+            if (block.content.subtitle) {
+              convertedBlocks.push({
+                id: `${blockId}-subtitle`,
+                type: 'text',
+                content: {
+                  text: block.content.subtitle,
+                  fontSize: '18px',
+                  fontWeight: 'normal',
+                  textAlign: 'center',
+                  color: block.content.subtitleColor || '#6b7280',
+                  backgroundColor: block.content.backgroundImage || block.content.backgroundColor || '#3b82f6',
+                  padding: '0px 20px 40px 20px'
+                }
+              });
+            }
+          } else if (block.type === 'header') {
+            console.log('📝 DEBUG: Converting header block');
+            convertedBlocks.push({
+              id: blockId,
+              type: 'header',
+              content: {
+                text: block.content.text || 'Header Text',
+                fontSize: block.content.fontSize || '24px',
+                fontWeight: block.content.fontWeight || 'bold',
+                textAlign: block.content.textAlign || 'center',
+                color: block.content.color || '#1f2937',
+                backgroundColor: block.content.backgroundColor || '#f9fafb',
+                padding: block.content.padding || '20px'
+              }
+            });
+          } else if (block.type === 'text') {
+            console.log('📄 DEBUG: Converting text block');
+            convertedBlocks.push({
+              id: blockId,
+              type: 'text',
+              content: {
+                text: block.content.text || 'Text content',
+                fontSize: block.content.fontSize || '16px',
+                fontWeight: block.content.fontWeight || 'normal',
+                textAlign: block.content.textAlign || 'left',
+                color: block.content.color || '#374151',
+                backgroundColor: block.content.backgroundColor || '#ffffff',
+                padding: block.content.padding || '15px'
+              }
+            });
+          } else if (block.type === 'calendar') {
+            console.log('📅 DEBUG: Converting calendar block');
+            // Convert calendar block to proper format
+            const calendarContent = {
+              title: block.content.eventTitle || 'Upcoming Events',
+              backgroundColor: block.content.backgroundColor || '#fef3c7',
+              titleColor: block.content.textColor || '#92400e',
+              textColor: block.content.textColor || '#92400e',
+              padding: '20px',
+              events: [{
+                title: block.content.eventTitle || 'Event',
+                date: block.content.eventDate ? (() => {
+                  try {
+                    return new Date(block.content.eventDate).toLocaleDateString();
+                  } catch (e) {
+                    console.warn('⚠️ DEBUG: Invalid date format:', block.content.eventDate);
+                    return 'TBD';
+                  }
+                })() : 'TBD',
+                time: block.content.eventTime || '',
+                location: block.content.location || '',
+                description: block.content.description || ''
+              }]
+            };
+            
+            convertedBlocks.push({
+              id: blockId,
+              type: 'calendar',
+              content: calendarContent
+            });
+          } else if (block.type === 'donation') {
+            console.log('💰 DEBUG: Converting donation block');
+            // Ensure donation block has required fields
+            const donationContent = {
+              title: block.content.title || 'Support Our Cause',
+              description: block.content.description || 'Help us reach our goal',
+              currentAmount: Number(block.content.currentAmount) || 0,
+              goalAmount: Number(block.content.goalAmount) || 10000,
+              backgroundColor: block.content.backgroundColor || '#f0f9ff',
+              titleColor: block.content.titleColor || '#1e40af',
+              textColor: block.content.textColor || '#374151',
+              progressColor: block.content.progressColor || '#3b82f6',
+              buttonText: block.content.buttonText || 'Donate Now',
+              buttonColor: block.content.buttonColor || '#3b82f6',
+              padding: block.content.padding || '20px'
+            };
+            
+            convertedBlocks.push({
+              id: blockId,
+              type: 'donation',
+              content: donationContent
+            });
+          } else if (block.type === 'volunteer') {
+            console.log('🤝 DEBUG: Converting volunteer block');
+            const volunteerContent = {
+              title: block.content.title || 'We Need Volunteers!',
+              description: block.content.description || 'Join our team',
+              opportunities: Array.isArray(block.content.opportunities) ? block.content.opportunities : ['General Volunteering'],
+              backgroundColor: block.content.backgroundColor || '#f0f9ff',
+              titleColor: block.content.titleColor || '#1e40af',
+              textColor: block.content.textColor || '#374151',
+              buttonText: block.content.buttonText || 'Sign Up',
+              buttonColor: block.content.buttonColor || '#2563eb',
+              padding: block.content.padding || '20px'
+            };
+            
+            convertedBlocks.push({
+              id: blockId,
+              type: 'volunteer',
+              content: volunteerContent
+            });
+          } else if (block.type === 'announcement') {
+            console.log('📢 DEBUG: Converting announcement block');
+            const announcementContent = {
+              title: block.content.title || 'Important Announcement',
+              message: block.content.message || block.content.text || 'Important information',
+              backgroundColor: block.content.backgroundColor || '#f0f9ff',
+              titleColor: block.content.titleColor || '#1e40af',
+              textColor: block.content.textColor || '#374151',
+              buttonText: block.content.buttonText || '',
+              buttonLink: block.content.buttonLink || '#',
+              buttonColor: block.content.buttonColor || '#2563eb',
+              padding: block.content.padding || '20px'
+            };
+            
+            convertedBlocks.push({
+              id: blockId,
+              type: 'announcement',
+              content: announcementContent
+            });
+          } else {
+            console.log(`🔧 DEBUG: Converting generic block type: ${block.type}`);
+            // Default handling for any other block types
+            const safeContent = {};
+            
+            // Safely copy content properties
+            Object.keys(block.content).forEach(key => {
+              try {
+                const value = block.content[key];
+                // Only copy serializable values
+                if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || Array.isArray(value)) {
+                  safeContent[key] = value;
+                }
+              } catch (e) {
+                console.warn(`⚠️ DEBUG: Skipping non-serializable property ${key}:`, e);
+              }
+            });
+            
+            convertedBlocks.push({
+              id: blockId,
+              type: block.type,
+              content: safeContent
+            });
+          }
+          
+          console.log(`✅ DEBUG: Successfully converted block ${index}`);
+        } catch (blockError) {
+          console.error(`❌ DEBUG: Error converting block ${index}:`, blockError);
+          console.error('Block data:', block);
+        }
+      });
+
+      console.log(`✅ DEBUG: Conversion complete. ${convertedBlocks.length} blocks converted:`, convertedBlocks);
+
+      // Validate converted blocks
+      const invalidBlocks = convertedBlocks.filter(block => !block.id || !block.type || !block.content);
+      if (invalidBlocks.length > 0) {
+        console.error('❌ DEBUG: Found invalid converted blocks:', invalidBlocks);
+        alert('Error: Some template blocks could not be converted properly');
+        return;
+      }
+
+      // Create the new template object
+      const newTemplate = {
+        name: selectedTemplate.name || 'New Template',
+        category: selectedTemplate.category || 'general',
+        subject: `${selectedTemplate.name || 'Template'} - ${new Date().toLocaleDateString()}`,
+        design_json: {
+          blocks: convertedBlocks,
+          styles: {
+            backgroundColor: '#ffffff',
+            fontFamily: 'Arial, sans-serif',
+            primaryColor: '#3b82f6',
+            secondaryColor: '#6b7280'
+          }
+        }
+      };
+
+      console.log('🎯 DEBUG: Final template object:', newTemplate);
+
+      // Update the template with the selected template data
+      setTemplate(prev => ({
+        ...prev,
+        ...newTemplate
+      }));
+      
+      setShowTemplateLibrary(false);
+      
+      console.log('✅ DEBUG: Template selection completed successfully');
+      
+    } catch (error) {
+      console.error('❌ DEBUG: Critical error in handleTemplateSelect:', error);
+      console.error('Error stack:', error.stack);
+      console.error('Template data that caused error:', selectedTemplate);
+      alert(`Error applying template: ${error.message}`);
+    }
+  };
+
+  // Auto-save functionality
+  const autoSave = useCallback(async () => {
+    if (!template.name || saving) return;
+    
+    try {
+      console.log('🔄 DEBUG: Auto-save triggered for template:', template.name);
+      setAutoSaveStatus('saving');
+      
+      // Check if API URL is configured
+      const apiUrl = import.meta.env.VITE_API_URL;
+      console.log('🔍 DEBUG: API URL:', apiUrl);
+      
+      if (!apiUrl || apiUrl.includes('localhost')) {
+        // Skip auto-save if API is not configured or pointing to localhost
+        console.log('✅ DEBUG: Auto-save skipped - API not available or in development mode');
+        setAutoSaveStatus('saved');
+        setLastSaved(new Date());
+        return;
+      }
+      
+      const templateData = {
+        ...template,
+        html_content: generateHTML()
+      };
+
+      const url = templateId 
+        ? `${apiUrl}/communications/templates/${templateId}`
+        : `${apiUrl}/communications/templates`;
+      
+      const method = templateId ? 'PUT' : 'POST';
+
+      console.log('🌐 DEBUG: Making auto-save request to:', url);
+      console.log('🔧 DEBUG: Method:', method);
+      console.log('📦 DEBUG: Template data size:', JSON.stringify(templateData).length, 'characters');
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(templateData)
+      });
+
+      console.log('📡 DEBUG: Auto-save response status:', response.status);
+      console.log('📡 DEBUG: Auto-save response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (response.ok) {
+        console.log('✅ DEBUG: Auto-save successful');
+        const responseData = await response.json();
+        console.log('📄 DEBUG: Auto-save response data:', responseData);
+        setAutoSaveStatus('saved');
+        setLastSaved(new Date());
+      } else {
+        console.warn('⚠️ DEBUG: Auto-save failed with status:', response.status, response.statusText);
+        
+        // Try to read the response as text to see what we're getting
+        try {
+          const responseText = await response.text();
+          console.error('❌ DEBUG: Auto-save error response body:', responseText);
+          
+          // Check if we're getting HTML instead of JSON
+          if (responseText.includes('<!DOCTYPE') || responseText.includes('<html>')) {
+            console.error('🚨 DEBUG: FOUND THE ISSUE! Auto-save is receiving HTML instead of JSON');
+            console.error('🚨 DEBUG: This is likely a routing/server configuration issue');
+          }
+        } catch (textError) {
+          console.error('❌ DEBUG: Could not read error response as text:', textError);
+        }
+        
+        setAutoSaveStatus('error');
+      }
+    } catch (err) {
+      console.error('❌ DEBUG: Auto-save critical error:', err);
+      console.error('❌ DEBUG: Error stack:', err.stack);
+      
+      // Check if this is the JSON parsing error we're looking for
+      if (err.message && err.message.includes('Unexpected token')) {
+        console.error('🚨 DEBUG: CONFIRMED! This is the JSON parsing error source');
+        console.error('🚨 DEBUG: Auto-save is trying to parse HTML as JSON');
+      }
+      
+      setAutoSaveStatus('error');
+    }
+  }, [template, templateId, saving]);
+
+  // Trigger auto-save when template changes
   useEffect(() => {
-    if (templateId) {
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+    
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      autoSave();
+    }, 3000);
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [template, autoSave]);
+
+  // Load saved state from localStorage on component mount
+  useEffect(() => {
+    if (!templateId && !isInitialized) {
+      const savedState = localStorage.getItem('emailTemplateBuilder_state');
+      if (savedState) {
+        try {
+          const parsedState = JSON.parse(savedState);
+          // Only restore if it's recent (within last 24 hours)
+          const isRecent = Date.now() - parsedState.timestamp < 24 * 60 * 60 * 1000;
+          if (isRecent && parsedState.template) {
+            console.log('Restoring saved template state:', parsedState.template);
+            setTemplate(parsedState.template);
+            setAutoSaveStatus('saved');
+            setLastSaved(new Date(parsedState.timestamp));
+          }
+        } catch (error) {
+          console.error('Error loading saved state:', error);
+          localStorage.removeItem('emailTemplateBuilder_state');
+        }
+      }
+      setIsInitialized(true);
+    } else if (templateId) {
       fetchTemplate();
     }
-  }, [templateId]);
+  }, [templateId, isInitialized]);
+
+  // Save state to localStorage whenever template changes (but not during initial load)
+  useEffect(() => {
+    if (isInitialized && !templateId && (template.name || template.design_json.blocks.length > 0)) {
+      const stateToSave = {
+        template,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('emailTemplateBuilder_state', JSON.stringify(stateToSave));
+      console.log('Template state saved to localStorage');
+    }
+  }, [template, isInitialized, templateId]);
+
+  // Clear saved state only when explicitly saving or canceling
+  useEffect(() => {
+    return () => {
+      // Don't automatically clear localStorage on unmount
+      // This allows users to switch windows/tabs without losing work
+      console.log('Component unmounting - preserving saved template state');
+    };
+  }, []);
 
   const fetchTemplate = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/communications/templates/${templateId}`, {
+      
+      // Check if API URL is configured
+      const apiUrl = import.meta.env.VITE_API_URL;
+      if (!apiUrl || apiUrl.includes('localhost')) {
+        console.log('Template fetch skipped: API not available or in development mode');
+        setLoading(false);
+        return;
+      }
+      
+      const response = await fetch(`${apiUrl}/communications/templates/${templateId}`, {
         headers: {
           'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
           'Content-Type': 'application/json'
@@ -206,22 +925,863 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
   };
 
   const moveBlock = (blockId, direction) => {
-    const blocks = [...template.design_json.blocks];
-    const index = blocks.findIndex(block => block.id === blockId);
+    console.log('🔄 DEBUG: Moving block', blockId, direction);
     
-    if (direction === 'up' && index > 0) {
-      [blocks[index], blocks[index - 1]] = [blocks[index - 1], blocks[index]];
-    } else if (direction === 'down' && index < blocks.length - 1) {
-      [blocks[index], blocks[index + 1]] = [blocks[index + 1], blocks[index]];
-    }
-
-    setTemplate(prev => ({
-      ...prev,
-      design_json: {
-        ...prev.design_json,
-        blocks
+    setTemplate(prev => {
+      const blocks = [...prev.design_json.blocks];
+      const currentIndex = blocks.findIndex(block => block.id === blockId);
+      
+      console.log('📍 DEBUG: Current index:', currentIndex, 'Total blocks:', blocks.length);
+      
+      if (currentIndex === -1) {
+        console.warn('⚠️ DEBUG: Block not found');
+        return prev;
       }
-    }));
+      
+      let newIndex;
+      if (direction === 'up' && currentIndex > 0) {
+        newIndex = currentIndex - 1;
+        console.log('⬆️ DEBUG: Moving up to index:', newIndex);
+      } else if (direction === 'down' && currentIndex < blocks.length - 1) {
+        newIndex = currentIndex + 1;
+        console.log('⬇️ DEBUG: Moving down to index:', newIndex);
+      } else {
+        console.log('🚫 DEBUG: Cannot move - at boundary');
+        return prev; // Can't move
+      }
+      
+      // Swap blocks
+      const blockToMove = blocks[currentIndex];
+      const blockToReplace = blocks[newIndex];
+      
+      console.log('🔄 DEBUG: Swapping blocks:', {
+        moving: blockToMove.type,
+        replacing: blockToReplace.type
+      });
+      
+      blocks[currentIndex] = blockToReplace;
+      blocks[newIndex] = blockToMove;
+      
+      const newTemplate = {
+        ...prev,
+        design_json: {
+          ...prev.design_json,
+          blocks
+        }
+      };
+      
+      console.log('✅ DEBUG: Block move completed');
+      return newTemplate;
+    });
+  };
+
+  const renderBlock = (block) => {
+    const { content } = block;
+    
+    switch (block.type) {
+      case 'header':
+        return (
+          <div style={{ 
+            background: content.backgroundImage || content.backgroundColor || '#f9fafb', 
+            padding: content.padding || '20px', 
+            textAlign: content.textAlign || 'center' 
+          }}>
+            <h1 style={{ 
+              margin: 0, 
+              fontSize: content.fontSize || '24px', 
+              fontWeight: content.fontWeight || 'bold', 
+              color: content.color || '#1f2937' 
+            }}>
+              {content.text}
+            </h1>
+          </div>
+        );
+      case 'text':
+        return (
+          <div style={{ 
+            padding: content.padding, 
+            textAlign: content.textAlign,
+            background: content.backgroundImage || content.backgroundColor || 'transparent'
+          }}>
+            <p style={{ margin: 0, fontSize: content.fontSize, fontWeight: content.fontWeight, color: content.color }}>
+              {content.text}
+            </p>
+          </div>
+        );
+      case 'image':
+        return (
+          <div style={{ padding: content.padding, textAlign: content.textAlign }}>
+            <img src={content.src} alt={content.alt} style={{ width: content.width, height: 'auto', display: 'block', margin: '0 auto' }} />
+          </div>
+        );
+      case 'button':
+        return (
+          <div style={{ padding: content.padding, textAlign: content.textAlign }}>
+            <a 
+              href={content.href} 
+              style={{ 
+                backgroundColor: content.backgroundColor, 
+                color: content.color, 
+                padding: content.padding, 
+                borderRadius: content.borderRadius, 
+                fontSize: content.fontSize, 
+                fontWeight: content.fontWeight, 
+                textDecoration: 'none',
+                display: 'inline-block'
+              }}
+            >
+              {content.text}
+            </a>
+          </div>
+        );
+      case 'donation':
+        const progressPercentage = Math.round((content.currentAmount / content.goalAmount) * 100);
+        return (
+          <div style={{ 
+            padding: content.padding, 
+            backgroundColor: content.backgroundColor,
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+              <h2 style={{ 
+                margin: '0 0 10px 0', 
+                fontSize: '20px', 
+                fontWeight: 'bold', 
+                color: content.titleColor 
+              }}>
+                {content.title}
+              </h2>
+              <p style={{ 
+                margin: '0 0 15px 0', 
+                fontSize: '16px', 
+                color: content.textColor 
+              }}>
+                {content.description}
+              </p>
+            </div>
+            
+            <div style={{ marginBottom: '15px' }}>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                marginBottom: '8px',
+                fontSize: '14px',
+                fontWeight: 'bold'
+              }}>
+                <span style={{ color: content.textColor }}>
+                  Raised: ${content.currentAmount?.toLocaleString()}
+                </span>
+                <span style={{ color: content.textColor }}>
+                  Goal: ${content.goalAmount?.toLocaleString()}
+                </span>
+              </div>
+              
+              <div style={{ 
+                width: '100%', 
+                height: '20px', 
+                backgroundColor: '#e5e7eb', 
+                borderRadius: '10px',
+                overflow: 'hidden'
+              }}>
+                <div style={{ 
+                  width: `${Math.min(progressPercentage, 100)}%`, 
+                  height: '100%', 
+                  backgroundColor: content.progressColor,
+                  borderRadius: '10px',
+                  transition: 'width 0.3s ease'
+                }}></div>
+              </div>
+              
+              <div style={{ 
+                textAlign: 'center', 
+                marginTop: '8px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                color: content.textColor
+              }}>
+                {progressPercentage}% of goal reached
+              </div>
+            </div>
+            
+            <div style={{ textAlign: 'center' }}>
+              <a 
+                href="#donate" 
+                style={{ 
+                  backgroundColor: content.buttonColor, 
+                  color: '#ffffff', 
+                  padding: '12px 24px', 
+                  borderRadius: '6px', 
+                  fontSize: '16px', 
+                  fontWeight: 'bold', 
+                  textDecoration: 'none',
+                  display: 'inline-block'
+                }}
+              >
+                {content.buttonText}
+              </a>
+            </div>
+          </div>
+        );
+      case 'volunteer':
+        return (
+          <div style={{ 
+            padding: content.padding, 
+            backgroundColor: content.backgroundColor,
+            borderRadius: '8px',
+            margin: '10px',
+            textAlign: 'center'
+          }}>
+            <h2 style={{ 
+              margin: '0 0 10px 0', 
+              fontSize: '22px', 
+              fontWeight: 'bold', 
+              color: content.titleColor 
+            }}>
+              {content.title}
+            </h2>
+            <p style={{ 
+              margin: '0 0 15px 0', 
+              fontSize: '16px', 
+              color: content.textColor 
+            }}>
+              {content.description}
+            </p>
+            <h3 style={{
+              margin: '20px 0 10px 0',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: content.titleColor,
+              textAlign: 'left'
+            }}>
+              Volunteer Opportunities:
+            </h3>
+            <ul style={{
+              margin: '0 0 20px 0',
+              paddingLeft: '20px',
+              listStyleType: 'disc',
+              textAlign: 'left',
+              color: content.textColor
+            }}>
+              {content.opportunities?.map((opp, i) => <li key={i} style={{ marginBottom: '5px' }}>{opp}</li>)}
+            </ul>
+            <a 
+              href="#volunteer" 
+              style={{ 
+                backgroundColor: content.buttonColor, 
+                color: '#ffffff', 
+                padding: '12px 24px', 
+                borderRadius: '6px', 
+                fontSize: '16px', 
+                fontWeight: 'bold', 
+                textDecoration: 'none',
+                display: 'inline-block'
+              }}
+            >
+              {content.buttonText}
+            </a>
+          </div>
+        );
+      case 'announcement':
+        return (
+          <div style={{ 
+            padding: content.padding || '20px', 
+            backgroundColor: content.backgroundColor || '#f0f9ff',
+            borderRadius: '8px',
+            margin: '10px',
+            textAlign: 'center'
+          }}>
+            <h2 style={{ 
+              margin: '0 0 15px 0', 
+              fontSize: content.titleSize || '24px', 
+              fontWeight: 'bold', 
+              color: content.titleColor || '#1e40af'
+            }}>
+              {content.title || 'Important Announcement'}
+            </h2>
+            <p style={{ 
+              margin: '0 0 20px 0', 
+              fontSize: content.textSize || '16px', 
+              color: content.textColor || '#374151',
+              lineHeight: '1.6'
+            }}>
+              {content.message || content.text || 'Your announcement message here.'}
+            </p>
+            {content.buttonText && (
+              <a 
+                href={content.buttonLink || '#'} 
+                style={{ 
+                  backgroundColor: content.buttonColor || '#2563eb', 
+                  color: '#ffffff', 
+                  padding: '12px 24px', 
+                  borderRadius: '6px', 
+                  fontSize: '16px', 
+                  fontWeight: 'bold', 
+                  textDecoration: 'none',
+                  display: 'inline-block'
+                }}
+              >
+                {content.buttonText}
+              </a>
+            )}
+          </div>
+        );
+      case 'calendar':
+        return (
+          <div style={{ 
+            padding: content.padding || '20px', 
+            backgroundColor: content.backgroundColor || '#fef3c7',
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            <h2 style={{ 
+              margin: '0 0 15px 0', 
+              fontSize: content.titleSize || '22px', 
+              fontWeight: 'bold', 
+              color: content.titleColor || '#92400e',
+              textAlign: 'center'
+            }}>
+              {content.title || 'Upcoming Events'}
+            </h2>
+            {content.events?.map((event, i) => (
+              <div key={i} style={{
+                backgroundColor: '#ffffff',
+                padding: '15px',
+                marginBottom: '10px',
+                borderRadius: '6px',
+                borderLeft: `4px solid ${content.accentColor || '#f59e0b'}`
+              }}>
+                <h3 style={{
+                  margin: '0 0 8px 0',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  color: content.eventTitleColor || '#1f2937'
+                }}>
+                  {event.title}
+                </h3>
+                <p style={{
+                  margin: '0 0 5px 0',
+                  fontSize: '14px',
+                  color: content.dateColor || '#6b7280',
+                  fontWeight: 'bold'
+                }}>
+                  📅 {event.date} {event.time && `• ⏰ ${event.time}`}
+                </p>
+                {event.location && (
+                  <p style={{
+                    margin: '0 0 5px 0',
+                    fontSize: '14px',
+                    color: content.locationColor || '#6b7280'
+                  }}>
+                    📍 {event.location}
+                  </p>
+                )}
+                {event.description && (
+                  <p style={{
+                    margin: '5px 0 0 0',
+                    fontSize: '14px',
+                    color: content.textColor || '#374151'
+                  }}>
+                    {event.description}
+                  </p>
+                )}
+              </div>
+            ))}
+            {content.buttonText && (
+              <div style={{ textAlign: 'center', marginTop: '15px' }}>
+                <a 
+                  href={content.buttonLink || '#'} 
+                  style={{ 
+                    backgroundColor: content.buttonColor || '#f59e0b', 
+                    color: '#ffffff', 
+                    padding: '12px 24px', 
+                    borderRadius: '6px', 
+                    fontSize: '16px', 
+                    fontWeight: 'bold', 
+                    textDecoration: 'none',
+                    display: 'inline-block'
+                  }}
+                >
+                  {content.buttonText}
+                </a>
+              </div>
+            )}
+          </div>
+        );
+      case 'divider':
+        return (
+          <div style={{ padding: '10px 0', textAlign: 'center' }}>
+            <hr style={{
+              border: 'none',
+              borderTop: `${content.thickness || '2px'} ${content.style || 'solid'} ${content.color || '#e5e7eb'}`,
+              width: content.width || '80%',
+              margin: content.margin || '20px auto'
+            }} />
+          </div>
+        );
+      case 'spacer':
+        return (
+          <div style={{
+            height: content.height || '30px',
+            backgroundColor: content.backgroundColor || 'transparent'
+          }}></div>
+        );
+      case 'quote':
+        return (
+          <div style={{
+            padding: content.padding || '25px',
+            backgroundColor: content.backgroundColor || '#f8fafc',
+            borderLeft: `4px solid ${content.borderColor || '#3b82f6'}`,
+            margin: '10px',
+            borderRadius: '4px'
+          }}>
+            <blockquote style={{
+              margin: '0 0 10px 0',
+              fontSize: content.fontSize || '18px',
+              fontStyle: content.fontStyle || 'italic',
+              color: content.textColor || '#475569',
+              lineHeight: '1.6'
+            }}>
+              {content.text}
+            </blockquote>
+            {content.author && (
+              <cite style={{
+                fontSize: '14px',
+                color: content.authorColor || '#64748b',
+                fontStyle: 'normal',
+                fontWeight: 'bold'
+              }}>
+                — {content.author}
+              </cite>
+            )}
+          </div>
+        );
+      case 'highlight':
+        return (
+          <div style={{
+            padding: content.padding || '20px',
+            backgroundColor: content.backgroundColor || '#fef3c7',
+            border: `2px solid ${content.borderColor || '#f59e0b'}`,
+            borderRadius: content.borderRadius || '8px',
+            margin: '10px'
+          }}>
+            <h3 style={{
+              margin: '0 0 10px 0',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#92400e'
+            }}>
+              {content.title}
+            </h3>
+            <p style={{
+              margin: '0',
+              fontSize: '16px',
+              color: content.textColor || '#78350f',
+              lineHeight: '1.5'
+            }}>
+              {content.text}
+            </p>
+          </div>
+        );
+      case 'stats':
+        return (
+          <div style={{
+            padding: content.padding || '25px',
+            backgroundColor: content.backgroundColor || '#f0f9ff',
+            borderRadius: '8px',
+            margin: '10px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{
+              margin: '0 0 20px 0',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#1e40af'
+            }}>
+              {content.title}
+            </h3>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-around',
+              flexWrap: 'wrap',
+              gap: '20px'
+            }}>
+              {content.stats?.map((stat, i) => (
+                <div key={i} style={{ textAlign: 'center', minWidth: '100px' }}>
+                  <div style={{
+                    fontSize: '32px',
+                    fontWeight: 'bold',
+                    color: content.numberColor || '#3b82f6',
+                    marginBottom: '5px'
+                  }}>
+                    {stat.number}
+                  </div>
+                  <div style={{
+                    fontSize: '14px',
+                    color: content.labelColor || '#64748b',
+                    fontWeight: '500'
+                  }}>
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 'event':
+        return (
+          <div style={{
+            padding: content.padding || '20px',
+            backgroundColor: content.backgroundColor || '#fef3c7',
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            {content.image && (
+              <img 
+                src={content.image} 
+                alt={content.title}
+                style={{
+                  width: '100%',
+                  height: '200px',
+                  objectFit: 'cover',
+                  borderRadius: '6px',
+                  marginBottom: '15px'
+                }}
+              />
+            )}
+            <h2 style={{
+              margin: '0 0 10px 0',
+              fontSize: '22px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#92400e'
+            }}>
+              {content.title}
+            </h2>
+            <div style={{
+              marginBottom: '10px',
+              fontSize: '14px',
+              color: content.textColor || '#374151'
+            }}>
+              <p style={{ margin: '5px 0' }}>📅 {content.date}</p>
+              <p style={{ margin: '5px 0' }}>⏰ {content.time}</p>
+              <p style={{ margin: '5px 0' }}>📍 {content.location}</p>
+            </div>
+            <p style={{
+              margin: '15px 0',
+              fontSize: '16px',
+              color: content.textColor || '#374151',
+              lineHeight: '1.5'
+            }}>
+              {content.description}
+            </p>
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+              <a 
+                href="#rsvp"
+                style={{
+                  backgroundColor: content.buttonColor || '#f59e0b',
+                  color: '#ffffff',
+                  padding: '12px 24px',
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  textDecoration: 'none',
+                  display: 'inline-block'
+                }}
+              >
+                {content.buttonText || 'RSVP Now'}
+              </a>
+            </div>
+          </div>
+        );
+      case 'social':
+        return (
+          <div style={{
+            padding: content.padding || '20px',
+            backgroundColor: content.backgroundColor || '#f8fafc',
+            borderRadius: '8px',
+            margin: '10px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{
+              margin: '0 0 15px 0',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#1e293b'
+            }}>
+              {content.title}
+            </h3>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '15px',
+              flexWrap: 'wrap'
+            }}>
+              {content.platforms?.map((platform, i) => (
+                <a 
+                  key={i}
+                  href={platform.url}
+                  style={{
+                    display: 'inline-block',
+                    padding: '10px 15px',
+                    backgroundColor: '#ffffff',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '8px',
+                    textDecoration: 'none',
+                    color: '#475569',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <span style={{ marginRight: '8px' }}>{platform.icon}</span>
+                  {platform.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        );
+      case 'contact':
+        return (
+          <div style={{
+            padding: content.padding || '20px',
+            backgroundColor: content.backgroundColor || '#f1f5f9',
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            <h3 style={{
+              margin: '0 0 15px 0',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#334155',
+              textAlign: 'center'
+            }}>
+              {content.title}
+            </h3>
+            <div style={{
+              fontSize: '14px',
+              color: content.textColor || '#64748b',
+              lineHeight: '1.6'
+            }}>
+              {content.email && (
+                <p style={{ margin: '8px 0' }}>
+                  📧 <a href={`mailto:${content.email}`} style={{ color: 'inherit' }}>{content.email}</a>
+                </p>
+              )}
+              {content.phone && (
+                <p style={{ margin: '8px 0' }}>
+                  📞 <a href={`tel:${content.phone}`} style={{ color: 'inherit' }}>{content.phone}</a>
+                </p>
+              )}
+              {content.address && (
+                <p style={{ margin: '8px 0' }}>
+                  📍 {content.address}
+                </p>
+              )}
+            </div>
+          </div>
+        );
+      case 'countdown':
+        const eventDate = new Date(content.eventDate);
+        const now = new Date();
+        const timeDiff = eventDate - now;
+        const days = Math.max(0, Math.floor(timeDiff / (1000 * 60 * 60 * 24)));
+        const hours = Math.max(0, Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+        const minutes = Math.max(0, Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60)));
+        
+        return (
+          <div style={{
+            padding: content.padding || '25px',
+            backgroundColor: content.backgroundColor || '#fef3c7',
+            borderRadius: '8px',
+            margin: '10px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{
+              margin: '0 0 20px 0',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#92400e'
+            }}>
+              {content.title}
+            </h3>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '20px',
+              flexWrap: 'wrap'
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontSize: '32px',
+                  fontWeight: 'bold',
+                  color: content.numberColor || '#f59e0b'
+                }}>
+                  {days}
+                </div>
+                <div style={{
+                  fontSize: '12px',
+                  color: content.labelColor || '#78350f',
+                  fontWeight: '500'
+                }}>
+                  DAYS
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontSize: '32px',
+                  fontWeight: 'bold',
+                  color: content.numberColor || '#f59e0b'
+                }}>
+                  {hours}
+                </div>
+                <div style={{
+                  fontSize: '12px',
+                  color: content.labelColor || '#78350f',
+                  fontWeight: '500'
+                }}>
+                  HOURS
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontSize: '32px',
+                  fontWeight: 'bold',
+                  color: content.numberColor || '#f59e0b'
+                }}>
+                  {minutes}
+                </div>
+                <div style={{
+                  fontSize: '12px',
+                  color: content.labelColor || '#78350f',
+                  fontWeight: '500'
+                }}>
+                  MINUTES
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 'grade':
+        return (
+          <div style={{
+            padding: content.padding || '20px',
+            backgroundColor: content.backgroundColor || '#f0fdf4',
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            <h3 style={{
+              margin: '0 0 10px 0',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#166534'
+            }}>
+              {content.title}
+            </h3>
+            {content.teacher && (
+              <p style={{
+                margin: '0 0 15px 0',
+                fontSize: '14px',
+                color: content.textColor || '#374151',
+                fontWeight: '500'
+              }}>
+                Teacher: {content.teacher}
+              </p>
+            )}
+            <p style={{
+              margin: '0',
+              fontSize: '16px',
+              color: content.textColor || '#374151',
+              lineHeight: '1.5'
+            }}>
+              {content.content}
+            </p>
+          </div>
+        );
+      case 'achievement':
+        return (
+          <div style={{
+            padding: content.padding || '20px',
+            backgroundColor: content.backgroundColor || '#fefce8',
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            <h3 style={{
+              margin: '0 0 15px 0',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#a16207',
+              textAlign: 'center'
+            }}>
+              {content.title}
+            </h3>
+            <ul style={{
+              margin: '0',
+              paddingLeft: '20px',
+              listStyleType: 'none',
+              color: content.textColor || '#374151'
+            }}>
+              {content.achievements?.map((achievement, i) => (
+                <li key={i} style={{
+                  marginBottom: '8px',
+                  fontSize: '16px',
+                  position: 'relative'
+                }}>
+                  <span style={{
+                    position: 'absolute',
+                    left: '-20px',
+                    color: content.titleColor || '#a16207'
+                  }}>
+                    ⭐
+                  </span>
+                  {achievement}
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      case 'newsletter':
+        return (
+          <div style={{
+            padding: content.padding || '25px',
+            backgroundColor: content.backgroundColor || '#f8fafc',
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            <h3 style={{
+              margin: '0 0 15px 0',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#1e293b'
+            }}>
+              {content.title}
+            </h3>
+            <div style={{
+              fontSize: '16px',
+              color: content.textColor || '#475569',
+              lineHeight: '1.6',
+              marginBottom: '15px'
+            }}>
+              {content.content?.split('\n').map((paragraph, i) => (
+                <p key={i} style={{ margin: '0 0 15px 0' }}>{paragraph}</p>
+              ))}
+            </div>
+            {content.author && (
+              <div style={{
+                fontSize: '14px',
+                color: content.authorColor || '#64748b',
+                fontStyle: 'italic',
+                textAlign: 'right',
+                borderTop: '1px solid #e2e8f0',
+                paddingTop: '10px'
+              }}>
+                — {content.author}
+              </div>
+            )}
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   const generateHTML = () => {
@@ -234,24 +1794,9 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>${template.subject || 'Email Template'}</title>
           <style>
-            body { 
-              margin: 0; 
-              padding: 0; 
-              font-family: ${styles.fontFamily}; 
-              background-color: ${styles.backgroundColor}; 
-            }
-            .email-container { 
-              max-width: 600px; 
-              margin: 0 auto; 
-              background-color: #ffffff; 
-            }
+            body { margin: 0; padding: 0; font-family: ${styles.fontFamily}; background-color: ${styles.backgroundColor}; }
+            .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
             .block { margin: 0; }
-            .button { 
-              display: inline-block; 
-              text-decoration: none; 
-              border: none; 
-              cursor: pointer; 
-            }
           </style>
         </head>
         <body>
@@ -259,50 +1804,9 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     `;
 
     blocks.forEach(block => {
-      const { content } = block;
-      
-      switch (block.type) {
-        case 'header':
-          html += `
-            <div class="block" style="background-color: ${content.backgroundColor}; padding: ${content.padding}; text-align: ${content.textAlign};">
-              <h1 style="margin: 0; font-size: ${content.fontSize}; font-weight: ${content.fontWeight}; color: ${content.color};">
-                ${content.text}
-              </h1>
-            </div>
-          `;
-          break;
-        case 'text':
-          html += `
-            <div class="block" style="padding: ${content.padding}; text-align: ${content.textAlign};">
-              <p style="margin: 0; font-size: ${content.fontSize}; font-weight: ${content.fontWeight}; color: ${content.color};">
-                ${content.text}
-              </p>
-            </div>
-          `;
-          break;
-        case 'image':
-          html += `
-            <div class="block" style="padding: ${content.padding}; text-align: ${content.textAlign};">
-              <img src="${content.src}" alt="${content.alt}" style="width: ${content.width}; height: auto; display: block; margin: 0 auto;">
-            </div>
-          `;
-          break;
-        case 'button':
-          html += `
-            <div class="block" style="padding: ${content.padding}; text-align: ${content.textAlign};">
-              <a href="${content.href}" class="button" style="background-color: ${content.backgroundColor}; color: ${content.color}; padding: ${content.padding}; border-radius: ${content.borderRadius}; font-size: ${content.fontSize}; font-weight: ${content.fontWeight}; text-decoration: none;">
-                ${content.text}
-              </a>
-            </div>
-          `;
-          break;
-        case 'divider':
-          html += `
-            <div class="block" style="margin: ${content.margin};">
-              <hr style="border: none; height: ${content.height}; background-color: ${content.backgroundColor};">
-            </div>
-          `;
-          break;
+      const blockHtml = renderBlock(block);
+      if (blockHtml) {
+        html += `<div class="block">${blockHtml.props.dangerouslySetInnerHTML?.__html || ''}</div>`;
       }
     });
 
@@ -320,14 +1824,34 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       setSaving(true);
       setError(null);
 
+      // Check if API URL is configured
+      const apiUrl = import.meta.env.VITE_API_URL;
+      if (!apiUrl || apiUrl.includes('localhost')) {
+        // For development mode, just simulate a successful save
+        console.log('Save simulated: API not available or in development mode');
+        
+        // Clear saved state since we're "saving"
+        localStorage.removeItem('emailTemplateBuilder_state');
+        
+        // Call onSave callback with mock data
+        onSave?.({
+          id: templateId || `mock-${Date.now()}`,
+          ...template,
+          html_content: generateHTML()
+        });
+        
+        setSaving(false);
+        return;
+      }
+
       const templateData = {
         ...template,
         html_content: generateHTML()
       };
 
       const url = templateId 
-        ? `${import.meta.env.VITE_API_URL}/api/communications/templates/${templateId}`
-        : `${import.meta.env.VITE_API_URL}/api/communications/templates`;
+        ? `${apiUrl}/communications/templates/${templateId}`
+        : `${apiUrl}/communications/templates`;
       
       const method = templateId ? 'PUT' : 'POST';
 
@@ -342,6 +1866,8 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
 
       if (response.ok) {
         const data = await response.json();
+        // Clear saved state since we successfully saved
+        localStorage.removeItem('emailTemplateBuilder_state');
         onSave?.(data.data);
       } else {
         const errorData = await response.json();
@@ -394,23 +1920,96 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
               <button
                 onClick={() => setPreviewMode('desktop')}
                 className={`p-2 rounded ${previewMode === 'desktop' ? 'bg-white shadow' : ''}`}
+                title="Desktop Preview"
               >
                 <ComputerDesktopIcon className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setPreviewMode('mobile')}
                 className={`p-2 rounded ${previewMode === 'mobile' ? 'bg-white shadow' : ''}`}
+                title="Mobile Preview"
               >
                 <DevicePhoneMobileIcon className="h-4 w-4" />
               </button>
             </div>
+
+            <button
+              onClick={() => setShowTemplateLibrary(true)}
+              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 shadow-lg transition-all duration-200 transform hover:scale-105"
+              title="Browse Professional Templates"
+            >
+              <SparklesIcon className="h-5 w-5" />
+              <span className="font-semibold">Professional Templates</span>
+              <div className="bg-white/20 px-2 py-1 rounded text-xs font-bold">
+                40+
+              </div>
+            </button>
             
             <button
               onClick={() => setShowPreview(!showPreview)}
               className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              title="Preview Email"
             >
               <EyeIcon className="h-4 w-4" />
               <span>Preview</span>
+            </button>
+
+            <button
+              onClick={() => {
+                // Copy template functionality
+                navigator.clipboard.writeText(JSON.stringify(template.design_json));
+                alert('Template copied to clipboard!');
+              }}
+              className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              title="Copy Template"
+            >
+              <DocumentDuplicateIcon className="h-4 w-4" />
+              <span>Copy</span>
+            </button>
+
+            <button
+              onClick={() => {
+                // Export as HTML functionality
+                const htmlContent = generateHTML();
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${template.name || 'email-template'}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              }}
+              className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              title="Export HTML"
+            >
+              <ArrowDownIcon className="h-4 w-4" />
+              <span>Export</span>
+            </button>
+
+            <button
+              onClick={() => {
+                if (confirm('Are you sure you want to clear all content and start over? This cannot be undone.')) {
+                  setTemplate(prev => ({
+                    ...prev,
+                    name: '',
+                    subject: '',
+                    design_json: {
+                      ...prev.design_json,
+                      blocks: []
+                    }
+                  }));
+                  setSelectedBlock(null);
+                  // Clear saved state
+                  localStorage.removeItem('emailTemplateBuilder_state');
+                }
+              }}
+              className="flex items-center space-x-2 px-3 py-2 border border-red-300 text-red-600 rounded-md hover:bg-red-50"
+              title="Clear All Content"
+            >
+              <TrashIcon className="h-4 w-4" />
+              <span>Clear</span>
             </button>
             
             <button
@@ -431,7 +2030,6 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
           </div>
         </div>
 
-        {/* Subject Line */}
         <div className="mt-4">
           <input
             type="text"
@@ -452,72 +2050,251 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       <div className="flex-1 flex overflow-hidden">
         {/* Block Library */}
         <div className="w-64 bg-white border-r border-gray-200 p-4 overflow-y-auto">
-          <h3 className="font-semibold text-gray-900 mb-4">Email Blocks</h3>
-          <div className="space-y-2">
-            {blockTypes.map((blockType) => {
-              const IconComponent = blockType.icon;
-              return (
-                <div
-                  key={blockType.type}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, blockType)}
-                  className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg cursor-move hover:border-blue-300 hover:bg-blue-50"
-                >
-                  <IconComponent className="h-5 w-5 text-gray-600" />
-                  <span className="text-sm font-medium text-gray-900">{blockType.name}</span>
-                </div>
-              );
-            })}
+          {/* Auto-save Status */}
+          <div className="mb-4 p-2 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-gray-600">Auto-save:</span>
+              <div className="flex items-center space-x-1">
+                {autoSaveStatus === 'saving' && (
+                  <>
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+                    <span className="text-yellow-600">Saving...</span>
+                  </>
+                )}
+                {autoSaveStatus === 'saved' && (
+                  <>
+                    <CheckCircleIcon className="w-3 h-3 text-green-500" />
+                    <span className="text-green-600">Saved</span>
+                  </>
+                )}
+                {autoSaveStatus === 'error' && (
+                  <>
+                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                    <span className="text-red-600">Error</span>
+                  </>
+                )}
+              </div>
+            </div>
+            {lastSaved && (
+              <div className="text-xs text-gray-500 mt-1">
+                Last saved: {lastSaved.toLocaleTimeString()}
+              </div>
+            )}
           </div>
 
-          {/* Style Controls */}
-          <div className="mt-8">
-            <h3 className="font-semibold text-gray-900 mb-4">Template Styles</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Primary Color
-                </label>
-                <input
-                  type="color"
-                  value={template.design_json.styles.primaryColor}
-                  onChange={(e) => setTemplate(prev => ({
-                    ...prev,
-                    design_json: {
-                      ...prev.design_json,
-                      styles: {
-                        ...prev.design_json.styles,
-                        primaryColor: e.target.value
+          {/* Quick Templates */}
+          <div className="mb-6">
+            <h3 className="font-semibold text-gray-900 mb-3">Quick Start Templates</h3>
+            <div className="space-y-2">
+              {prebuiltTemplates.map((template, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setTemplate(prev => ({
+                      ...prev,
+                      design_json: {
+                        ...prev.design_json,
+                        blocks: template.blocks.map((block, blockIndex) => ({
+                          id: `${Date.now()}-${blockIndex}`,
+                          type: block.type,
+                          content: block.content
+                        }))
                       }
-                    }
-                  }))}
-                  className="w-full h-10 border border-gray-300 rounded-md"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Font Family
-                </label>
-                <select
-                  value={template.design_json.styles.fontFamily}
-                  onChange={(e) => setTemplate(prev => ({
-                    ...prev,
-                    design_json: {
-                      ...prev.design_json,
-                      styles: {
-                        ...prev.design_json.styles,
-                        fontFamily: e.target.value
-                      }
-                    }
-                  }))}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                    }));
+                  }}
+                  className="w-full text-left p-2 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors"
                 >
-                  <option value="Arial, sans-serif">Arial</option>
-                  <option value="Georgia, serif">Georgia</option>
-                  <option value="'Times New Roman', serif">Times New Roman</option>
-                  <option value="Helvetica, sans-serif">Helvetica</option>
-                </select>
+                  <div className="text-sm font-medium text-gray-900">{template.name}</div>
+                  <div className="text-xs text-gray-500 capitalize">{template.category}</div>
+                </button>
+              ))}
+            </div>
+            
+            <button
+              onClick={() => setShowTemplateLibrary(true)}
+              className="w-full mt-3 p-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 shadow-lg transition-all duration-200 transform hover:scale-105 text-center"
+            >
+              <SparklesIcon className="h-6 w-6 text-white mx-auto mb-2" />
+              <div className="text-base font-bold text-white">Professional Templates</div>
+              <div className="text-sm text-purple-100">Browse 40+ stunning designs</div>
+              <div className="mt-2 bg-white/20 px-3 py-1 rounded-full text-xs font-bold inline-block">
+                NEW DESIGNS
+              </div>
+            </button>
+          </div>
+
+          {/* Enhanced Block Library with Categories */}
+          <div className="mb-6">
+            <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+              <SparklesIcon className="h-5 w-5 mr-2 text-purple-600" />
+              Design Elements
+            </h3>
+            
+            {/* Basic Content Blocks */}
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <Bars3Icon className="h-4 w-4 mr-1 text-blue-500" />
+                Basic Content
+              </h4>
+              <div className="space-y-1">
+                {blockTypes.filter(block => block.category === 'basic').map((blockType) => (
+                  <div
+                    key={blockType.type}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, blockType)}
+                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-blue-300 hover:bg-blue-50 transition-colors group"
+                  >
+                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-blue-500" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-blue-700">{blockType.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Design & Pizzazz Elements */}
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <PaintBrushIcon className="h-4 w-4 mr-1 text-purple-500" />
+                Design & Pizzazz
+              </h4>
+              <div className="space-y-1">
+                {blockTypes.filter(block => block.category === 'design').map((blockType) => (
+                  <div
+                    key={blockType.type}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, blockType)}
+                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-purple-300 hover:bg-purple-50 transition-colors group"
+                  >
+                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-purple-500" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700">{blockType.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* PTO-Specific Blocks */}
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <GiftIcon className="h-4 w-4 mr-1 text-green-500" />
+                Fundraising
+              </h4>
+              <div className="space-y-1">
+                {blockTypes.filter(block => block.category === 'fundraising').map((blockType) => (
+                  <div
+                    key={blockType.type}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, blockType)}
+                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-green-300 hover:bg-green-50 transition-colors group"
+                  >
+                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-green-500" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-green-700">{blockType.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Events */}
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <CalendarIcon className="h-4 w-4 mr-1 text-orange-500" />
+                Events
+              </h4>
+              <div className="space-y-1">
+                {blockTypes.filter(block => block.category === 'events').map((blockType) => (
+                  <div
+                    key={blockType.type}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, blockType)}
+                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-orange-300 hover:bg-orange-50 transition-colors group"
+                  >
+                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-orange-500" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-orange-700">{blockType.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Volunteers */}
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <UserGroupIcon className="h-4 w-4 mr-1 text-indigo-500" />
+                Volunteers
+              </h4>
+              <div className="space-y-1">
+                {blockTypes.filter(block => block.category === 'volunteers').map((blockType) => (
+                  <div
+                    key={blockType.type}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, blockType)}
+                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-indigo-300 hover:bg-indigo-50 transition-colors group"
+                  >
+                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-indigo-500" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-indigo-700">{blockType.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Announcements */}
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <MegaphoneIcon className="h-4 w-4 mr-1 text-red-500" />
+                Announcements
+              </h4>
+              <div className="space-y-1">
+                {blockTypes.filter(block => block.category === 'announcements').map((blockType) => (
+                  <div
+                    key={blockType.type}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, blockType)}
+                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-red-300 hover:bg-red-50 transition-colors group"
+                  >
+                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-red-500" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-red-700">{blockType.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Interactive Elements */}
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <HeartIcon className="h-4 w-4 mr-1 text-pink-500" />
+                Interactive
+              </h4>
+              <div className="space-y-1">
+                {blockTypes.filter(block => block.category === 'interactive').map((blockType) => (
+                  <div
+                    key={blockType.type}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, blockType)}
+                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-pink-300 hover:bg-pink-50 transition-colors group"
+                  >
+                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-pink-500" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-pink-700">{blockType.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Academic & School Elements */}
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <AcademicCapIcon className="h-4 w-4 mr-1 text-teal-500" />
+                Academic
+              </h4>
+              <div className="space-y-1">
+                {blockTypes.filter(block => block.category === 'academic').map((blockType) => (
+                  <div
+                    key={blockType.type}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, blockType)}
+                    className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-teal-300 hover:bg-teal-50 transition-colors group"
+                  >
+                    <blockType.icon className="h-4 w-4 text-gray-500 mr-2 group-hover:text-teal-500" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-teal-700">{blockType.name}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -529,423 +2306,648 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
             ref={canvasRef}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
-            className={`mx-auto bg-white shadow-lg rounded-lg overflow-hidden ${
+            className={`mx-auto bg-white shadow-lg rounded-lg min-h-96 ${
               previewMode === 'mobile' ? 'max-w-sm' : 'max-w-2xl'
             }`}
-            style={{ minHeight: '600px' }}
           >
             {template.design_json.blocks.length === 0 ? (
-              <div className="flex items-center justify-center h-96 border-2 border-dashed border-gray-300">
+              <div className="flex items-center justify-center h-96 text-gray-500">
                 <div className="text-center">
-                  <PlusIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-500">Drag blocks here to start building your email</p>
+                  <DocumentDuplicateIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                  <p className="text-lg font-medium">Start building your email</p>
+                  <p className="text-sm">Drag blocks from the sidebar or choose a template</p>
                 </div>
               </div>
             ) : (
-              template.design_json.blocks.map((block, index) => (
-                <EmailBlock
-                  key={block.id}
-                  block={block}
-                  isSelected={selectedBlock === block.id}
-                  onSelect={() => setSelectedBlock(block.id)}
-                  onUpdate={(content) => updateBlock(block.id, content)}
-                  onDelete={() => deleteBlock(block.id)}
-                  onMoveUp={() => moveBlock(block.id, 'up')}
-                  onMoveDown={() => moveBlock(block.id, 'down')}
-                  canMoveUp={index > 0}
-                  canMoveDown={index < template.design_json.blocks.length - 1}
-                />
-              ))
+              <div className="space-y-0">
+                {template.design_json.blocks.map((block, index) => (
+                  <div
+                    key={block.id}
+                    className={`relative group ${selectedBlock === block.id ? 'ring-2 ring-blue-500' : ''}`}
+                    onClick={() => setSelectedBlock(block.id)}
+                  >
+                    {renderBlock(block)}
+                    
+                    {/* Block Controls */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex space-x-1">
+                        {index > 0 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              moveBlock(block.id, 'up');
+                            }}
+                            className="p-1 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50"
+                          >
+                            <ArrowUpIcon className="h-3 w-3" />
+                          </button>
+                        )}
+                        {index < template.design_json.blocks.length - 1 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              moveBlock(block.id, 'down');
+                            }}
+                            className="p-1 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50"
+                          >
+                            <ArrowDownIcon className="h-3 w-3" />
+                          </button>
+                        )}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteBlock(block.id);
+                          }}
+                          className="p-1 bg-white border border-gray-300 rounded shadow-sm hover:bg-red-50 hover:border-red-300"
+                        >
+                          <TrashIcon className="h-3 w-3 text-red-500" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>
 
-        {/* Properties Panel */}
+        {/* Right-Side Properties Panel */}
         {selectedBlock && (
-          <BlockPropertiesPanel
-            block={template.design_json.blocks.find(b => b.id === selectedBlock)}
-            onUpdate={(content) => updateBlock(selectedBlock, content)}
-            onClose={() => setSelectedBlock(null)}
-          />
+          <div className="w-80 bg-white border-l border-gray-200 p-4 overflow-y-auto">
+            <div className="mb-4">
+              <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                <PaintBrushIcon className="h-5 w-5 mr-2 text-blue-600" />
+                Block Properties
+              </h3>
+              <div className="text-sm text-gray-600 mb-4">
+                Editing: {blockTypes.find(bt => bt.type === template.design_json.blocks.find(b => b.id === selectedBlock)?.type)?.name || 'Block'}
+              </div>
+            </div>
+
+            {(() => {
+              const block = template.design_json.blocks.find(b => b.id === selectedBlock);
+              if (!block) return null;
+
+              const { content } = block;
+
+              return (
+                <div className="space-y-4">
+                  {/* Common Properties for All Blocks */}
+                  {(block.type === 'header' || block.type === 'text' || block.type === 'announcement') && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Text Content</label>
+                        <textarea
+                          value={content.text || content.title || content.message || ''}
+                          onChange={(e) => {
+                            const key = content.text !== undefined ? 'text' : 
+                                       content.title !== undefined ? 'title' : 'message';
+                            updateBlock(selectedBlock, { [key]: e.target.value });
+                          }}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          rows={3}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Font Size</label>
+                          <select
+                            value={content.fontSize || '16px'}
+                            onChange={(e) => updateBlock(selectedBlock, { fontSize: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          >
+                            <option value="12px">12px</option>
+                            <option value="14px">14px</option>
+                            <option value="16px">16px</option>
+                            <option value="18px">18px</option>
+                            <option value="20px">20px</option>
+                            <option value="24px">24px</option>
+                            <option value="28px">28px</option>
+                            <option value="32px">32px</option>
+                            <option value="36px">36px</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Font Weight</label>
+                          <select
+                            value={content.fontWeight || 'normal'}
+                            onChange={(e) => updateBlock(selectedBlock, { fontWeight: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          >
+                            <option value="normal">Normal</option>
+                            <option value="bold">Bold</option>
+                            <option value="600">Semi-Bold</option>
+                            <option value="300">Light</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Text Alignment</label>
+                        <div className="flex space-x-2">
+                          {['left', 'center', 'right'].map(align => (
+                            <button
+                              key={align}
+                              onClick={() => updateBlock(selectedBlock, { textAlign: align })}
+                              className={`px-3 py-2 text-sm border rounded-md ${
+                                (content.textAlign || 'left') === align 
+                                  ? 'bg-blue-100 border-blue-300 text-blue-700' 
+                                  : 'border-gray-300 hover:bg-gray-50'
+                              }`}
+                            >
+                              {align.charAt(0).toUpperCase() + align.slice(1)}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Text Color</label>
+                        <input
+                          type="color"
+                          value={content.color || content.titleColor || '#374151'}
+                          onChange={(e) => {
+                            const key = content.color !== undefined ? 'color' : 'titleColor';
+                            updateBlock(selectedBlock, { [key]: e.target.value });
+                          }}
+                          className="w-full h-10 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Background Color for All Blocks */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Background Color</label>
+                    <input
+                      type="color"
+                      value={content.backgroundColor || '#ffffff'}
+                      onChange={(e) => updateBlock(selectedBlock, { backgroundColor: e.target.value })}
+                      className="w-full h-10 border border-gray-300 rounded-md"
+                    />
+                  </div>
+
+                  {/* Padding Control */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Padding</label>
+                    <input
+                      type="text"
+                      value={content.padding || '20px'}
+                      onChange={(e) => updateBlock(selectedBlock, { padding: e.target.value })}
+                      placeholder="e.g., 20px or 10px 20px"
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                    />
+                  </div>
+
+                  {/* Image-specific properties */}
+                  {block.type === 'image' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                        <input
+                          type="url"
+                          value={content.src || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { src: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          placeholder="https://example.com/image.jpg"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Alt Text</label>
+                        <input
+                          type="text"
+                          value={content.alt || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { alt: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          placeholder="Describe the image"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Width</label>
+                        <select
+                          value={content.width || '100%'}
+                          onChange={(e) => updateBlock(selectedBlock, { width: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        >
+                          <option value="100%">Full Width</option>
+                          <option value="75%">75%</option>
+                          <option value="50%">50%</option>
+                          <option value="25%">25%</option>
+                          <option value="300px">300px</option>
+                          <option value="400px">400px</option>
+                          <option value="500px">500px</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Button-specific properties */}
+                  {block.type === 'button' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Button Text</label>
+                        <input
+                          type="text"
+                          value={content.text || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { text: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Link URL</label>
+                        <input
+                          type="url"
+                          value={content.href || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { href: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          placeholder="https://example.com"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Button Color</label>
+                          <input
+                            type="color"
+                            value={content.backgroundColor || '#3b82f6'}
+                            onChange={(e) => updateBlock(selectedBlock, { backgroundColor: e.target.value })}
+                            className="w-full h-10 border border-gray-300 rounded-md"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Text Color</label>
+                          <input
+                            type="color"
+                            value={content.color || '#ffffff'}
+                            onChange={(e) => updateBlock(selectedBlock, { color: e.target.value })}
+                            className="w-full h-10 border border-gray-300 rounded-md"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Border Radius</label>
+                        <select
+                          value={content.borderRadius || '6px'}
+                          onChange={(e) => updateBlock(selectedBlock, { borderRadius: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        >
+                          <option value="0px">Square</option>
+                          <option value="4px">Slightly Rounded</option>
+                          <option value="6px">Rounded</option>
+                          <option value="12px">Very Rounded</option>
+                          <option value="50px">Pill Shape</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Donation-specific properties */}
+                  {block.type === 'donation' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Campaign Title</label>
+                        <input
+                          type="text"
+                          value={content.title || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { title: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea
+                          value={content.description || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { description: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Current Amount</label>
+                          <input
+                            type="number"
+                            value={content.currentAmount || 0}
+                            onChange={(e) => updateBlock(selectedBlock, { currentAmount: Number(e.target.value) })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Goal Amount</label>
+                          <input
+                            type="number"
+                            value={content.goalAmount || 10000}
+                            onChange={(e) => updateBlock(selectedBlock, { goalAmount: Number(e.target.value) })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Progress Bar Color</label>
+                        <input
+                          type="color"
+                          value={content.progressColor || '#f59e0b'}
+                          onChange={(e) => updateBlock(selectedBlock, { progressColor: e.target.value })}
+                          className="w-full h-10 border border-gray-300 rounded-md"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Button Text</label>
+                        <input
+                          type="text"
+                          value={content.buttonText || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { buttonText: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Volunteer-specific properties */}
+                  {block.type === 'volunteer' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                        <input
+                          type="text"
+                          value={content.title || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { title: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea
+                          value={content.description || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { description: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          rows={2}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Opportunities (one per line)</label>
+                        <textarea
+                          value={content.opportunities?.join('\n') || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { 
+                            opportunities: e.target.value.split('\n').filter(line => line.trim()) 
+                          })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          rows={3}
+                          placeholder="Event Setup&#10;Bake Sale&#10;Clean Up"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Button Text</label>
+                        <input
+                          type="text"
+                          value={content.buttonText || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { buttonText: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Event-specific properties */}
+                  {block.type === 'event' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Event Title</label>
+                        <input
+                          type="text"
+                          value={content.title || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { title: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                          <input
+                            type="date"
+                            value={content.date || ''}
+                            onChange={(e) => updateBlock(selectedBlock, { date: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
+                          <input
+                            type="text"
+                            value={content.time || ''}
+                            onChange={(e) => updateBlock(selectedBlock, { time: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                            placeholder="10:00 AM - 4:00 PM"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                        <input
+                          type="text"
+                          value={content.location || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { location: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea
+                          value={content.description || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { description: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          rows={3}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Event Image URL</label>
+                        <input
+                          type="url"
+                          value={content.image || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { image: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          placeholder="https://example.com/event-image.jpg"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Divider-specific properties */}
+                  {block.type === 'divider' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Line Style</label>
+                        <select
+                          value={content.style || 'solid'}
+                          onChange={(e) => updateBlock(selectedBlock, { style: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        >
+                          <option value="solid">Solid</option>
+                          <option value="dashed">Dashed</option>
+                          <option value="dotted">Dotted</option>
+                        </select>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Thickness</label>
+                          <select
+                            value={content.thickness || '2px'}
+                            onChange={(e) => updateBlock(selectedBlock, { thickness: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          >
+                            <option value="1px">1px</option>
+                            <option value="2px">2px</option>
+                            <option value="3px">3px</option>
+                            <option value="4px">4px</option>
+                            <option value="5px">5px</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Width</label>
+                          <select
+                            value={content.width || '80%'}
+                            onChange={(e) => updateBlock(selectedBlock, { width: e.target.value })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          >
+                            <option value="100%">Full Width</option>
+                            <option value="80%">80%</option>
+                            <option value="60%">60%</option>
+                            <option value="40%">40%</option>
+                            <option value="20%">20%</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Line Color</label>
+                        <input
+                          type="color"
+                          value={content.color || '#e5e7eb'}
+                          onChange={(e) => updateBlock(selectedBlock, { color: e.target.value })}
+                          className="w-full h-10 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Spacer-specific properties */}
+                  {block.type === 'spacer' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Height</label>
+                      <select
+                        value={content.height || '30px'}
+                        onChange={(e) => updateBlock(selectedBlock, { height: e.target.value })}
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                      >
+                        <option value="10px">10px</option>
+                        <option value="20px">20px</option>
+                        <option value="30px">30px</option>
+                        <option value="40px">40px</option>
+                        <option value="50px">50px</option>
+                        <option value="60px">60px</option>
+                        <option value="80px">80px</option>
+                        <option value="100px">100px</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {/* Quote-specific properties */}
+                  {block.type === 'quote' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Quote Text</label>
+                        <textarea
+                          value={content.text || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { text: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                          rows={3}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Author</label>
+                        <input
+                          type="text"
+                          value={content.author || ''}
+                          onChange={(e) => updateBlock(selectedBlock, { author: e.target.value })}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Quote Color</label>
+                          <input
+                            type="color"
+                            value={content.textColor || '#475569'}
+                            onChange={(e) => updateBlock(selectedBlock, { textColor: e.target.value })}
+                            className="w-full h-10 border border-gray-300 rounded-md"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Border Color</label>
+                          <input
+                            type="color"
+                            value={content.borderColor || '#3b82f6'}
+                            onChange={(e) => updateBlock(selectedBlock, { borderColor: e.target.value })}
+                            className="w-full h-10 border border-gray-300 rounded-md"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Delete Block Button */}
+                  <div className="pt-4 border-t border-gray-200">
+                    <button
+                      onClick={() => {
+                        deleteBlock(selectedBlock);
+                        setSelectedBlock(null);
+                      }}
+                      className="w-full flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                    >
+                      <TrashIcon className="h-4 w-4 mr-2" />
+                      Delete Block
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
         )}
       </div>
 
-      {/* Preview Modal */}
-      {showPreview && (
-        <EmailPreviewModal
-          html={generateHTML()}
-          subject={template.subject}
-          onClose={() => setShowPreview(false)}
+      {/* Template Library Modal */}
+      {showTemplateLibrary && (
+        <TemplateLibraryModal
+          isOpen={showTemplateLibrary}
+          onSelectTemplate={handleTemplateSelect}
+          onClose={() => setShowTemplateLibrary(false)}
         />
       )}
-    </div>
-  );
-};
-
-// Email Block Component
-const EmailBlock = ({ 
-  block, 
-  isSelected, 
-  onSelect, 
-  onUpdate, 
-  onDelete, 
-  onMoveUp, 
-  onMoveDown, 
-  canMoveUp, 
-  canMoveDown 
-}) => {
-  const { content } = block;
-
-  const renderBlock = () => {
-    switch (block.type) {
-      case 'header':
-        return (
-          <div 
-            style={{ 
-              backgroundColor: content.backgroundColor, 
-              padding: content.padding, 
-              textAlign: content.textAlign 
-            }}
-          >
-            <h1 
-              style={{ 
-                margin: 0, 
-                fontSize: content.fontSize, 
-                fontWeight: content.fontWeight, 
-                color: content.color 
-              }}
-            >
-              {content.text}
-            </h1>
-          </div>
-        );
-      case 'text':
-        return (
-          <div style={{ padding: content.padding, textAlign: content.textAlign }}>
-            <p 
-              style={{ 
-                margin: 0, 
-                fontSize: content.fontSize, 
-                fontWeight: content.fontWeight, 
-                color: content.color 
-              }}
-            >
-              {content.text}
-            </p>
-          </div>
-        );
-      case 'image':
-        return (
-          <div style={{ padding: content.padding, textAlign: content.textAlign }}>
-            <img 
-              src={content.src} 
-              alt={content.alt} 
-              style={{ width: content.width, height: 'auto', display: 'block', margin: '0 auto' }}
-            />
-          </div>
-        );
-      case 'button':
-        return (
-          <div style={{ padding: content.padding, textAlign: content.textAlign }}>
-            <a 
-              href={content.href}
-              style={{ 
-                backgroundColor: content.backgroundColor, 
-                color: content.color, 
-                padding: content.padding, 
-                borderRadius: content.borderRadius, 
-                fontSize: content.fontSize, 
-                fontWeight: content.fontWeight, 
-                textDecoration: 'none',
-                display: 'inline-block'
-              }}
-            >
-              {content.text}
-            </a>
-          </div>
-        );
-      case 'divider':
-        return (
-          <div style={{ margin: content.margin }}>
-            <hr 
-              style={{ 
-                border: 'none', 
-                height: content.height, 
-                backgroundColor: content.backgroundColor 
-              }} 
-            />
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div
-      className={`relative group ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
-      onClick={onSelect}
-    >
-      {renderBlock()}
-      
-      {/* Block Controls */}
-      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="flex space-x-1 bg-white shadow-lg rounded-md p-1">
-          {canMoveUp && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
-              className="p-1 hover:bg-gray-100 rounded"
-            >
-              ↑
-            </button>
-          )}
-          {canMoveDown && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
-              className="p-1 hover:bg-gray-100 rounded"
-            >
-              ↓
-            </button>
-          )}
-          <button
-            onClick={(e) => { e.stopPropagation(); onDelete(); }}
-            className="p-1 hover:bg-red-100 rounded text-red-600"
-          >
-            <TrashIcon className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Block Properties Panel Component
-const BlockPropertiesPanel = ({ block, onUpdate, onClose }) => {
-  if (!block) return null;
-
-  const { content } = block;
-
-  return (
-    <div className="w-80 bg-white border-l border-gray-200 p-4 overflow-y-auto">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-gray-900">Block Properties</h3>
-        <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-          ×
-        </button>
-      </div>
-
-      <div className="space-y-4">
-        {block.type === 'header' && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
-              <input
-                type="text"
-                value={content.text}
-                onChange={(e) => onUpdate({ text: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Font Size</label>
-              <input
-                type="text"
-                value={content.fontSize}
-                onChange={(e) => onUpdate({ fontSize: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Text Color</label>
-              <input
-                type="color"
-                value={content.color}
-                onChange={(e) => onUpdate({ color: e.target.value })}
-                className="w-full h-10 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
-              <input
-                type="color"
-                value={content.backgroundColor}
-                onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
-                className="w-full h-10 border border-gray-300 rounded-md"
-              />
-            </div>
-          </>
-        )}
-
-        {block.type === 'text' && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
-              <textarea
-                value={content.text}
-                onChange={(e) => onUpdate({ text: e.target.value })}
-                rows={4}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Font Size</label>
-              <input
-                type="text"
-                value={content.fontSize}
-                onChange={(e) => onUpdate({ fontSize: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Text Color</label>
-              <input
-                type="color"
-                value={content.color}
-                onChange={(e) => onUpdate({ color: e.target.value })}
-                className="w-full h-10 border border-gray-300 rounded-md"
-              />
-            </div>
-          </>
-        )}
-
-        {block.type === 'image' && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-              <input
-                type="url"
-                value={content.src}
-                onChange={(e) => onUpdate({ src: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Alt Text</label>
-              <input
-                type="text"
-                value={content.alt}
-                onChange={(e) => onUpdate({ alt: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Width</label>
-              <input
-                type="text"
-                value={content.width}
-                onChange={(e) => onUpdate({ width: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-          </>
-        )}
-
-        {block.type === 'button' && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
-              <input
-                type="text"
-                value={content.text}
-                onChange={(e) => onUpdate({ text: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Link URL</label>
-              <input
-                type="url"
-                value={content.href}
-                onChange={(e) => onUpdate({ href: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
-              <input
-                type="color"
-                value={content.backgroundColor}
-                onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
-                className="w-full h-10 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Text Color</label>
-              <input
-                type="color"
-                value={content.color}
-                onChange={(e) => onUpdate({ color: e.target.value })}
-                className="w-full h-10 border border-gray-300 rounded-md"
-              />
-            </div>
-          </>
-        )}
-
-        {block.type === 'divider' && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
-              <input
-                type="color"
-                value={content.backgroundColor}
-                onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
-                className="w-full h-10 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Height</label>
-              <input
-                type="text"
-                value={content.height}
-                onChange={(e) => onUpdate({ height: e.target.value })}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-              />
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// Email Preview Modal Component
-const EmailPreviewModal = ({ html, subject, onClose }) => {
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">Email Preview</h3>
-            <p className="text-sm text-gray-500">Subject: {subject || 'No subject'}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <span className="sr-only">Close</span>
-            ×
-          </button>
-        </div>
-        
-        <div className="p-4 overflow-y-auto max-h-[calc(90vh-120px)]">
-          <div className="border border-gray-300 rounded-lg overflow-hidden">
-            <iframe
-              srcDoc={html}
-              className="w-full h-96 border-none"
-              title="Email Preview"
-            />
-          </div>
-        </div>
-        
-        <div className="flex justify-end space-x-3 p-4 border-t border-gray-200">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-          >
-            Close
-          </button>
-        </div>
-      </div>
     </div>
   );
 };
