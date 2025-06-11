@@ -479,23 +479,69 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
               <button
                 onClick={() => setPreviewMode('desktop')}
                 className={`p-2 rounded ${previewMode === 'desktop' ? 'bg-white shadow' : ''}`}
+                title="Desktop Preview"
               >
                 <ComputerDesktopIcon className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setPreviewMode('mobile')}
                 className={`p-2 rounded ${previewMode === 'mobile' ? 'bg-white shadow' : ''}`}
+                title="Mobile Preview"
               >
                 <DevicePhoneMobileIcon className="h-4 w-4" />
               </button>
             </div>
+
+            <button
+              onClick={() => setShowTemplateLibrary(true)}
+              className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              title="Browse Templates"
+            >
+              <SparklesIcon className="h-4 w-4" />
+              <span>Templates</span>
+            </button>
             
             <button
               onClick={() => setShowPreview(!showPreview)}
               className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              title="Preview Email"
             >
               <EyeIcon className="h-4 w-4" />
               <span>Preview</span>
+            </button>
+
+            <button
+              onClick={() => {
+                // Copy template functionality
+                navigator.clipboard.writeText(JSON.stringify(template.design_json));
+                alert('Template copied to clipboard!');
+              }}
+              className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              title="Copy Template"
+            >
+              <DocumentDuplicateIcon className="h-4 w-4" />
+              <span>Copy</span>
+            </button>
+
+            <button
+              onClick={() => {
+                // Export as HTML functionality
+                const htmlContent = generateHTML();
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${template.name || 'email-template'}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              }}
+              className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              title="Export HTML"
+            >
+              <ArrowDownIcon className="h-4 w-4" />
+              <span>Export</span>
             </button>
             
             <button
@@ -700,7 +746,8 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       {/* Template Library Modal */}
       {showTemplateLibrary && (
         <TemplateLibraryModal
-          onSelect={handleTemplateSelect}
+          isOpen={showTemplateLibrary}
+          onSelectTemplate={handleTemplateSelect}
           onClose={() => setShowTemplateLibrary(false)}
         />
       )}
