@@ -121,6 +121,25 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
         fontSize: '16px',
         fontWeight: '600'
       }
+    },
+    {
+      type: 'donation',
+      name: 'Donation Progress',
+      icon: GiftIcon,
+      category: 'fundraising',
+      defaultContent: {
+        title: 'Help Us Reach Our Goal!',
+        description: 'Support our fundraising campaign',
+        currentAmount: 15000,
+        goalAmount: 25000,
+        backgroundColor: '#fef3c7',
+        titleColor: '#92400e',
+        textColor: '#374151',
+        progressColor: '#f59e0b',
+        buttonText: 'Donate Now',
+        buttonColor: '#f59e0b',
+        padding: '20px'
+      }
     }
   ];
 
@@ -246,16 +265,8 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
         const progressPercentage = Math.round((block.content.currentAmount / block.content.goalAmount) * 100);
         convertedBlocks.push({
           id: blockId,
-          type: 'text',
-          content: {
-            text: `${block.content.title}\n\n${block.content.description}\n\nGoal: $${block.content.goalAmount?.toLocaleString()}\nRaised: $${block.content.currentAmount?.toLocaleString()} (${progressPercentage}%)`,
-            fontSize: '16px',
-            fontWeight: 'normal',
-            textAlign: 'left',
-            color: '#374151',
-            backgroundColor: block.content.backgroundColor || '#f0f9ff',
-            padding: '20px'
-          }
+          type: 'donation',
+          content: { ...block.content }
         });
       } else if (block.type === 'volunteer') {
         convertedBlocks.push({
@@ -548,6 +559,95 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
             >
               {content.text}
             </a>
+          </div>
+        );
+      case 'donation':
+        const progressPercentage = Math.round((content.currentAmount / content.goalAmount) * 100);
+        return (
+          <div style={{ 
+            padding: content.padding, 
+            backgroundColor: content.backgroundColor,
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+              <h2 style={{ 
+                margin: '0 0 10px 0', 
+                fontSize: '20px', 
+                fontWeight: 'bold', 
+                color: content.titleColor 
+              }}>
+                {content.title}
+              </h2>
+              <p style={{ 
+                margin: '0 0 15px 0', 
+                fontSize: '16px', 
+                color: content.textColor 
+              }}>
+                {content.description}
+              </p>
+            </div>
+            
+            <div style={{ marginBottom: '15px' }}>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                marginBottom: '8px',
+                fontSize: '14px',
+                fontWeight: 'bold'
+              }}>
+                <span style={{ color: content.textColor }}>
+                  Raised: ${content.currentAmount?.toLocaleString()}
+                </span>
+                <span style={{ color: content.textColor }}>
+                  Goal: ${content.goalAmount?.toLocaleString()}
+                </span>
+              </div>
+              
+              <div style={{ 
+                width: '100%', 
+                height: '20px', 
+                backgroundColor: '#e5e7eb', 
+                borderRadius: '10px',
+                overflow: 'hidden'
+              }}>
+                <div style={{ 
+                  width: `${Math.min(progressPercentage, 100)}%`, 
+                  height: '100%', 
+                  backgroundColor: content.progressColor,
+                  borderRadius: '10px',
+                  transition: 'width 0.3s ease'
+                }}></div>
+              </div>
+              
+              <div style={{ 
+                textAlign: 'center', 
+                marginTop: '8px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                color: content.textColor
+              }}>
+                {progressPercentage}% of goal reached
+              </div>
+            </div>
+            
+            <div style={{ textAlign: 'center' }}>
+              <a 
+                href="#donate" 
+                style={{ 
+                  backgroundColor: content.buttonColor, 
+                  color: '#ffffff', 
+                  padding: '12px 24px', 
+                  borderRadius: '6px', 
+                  fontSize: '16px', 
+                  fontWeight: 'bold', 
+                  textDecoration: 'none',
+                  display: 'inline-block'
+                }}
+              >
+                {content.buttonText}
+              </a>
+            </div>
           </div>
         );
       default:
