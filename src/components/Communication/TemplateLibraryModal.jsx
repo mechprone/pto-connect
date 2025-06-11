@@ -28,6 +28,7 @@ const TemplateLibraryModal = ({ isOpen, onClose, onSelectTemplate }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedStyle, setSelectedStyle] = useState('all');
+  const [previewTemplate, setPreviewTemplate] = useState(null);
 
   // Comprehensive template library with 40+ professional templates
   const templateLibrary = [
@@ -731,8 +732,7 @@ const TemplateLibraryModal = ({ isOpen, onClose, onSelectTemplate }) => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            // TODO: Open full preview modal
-                            alert('Full preview coming soon!');
+                            setPreviewTemplate(template);
                           }}
                           className="p-2 bg-white bg-opacity-90 rounded-full shadow-lg hover:bg-opacity-100 transition-all"
                           title="Preview Template"
@@ -787,6 +787,209 @@ const TemplateLibraryModal = ({ isOpen, onClose, onSelectTemplate }) => {
           </div>
         </div>
       </div>
+
+      {/* Template Preview Modal */}
+      {previewTemplate && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-60">
+          <div className="bg-white rounded-lg shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
+            {/* Preview Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">{previewTemplate.name}</h3>
+                <p className="text-sm text-gray-600">{previewTemplate.description}</p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => {
+                    onSelectTemplate(previewTemplate);
+                    setPreviewTemplate(null);
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Use This Template
+                </button>
+                <button
+                  onClick={() => setPreviewTemplate(null)}
+                  className="text-gray-400 hover:text-gray-600 p-2"
+                >
+                  <XMarkIcon className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+
+            {/* Preview Content */}
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)] bg-gray-100">
+              <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+                {/* Render Template Preview */}
+                {previewTemplate.blocks.map((block, index) => {
+                  switch (block.type) {
+                    case 'hero':
+                      return (
+                        <div
+                          key={index}
+                          className="text-center text-white p-12"
+                          style={{ 
+                            background: block.content.backgroundImage || '#3b82f6',
+                            color: block.content.titleColor || '#ffffff'
+                          }}
+                        >
+                          <h1 className="text-3xl font-bold mb-4" style={{ color: block.content.titleColor }}>
+                            {block.content.title}
+                          </h1>
+                          <p className="text-lg opacity-90" style={{ color: block.content.subtitleColor }}>
+                            {block.content.subtitle}
+                          </p>
+                        </div>
+                      );
+                    
+                    case 'header':
+                      return (
+                        <div
+                          key={index}
+                          className="text-center p-8"
+                          style={{ 
+                            backgroundColor: block.content.backgroundColor || '#f9fafb',
+                            color: block.content.color || '#1f2937'
+                          }}
+                        >
+                          <h2 className="text-2xl font-bold">
+                            {block.content.text}
+                          </h2>
+                        </div>
+                      );
+                    
+                    case 'text':
+                      return (
+                        <div key={index} className="p-6">
+                          <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                            {block.content.text}
+                          </p>
+                        </div>
+                      );
+                    
+                    case 'calendar':
+                      return (
+                        <div
+                          key={index}
+                          className="p-6 m-4 rounded-lg text-center"
+                          style={{ 
+                            backgroundColor: block.content.backgroundColor || '#eff6ff',
+                            color: block.content.textColor || '#1d4ed8'
+                          }}
+                        >
+                          <div className="space-y-2">
+                            <h3 className="text-xl font-semibold">{block.content.eventTitle}</h3>
+                            <p className="text-lg">📅 {new Date(block.content.eventDate).toLocaleDateString()}</p>
+                            <p className="text-lg">🕐 {block.content.eventTime}</p>
+                            <p className="text-lg">📍 {block.content.location}</p>
+                          </div>
+                        </div>
+                      );
+                    
+                    case 'donation':
+                      const progressPercentage = (block.content.currentAmount / block.content.goalAmount) * 100;
+                      return (
+                        <div
+                          key={index}
+                          className="p-6 m-4 rounded-lg"
+                          style={{ backgroundColor: block.content.backgroundColor || '#f0f9ff' }}
+                        >
+                          <h3 className="text-xl font-bold mb-3">{block.content.title}</h3>
+                          <p className="text-gray-700 mb-4">{block.content.description}</p>
+                          
+                          {/* Progress Bar */}
+                          <div className="mb-4">
+                            <div className="flex justify-between text-sm mb-2">
+                              <span>Raised: ${block.content.currentAmount?.toLocaleString()}</span>
+                              <span>Goal: ${block.content.goalAmount?.toLocaleString()}</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-3">
+                              <div
+                                className="h-3 rounded-full transition-all duration-300"
+                                style={{ 
+                                  width: `${Math.min(progressPercentage, 100)}%`,
+                                  backgroundColor: block.content.buttonColor || '#3b82f6'
+                                }}
+                              ></div>
+                            </div>
+                            <div className="text-center mt-2 text-sm text-gray-600">
+                              {Math.round(progressPercentage)}% of goal reached
+                            </div>
+                          </div>
+                          
+                          <button
+                            className="w-full py-3 px-6 rounded-lg text-white font-semibold"
+                            style={{ backgroundColor: block.content.buttonColor || '#3b82f6' }}
+                          >
+                            Donate Now
+                          </button>
+                        </div>
+                      );
+                    
+                    case 'volunteer':
+                      return (
+                        <div
+                          key={index}
+                          className="p-6 m-4 rounded-lg"
+                          style={{ 
+                            backgroundColor: block.content.backgroundColor || '#faf5ff',
+                            color: block.content.textColor || '#7c3aed'
+                          }}
+                        >
+                          <h3 className="text-xl font-bold mb-3">{block.content.title}</h3>
+                          <p className="mb-4">{block.content.description}</p>
+                          
+                          {block.content.opportunities && (
+                            <div className="mb-4">
+                              <h4 className="font-semibold mb-2">Volunteer Opportunities:</h4>
+                              <ul className="list-disc list-inside space-y-1">
+                                {block.content.opportunities.map((opportunity, idx) => (
+                                  <li key={idx}>{opportunity}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          
+                          <button className="bg-purple-600 text-white py-2 px-6 rounded-lg hover:bg-purple-700 transition-colors">
+                            Sign Up to Volunteer
+                          </button>
+                        </div>
+                      );
+                    
+                    case 'announcement':
+                      return (
+                        <div
+                          key={index}
+                          className="p-6 m-4 rounded-lg text-center"
+                          style={{ 
+                            backgroundColor: block.content.backgroundColor || '#fef2f2',
+                            color: block.content.textColor || '#991b1b'
+                          }}
+                        >
+                          <h3 
+                            className="text-xl font-bold mb-3"
+                            style={{ color: block.content.titleColor || '#dc2626' }}
+                          >
+                            {block.content.title}
+                          </h3>
+                          <p className="text-lg">{block.content.message}</p>
+                        </div>
+                      );
+                    
+                    default:
+                      return null;
+                  }
+                })}
+                
+                {/* Footer */}
+                <div className="p-6 bg-gray-50 text-center text-sm text-gray-600 border-t">
+                  <p>© 2024 Your PTO | <a href="#" className="text-blue-600">Contact Us</a> | <a href="#" className="text-blue-600">Unsubscribe</a></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
