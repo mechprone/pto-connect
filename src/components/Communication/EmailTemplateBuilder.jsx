@@ -59,6 +59,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
   const [showTemplateLibrary, setShowTemplateLibrary] = useState(false);
   const canvasRef = useRef(null);
   const autoSaveTimeoutRef = useRef(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Enhanced block types
   const blockTypes = [
@@ -376,10 +377,53 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     };
   }, [template, autoSave]);
 
+  // Load saved state from localStorage on component mount
   useEffect(() => {
-    if (templateId) {
+    if (!templateId && !isInitialized) {
+      const savedState = localStorage.getItem('emailTemplateBuilder_state');
+      if (savedState) {
+        try {
+          const parsedState = JSON.parse(savedState);
+          // Only restore if it's recent (within last 24 hours)
+          const isRecent = Date.now() - parsedState.timestamp < 24 * 60 * 60 * 1000;
+          if (isRecent && parsedState.template) {
+            console.log('Restoring saved template state:', parsedState.template);
+            setTemplate(parsedState.template);
+            setAutoSaveStatus('saved');
+            setLastSaved(new Date(parsedState.timestamp));
+          }
+        } catch (error) {
+          console.error('Error loading saved state:', error);
+          localStorage.removeItem('emailTemplateBuilder_state');
+        }
+      }
+      setIsInitialized(true);
+    } else if (templateId) {
       fetchTemplate();
     }
+  }, [templateId, isInitialized]);
+
+  // Save state to localStorage whenever template changes (but not during initial load)
+  useEffect(() => {
+    if (isInitialized && !templateId && (template.name || template.design_json.blocks.length > 0)) {
+      const stateToSave = {
+        template,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('emailTemplateBuilder_state', JSON.stringify(stateToSave));
+      console.log('Template state saved to localStorage');
+    }
+  }, [template, isInitialized, templateId]);
+
+  // Clear saved state when component unmounts or when template is saved
+  useEffect(() => {
+    return () => {
+      // Only clear if we're not editing an existing template
+      if (!templateId) {
+        console.log('Clearing saved template state on unmount');
+        localStorage.removeItem('emailTemplateBuilder_state');
+      }
+    };
   }, [templateId]);
 
   const fetchTemplate = async () => {
