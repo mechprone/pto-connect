@@ -331,14 +331,24 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     try {
       setAutoSaveStatus('saving');
       
+      // Check if API URL is configured
+      const apiUrl = import.meta.env.VITE_API_URL;
+      if (!apiUrl || apiUrl.includes('localhost')) {
+        // Skip auto-save if API is not configured or pointing to localhost
+        console.log('Auto-save skipped: API not available or in development mode');
+        setAutoSaveStatus('saved');
+        setLastSaved(new Date());
+        return;
+      }
+      
       const templateData = {
         ...template,
         html_content: generateHTML()
       };
 
       const url = templateId 
-        ? `${import.meta.env.VITE_API_URL}/api/communications/templates/${templateId}`
-        : `${import.meta.env.VITE_API_URL}/api/communications/templates`;
+        ? `${apiUrl}/communications/templates/${templateId}`
+        : `${apiUrl}/communications/templates`;
       
       const method = templateId ? 'PUT' : 'POST';
 
@@ -355,6 +365,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
         setAutoSaveStatus('saved');
         setLastSaved(new Date());
       } else {
+        console.warn('Auto-save failed:', response.status, response.statusText);
         setAutoSaveStatus('error');
       }
     } catch (err) {
@@ -432,7 +443,16 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
   const fetchTemplate = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/communications/templates/${templateId}`, {
+      
+      // Check if API URL is configured
+      const apiUrl = import.meta.env.VITE_API_URL;
+      if (!apiUrl || apiUrl.includes('localhost')) {
+        console.log('Template fetch skipped: API not available or in development mode');
+        setLoading(false);
+        return;
+      }
+      
+      const response = await fetch(`${apiUrl}/communications/templates/${templateId}`, {
         headers: {
           'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
           'Content-Type': 'application/json'
@@ -872,14 +892,34 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       setSaving(true);
       setError(null);
 
+      // Check if API URL is configured
+      const apiUrl = import.meta.env.VITE_API_URL;
+      if (!apiUrl || apiUrl.includes('localhost')) {
+        // For development mode, just simulate a successful save
+        console.log('Save simulated: API not available or in development mode');
+        
+        // Clear saved state since we're "saving"
+        localStorage.removeItem('emailTemplateBuilder_state');
+        
+        // Call onSave callback with mock data
+        onSave?.({
+          id: templateId || `mock-${Date.now()}`,
+          ...template,
+          html_content: generateHTML()
+        });
+        
+        setSaving(false);
+        return;
+      }
+
       const templateData = {
         ...template,
         html_content: generateHTML()
       };
 
       const url = templateId 
-        ? `${import.meta.env.VITE_API_URL}/api/communications/templates/${templateId}`
-        : `${import.meta.env.VITE_API_URL}/api/communications/templates`;
+        ? `${apiUrl}/communications/templates/${templateId}`
+        : `${apiUrl}/communications/templates`;
       
       const method = templateId ? 'PUT' : 'POST';
 
@@ -894,6 +934,8 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
 
       if (response.ok) {
         const data = await response.json();
+        // Clear saved state since we successfully saved
+        localStorage.removeItem('emailTemplateBuilder_state');
         onSave?.(data.data);
       } else {
         const errorData = await response.json();
