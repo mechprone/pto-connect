@@ -60,7 +60,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
   const canvasRef = useRef(null);
   const autoSaveTimeoutRef = useRef(null);
 
-  // Enhanced block types with more variety
+  // Enhanced block types
   const blockTypes = [
     {
       type: 'header',
@@ -120,93 +120,6 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
         fontSize: '16px',
         fontWeight: '600'
       }
-    },
-    {
-      type: 'divider',
-      name: 'Divider',
-      icon: Bars3Icon,
-      category: 'basic',
-      defaultContent: {
-        height: '1px',
-        backgroundColor: '#e5e7eb',
-        margin: '20px 0'
-      }
-    },
-    // Enhanced content blocks
-    {
-      type: 'hero',
-      name: 'Hero Section',
-      icon: StarIcon,
-      category: 'enhanced',
-      defaultContent: {
-        title: 'Welcome to Our PTO!',
-        subtitle: 'Building stronger communities together',
-        backgroundImage: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        titleColor: '#ffffff',
-        subtitleColor: '#e2e8f0',
-        padding: '60px 20px',
-        textAlign: 'center'
-      }
-    },
-    {
-      type: 'donation',
-      name: 'Donation Call',
-      icon: GiftIcon,
-      category: 'fundraising',
-      defaultContent: {
-        title: 'Support Our School',
-        description: 'Your donation helps fund amazing programs for our students.',
-        goalAmount: 5000,
-        currentAmount: 2500,
-        buttonText: 'Donate Now',
-        buttonColor: '#10b981',
-        backgroundColor: '#ecfdf5',
-        padding: '25px'
-      }
-    },
-    {
-      type: 'volunteer',
-      name: 'Volunteer Signup',
-      icon: AcademicCapIcon,
-      category: 'volunteers',
-      defaultContent: {
-        title: 'We Need Your Help!',
-        description: 'Join our amazing volunteer team and make a difference.',
-        opportunities: ['Event Setup', 'Classroom Helper', 'Fundraising'],
-        buttonText: 'Sign Up',
-        backgroundColor: '#fef7ff',
-        textColor: '#7c3aed',
-        padding: '20px'
-      }
-    },
-    {
-      type: 'announcement',
-      name: 'Announcement',
-      icon: MegaphoneIcon,
-      category: 'communication',
-      defaultContent: {
-        title: 'Important Announcement',
-        message: 'Please mark your calendars for our upcoming meeting.',
-        backgroundColor: '#fef2f2',
-        titleColor: '#dc2626',
-        textColor: '#991b1b',
-        padding: '20px'
-      }
-    },
-    {
-      type: 'calendar',
-      name: 'Calendar Event',
-      icon: CalendarIcon,
-      category: 'events',
-      defaultContent: {
-        eventTitle: 'PTO Meeting',
-        eventDate: '2024-11-01',
-        eventTime: '7:00 PM',
-        location: 'School Library',
-        backgroundColor: '#eff6ff',
-        textColor: '#1d4ed8',
-        padding: '20px'
-      }
     }
   ];
 
@@ -216,67 +129,17 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       category: 'events',
       blocks: [
         {
-          type: 'hero',
-          content: {
-            title: 'Fall Festival 2024',
-            subtitle: 'Join us for a day of fun, food, and community!',
-            backgroundImage: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-            titleColor: '#ffffff',
-            subtitleColor: '#fce7f3'
-          }
-        },
-        {
-          type: 'calendar',
-          content: {
-            eventTitle: 'Fall Festival',
-            eventDate: '2024-11-15',
-            eventTime: '10:00 AM - 4:00 PM',
-            location: 'School Playground'
-          }
-        }
-      ]
-    },
-    {
-      name: 'Fundraising Campaign',
-      category: 'fundraising',
-      blocks: [
-        {
           type: 'header',
           content: {
-            text: 'Help Us Reach Our Goal!',
-            backgroundColor: '#10b981',
+            text: 'Fall Festival 2024',
+            backgroundColor: '#3b82f6',
             color: '#ffffff'
           }
         },
         {
-          type: 'donation',
+          type: 'text',
           content: {
-            title: 'Support Our Technology Fund',
-            description: 'Help us bring new computers and tablets to every classroom.',
-            goalAmount: 10000,
-            currentAmount: 6500
-          }
-        }
-      ]
-    },
-    {
-      name: 'Volunteer Recruitment',
-      category: 'volunteers',
-      blocks: [
-        {
-          type: 'hero',
-          content: {
-            title: 'We Need Amazing Volunteers!',
-            subtitle: 'Join our team and make a difference in our school community',
-            backgroundImage: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-          }
-        },
-        {
-          type: 'volunteer',
-          content: {
-            title: 'Volunteer Opportunities',
-            description: 'Choose from various ways to help our school thrive.',
-            opportunities: ['Event Planning', 'Classroom Support', 'Fundraising', 'Communications']
+            text: 'Join us for a day of fun, food, and community!'
           }
         }
       ]
@@ -451,25 +314,6 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     setSelectedBlock(null);
   };
 
-  const moveBlock = (blockId, direction) => {
-    const blocks = [...template.design_json.blocks];
-    const index = blocks.findIndex(block => block.id === blockId);
-    
-    if (direction === 'up' && index > 0) {
-      [blocks[index], blocks[index - 1]] = [blocks[index - 1], blocks[index]];
-    } else if (direction === 'down' && index < blocks.length - 1) {
-      [blocks[index], blocks[index + 1]] = [blocks[index + 1], blocks[index]];
-    }
-
-    setTemplate(prev => ({
-      ...prev,
-      design_json: {
-        ...prev.design_json,
-        blocks
-      }
-    }));
-  };
-
   const renderBlock = (block) => {
     const { content } = block;
     
@@ -516,94 +360,6 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
             </a>
           </div>
         );
-      case 'divider':
-        return (
-          <div style={{ margin: content.margin }}>
-            <hr style={{ border: 'none', height: content.height, backgroundColor: content.backgroundColor }} />
-          </div>
-        );
-      case 'hero':
-        return (
-          <div style={{ background: content.backgroundImage, padding: content.padding, textAlign: content.textAlign }}>
-            <h1 style={{ margin: '0 0 10px 0', fontSize: '32px', fontWeight: 'bold', color: content.titleColor }}>
-              {content.title}
-            </h1>
-            <p style={{ margin: 0, fontSize: '18px', color: content.subtitleColor }}>
-              {content.subtitle}
-            </p>
-          </div>
-        );
-      case 'donation':
-        const progressPercentage = (content.currentAmount / content.goalAmount) * 100;
-        return (
-          <div style={{ backgroundColor: content.backgroundColor, padding: content.padding }}>
-            <h3 style={{ margin: '0 0 15px 0', fontSize: '24px', fontWeight: 'bold' }}>
-              {content.title}
-            </h3>
-            <p style={{ margin: '0 0 20px 0', fontSize: '16px' }}>
-              {content.description}
-            </p>
-            <div style={{ backgroundColor: '#e5e7eb', borderRadius: '10px', height: '20px', marginBottom: '15px' }}>
-              <div style={{ backgroundColor: content.buttonColor, height: '100%', borderRadius: '10px', width: `${progressPercentage}%` }}></div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-              <span>${content.currentAmount.toLocaleString()} raised</span>
-              <span>Goal: ${content.goalAmount.toLocaleString()}</span>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <a href="#" style={{ backgroundColor: content.buttonColor, color: '#ffffff', padding: '12px 24px', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold', display: 'inline-block' }}>
-                {content.buttonText}
-              </a>
-            </div>
-          </div>
-        );
-      case 'volunteer':
-        return (
-          <div style={{ backgroundColor: content.backgroundColor, padding: content.padding }}>
-            <h3 style={{ margin: '0 0 15px 0', fontSize: '24px', fontWeight: 'bold', color: content.textColor }}>
-              {content.title}
-            </h3>
-            <p style={{ margin: '0 0 20px 0', fontSize: '16px', color: content.textColor }}>
-              {content.description}
-            </p>
-            <div style={{ marginBottom: '20px' }}>
-              {content.opportunities.map((opportunity, index) => (
-                <div key={index} style={{ backgroundColor: '#ffffff', padding: '10px', margin: '5px 0', borderRadius: '4px', border: '1px solid #e5e7eb' }}>
-                  • {opportunity}
-                </div>
-              ))}
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <a href="#" style={{ backgroundColor: content.textColor, color: '#ffffff', padding: '12px 24px', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold', display: 'inline-block' }}>
-                {content.buttonText}
-              </a>
-            </div>
-          </div>
-        );
-      case 'announcement':
-        return (
-          <div style={{ backgroundColor: content.backgroundColor, padding: content.padding }}>
-            <h3 style={{ margin: '0 0 15px 0', fontSize: '22px', fontWeight: 'bold', color: content.titleColor }}>
-              📢 {content.title}
-            </h3>
-            <p style={{ margin: 0, fontSize: '16px', color: content.textColor }}>
-              {content.message}
-            </p>
-          </div>
-        );
-      case 'calendar':
-        return (
-          <div style={{ backgroundColor: content.backgroundColor, padding: content.padding }}>
-            <h3 style={{ margin: '0 0 15px 0', fontSize: '22px', fontWeight: 'bold', color: content.textColor }}>
-              📅 {content.eventTitle}
-            </h3>
-            <div style={{ fontSize: '16px', color: content.textColor }}>
-              <p style={{ margin: '5px 0' }}><strong>Date:</strong> {new Date(content.eventDate).toLocaleDateString()}</p>
-              <p style={{ margin: '5px 0' }}><strong>Time:</strong> {content.eventTime}</p>
-              <p style={{ margin: '5px 0' }}><strong>Location:</strong> {content.location}</p>
-            </div>
-          </div>
-        );
       default:
         return null;
     }
@@ -622,7 +378,6 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
             body { margin: 0; padding: 0; font-family: ${styles.fontFamily}; background-color: ${styles.backgroundColor}; }
             .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
             .block { margin: 0; }
-            .button { display: inline-block; text-decoration: none; border: none; cursor: pointer; }
           </style>
         </head>
         <body>
@@ -630,7 +385,10 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     `;
 
     blocks.forEach(block => {
-      html += `<div class="block">${renderBlock(block)}</div>`;
+      const blockHtml = renderBlock(block);
+      if (blockHtml) {
+        html += `<div class="block">${blockHtml.props.dangerouslySetInnerHTML?.__html || ''}</div>`;
+      }
     });
 
     html += `
@@ -844,4 +602,110 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
             >
               <SparklesIcon className="h-5 w-5 text-purple-600 mx-auto mb-1" />
               <div className="text-sm font-medium text-purple-700">Other Templates</div>
-              <div className="text-xs text-purple
+              <div className="text-xs text-purple-600">Browse 40+ professional templates</div>
+            </button>
+          </div>
+
+          {/* Block Types */}
+          <div className="mb-6">
+            <h3 className="font-semibold text-gray-900 mb-3">Content Blocks</h3>
+            <div className="space-y-2">
+              {blockTypes.map((blockType) => (
+                <div
+                  key={blockType.type}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, blockType)}
+                  className="flex items-center p-2 border border-gray-200 rounded-lg cursor-move hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                >
+                  <blockType.icon className="h-4 w-4 text-gray-500 mr-2" />
+                  <span className="text-sm font-medium text-gray-700">{blockType.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Canvas */}
+        <div className="flex-1 p-6 overflow-y-auto">
+          <div
+            ref={canvasRef}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            className={`mx-auto bg-white shadow-lg rounded-lg min-h-96 ${
+              previewMode === 'mobile' ? 'max-w-sm' : 'max-w-2xl'
+            }`}
+          >
+            {template.design_json.blocks.length === 0 ? (
+              <div className="flex items-center justify-center h-96 text-gray-500">
+                <div className="text-center">
+                  <DocumentDuplicateIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                  <p className="text-lg font-medium">Start building your email</p>
+                  <p className="text-sm">Drag blocks from the sidebar or choose a template</p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-0">
+                {template.design_json.blocks.map((block, index) => (
+                  <div
+                    key={block.id}
+                    className={`relative group ${selectedBlock === block.id ? 'ring-2 ring-blue-500' : ''}`}
+                    onClick={() => setSelectedBlock(block.id)}
+                  >
+                    {renderBlock(block)}
+                    
+                    {/* Block Controls */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex space-x-1">
+                        {index > 0 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // moveBlock(block.id, 'up');
+                            }}
+                            className="p-1 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50"
+                          >
+                            <ArrowUpIcon className="h-3 w-3" />
+                          </button>
+                        )}
+                        {index < template.design_json.blocks.length - 1 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // moveBlock(block.id, 'down');
+                            }}
+                            className="p-1 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50"
+                          >
+                            <ArrowDownIcon className="h-3 w-3" />
+                          </button>
+                        )}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteBlock(block.id);
+                          }}
+                          className="p-1 bg-white border border-gray-300 rounded shadow-sm hover:bg-red-50 hover:border-red-300"
+                        >
+                          <TrashIcon className="h-3 w-3 text-red-500" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Template Library Modal */}
+      {showTemplateLibrary && (
+        <TemplateLibraryModal
+          onSelect={handleTemplateSelect}
+          onClose={() => setShowTemplateLibrary(false)}
+        />
+      )}
+    </div>
+  );
+};
+
+export default EmailTemplateBuilder;

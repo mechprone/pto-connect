@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, Edit, Trash2, Download, Paperclip,
-  AlertTriangle, CheckCircle, Clock, User, Tag, MessageSquare
+  AlertTriangle, CheckCircle, Clock, User, Tag, MessageSquare, Calendar
 } from 'lucide-react';
 
 const TransactionDetails = () => {
@@ -135,7 +135,7 @@ const TransactionDetails = () => {
                 <div>
                   <p className="text-sm text-gray-500">Category</p>
                   {/* Use > to prevent JSX parsing error */}
-                  <p className="font-medium text-gray-900">{transaction.category.name} > {transaction.subcategory.name}</p>
+                  <p className="font-medium text-gray-900">{transaction.category.name} &gt; {transaction.subcategory.name}</p>
                 </div>
               </div>
               <div className="flex items-start">

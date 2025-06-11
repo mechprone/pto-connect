@@ -20,9 +20,8 @@ import {
   MusicalNoteIcon,
   PaintBrushIcon,
   SunIcon,
-  SnowflakeIcon,
   FireIcon,
-  LeafIcon
+  BeakerIcon
 } from '@heroicons/react/24/outline';
 
 const TemplateLibraryModal = ({ isOpen, onClose, onSelectTemplate }) => {
@@ -594,7 +593,7 @@ const TemplateLibraryModal = ({ isOpen, onClose, onSelectTemplate }) => {
     { value: 'volunteers', label: 'Volunteers', icon: UserGroupIcon },
     { value: 'announcements', label: 'Announcements', icon: MegaphoneIcon },
     { value: 'meetings', label: 'Meetings', icon: BuildingOfficeIcon },
-    { value: 'seasonal', label: 'Seasonal', icon: LeafIcon },
+    { value: 'seasonal', label: 'Seasonal', icon: BeakerIcon },
     { value: 'thankyou', label: 'Thank You', icon: HeartIcon },
     { value: 'special', label: 'Special Events', icon: SparklesIcon }
   ];
