@@ -475,13 +475,16 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     if (!template.name || saving) return;
     
     try {
+      console.log('🔄 DEBUG: Auto-save triggered for template:', template.name);
       setAutoSaveStatus('saving');
       
       // Check if API URL is configured
       const apiUrl = import.meta.env.VITE_API_URL;
+      console.log('🔍 DEBUG: API URL:', apiUrl);
+      
       if (!apiUrl || apiUrl.includes('localhost')) {
         // Skip auto-save if API is not configured or pointing to localhost
-        console.log('Auto-save skipped: API not available or in development mode');
+        console.log('✅ DEBUG: Auto-save skipped - API not available or in development mode');
         setAutoSaveStatus('saved');
         setLastSaved(new Date());
         return;
@@ -498,6 +501,10 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       
       const method = templateId ? 'PUT' : 'POST';
 
+      console.log('🌐 DEBUG: Making auto-save request to:', url);
+      console.log('🔧 DEBUG: Method:', method);
+      console.log('📦 DEBUG: Template data size:', JSON.stringify(templateData).length, 'characters');
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -507,15 +514,44 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
         body: JSON.stringify(templateData)
       });
 
+      console.log('📡 DEBUG: Auto-save response status:', response.status);
+      console.log('📡 DEBUG: Auto-save response headers:', Object.fromEntries(response.headers.entries()));
+
       if (response.ok) {
+        console.log('✅ DEBUG: Auto-save successful');
+        const responseData = await response.json();
+        console.log('📄 DEBUG: Auto-save response data:', responseData);
         setAutoSaveStatus('saved');
         setLastSaved(new Date());
       } else {
-        console.warn('Auto-save failed:', response.status, response.statusText);
+        console.warn('⚠️ DEBUG: Auto-save failed with status:', response.status, response.statusText);
+        
+        // Try to read the response as text to see what we're getting
+        try {
+          const responseText = await response.text();
+          console.error('❌ DEBUG: Auto-save error response body:', responseText);
+          
+          // Check if we're getting HTML instead of JSON
+          if (responseText.includes('<!DOCTYPE') || responseText.includes('<html>')) {
+            console.error('🚨 DEBUG: FOUND THE ISSUE! Auto-save is receiving HTML instead of JSON');
+            console.error('🚨 DEBUG: This is likely a routing/server configuration issue');
+          }
+        } catch (textError) {
+          console.error('❌ DEBUG: Could not read error response as text:', textError);
+        }
+        
         setAutoSaveStatus('error');
       }
     } catch (err) {
-      console.error('Auto-save error:', err);
+      console.error('❌ DEBUG: Auto-save critical error:', err);
+      console.error('❌ DEBUG: Error stack:', err.stack);
+      
+      // Check if this is the JSON parsing error we're looking for
+      if (err.message && err.message.includes('Unexpected token')) {
+        console.error('🚨 DEBUG: CONFIRMED! This is the JSON parsing error source');
+        console.error('🚨 DEBUG: Auto-save is trying to parse HTML as JSON');
+      }
+      
       setAutoSaveStatus('error');
     }
   }, [template, templateId, saving]);
