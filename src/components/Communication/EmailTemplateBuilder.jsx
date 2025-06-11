@@ -20,7 +20,11 @@ import {
   ClockIcon,
   CheckCircleIcon,
   ArrowUpIcon,
-  ArrowDownIcon
+  ArrowDownIcon,
+  BuildingOfficeIcon,
+  DocumentTextIcon,
+  PresentationChartLineIcon,
+  TrophyIcon
 } from '@heroicons/react/24/outline';
 import { useUserProfile } from '@/modules/hooks/useUserProfile';
 import { supabase } from '../../utils/supabaseClient';
@@ -61,8 +65,9 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
   const autoSaveTimeoutRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Enhanced block types
+  // Enhanced block types with professional design elements
   const blockTypes = [
+    // Basic Content Blocks
     {
       type: 'header',
       name: 'Header',
@@ -122,6 +127,85 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
         fontWeight: '600'
       }
     },
+
+    // Design Elements & Pizzazz
+    {
+      type: 'divider',
+      name: 'Divider Line',
+      icon: Bars3Icon,
+      category: 'design',
+      defaultContent: {
+        style: 'solid',
+        color: '#e5e7eb',
+        thickness: '2px',
+        width: '80%',
+        margin: '20px auto'
+      }
+    },
+    {
+      type: 'spacer',
+      name: 'Spacer',
+      icon: ArrowUpIcon,
+      category: 'design',
+      defaultContent: {
+        height: '30px',
+        backgroundColor: 'transparent'
+      }
+    },
+    {
+      type: 'quote',
+      name: 'Quote Block',
+      icon: SparklesIcon,
+      category: 'design',
+      defaultContent: {
+        text: '"Education is the most powerful weapon which you can use to change the world."',
+        author: 'Nelson Mandela',
+        backgroundColor: '#f8fafc',
+        textColor: '#475569',
+        authorColor: '#64748b',
+        borderColor: '#3b82f6',
+        padding: '25px',
+        fontSize: '18px',
+        fontStyle: 'italic'
+      }
+    },
+    {
+      type: 'highlight',
+      name: 'Highlight Box',
+      icon: StarIcon,
+      category: 'design',
+      defaultContent: {
+        title: 'Important Notice',
+        text: 'This is an important message that stands out from the rest of the content.',
+        backgroundColor: '#fef3c7',
+        titleColor: '#92400e',
+        textColor: '#78350f',
+        borderColor: '#f59e0b',
+        padding: '20px',
+        borderRadius: '8px'
+      }
+    },
+    {
+      type: 'stats',
+      name: 'Statistics',
+      icon: PresentationChartLineIcon,
+      category: 'design',
+      defaultContent: {
+        title: 'Our Impact This Year',
+        stats: [
+          { number: '250', label: 'Students Served' },
+          { number: '$15K', label: 'Funds Raised' },
+          { number: '50', label: 'Volunteers' }
+        ],
+        backgroundColor: '#f0f9ff',
+        titleColor: '#1e40af',
+        numberColor: '#3b82f6',
+        labelColor: '#64748b',
+        padding: '25px'
+      }
+    },
+
+    // PTO-Specific Blocks
     {
       type: 'donation',
       name: 'Donation Progress',
@@ -156,6 +240,143 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
         buttonText: 'Sign Up to Volunteer',
         buttonColor: '#2563eb',
         padding: '20px'
+      }
+    },
+    {
+      type: 'event',
+      name: 'Event Card',
+      icon: CalendarIcon,
+      category: 'events',
+      defaultContent: {
+        title: 'Fall Festival 2024',
+        date: '2024-11-15',
+        time: '10:00 AM - 4:00 PM',
+        location: 'School Playground',
+        description: 'Join us for a day of fun, food, and community!',
+        image: 'https://via.placeholder.com/400x200?text=Event+Image',
+        backgroundColor: '#fef3c7',
+        titleColor: '#92400e',
+        textColor: '#374151',
+        buttonText: 'RSVP Now',
+        buttonColor: '#f59e0b',
+        padding: '20px'
+      }
+    },
+    {
+      type: 'announcement',
+      name: 'Announcement',
+      icon: MegaphoneIcon,
+      category: 'announcements',
+      defaultContent: {
+        title: 'Important Announcement',
+        message: 'We have important news to share with our school community.',
+        backgroundColor: '#fef2f2',
+        titleColor: '#dc2626',
+        textColor: '#991b1b',
+        buttonText: 'Learn More',
+        buttonColor: '#dc2626',
+        padding: '20px'
+      }
+    },
+
+    // Interactive Elements
+    {
+      type: 'social',
+      name: 'Social Media',
+      icon: HeartIcon,
+      category: 'interactive',
+      defaultContent: {
+        title: 'Follow Us on Social Media',
+        platforms: [
+          { name: 'Facebook', url: '#', icon: '📘' },
+          { name: 'Instagram', url: '#', icon: '📷' },
+          { name: 'Twitter', url: '#', icon: '🐦' }
+        ],
+        backgroundColor: '#f8fafc',
+        titleColor: '#1e293b',
+        padding: '20px'
+      }
+    },
+    {
+      type: 'contact',
+      name: 'Contact Info',
+      icon: BuildingOfficeIcon,
+      category: 'interactive',
+      defaultContent: {
+        title: 'Contact Us',
+        email: 'pto@school.edu',
+        phone: '(555) 123-4567',
+        address: '123 School Street, City, State 12345',
+        backgroundColor: '#f1f5f9',
+        titleColor: '#334155',
+        textColor: '#64748b',
+        padding: '20px'
+      }
+    },
+    {
+      type: 'countdown',
+      name: 'Event Countdown',
+      icon: ClockIcon,
+      category: 'interactive',
+      defaultContent: {
+        title: 'Event Starts In:',
+        eventDate: '2024-12-01',
+        backgroundColor: '#fef3c7',
+        titleColor: '#92400e',
+        numberColor: '#f59e0b',
+        labelColor: '#78350f',
+        padding: '25px'
+      }
+    },
+
+    // Academic & School Elements
+    {
+      type: 'grade',
+      name: 'Grade Level Info',
+      icon: AcademicCapIcon,
+      category: 'academic',
+      defaultContent: {
+        title: 'Kindergarten News',
+        teacher: 'Mrs. Johnson',
+        content: 'This week in Kindergarten, we are learning about letters and numbers!',
+        backgroundColor: '#f0fdf4',
+        titleColor: '#166534',
+        textColor: '#374151',
+        padding: '20px'
+      }
+    },
+    {
+      type: 'achievement',
+      name: 'Student Achievement',
+      icon: TrophyIcon,
+      category: 'academic',
+      defaultContent: {
+        title: '🏆 Student Achievements',
+        achievements: [
+          'Math Olympiad Winners',
+          'Perfect Attendance Awards',
+          'Reading Challenge Champions'
+        ],
+        backgroundColor: '#fefce8',
+        titleColor: '#a16207',
+        textColor: '#374151',
+        padding: '20px'
+      }
+    },
+    {
+      type: 'newsletter',
+      name: 'Newsletter Section',
+      icon: DocumentTextIcon,
+      category: 'academic',
+      defaultContent: {
+        title: 'Principal\'s Message',
+        content: 'Dear families, I hope this message finds you well. This month has been filled with exciting learning opportunities...',
+        author: 'Dr. Smith, Principal',
+        backgroundColor: '#f8fafc',
+        titleColor: '#1e293b',
+        textColor: '#475569',
+        authorColor: '#64748b',
+        padding: '25px'
       }
     }
   ];
@@ -703,6 +924,35 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     setSelectedBlock(null);
   };
 
+  const moveBlock = (blockId, direction) => {
+    setTemplate(prev => {
+      const blocks = [...prev.design_json.blocks];
+      const currentIndex = blocks.findIndex(block => block.id === blockId);
+      
+      if (currentIndex === -1) return prev;
+      
+      let newIndex;
+      if (direction === 'up' && currentIndex > 0) {
+        newIndex = currentIndex - 1;
+      } else if (direction === 'down' && currentIndex < blocks.length - 1) {
+        newIndex = currentIndex + 1;
+      } else {
+        return prev; // Can't move
+      }
+      
+      // Swap blocks
+      [blocks[currentIndex], blocks[newIndex]] = [blocks[newIndex], blocks[currentIndex]];
+      
+      return {
+        ...prev,
+        design_json: {
+          ...prev.design_json,
+          blocks
+        }
+      };
+    });
+  };
+
   const renderBlock = (block) => {
     const { content } = block;
     
@@ -1032,6 +1282,477 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
                 >
                   {content.buttonText}
                 </a>
+              </div>
+            )}
+          </div>
+        );
+      case 'divider':
+        return (
+          <div style={{ padding: '10px 0', textAlign: 'center' }}>
+            <hr style={{
+              border: 'none',
+              borderTop: `${content.thickness || '2px'} ${content.style || 'solid'} ${content.color || '#e5e7eb'}`,
+              width: content.width || '80%',
+              margin: content.margin || '20px auto'
+            }} />
+          </div>
+        );
+      case 'spacer':
+        return (
+          <div style={{
+            height: content.height || '30px',
+            backgroundColor: content.backgroundColor || 'transparent'
+          }}></div>
+        );
+      case 'quote':
+        return (
+          <div style={{
+            padding: content.padding || '25px',
+            backgroundColor: content.backgroundColor || '#f8fafc',
+            borderLeft: `4px solid ${content.borderColor || '#3b82f6'}`,
+            margin: '10px',
+            borderRadius: '4px'
+          }}>
+            <blockquote style={{
+              margin: '0 0 10px 0',
+              fontSize: content.fontSize || '18px',
+              fontStyle: content.fontStyle || 'italic',
+              color: content.textColor || '#475569',
+              lineHeight: '1.6'
+            }}>
+              {content.text}
+            </blockquote>
+            {content.author && (
+              <cite style={{
+                fontSize: '14px',
+                color: content.authorColor || '#64748b',
+                fontStyle: 'normal',
+                fontWeight: 'bold'
+              }}>
+                — {content.author}
+              </cite>
+            )}
+          </div>
+        );
+      case 'highlight':
+        return (
+          <div style={{
+            padding: content.padding || '20px',
+            backgroundColor: content.backgroundColor || '#fef3c7',
+            border: `2px solid ${content.borderColor || '#f59e0b'}`,
+            borderRadius: content.borderRadius || '8px',
+            margin: '10px'
+          }}>
+            <h3 style={{
+              margin: '0 0 10px 0',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#92400e'
+            }}>
+              {content.title}
+            </h3>
+            <p style={{
+              margin: '0',
+              fontSize: '16px',
+              color: content.textColor || '#78350f',
+              lineHeight: '1.5'
+            }}>
+              {content.text}
+            </p>
+          </div>
+        );
+      case 'stats':
+        return (
+          <div style={{
+            padding: content.padding || '25px',
+            backgroundColor: content.backgroundColor || '#f0f9ff',
+            borderRadius: '8px',
+            margin: '10px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{
+              margin: '0 0 20px 0',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#1e40af'
+            }}>
+              {content.title}
+            </h3>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-around',
+              flexWrap: 'wrap',
+              gap: '20px'
+            }}>
+              {content.stats?.map((stat, i) => (
+                <div key={i} style={{ textAlign: 'center', minWidth: '100px' }}>
+                  <div style={{
+                    fontSize: '32px',
+                    fontWeight: 'bold',
+                    color: content.numberColor || '#3b82f6',
+                    marginBottom: '5px'
+                  }}>
+                    {stat.number}
+                  </div>
+                  <div style={{
+                    fontSize: '14px',
+                    color: content.labelColor || '#64748b',
+                    fontWeight: '500'
+                  }}>
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 'event':
+        return (
+          <div style={{
+            padding: content.padding || '20px',
+            backgroundColor: content.backgroundColor || '#fef3c7',
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            {content.image && (
+              <img 
+                src={content.image} 
+                alt={content.title}
+                style={{
+                  width: '100%',
+                  height: '200px',
+                  objectFit: 'cover',
+                  borderRadius: '6px',
+                  marginBottom: '15px'
+                }}
+              />
+            )}
+            <h2 style={{
+              margin: '0 0 10px 0',
+              fontSize: '22px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#92400e'
+            }}>
+              {content.title}
+            </h2>
+            <div style={{
+              marginBottom: '10px',
+              fontSize: '14px',
+              color: content.textColor || '#374151'
+            }}>
+              <p style={{ margin: '5px 0' }}>📅 {content.date}</p>
+              <p style={{ margin: '5px 0' }}>⏰ {content.time}</p>
+              <p style={{ margin: '5px 0' }}>📍 {content.location}</p>
+            </div>
+            <p style={{
+              margin: '15px 0',
+              fontSize: '16px',
+              color: content.textColor || '#374151',
+              lineHeight: '1.5'
+            }}>
+              {content.description}
+            </p>
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+              <a 
+                href="#rsvp"
+                style={{
+                  backgroundColor: content.buttonColor || '#f59e0b',
+                  color: '#ffffff',
+                  padding: '12px 24px',
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  textDecoration: 'none',
+                  display: 'inline-block'
+                }}
+              >
+                {content.buttonText || 'RSVP Now'}
+              </a>
+            </div>
+          </div>
+        );
+      case 'social':
+        return (
+          <div style={{
+            padding: content.padding || '20px',
+            backgroundColor: content.backgroundColor || '#f8fafc',
+            borderRadius: '8px',
+            margin: '10px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{
+              margin: '0 0 15px 0',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#1e293b'
+            }}>
+              {content.title}
+            </h3>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '15px',
+              flexWrap: 'wrap'
+            }}>
+              {content.platforms?.map((platform, i) => (
+                <a 
+                  key={i}
+                  href={platform.url}
+                  style={{
+                    display: 'inline-block',
+                    padding: '10px 15px',
+                    backgroundColor: '#ffffff',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '8px',
+                    textDecoration: 'none',
+                    color: '#475569',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <span style={{ marginRight: '8px' }}>{platform.icon}</span>
+                  {platform.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        );
+      case 'contact':
+        return (
+          <div style={{
+            padding: content.padding || '20px',
+            backgroundColor: content.backgroundColor || '#f1f5f9',
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            <h3 style={{
+              margin: '0 0 15px 0',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#334155',
+              textAlign: 'center'
+            }}>
+              {content.title}
+            </h3>
+            <div style={{
+              fontSize: '14px',
+              color: content.textColor || '#64748b',
+              lineHeight: '1.6'
+            }}>
+              {content.email && (
+                <p style={{ margin: '8px 0' }}>
+                  📧 <a href={`mailto:${content.email}`} style={{ color: 'inherit' }}>{content.email}</a>
+                </p>
+              )}
+              {content.phone && (
+                <p style={{ margin: '8px 0' }}>
+                  📞 <a href={`tel:${content.phone}`} style={{ color: 'inherit' }}>{content.phone}</a>
+                </p>
+              )}
+              {content.address && (
+                <p style={{ margin: '8px 0' }}>
+                  📍 {content.address}
+                </p>
+              )}
+            </div>
+          </div>
+        );
+      case 'countdown':
+        const eventDate = new Date(content.eventDate);
+        const now = new Date();
+        const timeDiff = eventDate - now;
+        const days = Math.max(0, Math.floor(timeDiff / (1000 * 60 * 60 * 24)));
+        const hours = Math.max(0, Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+        const minutes = Math.max(0, Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60)));
+        
+        return (
+          <div style={{
+            padding: content.padding || '25px',
+            backgroundColor: content.backgroundColor || '#fef3c7',
+            borderRadius: '8px',
+            margin: '10px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{
+              margin: '0 0 20px 0',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#92400e'
+            }}>
+              {content.title}
+            </h3>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '20px',
+              flexWrap: 'wrap'
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontSize: '32px',
+                  fontWeight: 'bold',
+                  color: content.numberColor || '#f59e0b'
+                }}>
+                  {days}
+                </div>
+                <div style={{
+                  fontSize: '12px',
+                  color: content.labelColor || '#78350f',
+                  fontWeight: '500'
+                }}>
+                  DAYS
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontSize: '32px',
+                  fontWeight: 'bold',
+                  color: content.numberColor || '#f59e0b'
+                }}>
+                  {hours}
+                </div>
+                <div style={{
+                  fontSize: '12px',
+                  color: content.labelColor || '#78350f',
+                  fontWeight: '500'
+                }}>
+                  HOURS
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontSize: '32px',
+                  fontWeight: 'bold',
+                  color: content.numberColor || '#f59e0b'
+                }}>
+                  {minutes}
+                </div>
+                <div style={{
+                  fontSize: '12px',
+                  color: content.labelColor || '#78350f',
+                  fontWeight: '500'
+                }}>
+                  MINUTES
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 'grade':
+        return (
+          <div style={{
+            padding: content.padding || '20px',
+            backgroundColor: content.backgroundColor || '#f0fdf4',
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            <h3 style={{
+              margin: '0 0 10px 0',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#166534'
+            }}>
+              {content.title}
+            </h3>
+            {content.teacher && (
+              <p style={{
+                margin: '0 0 15px 0',
+                fontSize: '14px',
+                color: content.textColor || '#374151',
+                fontWeight: '500'
+              }}>
+                Teacher: {content.teacher}
+              </p>
+            )}
+            <p style={{
+              margin: '0',
+              fontSize: '16px',
+              color: content.textColor || '#374151',
+              lineHeight: '1.5'
+            }}>
+              {content.content}
+            </p>
+          </div>
+        );
+      case 'achievement':
+        return (
+          <div style={{
+            padding: content.padding || '20px',
+            backgroundColor: content.backgroundColor || '#fefce8',
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            <h3 style={{
+              margin: '0 0 15px 0',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#a16207',
+              textAlign: 'center'
+            }}>
+              {content.title}
+            </h3>
+            <ul style={{
+              margin: '0',
+              paddingLeft: '20px',
+              listStyleType: 'none',
+              color: content.textColor || '#374151'
+            }}>
+              {content.achievements?.map((achievement, i) => (
+                <li key={i} style={{
+                  marginBottom: '8px',
+                  fontSize: '16px',
+                  position: 'relative'
+                }}>
+                  <span style={{
+                    position: 'absolute',
+                    left: '-20px',
+                    color: content.titleColor || '#a16207'
+                  }}>
+                    ⭐
+                  </span>
+                  {achievement}
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      case 'newsletter':
+        return (
+          <div style={{
+            padding: content.padding || '25px',
+            backgroundColor: content.backgroundColor || '#f8fafc',
+            borderRadius: '8px',
+            margin: '10px'
+          }}>
+            <h3 style={{
+              margin: '0 0 15px 0',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: content.titleColor || '#1e293b'
+            }}>
+              {content.title}
+            </h3>
+            <div style={{
+              fontSize: '16px',
+              color: content.textColor || '#475569',
+              lineHeight: '1.6',
+              marginBottom: '15px'
+            }}>
+              {content.content?.split('\n').map((paragraph, i) => (
+                <p key={i} style={{ margin: '0 0 15px 0' }}>{paragraph}</p>
+              ))}
+            </div>
+            {content.author && (
+              <div style={{
+                fontSize: '14px',
+                color: content.authorColor || '#64748b',
+                fontStyle: 'italic',
+                textAlign: 'right',
+                borderTop: '1px solid #e2e8f0',
+                paddingTop: '10px'
+              }}>
+                — {content.author}
               </div>
             )}
           </div>
@@ -1404,7 +2125,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              // moveBlock(block.id, 'up');
+                              moveBlock(block.id, 'up');
                             }}
                             className="p-1 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50"
                           >
@@ -1415,7 +2136,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              // moveBlock(block.id, 'down');
+                              moveBlock(block.id, 'down');
                             }}
                             className="p-1 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50"
                           >
