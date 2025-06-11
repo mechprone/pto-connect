@@ -7,9 +7,11 @@ import {
   Facebook, Instagram, Twitter, Smartphone
 } from 'lucide-react';
 import AIAssistanceToggle from '../../../components/common/AIAssistanceToggle';
+import { useStella } from '../../../components/common/StellaProvider';
 
 const EnhancedCommunicationsDashboard = () => {
   const navigate = useNavigate();
+  const { openStella } = useStella();
   const [viewMode, setViewMode] = useState('grid');
   const [creationMode, setCreationMode] = useState('manual');
   const [searchTerm, setSearchTerm] = useState('');
@@ -328,8 +330,8 @@ const EnhancedCommunicationsDashboard = () => {
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <button 
-          onClick={() => navigate('/communications/ai')}
-          className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
+          onClick={openStella}
+          className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors"
         >
           <Sparkles className="w-6 h-6 text-purple-600 mb-2" />
           <span className="text-sm font-medium">Ask Stella</span>
@@ -441,6 +443,7 @@ const EnhancedCommunicationsDashboard = () => {
           </div>
         )}
       </div>
+
     </div>
   );
 };

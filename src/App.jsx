@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import MainLayout from '@/modules/components/layout/MainLayout'
+import StellaProvider from './components/common/StellaProvider'
 
 // Auth
 import LoginPage from '@/modules/auth/pages/LoginPage'
@@ -91,7 +92,8 @@ import NextStepPage from './modules/onboarding/pages/NextStepPage'
 
 export default function App() {
   return (
-    <Routes>
+    <StellaProvider>
+      <Routes>
       {/* Public Routes */}
       <Route path="/" element={<LoginPage />} />
       <Route path="/login" element={<LoginPage />} />
@@ -221,6 +223,7 @@ export default function App() {
           <Route path="/dashboard/parent" element={<ParentDashboard />} />
         </Route>
       </Route>
-    </Routes>
+      </Routes>
+    </StellaProvider>
   )
 }
