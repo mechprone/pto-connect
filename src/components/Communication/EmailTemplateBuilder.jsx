@@ -265,10 +265,26 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
           }
         });
       } else if (block.type === 'calendar') {
+        // Convert calendar block to proper format
+        const calendarContent = {
+          title: block.content.eventTitle || 'Upcoming Events',
+          backgroundColor: block.content.backgroundColor || '#fef3c7',
+          titleColor: block.content.textColor || '#92400e',
+          textColor: block.content.textColor || '#92400e',
+          padding: '20px',
+          events: [{
+            title: block.content.eventTitle || 'Event',
+            date: block.content.eventDate ? new Date(block.content.eventDate).toLocaleDateString() : 'TBD',
+            time: block.content.eventTime || '',
+            location: block.content.location || '',
+            description: block.content.description || ''
+          }]
+        };
+        
         convertedBlocks.push({
           id: blockId,
           type: 'calendar',
-          content: { ...block.content }
+          content: calendarContent
         });
       } else if (block.type === 'donation') {
         convertedBlocks.push({
