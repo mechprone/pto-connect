@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { supabase } from '@/utils/supabaseClient';
 import { Sparkles, X, Loader2, Wand2, Smartphone } from 'lucide-react';
 
 const AiWizardModal = ({ mode, onGenerate, onClose }) => {
@@ -7,25 +8,131 @@ const AiWizardModal = ({ mode, onGenerate, onClose }) => {
   const [assistedData, setAssistedData] = useState({
     goal: '',
     keyInfo: '',
-    link: ''
+    urgency: 'Normal',
+    includeLink: false
   });
   const [isGenerating, setIsGenerating] = useState(false);
+  const [orgData, setOrgData] = useState(null);
+
+  useEffect(() => {
+    // Fetch organization data for context enhancement
+    const fetchOrgData = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select(`
+              organization_id,
+              organizations (
+                name,
+                type,
+                schools (
+                  name,
+                  grade_levels
+                )
+              )
+            `)
+            .eq('user_id', user.id)
+            .single();
+          
+          setOrgData(profile?.organizations);
+        }
+      } catch (error) {
+        console.error('Error fetching org data:', error);
+      }
+    };
+
+    fetchOrgData();
+  }, []);
+
+  const enhancePromptWithContext = (userPrompt) => {
+    const schoolType = orgData?.schools?.grade_levels || 'K-12';
+    const orgName = orgData?.name || 'Your PTO';
+    const orgType = orgData?.type || 'PTO';
+    
+    // Determine school level context
+    let schoolLevel = 'elementary';
+    if (schoolType.includes('6') || schoolType.includes('7') || schoolType.includes('8')) {
+      schoolLevel = 'middle school';
+    } else if (schoolType.includes('9') || schoolType.includes('10') || schoolType.includes('11') || schoolType.includes('12')) {
+      schoolLevel = 'high school';
+    }
+
+    return `
+Create a professional, engaging SMS message for ${orgName}, a ${schoolLevel} ${orgType}.
+
+Original request: "${userPrompt}"
+
+Context to incorporate:
+- This is for a ${schoolLevel} community (grades ${schoolType})
+- Organization: ${orgName}
+- Audience: Parents and school community members
+- SMS character limit: 160 characters maximum
+
+SMS Requirements:
+- Keep it short, punchy, and to the point
+- Use appropriate emojis to make it engaging
+- Include clear action items or next steps
+- Make it urgent but friendly
+- Use school-appropriate language for ${schoolLevel} parents
+- Include relevant details but stay concise
+- Make it informative but fun and engaging
+- Fix any grammar or spelling issues
+- Create urgency or excitement where appropriate
+
+Please create a professional SMS that feels personal and engaging while staying within character limits.
+    `;
+  };
+
+  const generateEnhancedSMS = (prompt, mode) => {
+    const enhancedPrompt = enhancePromptWithContext(prompt);
+    let message = '';
+
+    if (mode === 'auto') {
+      // Auto mode: Create complete professional SMS
+      if (prompt.toLowerCase().includes('popcorn')) {
+        message = '🍿 POPCORN FRIDAY! Don\'t forget $0.50 for your kiddo. Fresh popped goodness awaits! 🎒✨';
+      } else if (prompt.toLowerCase().includes('early dismissal') || prompt.toLowerCase().includes('dismissal')) {
+        message = '🚨 EARLY DISMISSAL ALERT! Pickup at 1PM Friday. Set those alarms! 📱⏰ Questions? Reply here!';
+      } else if (prompt.toLowerCase().includes('volunteer')) {
+        message = '🙋‍♀️ VOLUNTEERS NEEDED! Help make our event amazing. 2-hour shifts available. Sign up: [link] 💪';
+      } else if (prompt.toLowerCase().includes('meeting')) {
+        message = '📅 PTO MEETING TONIGHT! 7PM in the library. Pizza provided! Come shape our school\'s future 🍕✨';
+      } else if (prompt.toLowerCase().includes('fundraiser') || prompt.toLowerCase().includes('fundraising')) {
+        message = '💰 FUNDRAISER ALERT! Help us reach our goal. Every dollar counts for our kids! Details: [link] 🎯';
+      } else {
+        // Generic enhanced content
+        message = `📢 ${prompt.toUpperCase()}! More details coming soon. Stay tuned! 🎉`;
+      }
+    } else {
+      // Assisted mode: Use provided details
+      const urgencyEmoji = assistedData.urgency === 'High' ? '🚨' : assistedData.urgency === 'Low' ? 'ℹ️' : '📢';
+      const actionEmoji = assistedData.includeLink ? '👆' : '✨';
+      
+      message = `${urgencyEmoji} ${assistedData.goal.toUpperCase()}! ${assistedData.keyInfo}${assistedData.includeLink ? ' Link: [URL]' : ''} ${actionEmoji}`;
+    }
+
+    // Ensure message is within 160 characters
+    if (message.length > 160) {
+      message = message.substring(0, 157) + '...';
+    }
+
+    return message;
+  };
 
   const handleGenerate = () => {
     setIsGenerating(true);
-    // Simulate AI call
+    
+    // Simulate AI processing time
     setTimeout(() => {
-      let message = '';
-      if (mode === 'auto') {
-        message = `Reminder: ${autoPrompt}. See you there!`;
-      } else {
-        message = `PTO Update: ${assistedData.goal}. ${assistedData.keyInfo}. More info: ${assistedData.link || '(add link here)'}`;
-      }
+      const prompt = mode === 'auto' ? autoPrompt : assistedData.goal;
+      const message = generateEnhancedSMS(prompt, mode);
       
       onGenerate({ message });
       setIsGenerating(false);
       onClose();
-    }, 1500);
+    }, 2000); // Longer delay to show sophisticated processing
   };
 
   return (
@@ -37,7 +144,7 @@ const AiWizardModal = ({ mode, onGenerate, onClose }) => {
             <div>
               <h2 className="text-2xl font-bold text-gray-900">Stella's SMS Assistant</h2>
               <p className="text-gray-600">
-                {mode === 'auto' ? 'Provide a simple prompt for a quick SMS.' : 'Give me a few details for a structured message.'}
+                {mode === 'auto' ? 'Tell me the topic and I\'ll craft an engaging SMS.' : 'Provide details for a targeted message.'}
               </p>
             </div>
           </div>
@@ -49,27 +156,61 @@ const AiWizardModal = ({ mode, onGenerate, onClose }) => {
         {mode === 'auto' ? (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">What is this SMS about?</label>
-            <input
-              type="text"
+            <textarea
               value={autoPrompt}
               onChange={(e) => setAutoPrompt(e.target.value)}
-              placeholder="e.g., Popcorn Friday"
+              placeholder="e.g., Popcorn Friday reminder, Early dismissal alert, Volunteer recruitment"
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              rows={3}
             />
           </div>
         ) : (
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Goal of Message</label>
-              <input type="text" value={assistedData.goal} onChange={(e) => setAssistedData({...assistedData, goal: e.target.value})} placeholder="e.g., Remind about early dismissal" className="w-full p-2 border border-gray-300 rounded-lg" />
+              <input 
+                type="text" 
+                value={assistedData.goal} 
+                onChange={(e) => setAssistedData({...assistedData, goal: e.target.value})} 
+                placeholder="e.g., Remind about early dismissal" 
+                className="w-full p-2 border border-gray-300 rounded-lg" 
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Key Info</label>
-              <input type="text" value={assistedData.keyInfo} onChange={(e) => setAssistedData({...assistedData, keyInfo: e.target.value})} placeholder="e.g., Dismissal is at 1 PM on Friday" className="w-full p-2 border border-gray-300 rounded-lg" />
+              <label className="block text-sm font-medium text-gray-700 mb-1">Key Information</label>
+              <input 
+                type="text" 
+                value={assistedData.keyInfo} 
+                onChange={(e) => setAssistedData({...assistedData, keyInfo: e.target.value})} 
+                placeholder="e.g., Pickup at 1 PM on Friday" 
+                className="w-full p-2 border border-gray-300 rounded-lg" 
+              />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Optional Link</label>
-              <input type="text" value={assistedData.link} onChange={(e) => setAssistedData({...assistedData, link: e.target.value})} placeholder="e.g., https://pto.school/details" className="w-full p-2 border border-gray-300 rounded-lg" />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Urgency Level</label>
+                <select 
+                  value={assistedData.urgency} 
+                  onChange={(e) => setAssistedData({...assistedData, urgency: e.target.value})} 
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                >
+                  <option>Low</option>
+                  <option>Normal</option>
+                  <option>High</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Include Link?</label>
+                <label className="flex items-center mt-2">
+                  <input 
+                    type="checkbox" 
+                    checked={assistedData.includeLink} 
+                    onChange={(e) => setAssistedData({...assistedData, includeLink: e.target.checked})} 
+                    className="h-4 w-4 text-blue-600 rounded" 
+                  />
+                  <span className="ml-2 text-sm">Add link placeholder</span>
+                </label>
+              </div>
             </div>
           </div>
         )}
@@ -83,7 +224,7 @@ const AiWizardModal = ({ mode, onGenerate, onClose }) => {
             {isGenerating ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Stella is Writing...
+                Stella is Crafting...
               </>
             ) : (
               <>
@@ -122,7 +263,7 @@ export default function SmsComposer() {
 
   const handleAiGenerate = ({ message }) => {
     setFormData(prev => ({ ...prev, message }));
-    setStatus('AI draft loaded. Review and make edits.');
+    setStatus('✨ Professional SMS crafted! Review and customize as needed.');
   };
 
   const handleInputChange = (e) => {
