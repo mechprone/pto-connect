@@ -246,7 +246,8 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
                 fontWeight: 'bold',
                 textAlign: 'center',
                 color: block.content.titleColor || '#ffffff',
-                backgroundColor: block.content.backgroundImage || '#3b82f6',
+                backgroundImage: block.content.backgroundImage || 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                backgroundColor: block.content.backgroundColor || '#3b82f6',
                 padding: '40px'
               }
             });
@@ -262,8 +263,8 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
                   fontWeight: 'normal',
                   textAlign: 'center',
                   color: block.content.subtitleColor || '#6b7280',
-                  backgroundColor: '#ffffff',
-                  padding: '15px'
+                  backgroundColor: block.content.backgroundImage || block.content.backgroundColor || '#3b82f6',
+                  padding: '0px 20px 40px 20px'
                 }
               });
             }
@@ -715,15 +716,28 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     switch (block.type) {
       case 'header':
         return (
-          <div style={{ backgroundColor: content.backgroundColor, padding: content.padding, textAlign: content.textAlign }}>
-            <h1 style={{ margin: 0, fontSize: content.fontSize, fontWeight: content.fontWeight, color: content.color }}>
+          <div style={{ 
+            background: content.backgroundImage || content.backgroundColor || '#f9fafb', 
+            padding: content.padding || '20px', 
+            textAlign: content.textAlign || 'center' 
+          }}>
+            <h1 style={{ 
+              margin: 0, 
+              fontSize: content.fontSize || '24px', 
+              fontWeight: content.fontWeight || 'bold', 
+              color: content.color || '#1f2937' 
+            }}>
               {content.text}
             </h1>
           </div>
         );
       case 'text':
         return (
-          <div style={{ padding: content.padding, textAlign: content.textAlign }}>
+          <div style={{ 
+            padding: content.padding, 
+            textAlign: content.textAlign,
+            background: content.backgroundImage || content.backgroundColor || 'transparent'
+          }}>
             <p style={{ margin: 0, fontSize: content.fontSize, fontWeight: content.fontWeight, color: content.color }}>
               {content.text}
             </p>
