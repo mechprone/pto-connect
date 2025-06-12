@@ -613,7 +613,231 @@ const TemplateLibraryModal = ({ isOpen, onClose, onSelectTemplate }) => {
     }
   ];
 
-  const templateLibrary = activeTab === 'professional' ? professionalTemplates : basicTemplates;
+  // Community Shared Templates - Templates shared by other PTOs in district/platform
+  const communityTemplates = [
+    {
+      id: 'community-movie-night',
+      name: 'Family Movie Night',
+      category: 'events',
+      style: 'fun',
+      description: 'Shared by Lincoln Elementary PTO - Great for outdoor movie events',
+      author: 'Lincoln Elementary PTO',
+      district: 'Metro School District',
+      likes: 24,
+      uses: 156,
+      blocks: [
+        {
+          type: 'hero',
+          content: {
+            title: '🍿 Family Movie Night Under the Stars',
+            subtitle: 'Bring blankets and join us for a magical evening!',
+            backgroundImage: 'linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%)',
+            titleColor: '#ffffff',
+            subtitleColor: '#ddd6fe'
+          }
+        },
+        {
+          type: 'calendar',
+          content: {
+            eventTitle: 'Outdoor Movie Night',
+            eventDate: '2024-11-22',
+            eventTime: '7:00 PM - 10:00 PM',
+            location: 'School Football Field',
+            backgroundColor: '#ede9fe',
+            textColor: '#5b21b6'
+          }
+        }
+      ]
+    },
+    {
+      id: 'community-teacher-appreciation',
+      name: 'Teacher Appreciation Week',
+      category: 'thankyou',
+      style: 'grateful',
+      description: 'Shared by Riverside PTO - Perfect for showing teacher appreciation',
+      author: 'Riverside Elementary PTO',
+      district: 'Metro School District',
+      likes: 89,
+      uses: 342,
+      blocks: [
+        {
+          type: 'hero',
+          content: {
+            title: '🌟 Teacher Appreciation Week',
+            subtitle: 'Celebrating our incredible educators!',
+            backgroundImage: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+            titleColor: '#ffffff',
+            subtitleColor: '#d1fae5'
+          }
+        },
+        {
+          type: 'text',
+          content: {
+            text: 'This week, we celebrate the amazing teachers who inspire, educate, and care for our children every day. Thank you for your dedication and passion!',
+            fontSize: '16px',
+            padding: '20px',
+            backgroundColor: '#f0fdf4',
+            color: '#166534'
+          }
+        }
+      ]
+    },
+    {
+      id: 'community-bake-sale',
+      name: 'Ultimate Bake Sale',
+      category: 'fundraising',
+      style: 'sweet',
+      description: 'Shared by Oakwood PTO - Raised $3,200 with this template!',
+      author: 'Oakwood Elementary PTO',
+      district: 'Metro School District',
+      likes: 67,
+      uses: 234,
+      blocks: [
+        {
+          type: 'hero',
+          content: {
+            title: '🧁 Ultimate Bake Sale Extravaganza',
+            subtitle: 'Sweet treats for a sweet cause!',
+            backgroundImage: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            titleColor: '#ffffff',
+            subtitleColor: '#fef3c7'
+          }
+        },
+        {
+          type: 'donation',
+          content: {
+            title: 'Support Our Music Program',
+            description: 'Every cupcake sold helps fund new instruments and music education.',
+            goalAmount: 5000,
+            currentAmount: 3200,
+            buttonColor: '#f59e0b',
+            backgroundColor: '#fffbeb'
+          }
+        }
+      ]
+    },
+    {
+      id: 'community-reading-challenge',
+      name: 'Summer Reading Challenge',
+      category: 'academic',
+      style: 'educational',
+      description: 'Shared by Maplewood PTO - Boosted reading participation by 40%',
+      author: 'Maplewood Elementary PTO',
+      district: 'Metro School District',
+      likes: 45,
+      uses: 189,
+      blocks: [
+        {
+          type: 'hero',
+          content: {
+            title: '📚 Summer Reading Challenge 2024',
+            subtitle: 'Read your way to amazing prizes!',
+            backgroundImage: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
+            titleColor: '#ffffff',
+            subtitleColor: '#e9d5ff'
+          }
+        },
+        {
+          type: 'achievement',
+          content: {
+            title: '🏆 Reading Milestones',
+            achievements: [
+              '5 Books: Bookmark & Stickers',
+              '10 Books: Library Tote Bag',
+              '20 Books: $25 Bookstore Gift Card',
+              '30+ Books: Special Recognition Ceremony'
+            ],
+            backgroundColor: '#faf5ff',
+            titleColor: '#7c3aed',
+            textColor: '#5b21b6'
+          }
+        }
+      ]
+    },
+    {
+      id: 'community-field-day',
+      name: 'Epic Field Day',
+      category: 'events',
+      style: 'energetic',
+      description: 'Shared by Sunnydale PTO - Students loved this format!',
+      author: 'Sunnydale Elementary PTO',
+      district: 'Metro School District',
+      likes: 78,
+      uses: 267,
+      blocks: [
+        {
+          type: 'hero',
+          content: {
+            title: '🏃‍♂️ Epic Field Day 2024',
+            subtitle: 'Games, fun, and friendly competition!',
+            backgroundImage: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
+            titleColor: '#ffffff',
+            subtitleColor: '#fecaca'
+          }
+        },
+        {
+          type: 'highlight',
+          content: {
+            title: '🎯 Field Day Activities',
+            text: '• Relay Races & Obstacle Courses\n• Water Balloon Toss\n• Three-Legged Race\n• Tug of War Championship\n• Face Painting Station\n• Healthy Snack Bar',
+            backgroundColor: '#fef2f2',
+            titleColor: '#dc2626',
+            textColor: '#991b1b',
+            borderColor: '#f87171'
+          }
+        }
+      ]
+    },
+    {
+      id: 'community-grandparents-day',
+      name: 'Grandparents Day Celebration',
+      category: 'events',
+      style: 'heartwarming',
+      description: 'Shared by Valley View PTO - Brought tears of joy to many families',
+      author: 'Valley View Elementary PTO',
+      district: 'Metro School District',
+      likes: 92,
+      uses: 178,
+      blocks: [
+        {
+          type: 'hero',
+          content: {
+            title: '👴👵 Grandparents Day Celebration',
+            subtitle: 'Honoring the wisdom and love of our grandparents',
+            backgroundImage: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+            titleColor: '#ffffff',
+            subtitleColor: '#d1fae5'
+          }
+        },
+        {
+          type: 'calendar',
+          content: {
+            eventTitle: 'Grandparents Day Program',
+            eventDate: '2024-11-08',
+            eventTime: '2:00 PM - 4:00 PM',
+            location: 'School Auditorium',
+            backgroundColor: '#ecfdf5',
+            textColor: '#166534'
+          }
+        }
+      ]
+    }
+  ];
+
+  const getTemplateLibrary = () => {
+    switch (activeTab) {
+      case 'professional':
+        return professionalTemplates;
+      case 'basic':
+        return basicTemplates;
+      case 'community':
+        return communityTemplates;
+      default:
+        return professionalTemplates;
+    }
+  };
+
+  const templateLibrary = getTemplateLibrary();
 
   const categories = [
     { value: 'all', label: 'All Templates', icon: StarIcon },
@@ -663,21 +887,30 @@ const TemplateLibraryModal = ({ isOpen, onClose, onSelectTemplate }) => {
             <div className="flex items-center space-x-1 mt-2 border border-gray-200 rounded-lg p-1">
               <button
                 onClick={() => setActiveTab('professional')}
-                className={`px-4 py-1 text-sm font-semibold rounded-md transition-colors ${
+                className={`px-3 py-1 text-sm font-semibold rounded-md transition-colors ${
                   activeTab === 'professional' ? 'bg-purple-600 text-white shadow' : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
-                <SparklesIcon className="w-4 h-4 inline-block mr-2" />
+                <SparklesIcon className="w-4 h-4 inline-block mr-1" />
                 Professional
               </button>
               <button
                 onClick={() => setActiveTab('basic')}
-                className={`px-4 py-1 text-sm font-semibold rounded-md transition-colors ${
+                className={`px-3 py-1 text-sm font-semibold rounded-md transition-colors ${
                   activeTab === 'basic' ? 'bg-blue-600 text-white shadow' : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
-                <DocumentTextIcon className="w-4 h-4 inline-block mr-2" />
+                <DocumentTextIcon className="w-4 h-4 inline-block mr-1" />
                 Basic
+              </button>
+              <button
+                onClick={() => setActiveTab('community')}
+                className={`px-3 py-1 text-sm font-semibold rounded-md transition-colors ${
+                  activeTab === 'community' ? 'bg-green-600 text-white shadow' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <UserGroupIcon className="w-4 h-4 inline-block mr-1" />
+                Community
               </button>
             </div>
           </div>
@@ -953,6 +1186,27 @@ const TemplateLibraryModal = ({ isOpen, onClose, onSelectTemplate }) => {
                       <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                         {template.description}
                       </p>
+                      
+                      {/* Community Template Metadata */}
+                      {activeTab === 'community' && template.author && (
+                        <div className="mb-3 p-2 bg-green-50 rounded-lg border border-green-200">
+                          <div className="flex items-center justify-between text-xs text-green-700 mb-1">
+                            <span className="font-medium">👥 {template.author}</span>
+                            <span className="text-green-600">{template.district}</span>
+                          </div>
+                          <div className="flex items-center justify-between text-xs text-green-600">
+                            <span className="flex items-center">
+                              <HeartIcon className="w-3 h-3 mr-1" />
+                              {template.likes} likes
+                            </span>
+                            <span className="flex items-center">
+                              <DocumentTextIcon className="w-3 h-3 mr-1" />
+                              {template.uses} uses
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-gray-500 capitalize">
                           {template.category}

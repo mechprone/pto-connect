@@ -62,6 +62,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
   const [autoSaveStatus, setAutoSaveStatus] = useState('saved');
   const [lastSaved, setLastSaved] = useState(null);
   const [showTemplateLibrary, setShowTemplateLibrary] = useState(false);
+  const [builderMode, setBuilderMode] = useState('email'); // New unified builder mode
   const [collapsedCategories, setCollapsedCategories] = useState({
     basic: true,
     design: true,
@@ -75,6 +76,50 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
   const canvasRef = useRef(null);
   const autoSaveTimeoutRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
+
+  // Unified Builder Mode Configuration
+  const builderModes = {
+    email: {
+      name: 'Email',
+      icon: '📧',
+      canvas: { width: '600px', maxWidth: '600px', responsive: true },
+      blocks: ['header', 'text', 'image', 'button', 'divider', 'donation', 'volunteer', 'event', 'announcement', 'social', 'contact'],
+      constraints: { maxWidth: '600px', emailSafe: true },
+      description: 'Create professional email communications'
+    },
+    newsletter: {
+      name: 'Newsletter',
+      icon: '📰',
+      canvas: { width: '800px', maxWidth: '800px', multiColumn: true },
+      blocks: ['header', 'text', 'image', 'newsletter', 'divider', 'stats', 'achievement', 'grade', 'highlight'],
+      constraints: { sections: true, multiColumn: true },
+      description: 'Design comprehensive newsletters'
+    },
+    social: {
+      name: 'Social Media',
+      icon: '📱',
+      canvas: { width: '1080px', height: '1080px', aspectRatio: '1:1' },
+      blocks: ['header', 'text', 'image', 'quote', 'stats', 'social', 'highlight'],
+      constraints: { aspectRatio: '1:1', socialOptimized: true },
+      description: 'Create engaging social media posts'
+    },
+    flyer: {
+      name: 'Flyer/Poster',
+      icon: '📄',
+      canvas: { width: '8.5in', height: '11in', printReady: true },
+      blocks: ['header', 'text', 'image', 'event', 'contact', 'divider', 'highlight', 'stats'],
+      constraints: { printSafe: true, highRes: true },
+      description: 'Design print-ready flyers and posters'
+    },
+    announcement: {
+      name: 'Announcement',
+      icon: '📢',
+      canvas: { width: '600px', maxWidth: '600px', compact: true },
+      blocks: ['header', 'text', 'announcement', 'button', 'contact', 'divider'],
+      constraints: { compact: true, urgent: true },
+      description: 'Quick announcements and alerts'
+    }
+  };
 
   // Enhanced block types with professional design elements
   const blockTypes = [
@@ -1202,6 +1247,25 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
               onChange={(e) => setTemplate(prev => ({ ...prev, name: e.target.value }))}
               className="text-xl font-semibold border-none bg-transparent focus:outline-none focus:ring-0"
             />
+            
+            {/* Unified Builder Mode Selector */}
+            <div className="flex items-center space-x-2 border border-gray-200 rounded-lg p-1 bg-gray-50">
+              {Object.entries(builderModes).map(([modeKey, mode]) => (
+                <button
+                  key={modeKey}
+                  onClick={() => setBuilderMode(modeKey)}
+                  className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-1 ${
+                    builderMode === modeKey 
+                      ? 'bg-blue-600 text-white shadow-sm' 
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                  }`}
+                  title={mode.description}
+                >
+                  <span className="text-base">{mode.icon}</span>
+                  <span className="hidden sm:inline">{mode.name}</span>
+                </button>
+              ))}
+            </div>
           </div>
           
           <div className="flex items-center space-x-3">
