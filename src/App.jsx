@@ -36,6 +36,11 @@ import BudgetDashboard from './modules/budgets/pages/BudgetDashboard'
 import EnhancedBudgetDashboard from './modules/budgets/pages/EnhancedBudgetDashboard'
 import CreateBudgetEntry from './modules/budgets/pages/CreateBudgetEntry'
 
+// Reconciliation
+import ReconciliationDashboard from './components/budget/reconciliation/ReconciliationDashboard'
+import ReconciliationWizard from './components/budget/reconciliation/ReconciliationWizard'
+import ReconciliationReport from './components/budget/reconciliation/ReconciliationReport'
+
 // Communications
 import CommunicationsDashboard from './modules/communications/pages/CommunicationsDashboard'
 import EnhancedCommunicationsDashboard from './modules/communications/pages/EnhancedCommunicationsDashboard'
@@ -119,6 +124,9 @@ export default function App() {
           <Route path="/budget" element={<EnhancedBudgetDashboard />} />
           <Route path="/budget/legacy" element={<BudgetDashboard />} />
           <Route path="/budget/create" element={<CreateBudgetEntry />} />
+          <Route path="/budget/reconciliation" element={<ReconciliationDashboard />} />
+          <Route path="/budget/reconciliation/new" element={<ReconciliationWizard />} />
+          <Route path="/budget/reconciliation/:id" element={<ReconciliationReport />} />
 
           <Route path="/communications" element={<EnhancedCommunicationsDashboard />} />
           <Route path="/communications/legacy" element={<CommunicationsDashboard />} />

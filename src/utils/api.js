@@ -114,6 +114,62 @@ export const budgetAPI = {
   },
 };
 
+// Reconciliation API calls
+export const reconciliationAPI = {
+  // Get all reconciliation records
+  getReconciliations: () => apiRequest('GET', '/reconciliation'),
+  
+  // Get specific reconciliation by ID
+  getReconciliation: (id) => apiRequest('GET', `/reconciliation/${id}`),
+  
+  // Create new reconciliation
+  createReconciliation: (data) => apiRequest('POST', '/reconciliation', data),
+  
+  // Update reconciliation
+  updateReconciliation: (id, data) => apiRequest('PUT', `/reconciliation/${id}`, data),
+  
+  // Delete reconciliation
+  deleteReconciliation: (id) => apiRequest('DELETE', `/reconciliation/${id}`),
+  
+  // Upload bank statement for reconciliation
+  uploadStatement: (file, reconciliationId) => {
+    const formData = new FormData();
+    formData.append('statement', file);
+    formData.append('reconciliationId', reconciliationId);
+    return apiRequest('POST', '/reconciliation/upload-statement', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  },
+  
+  // Get transactions for matching
+  getTransactionsForMatching: (reconciliationId, startDate, endDate) => 
+    apiRequest('GET', `/reconciliation/${reconciliationId}/transactions`, {
+      params: { startDate, endDate }
+    }),
+  
+  // Match transactions
+  matchTransactions: (reconciliationId, matches) => 
+    apiRequest('POST', `/reconciliation/${reconciliationId}/match`, { matches }),
+  
+  // Get reconciliation report
+  getReconciliationReport: (reconciliationId) => 
+    apiRequest('GET', `/reconciliation/${reconciliationId}/report`),
+  
+  // Save reconciliation progress
+  saveProgress: (reconciliationId, progressData) => 
+    apiRequest('PUT', `/reconciliation/${reconciliationId}/progress`, progressData),
+  
+  // Finalize reconciliation
+  finalizeReconciliation: (reconciliationId, finalData) => 
+    apiRequest('POST', `/reconciliation/${reconciliationId}/finalize`, finalData),
+  
+  // Get reconciliation history/dashboard data
+  getDashboardData: (startDate, endDate) => 
+    apiRequest('GET', '/reconciliation/dashboard', {
+      params: { startDate, endDate }
+    }),
+};
+
 // Communications API calls
 export const communicationsAPI = {
   getMessages: () => apiRequest('GET', '/messages'),
