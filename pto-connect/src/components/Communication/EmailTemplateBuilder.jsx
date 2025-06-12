@@ -412,21 +412,315 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
 
   const prebuiltTemplates = [
     {
-      name: 'Event Announcement',
-      category: 'events',
+      name: 'Weekly Newsletter',
+      category: 'newsletters',
       blocks: [
         {
           type: 'header',
           content: {
-            text: 'Fall Festival 2024',
-            backgroundColor: '#3b82f6',
-            color: '#ffffff'
+            text: 'The Weekly Owl',
+            fontSize: '36px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            color: '#2c3e50',
+            backgroundColor: '#ecf0f1',
+            padding: '30px 20px'
           }
         },
         {
           type: 'text',
           content: {
-            text: 'Join us for a day of fun, food, and community!'
+            text: 'Your weekly digest of news and events from the school community.',
+            fontSize: '16px',
+            textAlign: 'center',
+            color: '#7f8c8d',
+            backgroundColor: '#ecf0f1',
+            padding: '0 20px 30px'
+          }
+        },
+        {
+          type: 'image',
+          content: {
+            src: 'https://via.placeholder.com/600x300?text=School+News+Image',
+            alt: 'Weekly news image',
+            width: '100%',
+            padding: '0'
+          }
+        },
+        {
+          type: 'announcement',
+          content: {
+            title: "Principal's Message",
+            message: "A few words from our principal on this week's highlights and upcoming initiatives.",
+            backgroundColor: '#ffffff',
+            titleColor: '#3498db',
+            textColor: '#34495e',
+            buttonText: 'Read More',
+            buttonColor: '#3498db',
+            padding: '25px'
+          }
+        },
+        {
+          type: 'divider',
+          content: {
+            style: 'dotted',
+            color: '#bdc3c7',
+            thickness: '2px',
+            width: '50%',
+            margin: '20px auto'
+          }
+        },
+        {
+          type: 'event',
+          content: {
+            title: 'Upcoming: Science Fair',
+            date: '2024-12-05',
+            time: '6:00 PM - 8:00 PM',
+            location: 'School Gymnasium',
+            description: 'Come see the amazing projects from our budding scientists!',
+            backgroundColor: '#f9f9f9',
+            titleColor: '#27ae60',
+            textColor: '#333333',
+            buttonText: 'Get Details',
+            buttonColor: '#27ae60',
+            padding: '20px'
+          }
+        },
+        {
+          type: 'social',
+          content: {
+            title: 'Stay Connected',
+            platforms: [
+              { name: 'Facebook', url: '#', icon: '📘' },
+              { name: 'Instagram', url: '#', icon: '📷' }
+            ],
+            backgroundColor: '#ecf0f1',
+            titleColor: '#2c3e50',
+            padding: '20px'
+          }
+        }
+      ]
+    },
+    {
+      name: 'Talent Show',
+      category: 'events',
+      blocks: [
+        {
+          type: 'header',
+          content: {
+            text: '⭐ You Are Invited! ⭐',
+            fontSize: '28px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            color: '#ffffff',
+            backgroundColor: '#9b59b6',
+            padding: '20px'
+          }
+        },
+        {
+          type: 'header',
+          content: {
+            text: 'Annual Talent Show',
+            fontSize: '48px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            color: '#ffffff',
+            backgroundColor: '#9b59b6',
+            padding: '10px 20px 30px'
+          }
+        },
+        {
+          type: 'image',
+          content: {
+            src: 'https://via.placeholder.com/600x250?text=Showcase+Your+Talents!',
+            alt: 'Talent show banner',
+            width: '100%',
+            padding: '0'
+          }
+        },
+        {
+          type: 'countdown',
+          content: {
+            title: 'The Show Starts In:',
+            eventDate: '2024-11-22',
+            backgroundColor: '#fdf2e9',
+            titleColor: '#d35400',
+            numberColor: '#e67e22',
+            labelColor: '#d35400',
+            padding: '25px'
+          }
+        },
+        {
+          type: 'text',
+          content: {
+            text: "Get ready to be amazed by the incredible talents of our students! From singing and dancing to magic tricks and more, this is a night you won't want to miss. Join us for an evening of entertainment and community spirit.",
+            fontSize: '16px',
+            textAlign: 'center',
+            color: '#34495e',
+            padding: '30px 20px'
+          }
+        },
+        {
+          type: 'button',
+          content: {
+            text: 'Get Your Tickets Now!',
+            href: '#',
+            backgroundColor: '#e74c3c',
+            color: '#ffffff',
+            padding: '15px 30px',
+            borderRadius: '50px',
+            textAlign: 'center',
+            fontSize: '18px',
+            fontWeight: 'bold'
+          }
+        }
+      ]
+    },
+    {
+      name: 'Book Fair',
+      category: 'events',
+      blocks: [
+        {
+          type: 'header',
+          content: {
+            text: '📚 Get Ready to Read! 📚',
+            fontSize: '32px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            color: '#2980b9',
+            backgroundColor: '#eaf8ff',
+            padding: '30px 20px'
+          }
+        },
+        {
+          type: 'image',
+          content: {
+            src: 'https://via.placeholder.com/600x250?text=Our+Book+Fair+is+Here!',
+            alt: 'Book fair banner',
+            width: '100%',
+            padding: '0'
+          }
+        },
+        {
+          type: 'highlight',
+          content: {
+            title: 'Book Fair Dates & Times',
+            text: 'Monday-Friday, December 2-6, from 8:00 AM to 4:00 PM in the School Library. Special family night on Thursday until 7 PM!',
+            backgroundColor: '#fef9e7',
+            titleColor: '#f39c12',
+            textColor: '#b07818',
+            borderColor: '#f39c12',
+            padding: '20px',
+            borderRadius: '8px'
+          }
+        },
+        {
+          type: 'volunteer',
+          content: {
+            title: 'We Need Your Help!',
+            description: 'The book fair is only possible with the help of our amazing volunteers. Can you spare an hour or two?',
+            opportunities: ['Cashier', 'Help students find books', 'Restock shelves'],
+            backgroundColor: '#e8f6f3',
+            titleColor: '#16a085',
+            textColor: '#117a65',
+            buttonText: 'Yes, I Can Help!',
+            buttonColor: '#1abc9c',
+            padding: '20px'
+          }
+        }
+      ]
+    },
+    {
+      name: 'Fundraiser Kick-off',
+      category: 'fundraising',
+      blocks: [
+        {
+          type: 'header',
+          content: {
+            text: "Let's Make a Difference!",
+            fontSize: '32px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            color: '#ffffff',
+            backgroundColor: '#27ae60',
+            padding: '30px 20px'
+          }
+        },
+        {
+          type: 'donation',
+          content: {
+            title: 'Support Our Playground Fund!',
+            description: 'We are raising funds to build a new, safe, and accessible playground for all our students. Every dollar helps!',
+            currentAmount: 5250,
+            goalAmount: 30000,
+            backgroundColor: '#f0f9ff',
+            titleColor: '#1e40af',
+            textColor: '#374151',
+            progressColor: '#3b82f6',
+            buttonText: 'Donate Today!',
+            buttonColor: '#2563eb',
+            padding: '25px'
+          }
+        },
+        {
+          type: 'text',
+          content: {
+            text: 'Your generous contribution will help us create a space where our children can play, learn, and grow. We appreciate your support!',
+            fontSize: '16px',
+            textAlign: 'center',
+            color: '#555555',
+            padding: '20px'
+          }
+        }
+      ]
+    },
+    {
+      name: 'Welcome to the PTO',
+      category: 'general',
+      blocks: [
+        {
+          type: 'header',
+          content: {
+            text: "We're So Glad You're Here!",
+            fontSize: '32px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            color: '#333333',
+            backgroundColor: '#ffffff',
+            padding: '30px 20px'
+          }
+        },
+        {
+          type: 'image',
+          content: {
+            src: 'https://via.placeholder.com/600x200?text=Welcome!',
+            alt: 'Welcome banner',
+            width: '100%',
+            padding: '0'
+          }
+        },
+        {
+          type: 'text',
+          content: {
+            text: "Welcome to the [School Name] PTO! We are a community of parents, teachers, and staff dedicated to supporting our students and school. We're excited to have you with us.",
+            fontSize: '16px',
+            textAlign: 'center',
+            color: '#555555',
+            padding: '30px 20px'
+          }
+        },
+        {
+          type: 'button',
+          content: {
+            text: 'Learn More About Us',
+            href: '#',
+            backgroundColor: '#3498db',
+            color: '#ffffff',
+            padding: '15px 30px',
+            borderRadius: '8px',
+            textAlign: 'center',
+            fontSize: '16px',
+            fontWeight: 'bold'
           }
         }
       ]
