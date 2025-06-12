@@ -677,6 +677,207 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
           } 
         }
       ]
+    },
+    // Adding more professional templates to reach 40+ total
+    {
+      id: 'pro-fundraising-gala',
+      name: 'Annual Fundraising Gala',
+      category: 'fundraising',
+      style: 'elegant-formal',
+      description: 'Sophisticated black-tie event invitation with elegant design elements',
+      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjMWEyMDJjIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMzAiIGZpbGw9ImdvbGQiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn4+GIEFOTlVBTCBGVU5EUkFJU0lORyBHQUxBIPCfj4Y8L3RleHQ+Cjx0ZXh0IHg9IjEwMCIgeT0iNjAiIGZpbGw9ImdvbGQiIGZvbnQtc2l6ZT0iMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFuIEVsZWdhbnQgRXZlbmluZyBvZiBHaXZpbmc8L3RleHQ+Cjx0ZXh0IHg9IjEwMCIgeT0iOTAiIGZpbGw9IiNmZmZmZmYiIGZvbnQtc2l6ZT0iOCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Sm9pbiB1cyBmb3IgYSBtYWdpY2FsIGV2ZW5pbmcgb2YgZGluaW5nLCBkYW5jaW5nPC90ZXh0Pgo8dGV4dCB4PSIxMDAiIHk9IjExMCIgZmlsbD0iI2ZmZmZmZiIgZm9udC1zaXplPSI4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5hbmQgc3VwcG9ydGluZyBvdXIgc2Nob29sIGNvbW11bml0eTwvdGV4dD4KPHR5ZXh0IHg9IjEwMCIgeT0iMTMwIiBmaWxsPSJnb2xkIiBmb250LXNpemU9IjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkJsYWNrLVRpZSBPcHRpb25hbDwvdGV4dD4KPC9zdmc+Cg==',
+      blocks: [
+        { 
+          type: 'header', 
+          content: { 
+            text: '🏆 ANNUAL FUNDRAISING GALA 🏆', 
+            backgroundColor: '#1a202c', 
+            backgroundImage: 'linear-gradient(135deg, #1a202c 0%, #2d3748 100%)',
+            color: 'gold', 
+            fontSize: '34px', 
+            fontWeight: 'bold', 
+            padding: '50px 20px', 
+            textAlign: 'center',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+          } 
+        },
+        { 
+          type: 'text', 
+          content: { 
+            text: '✨ An Elegant Evening of Giving ✨\n\nJoin us for a magical evening of dining, dancing, and supporting our school community. This black-tie optional event will feature gourmet cuisine, live entertainment, and inspiring stories of student success.', 
+            padding: '30px', 
+            fontSize: '17px', 
+            textAlign: 'center',
+            color: '#1a202c',
+            backgroundColor: '#f7fafc',
+            lineHeight: '1.7'
+          } 
+        },
+        { 
+          type: 'donation', 
+          content: { 
+            title: '🎯 Our Fundraising Goal', 
+            description: 'Help us raise funds for new technology and learning resources',
+            currentAmount: 45000,
+            goalAmount: 75000,
+            backgroundColor: '#fef3c7',
+            titleColor: '#92400e',
+            textColor: '#78350f',
+            progressColor: '#f59e0b',
+            buttonText: '💳 Purchase Tickets',
+            buttonColor: '#d97706',
+            padding: '25px'
+          } 
+        },
+        { 
+          type: 'event', 
+          content: { 
+            title: 'Gala Details', 
+            date: '2024-11-30', 
+            time: '6:00 PM - 11:00 PM', 
+            location: 'Grand Ballroom, Downtown Hotel', 
+            description: 'Cocktail hour, dinner, silent auction, and dancing',
+            backgroundColor: '#f8fafc',
+            titleColor: '#1e293b',
+            textColor: '#475569',
+            buttonText: '🎫 Reserve Your Table',
+            buttonColor: '#1e293b',
+            padding: '25px'
+          } 
+        }
+      ]
+    },
+    {
+      id: 'pro-volunteer-appreciation',
+      name: 'Volunteer Appreciation Dinner',
+      category: 'volunteers',
+      style: 'warm-gratitude',
+      description: 'Heartwarming design to thank and celebrate dedicated volunteers',
+      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZWNmZGY1Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMzAiIGZpbGw9IiMxNjUzNGQiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn5OKIE9VUiBBTUFaSU5HIFZPTFVOVEVFUlMg8J+TojwvdGV4dD4KPHR5ZXh0IHg9IjEwMCIgeT0iNTAiIGZpbGw9IiMxNjUzNGQiIGZvbnQtc2l6ZT0iMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFwcHJlY2lhdGlvbiBEaW5uZXI8L3RleHQ+Cjx0ZXh0IHg9IjEwMCIgeT0iODAiIGZpbGw9IiMxNjUzNGQiIGZvbnQtc2l6ZT0iOCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+VGhhbmsgeW91IGZvciB5b3VyIGRlZGljYXRpb248L3RleHQ+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmaWxsPSIjMTY1MzRkIiBmb250LXNpemU9IjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPmFuZCBjb21taXRtZW50IHRvIG91ciBzY2hvb2w8L3RleHQ+Cjx0ZXh0IHg9IjEwMCIgeT0iMTIwIiBmaWxsPSIjMTY1MzRkIiBmb250LXNpemU9IjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPllvdSBtYWtlIGEgZGlmZmVyZW5jZSE8L3RleHQ+Cjwvc3ZnPgo=',
+      blocks: [
+        { 
+          type: 'header', 
+          content: { 
+            text: '🙏 CELEBRATING OUR AMAZING VOLUNTEERS 🙏', 
+            backgroundColor: '#ecfdf5', 
+            backgroundImage: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+            color: '#14532d', 
+            fontSize: '28px', 
+            fontWeight: 'bold', 
+            padding: '40px 20px', 
+            textAlign: 'center'
+          } 
+        },
+        { 
+          type: 'text', 
+          content: { 
+            text: '💚 Thank You for Your Dedication! 💚\n\nYour countless hours of service, unwavering commitment, and generous spirit have made an incredible impact on our school community. This special evening is our way of saying thank you for all that you do.', 
+            padding: '25px', 
+            fontSize: '16px', 
+            textAlign: 'center',
+            color: '#14532d',
+            backgroundColor: '#f0fdf4',
+            lineHeight: '1.6'
+          } 
+        },
+        { 
+          type: 'stats', 
+          content: { 
+            title: '📊 Your Amazing Impact This Year', 
+            stats: [
+              { number: '2,500+', label: 'Volunteer Hours' },
+              { number: '150', label: 'Active Volunteers' },
+              { number: '50+', label: 'Events Supported' }
+            ],
+            backgroundColor: '#f0fdf4',
+            titleColor: '#166534',
+            numberColor: '#16a34a',
+            labelColor: '#15803d',
+            padding: '25px'
+          } 
+        },
+        { 
+          type: 'event', 
+          content: { 
+            title: 'Appreciation Dinner Details', 
+            date: '2024-12-15', 
+            time: '6:00 PM - 9:00 PM', 
+            location: 'School Cafeteria (Beautifully Decorated!)', 
+            description: 'Dinner, recognition ceremony, and heartfelt thanks',
+            backgroundColor: '#ecfdf5',
+            titleColor: '#14532d',
+            textColor: '#166534',
+            buttonText: '✅ Confirm Attendance',
+            buttonColor: '#16a34a',
+            padding: '25px'
+          } 
+        }
+      ]
+    },
+    {
+      id: 'pro-spring-carnival',
+      name: 'Spring Carnival Extravaganza',
+      category: 'events',
+      style: 'festive-colorful',
+      description: 'Vibrant, fun-filled design perfect for spring carnival celebrations',
+      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZmVmM2M3Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMjUiIGZpbGw9IiNkOTc3MDYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn46gIFNQUklORyBDQVJOSVZBTCDwn46gPC90ZXh0Pgo8dGV4dCB4PSIxMDAiIHk9IjQ1IiBmaWxsPSIjZDk3NzA2IiBmb250LXNpemU9IjEyIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RVhUUkFWQUdBTlpBPC90ZXh0Pgo8dGV4dCB4PSIxMDAiIHk9IjcwIiBmaWxsPSIjOTI0MDA5IiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn46qIEZ1biwgRm9vZCAmIEZhbWlseSBGdW4hIPCfjqo8L3RleHQ+Cjx0ZXh0IHg9IjEwMCIgeT0iOTUiIGZpbGw9IiM5MjQwMDkiIGZvbnQtc2l6ZT0iOCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+R2FtZXMsIHByaXplcywgZGVsaWNpb3VzIGZvb2Q8L3RleHQ+Cjx0ZXh0IHg9IjEwMCIgeT0iMTE1IiBmaWxsPSIjOTI0MDA5IiBmb250LXNpemU9IjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPmFuZCBtZW1vcmllcyB0byBsYXN0IGEgbGlmZXRpbWU8L3RleHQ+Cjx0ZXh0IHg9IjEwMCIgeT0iMTM1IiBmaWxsPSIjZDk3NzA2IiBmb250LXNpemU9IjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkJyaW5nIHRoZSB3aG9sZSBmYW1pbHkhPC90ZXh0Pgo8L3N2Zz4K',
+      blocks: [
+        { 
+          type: 'header', 
+          content: { 
+            text: '🎠 SPRING CARNIVAL EXTRAVAGANZA 🎠', 
+            backgroundColor: '#fef3c7', 
+            backgroundImage: 'linear-gradient(45deg, #fef3c7 0%, #fed7aa 25%, #fecaca 50%, #ddd6fe 75%, #fef3c7 100%)',
+            color: '#d97706', 
+            fontSize: '30px', 
+            fontWeight: 'bold', 
+            padding: '45px 20px', 
+            textAlign: 'center',
+            textShadow: '1px 1px 2px rgba(0,0,0,0.2)'
+          } 
+        },
+        { 
+          type: 'text', 
+          content: { 
+            text: '🎪 Fun, Food & Family Fun! 🎪\n\nStep right up to the most exciting event of the year! Our Spring Carnival features thrilling games, delicious food, amazing prizes, and memories to last a lifetime. Bring the whole family for a day of pure joy and community celebration!', 
+            padding: '25px', 
+            fontSize: '16px', 
+            textAlign: 'center',
+            color: '#92400e',
+            backgroundColor: '#fffbeb',
+            lineHeight: '1.6'
+          } 
+        },
+        { 
+          type: 'highlight', 
+          content: { 
+            title: '🎯 Carnival Attractions', 
+            text: '• Ring Toss & Duck Pond Games\n• Face Painting & Balloon Artists\n• Bounce Houses & Obstacle Course\n• Cotton Candy & Popcorn Stands\n• Prize Wheel & Photo Booth\n• Live Music & Entertainment', 
+            backgroundColor: '#fef2f2', 
+            titleColor: '#dc2626', 
+            textColor: '#991b1b', 
+            borderColor: '#f87171', 
+            padding: '25px', 
+            borderRadius: '12px' 
+          } 
+        },
+        { 
+          type: 'event', 
+          content: { 
+            title: 'Carnival Information', 
+            date: '2024-05-18', 
+            time: '11:00 AM - 4:00 PM', 
+            location: 'School Playground & Gymnasium', 
+            description: 'Rain or shine - indoor backup plan ready!',
+            backgroundColor: '#f0f9ff',
+            titleColor: '#1e40af',
+            textColor: '#1e3a8a',
+            buttonText: '🎫 Get Your Wristbands',
+            buttonColor: '#2563eb',
+            padding: '25px'
+          } 
+        }
+      ]
     }
   ];
 
