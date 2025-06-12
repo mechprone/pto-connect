@@ -64,8 +64,8 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
   const [showTemplateLibrary, setShowTemplateLibrary] = useState(false);
   const [builderMode, setBuilderMode] = useState('email'); // New unified builder mode
   const [collapsedCategories, setCollapsedCategories] = useState({
-    basic: false,
-    design: false,
+    basic: true,
+    design: true,
     fundraising: true,
     events: true,
     volunteers: true,
