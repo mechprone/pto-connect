@@ -3,11 +3,14 @@ import {
   DollarSign, TrendingUp, TrendingDown, AlertTriangle, 
   Sparkles, User, Calculator, PieChart, BarChart3,
   Plus, Search, Filter, Calendar, Target, CheckCircle,
-  ArrowUp, ArrowDown, Eye, Edit, Download
+  ArrowUp, ArrowDown, Eye, Edit, Download, FileText,
+  Upload, BarChart2
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import AIAssistanceToggle from '../../../components/common/AIAssistanceToggle';
 
 const EnhancedBudgetDashboard = () => {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('overview');
   const [creationMode, setCreationMode] = useState('manual');
   const [selectedPeriod, setSelectedPeriod] = useState('current');
@@ -319,6 +322,98 @@ const EnhancedBudgetDashboard = () => {
     </div>
   );
 
+  const MonthlyReconciliation = () => (
+    <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-3">
+          <BarChart2 className="w-6 h-6 text-indigo-600" />
+          <h3 className="text-xl font-semibold text-gray-900">Monthly Reconciliation</h3>
+        </div>
+        <button 
+          onClick={() => navigate('/budget/reconciliation')}
+          className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          <FileText className="w-4 h-4 mr-2" />
+          View All Reconciliations
+        </button>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Quick Start Reconciliation */}
+        <div className="border-2 border-indigo-200 rounded-lg p-6 hover:border-indigo-400 transition-colors bg-indigo-50">
+          <div className="flex items-center space-x-3 mb-4">
+            <Upload className="w-8 h-8 text-indigo-600" />
+            <div>
+              <h4 className="font-semibold text-indigo-900">Start New Reconciliation</h4>
+              <p className="text-sm text-indigo-700">Upload bank statement and reconcile transactions</p>
+            </div>
+          </div>
+          <ul className="text-sm text-indigo-700 space-y-2 mb-4">
+            <li>• OCR bank statement processing</li>
+            <li>• Smart transaction matching</li>
+            <li>• Automated discrepancy detection</li>
+            <li>• Generate reconciliation reports</li>
+          </ul>
+          <button 
+            onClick={() => navigate('/budget/reconciliation/new')}
+            className="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            Start Reconciliation
+          </button>
+        </div>
+
+        {/* Recent Reconciliation Status */}
+        <div className="border border-gray-200 rounded-lg p-6">
+          <h4 className="font-semibold text-gray-900 mb-4">Recent Reconciliations</h4>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+              <div>
+                <div className="font-medium text-green-900">October 2024</div>
+                <div className="text-sm text-green-700">Completed • 98% match rate</div>
+              </div>
+              <CheckCircle className="w-5 h-5 text-green-600" />
+            </div>
+            
+            <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+              <div>
+                <div className="font-medium text-yellow-900">November 2024</div>
+                <div className="text-sm text-yellow-700">In Progress • 3 discrepancies</div>
+              </div>
+              <AlertTriangle className="w-5 h-5 text-yellow-600" />
+            </div>
+            
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div>
+                <div className="font-medium text-gray-900">December 2024</div>
+                <div className="text-sm text-gray-700">Pending • Not started</div>
+              </div>
+              <Calendar className="w-5 h-5 text-gray-600" />
+            </div>
+          </div>
+          
+          <button 
+            onClick={() => navigate('/budget/reconciliation')}
+            className="w-full mt-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
+          >
+            View Reconciliation History
+          </button>
+        </div>
+      </div>
+      
+      {/* Reconciliation Insights */}
+      <div className="mt-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4">
+        <div className="flex items-center space-x-2 mb-2">
+          <Sparkles className="w-5 h-5 text-indigo-600" />
+          <span className="font-medium text-indigo-900">Reconciliation Insights</span>
+        </div>
+        <div className="text-sm text-indigo-800">
+          Your reconciliation accuracy has improved by 15% this quarter. Consider setting up automated 
+          monthly reconciliations to maintain financial accuracy and save time.
+        </div>
+      </div>
+    </div>
+  );
+
   const CreateBudgetOptions = () => (
     <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
       <h3 className="text-xl font-semibold text-gray-900 mb-4">Create New Budget Item</h3>
@@ -457,6 +552,9 @@ const EnhancedBudgetDashboard = () => {
 
         {/* Stella's Insights */}
         <StellaInsights />
+
+        {/* Monthly Reconciliation */}
+        <MonthlyReconciliation />
 
         {/* Create Budget Options */}
         <CreateBudgetOptions />
