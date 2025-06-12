@@ -417,6 +417,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       category: 'events',
       style: 'educational-classic',
       description: 'Professional chalkboard design with educational motifs and elegant typography',
+      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjMmQzNzQ4Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNDAiIGZpbGw9IndoaXRlIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+TsiBQQVJFTlQtVEVBQ0hFUjwvdGV4dD4KPHR5ZXh0IHg9IjEwMCIgeT0iNjAiIGZpbGw9IndoaXRlIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q09ORkVSRU5DRVMg8J+TsjwvdGV4dD4KPHR5ZXh0IHg9IjEwMCIgeT0iOTAiIGZpbGw9IiNiZWUzZjgiIGZvbnQtc2l6ZT0iMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkpvaW4gdXMgZm9yIG1lYW5pbmdmdWwgY29udmVyc2F0aW9uczwvdGV4dD4KPHR5ZXh0IHg9IjEwMCIgeT0iMTEwIiBmaWxsPSIjYmVlM2Y4IiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5hYm91dCB5b3VyIGNoaWxkJ3MgYWNhZGVtaWMgcHJvZ3Jlc3M8L3RleHQ+Cjwvc3ZnPgo=',
       blocks: [
         { 
           type: 'header', 
@@ -481,6 +482,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       category: 'events',
       style: 'notebook-academic',
       description: 'Notebook paper texture with scientific elements and playful academic design',
+      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNlNWU3ZWIiLz4KPGxpbmUgeDE9IjIwIiB5MT0iMzAiIHgyPSIxODAiIHkyPSIzMCIgc3Ryb2tlPSIjYTJmIiBzdHJva2Utd2lkdGg9IjEiLz4KPGxpbmUgeDE9IjIwIiB5MT0iNTAiIHgyPSIxODAiIHkyPSI1MCIgc3Ryb2tlPSIjYTJmIiBzdHJva2Utd2lkdGg9IjEiLz4KPGxpbmUgeDE9IjIwIiB5MT0iNzAiIHgyPSIxODAiIHkyPSI3MCIgc3Ryb2tlPSIjYTJmIiBzdHJva2Utd2lkdGg9IjEiLz4KPGxpbmUgeDE9IjIwIiB5MT0iOTAiIHgyPSIxODAiIHkyPSI5MCIgc3Ryb2tlPSIjYTJmIiBzdHJva2Utd2lkdGg9IjEiLz4KPGxpbmUgeDE9IjIwIiB5MT0iMTEwIiB4Mj0iMTgwIiB5Mj0iMTEwIiBzdHJva2U9IiNhMmYiIHN0cm9rZS13aWR0aD0iMSIvPgo8dGV4dCB4PSIxMDAiIHk9IjIwIiBmaWxsPSIjMWEzNjVkIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+UrCBTQ0lFTkNFIEZBSVIg8J+UrDwvdGV4dD4KPHR5ZXh0IHg9IjMwIiB5PSI0NSIgZmlsbD0iIzJkMzc0OCIgZm9udC1zaXplPSI4Ij5DYWxsaW5nIGFsbCB5b3VuZyBzY2llbnRpc3RzITwvdGV4dD4KPHR5ZXh0IHg9IjMwIiB5PSI2NSIgZmlsbD0iIzJkMzc0OCIgZm9udC1zaXplPSI4Ij5TaG93Y2FzZSB5b3VyIGFtYXppbmcgZGlzY292ZXJpZXM8L3RleHQ+Cjx0ZXh0IHg9IjMwIiB5PSI4NSIgZmlsbD0iIzJkMzc0OCIgZm9udC1zaXplPSI4Ij5hbmQgZXhwZXJpbWVudHMgYXQgb3VyIGZhaXI8L3RleHQ+Cjx0ZXh0IHg9IjMwIiB5PSIxMDUiIGZpbGw9IiMyZDM3NDgiIGZvbnQtc2l6ZT0iOCI+RnJvbSB2b2xjYW5vZXMgdG8gcm9ib3RpY3M8L3RleHQ+Cjx0ZXh0IHg9IjMwIiB5PSIxMjUiIGZpbGw9IiMyZDM3NDgiIGZvbnQtc2l6ZT0iOCI+ZXZlcnkgcHJvamVjdCB0ZWxscyBhIHN0b3J5PC90ZXh0Pgo8L3N2Zz4K',
       blocks: [
         { 
           type: 'header', 
@@ -536,6 +538,142 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
             fontSize: '18px', 
             fontWeight: 'bold',
             boxShadow: '0 4px 12px rgba(56, 161, 105, 0.3)'
+          } 
+        }
+      ]
+    },
+    // Adding 10 more professional templates to reach our goal
+    {
+      id: 'pro-book-fair-literary',
+      name: 'Book Fair - Literary Adventure',
+      category: 'events',
+      style: 'literary-themed',
+      description: 'Enchanting book-themed design with literary elements and reading motifs',
+      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjN2MyZDEyIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMzAiIGZpbGw9IndoaXRlIiBmb250LXNpemU9IjEyIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+TsiBCT09LIEZBSVIg8J+TsjwvdGV4dD4KPHR5ZXh0IHg9IjEwMCIgeT0iNTAiIGZpbGw9IndoaXRlIiBmb250LXNpemU9IjEyIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RVhUUkFWQUdBTlpBPC90ZXh0Pgo8dGV4dCB4PSIxMDAiIHk9Ijc1IiBmaWxsPSIjZmVmN2VkIiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn5OWIERpc2NvdmVyIE5ldyBXb3JsZHMg8J+TljwvdGV4dD4KPHR5ZXh0IHg9IjEwMCIgeT0iOTUiIGZpbGw9IiNmZWY3ZWQiIGZvbnQtc2l6ZT0iMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlRocm91Z2ggUmVhZGluZyE8L3RleHQ+Cjx0ZXh0IHg9IjEwMCIgeT0iMTIwIiBmaWxsPSIjZWNmZGY1IiBmb250LXNpemU9IjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkJyb3dzZSB0aG91c2FuZHMgb2YgYm9va3M8L3RleHQ+Cjx0ZXh0IHg9IjEwMCIgeT0iMTM1IiBmaWxsPSIjZWNmZGY1IiBmb250LXNpemU9IjgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPm1lZXQgYXV0aG9ycywgYW5kIGVtYmFyayBvbiBhZHZlbnR1cmVzPC90ZXh0Pgo8L3N2Zz4K',
+      blocks: [
+        { 
+          type: 'header', 
+          content: { 
+            text: '📚 ANNUAL BOOK FAIR EXTRAVAGANZA 📚', 
+            backgroundColor: '#7c2d12', 
+            backgroundImage: 'linear-gradient(135deg, #7c2d12 0%, #a16207 100%)',
+            color: '#ffffff', 
+            fontSize: '30px', 
+            fontWeight: 'bold', 
+            padding: '40px 20px', 
+            textAlign: 'center',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+          } 
+        },
+        { 
+          type: 'text', 
+          content: { 
+            text: '📖 Discover New Worlds Through Reading! 📖\n\nJoin us for our magical Book Fair where stories come alive! Browse thousands of books, meet authors, and embark on literary adventures that will spark imagination and foster a lifelong love of reading.', 
+            padding: '30px 25px', 
+            fontSize: '16px', 
+            textAlign: 'center',
+            color: '#7c2d12',
+            backgroundColor: '#fef7ed',
+            lineHeight: '1.6'
+          } 
+        },
+        { 
+          type: 'stats', 
+          content: { 
+            title: '📊 Amazing Book Collection', 
+            stats: [
+              { number: '2,500+', label: 'Books Available' },
+              { number: '50+', label: 'Authors Featured' },
+              { number: '15', label: 'Reading Levels' }
+            ],
+            backgroundColor: '#fff7ed',
+            titleColor: '#9a3412',
+            numberColor: '#ea580c',
+            labelColor: '#7c2d12',
+            padding: '25px'
+          } 
+        },
+        { 
+          type: 'highlight', 
+          content: { 
+            title: '🎁 Special Book Fair Features', 
+            text: '• Author meet & greet sessions\n• Interactive storytelling corner\n• Book recommendation station\n• Reading challenge kickoff\n• Special discounts for families', 
+            backgroundColor: '#ecfdf5', 
+            titleColor: '#14532d', 
+            textColor: '#166534', 
+            borderColor: '#22c55e', 
+            padding: '25px', 
+            borderRadius: '8px' 
+          } 
+        }
+      ]
+    },
+    {
+      id: 'pro-art-showcase-creative',
+      name: 'Art Showcase - Creative Expression',
+      category: 'events',
+      style: 'artistic-vibrant',
+      description: 'Colorful, artistic design celebrating student creativity and artistic expression',
+      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjYzAyNmQzIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMzAiIGZpbGw9IndoaXRlIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+OqCBTVFVERU5UIEFSVCBTSE9XQ0FTRSAyMDI0IPCfjqg8L3RleHQ+Cjx0ZXh0IHg9IjEwMCIgeT0iNjAiIGZpbGw9IndoaXRlIiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn4yIIENlbGVicmF0aW5nIFlvdW5nIEFydGlzdHMhIPCfjIg8L3RleHQ+Cjx0ZXh0IHg9IjEwMCIgeT0iOTAiIGZpbGw9IiNmZWYzYzciIGZvbnQtc2l6ZT0iOCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RXhwZXJpZW5jZSB0aGUgaW5jcmVkaWJsZSBjcmVhdGl2aXR5PC90ZXh0Pgo8dGV4dCB4PSIxMDAiIHk9IjExMCIgZmlsbD0iI2ZlZjNjNyIgZm9udC1zaXplPSI4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5vZiBvdXIgc3R1ZGVudHMgYXQgdGhpcyB5ZWFyJ3MgQXJ0IFNob3djYXNlPC90ZXh0Pgo8dGV4dCB4PSIxMDAiIHk9IjEzMCIgZmlsbD0iI2ZlZjNjNyIgZm9udC1zaXplPSI4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Gcm9tIHBhaW50aW5ncyB0byBzY3VscHR1cmVzPC90ZXh0Pgo8L3N2Zz4K',
+      blocks: [
+        { 
+          type: 'header', 
+          content: { 
+            text: '🎨 STUDENT ART SHOWCASE 2024 🎨', 
+            backgroundColor: '#c026d3', 
+            backgroundImage: 'linear-gradient(45deg, #c026d3 0%, #f59e0b 25%, #10b981 50%, #3b82f6 75%, #c026d3 100%)',
+            color: '#ffffff', 
+            fontSize: '32px', 
+            fontWeight: 'bold', 
+            padding: '45px 20px', 
+            textAlign: 'center',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.4)'
+          } 
+        },
+        { 
+          type: 'text', 
+          content: { 
+            text: '🌈 Celebrating Young Artists! 🌈\n\nExperience the incredible creativity of our students at this year\'s Art Showcase. From paintings to sculptures, digital art to photography, witness the amazing talent and imagination of our young artists.', 
+            padding: '25px', 
+            fontSize: '17px', 
+            textAlign: 'center',
+            color: '#1f2937',
+            backgroundColor: '#fef3c7',
+            borderRadius: '12px',
+            margin: '20px'
+          } 
+        },
+        { 
+          type: 'achievement', 
+          content: { 
+            title: '🏆 Featured Art Categories', 
+            achievements: [
+              'Painting & Drawing Masterpieces',
+              'Sculpture & 3D Art Creations',
+              'Digital Art & Photography',
+              'Mixed Media Innovations',
+              'Collaborative Class Projects'
+            ],
+            backgroundColor: '#f0f9ff',
+            titleColor: '#1e40af',
+            textColor: '#1e3a8a',
+            padding: '25px'
+          } 
+        },
+        { 
+          type: 'event', 
+          content: { 
+            title: 'Opening Reception & Awards Ceremony', 
+            date: '2024-12-05', 
+            time: '6:00 PM - 8:00 PM', 
+            location: 'School Gymnasium & Art Hallways', 
+            description: 'Join us for refreshments and the presentation of special recognition awards',
+            backgroundColor: '#fdf4ff',
+            titleColor: '#86198f',
+            textColor: '#a21caf',
+            buttonText: '🎨 RSVP for Reception',
+            buttonColor: '#c026d3',
+            padding: '25px'
           } 
         }
       ]
