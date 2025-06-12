@@ -579,14 +579,35 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
             style={{
               backgroundColor: block.content.backgroundColor || '#f9fafb',
               backgroundImage: block.content.backgroundImage,
-              color: block.content.color || '#1f2937',
-              fontSize: block.content.fontSize || '24px',
-              fontWeight: block.content.fontWeight || 'bold',
-              textAlign: block.content.textAlign || 'center',
-              padding: block.content.padding || '20px'
+              padding: block.content.padding || '20px',
+              textAlign: block.content.textAlign || 'center'
             }}
           >
-            {block.content.text || 'Header Text'}
+            {/* Main Title */}
+            <div
+              style={{
+                color: block.content.color || '#1f2937',
+                fontSize: block.content.fontSize || '24px',
+                fontWeight: block.content.fontWeight || 'bold',
+                marginBottom: block.content.subtitle ? '10px' : '0'
+              }}
+            >
+              {block.content.title || block.content.text || 'Header Text'}
+            </div>
+            
+            {/* Subtitle if it exists */}
+            {block.content.subtitle && (
+              <div
+                style={{
+                  color: block.content.subtitleColor || block.content.color || '#6b7280',
+                  fontSize: '18px',
+                  fontWeight: 'normal',
+                  opacity: '0.9'
+                }}
+              >
+                {block.content.subtitle}
+              </div>
+            )}
           </div>
         );
       
@@ -1310,38 +1331,29 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
           // Convert different block types to our standard format
           if (block.type === 'hero') {
             console.log('🎨 DEBUG: Converting hero block');
-            // Add hero header block
+            // Combine title and subtitle into a single header block
+            let headerText = block.content.title || 'Hero Title';
+            if (block.content.subtitle) {
+              headerText += `\n${block.content.subtitle}`;
+            }
+            
             convertedBlocks.push({
               id: blockId,
               type: 'header',
               content: {
-                text: block.content.title || 'Hero Title',
+                text: headerText,
+                title: block.content.title || 'Hero Title',
+                subtitle: block.content.subtitle || '',
                 fontSize: '32px',
                 fontWeight: 'bold',
                 textAlign: 'center',
                 color: block.content.titleColor || '#ffffff',
+                subtitleColor: block.content.subtitleColor || '#ffffff',
                 backgroundImage: block.content.backgroundImage || 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
                 backgroundColor: block.content.backgroundColor || '#3b82f6',
                 padding: '40px'
               }
             });
-            
-            // Add subtitle block if it exists
-            if (block.content.subtitle) {
-              convertedBlocks.push({
-                id: `${blockId}-subtitle`,
-                type: 'text',
-                content: {
-                  text: block.content.subtitle,
-                  fontSize: '18px',
-                  fontWeight: 'normal',
-                  textAlign: 'center',
-                  color: block.content.subtitleColor || '#6b7280',
-                  backgroundColor: block.content.backgroundImage || block.content.backgroundColor || '#3b82f6',
-                  padding: '0px 20px 40px 20px'
-                }
-              });
-            }
           } else if (block.type === 'header') {
             console.log('📝 DEBUG: Converting header block');
             convertedBlocks.push({
