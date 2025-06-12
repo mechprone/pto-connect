@@ -64,8 +64,8 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
   const [showTemplateLibrary, setShowTemplateLibrary] = useState(false);
   const [builderMode, setBuilderMode] = useState('email'); // New unified builder mode
   const [collapsedCategories, setCollapsedCategories] = useState({
-    basic: true,
-    design: true,
+    basic: false,
+    design: false,
     fundraising: true,
     events: true,
     volunteers: true,
@@ -1295,9 +1295,92 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       </div>
 
       <div className="flex-1 flex overflow-hidden">
-        <div className="w-64 bg-white border-r border-gray-200 p-4">
-          <h3 className="font-semibold text-gray-900 mb-3">Design Elements</h3>
-          <p className="text-sm text-gray-600">Drag blocks to canvas or use Template Library</p>
+        {/* Design Elements Sidebar */}
+        <div className="w-64 bg-white border-r border-gray-200 p-4 overflow-y-auto">
+          <div className="mb-4">
+            <h3 className="font-semibold text-gray-900 mb-2 flex items-center">
+              <SparklesIcon className="h-5 w-5 text-purple-500 mr-2" />
+              Design Elements
+            </h3>
+            <p className="text-sm text-gray-600">Drag blocks to canvas or use Template Library</p>
+          </div>
+
+          {/* Design Element Categories */}
+          <div className="space-y-2">
+            {designElementCategories.map((category) => {
+              const categoryBlocks = blockTypes.filter(block => block.category === category.id);
+              const isCollapsed = collapsedCategories[category.id];
+              const CategoryIcon = category.icon;
+
+              return (
+                <div key={category.id} className="border border-gray-200 rounded-lg">
+                  <button
+                    onClick={() => toggleCategory(category.id)}
+                    className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <CategoryIcon className={`h-4 w-4 text-${category.color}`} />
+                      <span className="font-medium text-gray-900 text-sm">{category.name}</span>
+                      <span className="text-xs text-gray-500">({categoryBlocks.length})</span>
+                    </div>
+                    <ChevronDownIcon 
+                      className={`h-4 w-4 text-gray-400 transition-transform ${
+                        isCollapsed ? '' : 'rotate-180'
+                      }`} 
+                    />
+                  </button>
+                  
+                  {!isCollapsed && (
+                    <div className="px-3 pb-3 space-y-2">
+                      {categoryBlocks.map((block) => {
+                        const BlockIcon = block.icon;
+                        return (
+                          <div
+                            key={block.type}
+                            draggable
+                            onDragStart={(e) => {
+                              setDraggedBlock(block);
+                              e.dataTransfer.effectAllowed = 'copy';
+                            }}
+                            className="flex items-center space-x-2 p-2 bg-gray-50 rounded-md cursor-move hover:bg-gray-100 transition-colors border border-gray-200"
+                          >
+                            <BlockIcon className="h-4 w-4 text-gray-600" />
+                            <span className="text-sm text-gray-700">{block.name}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Quick Actions */}
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <h4 className="font-medium text-gray-900 mb-3 text-sm">Quick Actions</h4>
+            <div className="space-y-2">
+              <button
+                onClick={() => setShowTemplateLibrary(true)}
+                className="w-full flex items-center space-x-2 p-2 text-left text-sm text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
+              >
+                <StarIcon className="h-4 w-4" />
+                <span>Browse Templates</span>
+              </button>
+              <button
+                onClick={() => {
+                  setTemplate(prev => ({
+                    ...prev,
+                    design_json: { ...prev.design_json, blocks: [] }
+                  }));
+                }}
+                className="w-full flex items-center space-x-2 p-2 text-left text-sm text-gray-600 hover:bg-gray-50 rounded-md transition-colors"
+              >
+                <TrashIcon className="h-4 w-4" />
+                <span>Clear Canvas</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="flex-1 p-6">
