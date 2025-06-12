@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon, CheckIcon } from '@heroicons/react/24/outline';
-import { reconciliationAPI } from '../../../services/api';
+import { reconciliationAPI } from '../../../services/api/reconciliation';
 import StatementUploader from './StatementUploader';
 import TransactionMatchingUI from './TransactionMatchingUI';
 import ReconciliationReport from './ReconciliationReport';

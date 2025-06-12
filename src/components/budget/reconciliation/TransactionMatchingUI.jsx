@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
-import { reconciliationAPI } from '../../../services/api';
+import { reconciliationAPI } from '../../../services/api/reconciliation';
 
 const TransactionMatchingUI = ({ reconciliationId }) => {
   const [bankTransactions, setBankTransactions] = useState([]);
