@@ -37,16 +37,20 @@ const ReconciliationWizard = ({ onComplete, onCancel }) => {
     if (currentStep === 1) {
       setLoading(true);
       try {
-        const response = await reconciliationAPI.startReconciliation(
-          reconciliationData.month,
-          reconciliationData.year
-        );
+        const response = await reconciliationAPI.startReconciliation({
+          month: reconciliationData.month,
+          year: reconciliationData.year
+        });
         if (response.success) {
           setReconciliationData(prev => ({ ...prev, id: response.data.id }));
           setCurrentStep(currentStep + 1);
+        } else {
+          console.error('Failed to start reconciliation:', response.error);
+          alert('Failed to start reconciliation: ' + response.error);
         }
       } catch (error) {
         console.error('Failed to start reconciliation:', error);
+        alert('Failed to start reconciliation. Please try again.');
       } finally {
         setLoading(false);
       }
