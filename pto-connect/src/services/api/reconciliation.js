@@ -1,25 +1,30 @@
-import { get, post } from './api';
+import { apiClient } from '../api';
 
 const BASE_URL = '/reconciliation';
 
 export const reconciliationAPI = {
-  getReconciliations: () => {
-    return get(BASE_URL);
+  getReconciliations: async () => {
+    const response = await apiClient.get(BASE_URL);
+    return response.data;
   },
 
-  startReconciliation: (month, year) => {
-    return post(`${BASE_URL}/start`, { month, year });
+  startReconciliation: async (month, year) => {
+    const response = await apiClient.post(`${BASE_URL}/start`, { month, year });
+    return response.data;
   },
 
-  uploadStatement: (reconciliationId, transactions) => {
-    return post(`${BASE_URL}/${reconciliationId}/upload`, { transactions });
+  uploadStatement: async (reconciliationId, transactions) => {
+    const response = await apiClient.post(`${BASE_URL}/${reconciliationId}/upload`, { transactions });
+    return response.data;
   },
 
-  getReconciliationData: (reconciliationId) => {
-    return get(`${BASE_URL}/${reconciliationId}/transactions`);
+  getReconciliationData: async (reconciliationId) => {
+    const response = await apiClient.get(`${BASE_URL}/${reconciliationId}/transactions`);
+    return response.data;
   },
 
-  matchTransaction: (reconciliationId, bank_transaction_id, expense_id) => {
-    return post(`${BASE_URL}/${reconciliationId}/match`, { bank_transaction_id, expense_id });
+  matchTransaction: async (reconciliationId, bank_transaction_id, expense_id) => {
+    const response = await apiClient.post(`${BASE_URL}/${reconciliationId}/match`, { bank_transaction_id, expense_id });
+    return response.data;
   },
 };

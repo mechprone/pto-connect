@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { PlusIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { reconciliationAPI } from '../../../services/api/reconciliation';
-import { useAuth } from '../../../hooks/useAuth';
+import { useUserProfile } from '../../../modules/hooks/useUserProfile';
 import ReconciliationWizard from './ReconciliationWizard';
 
 const ReconciliationDashboard = () => {
-  const { user } = useAuth();
+  const { userProfile } = useUserProfile();
   const [reconciliations, setReconciliations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);

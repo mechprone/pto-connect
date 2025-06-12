@@ -45,6 +45,9 @@ import CreateEditBudgetSubcategory from './modules/budgets/pages/CreateEditBudge
 import TransactionDetails from './modules/budgets/pages/TransactionDetails'
 import CreateEditTransaction from './modules/budgets/pages/CreateEditTransaction'
 
+// Budget Reconciliation
+import ReconciliationDashboard from './components/budget/reconciliation/ReconciliationDashboard'
+
 // Communications
 import CommunicationsDashboard from './modules/communications/pages/CommunicationsDashboard'
 import EnhancedCommunicationsDashboard from './modules/communications/pages/EnhancedCommunicationsDashboard'
@@ -156,6 +159,9 @@ export default function App() {
           <Route path="/budget/transaction/:id" element={<TransactionDetails />} />
           <Route path="/budget/transaction/create" element={<CreateEditTransaction />} />
           <Route path="/budget/transaction/edit/:id" element={<CreateEditTransaction />} />
+          
+          {/* Budget Reconciliation Routes */}
+          <Route path="/budget/reconciliation" element={<ReconciliationDashboard />} />
 
           <Route path="/communications" element={<EnhancedCommunicationsDashboard />} />
           <Route path="/communications/legacy" element={<CommunicationsDashboard />} />
