@@ -2099,43 +2099,17 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
             )}
           </div>
 
-          {/* Quick Templates */}
+          {/* Professional Templates Button */}
           <div className="mb-6">
-            <h3 className="font-semibold text-gray-900 mb-3">Quick Start Templates</h3>
-            <div className="space-y-2">
-              {prebuiltTemplates.map((template, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    setTemplate(prev => ({
-                      ...prev,
-                      design_json: {
-                        ...prev.design_json,
-                        blocks: template.blocks.map((block, blockIndex) => ({
-                          id: `${Date.now()}-${blockIndex}`,
-                          type: block.type,
-                          content: block.content
-                        }))
-                      }
-                    }));
-                  }}
-                  className="w-full text-left p-2 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors"
-                >
-                  <div className="text-sm font-medium text-gray-900">{template.name}</div>
-                  <div className="text-xs text-gray-500 capitalize">{template.category}</div>
-                </button>
-              ))}
-            </div>
-            
             <button
               onClick={() => setShowTemplateLibrary(true)}
-              className="w-full mt-3 p-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 shadow-lg transition-all duration-200 transform hover:scale-105 text-center"
+              className="w-full group relative p-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 shadow-lg transition-all duration-300 transform hover:scale-105 overflow-hidden"
             >
-              <SparklesIcon className="h-6 w-6 text-white mx-auto mb-2" />
-              <div className="text-base font-bold text-white">Professional Templates</div>
-              <div className="text-sm text-purple-100">Browse 40+ stunning designs</div>
-              <div className="mt-2 bg-white/20 px-3 py-1 rounded-full text-xs font-bold inline-block">
-                NEW DESIGNS
+              <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/10 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+              <div className="relative z-10 text-center">
+                <SparklesIcon className="h-6 w-6 text-white mx-auto mb-1 transition-transform duration-300 group-hover:rotate-12" />
+                <div className="text-base font-bold text-white">Template Library</div>
+                <div className="text-xs text-purple-100">Browse 40+ stunning designs</div>
               </div>
             </button>
           </div>
