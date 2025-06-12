@@ -1664,24 +1664,24 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
                 </div>
               </div>
             ) : (
-              <div className="p-4 space-y-4">
+              <div className="relative">
                 {template.design_json.blocks.map((block, index) => (
                   <div
                     key={block.id || index}
-                    className={`relative group border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors ${
-                      selectedBlock === block.id ? 'border-blue-500 ring-2 ring-blue-200' : ''
+                    className={`relative group hover:outline hover:outline-2 hover:outline-blue-300 transition-all ${
+                      selectedBlock === block.id ? 'outline outline-2 outline-blue-500 ring-2 ring-blue-200' : ''
                     }`}
                     onClick={() => setSelectedBlock(block.id)}
                   >
-                    {/* Block Controls */}
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+                    {/* Block Controls - Positioned outside the block content */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1 z-10">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           moveBlockUp(index);
                         }}
                         disabled={index === 0}
-                        className="p-1 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+                        className="p-1 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 disabled:opacity-50"
                         title="Move Up"
                       >
                         <ArrowUpIcon className="h-3 w-3" />
@@ -1692,7 +1692,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
                           moveBlockDown(index);
                         }}
                         disabled={index === template.design_json.blocks.length - 1}
-                        className="p-1 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+                        className="p-1 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 disabled:opacity-50"
                         title="Move Down"
                       >
                         <ArrowDownIcon className="h-3 w-3" />
@@ -1702,7 +1702,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
                           e.stopPropagation();
                           duplicateBlock(index);
                         }}
-                        className="p-1 bg-white border border-gray-300 rounded hover:bg-gray-50"
+                        className="p-1 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50"
                         title="Duplicate"
                       >
                         <DocumentDuplicateIcon className="h-3 w-3" />
@@ -1712,21 +1712,21 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
                           e.stopPropagation();
                           deleteBlock(index);
                         }}
-                        className="p-1 bg-white border border-gray-300 rounded hover:bg-red-50 text-red-600"
+                        className="p-1 bg-white border border-gray-300 rounded shadow-sm hover:bg-red-50 text-red-600"
                         title="Delete"
                       >
                         <TrashIcon className="h-3 w-3" />
                       </button>
                     </div>
 
-                    {/* Render Block Content */}
+                    {/* Render Block Content - Full Width */}
                     {renderBlock(block)}
                   </div>
                 ))}
                 
                 {/* Drop Zone at Bottom */}
                 <div
-                  className="h-16 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-colors"
+                  className="h-16 border-2 border-dashed border-gray-300 mx-4 my-4 rounded-lg flex items-center justify-center text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-colors"
                   onDrop={(e) => handleDropAtPosition(e, template.design_json.blocks.length)}
                   onDragOver={handleDragOver}
                   onDragEnter={handleDragEnter}
