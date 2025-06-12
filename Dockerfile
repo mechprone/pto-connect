@@ -4,17 +4,17 @@ FROM node:20-alpine
 # Set working directory
 WORKDIR /app
 
-# Copy frontend source code from pto-connect subdirectory
-COPY pto-connect/ .
-
-# Debug: List files to see what was copied
-RUN ls -la /app && echo "=== Checking for package.json ===" && ls -la /app/package.json || echo "package.json NOT FOUND"
+# Install dependencies first (better caching)
+COPY package*.json ./
 
 # Clear npm cache and remove lock file to fix rollup issue
 RUN rm -f package-lock.json && npm cache clean --force
 
 # Install dependencies with legacy peer deps to avoid rollup conflicts
 RUN npm install --legacy-peer-deps
+
+# Copy source code
+COPY . .
 
 # Declare build arguments for environment variables
 ARG VITE_SUPABASE_URL
