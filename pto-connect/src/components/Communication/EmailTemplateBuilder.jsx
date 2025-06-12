@@ -411,8 +411,582 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
   ];
 
   const professionalTemplates = [
+    // Event Invitations - Professional Canva-Level Templates
     {
-      id: 'pro-summer-school',
+      id: 'pro-parent-teacher-conference-chalkboard',
+      name: 'Parent-Teacher Conference - Chalkboard Theme',
+      category: 'events',
+      style: 'educational-classic',
+      description: 'Professional chalkboard design with educational motifs and elegant typography',
+      blocks: [
+        { 
+          type: 'header', 
+          content: { 
+            text: '📚 PARENT-TEACHER CONFERENCES 📚', 
+            backgroundColor: '#2d3748', 
+            backgroundImage: 'linear-gradient(135deg, #2d3748 0%, #1a202c 100%)',
+            color: '#ffffff', 
+            fontSize: '32px', 
+            fontWeight: 'bold', 
+            padding: '40px 20px', 
+            textAlign: 'center',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+          } 
+        },
+        { 
+          type: 'text', 
+          content: { 
+            text: 'Dear Parents & Guardians,\n\nJoin us for meaningful conversations about your child\'s academic progress and future goals. Our dedicated teachers are excited to share insights and collaborate with you.', 
+            padding: '30px 25px', 
+            fontSize: '16px', 
+            textAlign: 'left',
+            color: '#2d3748',
+            lineHeight: '1.6',
+            backgroundColor: '#f7fafc'
+          } 
+        },
+        { 
+          type: 'event', 
+          content: { 
+            title: 'Conference Details', 
+            date: '2024-11-20', 
+            time: '3:00 PM - 8:00 PM', 
+            location: 'Individual Classrooms', 
+            description: 'Schedule your 15-minute session with your child\'s teacher',
+            backgroundColor: '#edf2f7',
+            titleColor: '#2d3748',
+            textColor: '#4a5568',
+            buttonText: 'Schedule Your Conference',
+            buttonColor: '#3182ce',
+            padding: '25px'
+          } 
+        },
+        { 
+          type: 'highlight', 
+          content: { 
+            title: '🎯 What to Expect', 
+            text: '• Academic progress review\n• Goal setting for the semester\n• Questions & discussion time\n• Resource recommendations', 
+            backgroundColor: '#bee3f8', 
+            titleColor: '#2c5282', 
+            textColor: '#2a4365', 
+            borderColor: '#3182ce', 
+            padding: '20px', 
+            borderRadius: '8px' 
+          } 
+        }
+      ]
+    },
+    {
+      id: 'pro-science-fair-notebook',
+      name: 'Science Fair - Notebook Paper Style',
+      category: 'events',
+      style: 'notebook-academic',
+      description: 'Notebook paper texture with scientific elements and playful academic design',
+      blocks: [
+        { 
+          type: 'header', 
+          content: { 
+            text: '🔬 ANNUAL SCIENCE FAIR 🔬', 
+            backgroundColor: '#ffffff', 
+            backgroundImage: 'repeating-linear-gradient(transparent, transparent 24px, #a2f 25px)',
+            color: '#1a365d', 
+            fontSize: '36px', 
+            fontWeight: 'bold', 
+            padding: '50px 20px 30px', 
+            textAlign: 'center',
+            borderLeft: '3px solid #e53e3e'
+          } 
+        },
+        { 
+          type: 'text', 
+          content: { 
+            text: 'Calling all young scientists! 🧪\n\nShowcase your amazing discoveries and experiments at our annual Science Fair. From volcanoes to robotics, every project tells a story of curiosity and learning.', 
+            padding: '20px 30px', 
+            fontSize: '16px', 
+            textAlign: 'left',
+            color: '#2d3748',
+            backgroundColor: '#f7fafc',
+            borderLeft: '4px solid #4299e1'
+          } 
+        },
+        { 
+          type: 'stats', 
+          content: { 
+            title: '📊 Last Year\'s Amazing Results', 
+            stats: [
+              { number: '150+', label: 'Student Projects' },
+              { number: '25', label: 'Categories' },
+              { number: '500+', label: 'Visitors' }
+            ],
+            backgroundColor: '#ebf8ff',
+            titleColor: '#2c5282',
+            numberColor: '#3182ce',
+            labelColor: '#4a5568',
+            padding: '25px'
+          } 
+        },
+        { 
+          type: 'button', 
+          content: { 
+            text: '🚀 Register Your Project', 
+            backgroundColor: '#38a169', 
+            color: '#ffffff', 
+            textAlign: 'center', 
+            padding: '15px 30px', 
+            borderRadius: '25px', 
+            fontSize: '18px', 
+            fontWeight: 'bold',
+            boxShadow: '0 4px 12px rgba(56, 161, 105, 0.3)'
+          } 
+        }
+      ]
+    },
+    {
+      id: 'pro-summer-camp-vibrant',
+      name: 'Summer Camp - Vibrant Adventure',
+      category: 'events',
+      style: 'colorful-energetic',
+      description: 'Bright, energetic design with summer camp themes and adventure elements',
+      blocks: [
+        { 
+          type: 'header', 
+          content: { 
+            text: '🏕️ SUMMER ADVENTURE CAMP 🏕️', 
+            backgroundColor: '#fd7f6f', 
+            backgroundImage: 'linear-gradient(45deg, #fd7f6f 0%, #7eb77f 50%, #7eb77f 100%)',
+            color: '#ffffff', 
+            fontSize: '34px', 
+            fontWeight: 'bold', 
+            padding: '45px 20px', 
+            textAlign: 'center',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.4)'
+          } 
+        },
+        { 
+          type: 'text', 
+          content: { 
+            text: '🌟 Adventure Awaits! 🌟\n\nJoin us for the ultimate summer experience filled with outdoor adventures, creative arts, STEM exploration, and lifelong friendships. Every day brings new discoveries!', 
+            padding: '25px', 
+            fontSize: '17px', 
+            textAlign: 'center',
+            color: '#2d3748',
+            backgroundColor: '#fffbeb',
+            borderRadius: '12px',
+            margin: '20px'
+          } 
+        },
+        { 
+          type: 'highlight', 
+          content: { 
+            title: '🎨 Weekly Themes', 
+            text: 'Week 1: Nature Explorers 🌿\nWeek 2: Mad Scientists 🧪\nWeek 3: Creative Artists 🎨\nWeek 4: Adventure Athletes ⚽', 
+            backgroundColor: '#f0fff4', 
+            titleColor: '#22543d', 
+            textColor: '#2f855a', 
+            borderColor: '#48bb78', 
+            padding: '25px', 
+            borderRadius: '12px' 
+          } 
+        },
+        { 
+          type: 'countdown', 
+          content: { 
+            title: '⏰ Camp Starts In:', 
+            eventDate: '2024-06-15', 
+            backgroundColor: '#fef5e7', 
+            titleColor: '#c05621', 
+            numberColor: '#dd6b20', 
+            labelColor: '#9c4221', 
+            padding: '30px' 
+          } 
+        }
+      ]
+    },
+
+    // Newsletter Templates - Professional Designs
+    {
+      id: 'pro-monthly-newsletter-academic',
+      name: 'Monthly Newsletter - Academic Excellence',
+      category: 'newsletters',
+      style: 'professional-academic',
+      description: 'Sophisticated newsletter design with academic themes and clean typography',
+      blocks: [
+        { 
+          type: 'header', 
+          content: { 
+            text: '📖 MONTHLY ACADEMIC DIGEST 📖', 
+            backgroundColor: '#1a365d', 
+            color: '#ffffff', 
+            fontSize: '28px', 
+            fontWeight: 'bold', 
+            padding: '35px 20px', 
+            textAlign: 'center' 
+          } 
+        },
+        { 
+          type: 'newsletter', 
+          content: { 
+            title: 'Principal\'s Message', 
+            content: 'Dear School Community,\n\nThis month has been filled with remarkable achievements and exciting learning opportunities. Our students continue to excel academically while developing important life skills through our comprehensive programs.\n\nWe are particularly proud of our recent science fair winners and our reading program participants who have shown tremendous growth.', 
+            author: 'Dr. Sarah Johnson, Principal',
+            backgroundColor: '#f7fafc',
+            titleColor: '#2d3748',
+            textColor: '#4a5568',
+            authorColor: '#718096',
+            padding: '25px'
+          } 
+        },
+        { 
+          type: 'achievement', 
+          content: { 
+            title: '🏆 Student Achievements This Month', 
+            achievements: [
+              'Math Olympiad Regional Champions',
+              'Perfect Attendance Recognition (45 students)',
+              'Reading Challenge Completions (120 students)',
+              'Science Fair State Qualifiers (8 projects)'
+            ],
+            backgroundColor: '#f0fff4',
+            titleColor: '#22543d',
+            textColor: '#2f855a',
+            padding: '25px'
+          } 
+        },
+        { 
+          type: 'stats', 
+          content: { 
+            title: '📈 Academic Progress Highlights', 
+            stats: [
+              { number: '95%', label: 'Reading Proficiency' },
+              { number: '88%', label: 'Math Scores' },
+              { number: '100%', label: 'Graduation Rate' }
+            ],
+            backgroundColor: '#ebf8ff',
+            titleColor: '#2c5282',
+            numberColor: '#3182ce',
+            labelColor: '#4a5568',
+            padding: '25px'
+          } 
+        }
+      ]
+    },
+    {
+      id: 'pro-classroom-news-creative',
+      name: 'Classroom News - Creative Learning',
+      category: 'newsletters',
+      style: 'creative-classroom',
+      description: 'Playful classroom-themed design with educational elements and bright colors',
+      blocks: [
+        { 
+          type: 'header', 
+          content: { 
+            text: '🎨 MRS. SMITH\'S 3RD GRADE NEWS 🎨', 
+            backgroundColor: '#ed8936', 
+            backgroundImage: 'linear-gradient(135deg, #ed8936 0%, #dd6b20 100%)',
+            color: '#ffffff', 
+            fontSize: '26px', 
+            fontWeight: 'bold', 
+            padding: '30px 20px', 
+            textAlign: 'center' 
+          } 
+        },
+        { 
+          type: 'grade', 
+          content: { 
+            title: '📚 This Week in Learning', 
+            teacher: 'Mrs. Sarah Smith',
+            content: 'Our young scholars have been diving deep into the world of fractions in math, exploring character development in our novel study, and conducting exciting experiments about plant growth in science. The enthusiasm for learning is contagious!',
+            backgroundColor: '#fff5f5',
+            titleColor: '#c53030',
+            textColor: '#2d3748',
+            padding: '25px'
+          } 
+        },
+        { 
+          type: 'highlight', 
+          content: { 
+            title: '⭐ Student Spotlight', 
+            text: 'This week we celebrate Emma Rodriguez for her outstanding creativity in our writing workshop. Her story about a time-traveling pencil had the whole class laughing and inspired many other creative tales!', 
+            backgroundColor: '#f0fff4', 
+            titleColor: '#22543d', 
+            textColor: '#2f855a', 
+            borderColor: '#48bb78', 
+            padding: '20px', 
+            borderRadius: '8px' 
+          } 
+        },
+        { 
+          type: 'text', 
+          content: { 
+            text: '📝 Upcoming Events:\n• Math Game Day - Friday\n• Author Visit - Next Tuesday\n• Field Trip Permission Slips Due - Monday', 
+            padding: '20px', 
+            fontSize: '16px', 
+            textAlign: 'left',
+            color: '#2d3748',
+            backgroundColor: '#edf2f7'
+          } 
+        }
+      ]
+    },
+
+    // Welcome Templates - Professional Designs
+    {
+      id: 'pro-new-student-welcome-warm',
+      name: 'New Student Welcome - Warm Community',
+      category: 'welcome',
+      style: 'warm-welcoming',
+      description: 'Warm, inviting design that makes new families feel part of the school community',
+      blocks: [
+        { 
+          type: 'header', 
+          content: { 
+            text: '🏫 WELCOME TO OUR SCHOOL FAMILY! 🏫', 
+            backgroundColor: '#4299e1', 
+            backgroundImage: 'linear-gradient(135deg, #4299e1 0%, #3182ce 100%)',
+            color: '#ffffff', 
+            fontSize: '30px', 
+            fontWeight: 'bold', 
+            padding: '40px 20px', 
+            textAlign: 'center' 
+          } 
+        },
+        { 
+          type: 'text', 
+          content: { 
+            text: 'Dear New Families,\n\nWe are absolutely thrilled to welcome you to our vibrant school community! 🎉 Your journey with us begins now, and we can\'t wait to see the amazing things your child will accomplish here.\n\nOur dedicated team is here to support you every step of the way.', 
+            padding: '30px 25px', 
+            fontSize: '16px', 
+            textAlign: 'left',
+            color: '#2d3748',
+            backgroundColor: '#f7fafc',
+            lineHeight: '1.6'
+          } 
+        },
+        { 
+          type: 'highlight', 
+          content: { 
+            title: '🌟 What Makes Us Special', 
+            text: '• Personalized learning approaches\n• Strong community partnerships\n• Innovative STEAM programs\n• Caring, experienced educators\n• Safe, inclusive environment', 
+            backgroundColor: '#e6fffa', 
+            titleColor: '#234e52', 
+            textColor: '#285e61', 
+            borderColor: '#4fd1c7', 
+            padding: '25px', 
+            borderRadius: '8px' 
+          } 
+        },
+        { 
+          type: 'button', 
+          content: { 
+            text: '📋 Complete New Family Checklist', 
+            backgroundColor: '#38a169', 
+            color: '#ffffff', 
+            textAlign: 'center', 
+            padding: '15px 30px', 
+            borderRadius: '8px', 
+            fontSize: '16px', 
+            fontWeight: 'bold' 
+          } 
+        }
+      ]
+    },
+
+    // Fundraising Templates - Professional Designs
+    {
+      id: 'pro-fundraising-campaign-impact',
+      name: 'Fundraising Campaign - Community Impact',
+      category: 'fundraising',
+      style: 'impact-focused',
+      description: 'Professional fundraising design emphasizing community impact and transparency',
+      blocks: [
+        { 
+          type: 'header', 
+          content: { 
+            text: '💝 BUILDING BRIGHTER FUTURES TOGETHER 💝', 
+            backgroundColor: '#805ad5', 
+            backgroundImage: 'linear-gradient(135deg, #805ad5 0%, #6b46c1 100%)',
+            color: '#ffffff', 
+            fontSize: '28px', 
+            fontWeight: 'bold', 
+            padding: '35px 20px', 
+            textAlign: 'center' 
+          } 
+        },
+        { 
+          type: 'text', 
+          content: { 
+            text: 'Dear School Community,\n\nEvery child deserves access to exceptional educational opportunities. Your support helps us provide cutting-edge technology, enriching programs, and resources that make learning come alive for every student.', 
+            padding: '25px', 
+            fontSize: '16px', 
+            textAlign: 'left',
+            color: '#2d3748',
+            backgroundColor: '#faf5ff',
+            lineHeight: '1.6'
+          } 
+        },
+        { 
+          type: 'donation', 
+          content: { 
+            title: '🎯 Our Goal: New STEM Lab Equipment', 
+            description: 'Help us create a state-of-the-art learning environment for our students',
+            currentAmount: 18500,
+            goalAmount: 35000,
+            backgroundColor: '#f0fff4',
+            titleColor: '#22543d',
+            textColor: '#2f855a',
+            progressColor: '#48bb78',
+            buttonText: '💚 Donate Now',
+            buttonColor: '#38a169',
+            padding: '25px'
+          } 
+        },
+        { 
+          type: 'highlight', 
+          content: { 
+            title: '🌟 Your Impact', 
+            text: '$25 - Supplies for one student\n$50 - Science experiment kit\n$100 - Classroom technology upgrade\n$250 - Full STEM project materials', 
+            backgroundColor: '#ebf8ff', 
+            titleColor: '#2c5282', 
+            textColor: '#2a4365', 
+            borderColor: '#4299e1', 
+            padding: '20px', 
+            borderRadius: '8px' 
+          } 
+        }
+      ]
+    },
+
+    // Announcement Templates - Professional Designs
+    {
+      id: 'pro-policy-update-official',
+      name: 'Policy Update - Official Communication',
+      category: 'announcements',
+      style: 'official-professional',
+      description: 'Clean, official design for important policy communications and updates',
+      blocks: [
+        { 
+          type: 'header', 
+          content: { 
+            text: '📋 IMPORTANT POLICY UPDATE 📋', 
+            backgroundColor: '#2d3748', 
+            color: '#ffffff', 
+            fontSize: '26px', 
+            fontWeight: 'bold', 
+            padding: '30px 20px', 
+            textAlign: 'center' 
+          } 
+        },
+        { 
+          type: 'announcement', 
+          content: { 
+            title: 'Updated Health & Safety Protocols', 
+            message: 'Effective immediately, we are implementing enhanced health and safety measures to ensure the wellbeing of all students, staff, and families. These updates reflect current best practices and regulatory requirements.',
+            backgroundColor: '#edf2f7',
+            titleColor: '#2d3748',
+            textColor: '#4a5568',
+            buttonText: 'View Full Policy Document',
+            buttonColor: '#3182ce',
+            padding: '25px'
+          } 
+        },
+        { 
+          type: 'highlight', 
+          content: { 
+            title: '📌 Key Changes', 
+            text: '• Updated visitor check-in procedures\n• Enhanced cleaning protocols\n• Modified pickup/drop-off procedures\n• New emergency contact requirements', 
+            backgroundColor: '#fff5f5', 
+            titleColor: '#c53030', 
+            textColor: '#742a2a', 
+            borderColor: '#fc8181', 
+            padding: '20px', 
+            borderRadius: '8px' 
+          } 
+        },
+        { 
+          type: 'text', 
+          content: { 
+            text: 'Questions? Please contact our main office at (555) 123-4567 or email admin@school.edu. We appreciate your cooperation in keeping our school community safe and healthy.', 
+            padding: '20px', 
+            fontSize: '14px', 
+            textAlign: 'center',
+            color: '#4a5568',
+            backgroundColor: '#f7fafc',
+            fontStyle: 'italic'
+          } 
+        }
+      ]
+    },
+
+    // Additional Professional Templates...
+    {
+      id: 'pro-workshop-series-academic',
+      name: 'Workshop Series - Academic Excellence',
+      category: 'events',
+      style: 'workshop-professional',
+      description: 'Sophisticated design for academic workshops and professional development events',
+      blocks: [
+        { 
+          type: 'header', 
+          content: { 
+            text: '🎓 PARENT EDUCATION WORKSHOP SERIES 🎓', 
+            backgroundColor: '#1a365d', 
+            backgroundImage: 'linear-gradient(135deg, #1a365d 0%, #2c5282 100%)',
+            color: '#ffffff', 
+            fontSize: '26px', 
+            fontWeight: 'bold', 
+            padding: '35px 20px', 
+            textAlign: 'center' 
+          } 
+        },
+        { 
+          type: 'text', 
+          content: { 
+            text: 'Empowering Parents, Enriching Education 📚\n\nJoin our expert-led workshop series designed to help parents support their children\'s academic journey. Learn practical strategies, connect with other families, and discover resources that make a difference.', 
+            padding: '25px', 
+            fontSize: '16px', 
+            textAlign: 'left',
+            color: '#2d3748',
+            backgroundColor: '#ebf8ff',
+            lineHeight: '1.6'
+          } 
+        },
+        { 
+          type: 'event', 
+          content: { 
+            title: 'Upcoming Workshop: "Supporting Math Learning at Home"', 
+            date: '2024-11-25', 
+            time: '6:30 PM - 8:00 PM', 
+            location: 'School Library', 
+            description: 'Learn fun, effective ways to reinforce math concepts at home',
+            backgroundColor: '#f0f9ff',
+            titleColor: '#1e3a8a',
+            textColor: '#1e40af',
+            buttonText: 'Reserve Your Spot',
+            buttonColor: '#3b82f6',
+            padding: '25px'
+          } 
+        },
+        { 
+          type: 'highlight', 
+          content: { 
+            title: '📅 Complete Series Schedule', 
+            text: 'Nov 25: Math Support Strategies\nDec 9: Reading Comprehension Tips\nJan 13: Study Skills & Organization\nFeb 10: Technology & Learning', 
+            backgroundColor: '#fef3c7', 
+            titleColor: '#92400e', 
+            textColor: '#a16207', 
+            borderColor: '#f59e0b', 
+            padding: '20px', 
+            borderRadius: '8px' 
+          } 
+        }
+      ]
+    }
+  ];
+
+  const basicTemplates = [
+    // Move previous "professional" templates to basic
+    {
+      id: 'basic-summer-school',
       name: 'Summer School Enrollment',
       category: 'events',
       style: 'energetic',
@@ -427,7 +1001,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
       ]
     },
     {
-      id: 'pro-back-to-school',
+      id: 'basic-back-to-school',
       name: 'Back to School Bash',
       category: 'events',
       style: 'playful',
@@ -441,9 +1015,6 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
         { type: 'button', content: { text: 'I\'m Coming!', backgroundColor: '#f97316', color: '#ffffff', textAlign: 'center', padding: '15px 30px', borderRadius: '8px', fontSize: '18px', fontWeight: 'bold' } },
       ]
     },
-  ];
-
-  const basicTemplates = [
     {
       id: 'basic-announcement',
       name: 'Simple Announcement',
