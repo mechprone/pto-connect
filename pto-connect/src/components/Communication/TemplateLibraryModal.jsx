@@ -28,10 +28,11 @@ const TemplateLibraryModal = ({ isOpen, onClose, onSelectTemplate }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedStyle, setSelectedStyle] = useState('all');
+  const [activeTab, setActiveTab] = useState('professional');
   const [previewTemplate, setPreviewTemplate] = useState(null);
 
   // Comprehensive template library with 40+ professional templates
-  const templateLibrary = [
+  const professionalTemplates = [
     // Event Templates
     {
       id: 'event-fall-festival',
@@ -586,6 +587,34 @@ const TemplateLibraryModal = ({ isOpen, onClose, onSelectTemplate }) => {
     }
   ];
 
+  const basicTemplates = [
+    {
+      id: 'basic-announcement',
+      name: 'Simple Announcement',
+      category: 'announcements',
+      style: 'basic',
+      description: 'A clean, simple announcement template.',
+      blocks: [
+        { type: 'header', content: { text: 'Announcement Title' } },
+        { type: 'text', content: { text: 'Your message here.' } },
+        { type: 'button', content: { text: 'Learn More' } }
+      ]
+    },
+    {
+      id: 'basic-event',
+      name: 'Basic Event',
+      category: 'events',
+      style: 'basic',
+      description: 'A basic template for event invitations.',
+      blocks: [
+        { type: 'header', content: { text: 'Event Name' } },
+        { type: 'event', content: { title: 'Event Details' } }
+      ]
+    }
+  ];
+
+  const templateLibrary = activeTab === 'professional' ? professionalTemplates : basicTemplates;
+
   const categories = [
     { value: 'all', label: 'All Templates', icon: StarIcon },
     { value: 'events', label: 'Events', icon: CalendarIcon },
@@ -630,8 +659,27 @@ const TemplateLibraryModal = ({ isOpen, onClose, onSelectTemplate }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Professional Template Library</h2>
-            <p className="text-gray-600">Choose from {templateLibrary.length}+ professionally designed templates</p>
+            <h2 className="text-2xl font-bold text-gray-900">Template Library</h2>
+            <div className="flex items-center space-x-1 mt-2 border border-gray-200 rounded-lg p-1">
+              <button
+                onClick={() => setActiveTab('professional')}
+                className={`px-4 py-1 text-sm font-semibold rounded-md transition-colors ${
+                  activeTab === 'professional' ? 'bg-purple-600 text-white shadow' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <SparklesIcon className="w-4 h-4 inline-block mr-2" />
+                Professional
+              </button>
+              <button
+                onClick={() => setActiveTab('basic')}
+                className={`px-4 py-1 text-sm font-semibold rounded-md transition-colors ${
+                  activeTab === 'basic' ? 'bg-blue-600 text-white shadow' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <DocumentTextIcon className="w-4 h-4 inline-block mr-2" />
+                Basic
+              </button>
+            </div>
           </div>
           <button
             onClick={onClose}
