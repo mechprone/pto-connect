@@ -444,6 +444,268 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
     }));
   };
 
+  // Drag and Drop Handlers
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    if (draggedBlock) {
+      addBlock(draggedBlock);
+      setDraggedBlock(null);
+    }
+  };
+
+  const handleDropAtPosition = (e, position) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (draggedBlock) {
+      addBlockAtPosition(draggedBlock, position);
+      setDraggedBlock(null);
+    }
+  };
+
+  // Block Management Functions
+  const addBlock = (blockType) => {
+    const newBlock = {
+      id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      type: blockType.type,
+      content: { ...blockType.defaultContent }
+    };
+    
+    setTemplate(prev => ({
+      ...prev,
+      design_json: {
+        ...prev.design_json,
+        blocks: [...prev.design_json.blocks, newBlock]
+      }
+    }));
+  };
+
+  const addBlockAtPosition = (blockType, position) => {
+    const newBlock = {
+      id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      type: blockType.type,
+      content: { ...blockType.defaultContent }
+    };
+    
+    setTemplate(prev => {
+      const newBlocks = [...prev.design_json.blocks];
+      newBlocks.splice(position, 0, newBlock);
+      return {
+        ...prev,
+        design_json: {
+          ...prev.design_json,
+          blocks: newBlocks
+        }
+      };
+    });
+  };
+
+  const moveBlockUp = (index) => {
+    if (index === 0) return;
+    
+    setTemplate(prev => {
+      const newBlocks = [...prev.design_json.blocks];
+      [newBlocks[index - 1], newBlocks[index]] = [newBlocks[index], newBlocks[index - 1]];
+      return {
+        ...prev,
+        design_json: {
+          ...prev.design_json,
+          blocks: newBlocks
+        }
+      };
+    });
+  };
+
+  const moveBlockDown = (index) => {
+    if (index === template.design_json.blocks.length - 1) return;
+    
+    setTemplate(prev => {
+      const newBlocks = [...prev.design_json.blocks];
+      [newBlocks[index], newBlocks[index + 1]] = [newBlocks[index + 1], newBlocks[index]];
+      return {
+        ...prev,
+        design_json: {
+          ...prev.design_json,
+          blocks: newBlocks
+        }
+      };
+    });
+  };
+
+  const duplicateBlock = (index) => {
+    const blockToDuplicate = template.design_json.blocks[index];
+    const newBlock = {
+      ...blockToDuplicate,
+      id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    };
+    
+    setTemplate(prev => {
+      const newBlocks = [...prev.design_json.blocks];
+      newBlocks.splice(index + 1, 0, newBlock);
+      return {
+        ...prev,
+        design_json: {
+          ...prev.design_json,
+          blocks: newBlocks
+        }
+      };
+    });
+  };
+
+  const deleteBlock = (index) => {
+    setTemplate(prev => ({
+      ...prev,
+      design_json: {
+        ...prev.design_json,
+        blocks: prev.design_json.blocks.filter((_, i) => i !== index)
+      }
+    }));
+  };
+
+  // Block Rendering Function
+  const renderBlock = (block) => {
+    switch (block.type) {
+      case 'header':
+        return (
+          <div
+            style={{
+              backgroundColor: block.content.backgroundColor || '#f9fafb',
+              backgroundImage: block.content.backgroundImage,
+              color: block.content.color || '#1f2937',
+              fontSize: block.content.fontSize || '24px',
+              fontWeight: block.content.fontWeight || 'bold',
+              textAlign: block.content.textAlign || 'center',
+              padding: block.content.padding || '20px'
+            }}
+          >
+            {block.content.text || 'Header Text'}
+          </div>
+        );
+      
+      case 'text':
+        return (
+          <div
+            style={{
+              backgroundColor: block.content.backgroundColor || '#ffffff',
+              color: block.content.color || '#374151',
+              fontSize: block.content.fontSize || '16px',
+              fontWeight: block.content.fontWeight || 'normal',
+              textAlign: block.content.textAlign || 'left',
+              padding: block.content.padding || '15px',
+              lineHeight: '1.6'
+            }}
+          >
+            {block.content.text?.split('\n').map((line, i) => (
+              <div key={i}>{line}</div>
+            )) || 'Text content'}
+          </div>
+        );
+      
+      case 'image':
+        return (
+          <div style={{ textAlign: block.content.textAlign || 'center', padding: block.content.padding || '15px' }}>
+            <img
+              src={block.content.src || 'https://via.placeholder.com/600x300?text=Add+Your+Image'}
+              alt={block.content.alt || 'Email Image'}
+              style={{ width: block.content.width || '100%', maxWidth: '100%', height: 'auto' }}
+            />
+          </div>
+        );
+      
+      case 'button':
+        return (
+          <div style={{ textAlign: block.content.textAlign || 'center', padding: '20px' }}>
+            <button
+              style={{
+                backgroundColor: block.content.backgroundColor || '#3b82f6',
+                color: block.content.color || '#ffffff',
+                padding: block.content.padding || '12px 24px',
+                borderRadius: block.content.borderRadius || '6px',
+                fontSize: block.content.fontSize || '16px',
+                fontWeight: block.content.fontWeight || '600',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              {block.content.text || 'Click Here'}
+            </button>
+          </div>
+        );
+      
+      case 'donation':
+        const progressPercentage = (block.content.currentAmount / block.content.goalAmount) * 100;
+        return (
+          <div
+            style={{
+              backgroundColor: block.content.backgroundColor || '#f0f9ff',
+              padding: block.content.padding || '20px',
+              borderRadius: '8px'
+            }}
+          >
+            <h3 style={{ color: block.content.titleColor || '#1e40af', marginBottom: '10px' }}>
+              {block.content.title || 'Support Our Cause'}
+            </h3>
+            <p style={{ color: block.content.textColor || '#374151', marginBottom: '15px' }}>
+              {block.content.description || 'Help us reach our goal'}
+            </p>
+            
+            <div style={{ marginBottom: '15px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', fontSize: '14px' }}>
+                <span>Raised: ${block.content.currentAmount?.toLocaleString() || '0'}</span>
+                <span>Goal: ${block.content.goalAmount?.toLocaleString() || '10,000'}</span>
+              </div>
+              <div style={{ width: '100%', backgroundColor: '#e5e7eb', borderRadius: '4px', height: '8px' }}>
+                <div
+                  style={{
+                    width: `${Math.min(progressPercentage, 100)}%`,
+                    backgroundColor: block.content.progressColor || '#3b82f6',
+                    height: '8px',
+                    borderRadius: '4px',
+                    transition: 'width 0.3s ease'
+                  }}
+                ></div>
+              </div>
+            </div>
+            
+            <button
+              style={{
+                backgroundColor: block.content.buttonColor || '#3b82f6',
+                color: '#ffffff',
+                padding: '12px 24px',
+                borderRadius: '6px',
+                border: 'none',
+                fontWeight: '600',
+                cursor: 'pointer',
+                width: '100%'
+              }}
+            >
+              {block.content.buttonText || 'Donate Now'}
+            </button>
+          </div>
+        );
+      
+      default:
+        return (
+          <div style={{ padding: '20px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px' }}>
+            <div style={{ color: '#6b7280', fontSize: '14px' }}>
+              {block.type.charAt(0).toUpperCase() + block.type.slice(1)} Block
+            </div>
+            <div style={{ color: '#9ca3af', fontSize: '12px', marginTop: '5px' }}>
+              Content will be rendered here
+            </div>
+          </div>
+        );
+    }
+  };
+
   const designElementCategories = [
     { id: 'basic', name: 'Basic Content', icon: Bars3Icon, color: 'blue-500' },
     { id: 'design', name: 'Design & Pizzazz', icon: PaintBrushIcon, color: 'purple-500' },
@@ -1269,16 +1531,18 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
           </div>
           
           <div className="flex items-center space-x-3">
+            {/* Prominent Templates Button */}
             <button
               onClick={() => setShowTemplateLibrary(true)}
-              className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+              className="px-6 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 font-semibold"
             >
-              Template Library
+              <StarIcon className="h-5 w-5" />
+              <span>Templates</span>
             </button>
             
             <button
               onClick={onCancel}
-              className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
@@ -1286,7 +1550,7 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
             <button
               onClick={() => onSave?.(template)}
               disabled={saving || !template.name}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
               Save Template
             </button>
@@ -1384,17 +1648,92 @@ const EmailTemplateBuilder = ({ templateId, onSave, onCancel }) => {
         </div>
 
         <div className="flex-1 p-6">
-          <div className="mx-auto bg-white shadow-lg rounded-lg min-h-96 max-w-2xl">
+          <div 
+            ref={canvasRef}
+            className="mx-auto bg-white shadow-lg rounded-lg min-h-96 max-w-2xl"
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragEnter}
+          >
             {template.design_json.blocks.length === 0 ? (
-              <div className="flex items-center justify-center h-96 text-gray-500">
+              <div className="flex items-center justify-center h-96 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
                 <div className="text-center">
+                  <SparklesIcon className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                   <p className="text-lg font-medium">Start building your email</p>
                   <p className="text-sm">Choose a template or drag blocks from the sidebar</p>
                 </div>
               </div>
             ) : (
-              <div className="p-4">
-                <p>Template loaded with {template.design_json.blocks.length} blocks</p>
+              <div className="p-4 space-y-4">
+                {template.design_json.blocks.map((block, index) => (
+                  <div
+                    key={block.id || index}
+                    className={`relative group border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors ${
+                      selectedBlock === block.id ? 'border-blue-500 ring-2 ring-blue-200' : ''
+                    }`}
+                    onClick={() => setSelectedBlock(block.id)}
+                  >
+                    {/* Block Controls */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          moveBlockUp(index);
+                        }}
+                        disabled={index === 0}
+                        className="p-1 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+                        title="Move Up"
+                      >
+                        <ArrowUpIcon className="h-3 w-3" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          moveBlockDown(index);
+                        }}
+                        disabled={index === template.design_json.blocks.length - 1}
+                        className="p-1 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+                        title="Move Down"
+                      >
+                        <ArrowDownIcon className="h-3 w-3" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          duplicateBlock(index);
+                        }}
+                        className="p-1 bg-white border border-gray-300 rounded hover:bg-gray-50"
+                        title="Duplicate"
+                      >
+                        <DocumentDuplicateIcon className="h-3 w-3" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteBlock(index);
+                        }}
+                        className="p-1 bg-white border border-gray-300 rounded hover:bg-red-50 text-red-600"
+                        title="Delete"
+                      >
+                        <TrashIcon className="h-3 w-3" />
+                      </button>
+                    </div>
+
+                    {/* Render Block Content */}
+                    {renderBlock(block)}
+                  </div>
+                ))}
+                
+                {/* Drop Zone at Bottom */}
+                <div
+                  className="h-16 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-colors"
+                  onDrop={(e) => handleDropAtPosition(e, template.design_json.blocks.length)}
+                  onDragOver={handleDragOver}
+                  onDragEnter={handleDragEnter}
+                >
+                  <PlusIcon className="h-6 w-6 mr-2" />
+                  <span>Drop blocks here to add to bottom</span>
+                </div>
               </div>
             )}
           </div>
