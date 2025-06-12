@@ -4,7 +4,7 @@ export const reconciliationAPI = {
   // Start a new reconciliation
   startReconciliation: async (data) => {
     try {
-      const response = await api.post('/api/reconciliation/start', data);
+      const response = await api.post('/budget/reconciliation/start', data);
       return response.data;
     } catch (error) {
       console.error('Error starting reconciliation:', error);
@@ -15,7 +15,7 @@ export const reconciliationAPI = {
   // Get all reconciliations for the organization
   getReconciliations: async () => {
     try {
-      const response = await api.get('/api/reconciliation');
+      const response = await api.get('/budget/reconciliation');
       return response.data;
     } catch (error) {
       console.error('Error fetching reconciliations:', error);
@@ -24,15 +24,10 @@ export const reconciliationAPI = {
   },
 
   // Upload bank statement
-  uploadStatement: async (reconciliationId, file) => {
+  uploadStatement: async (reconciliationId, transactions) => {
     try {
-      const formData = new FormData();
-      formData.append('statement', file);
-      
-      const response = await api.post(`/api/reconciliation/${reconciliationId}/upload`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const response = await api.post(`/budget/reconciliation/${reconciliationId}/upload`, {
+        transactions: transactions
       });
       return response.data;
     } catch (error) {
@@ -44,7 +39,7 @@ export const reconciliationAPI = {
   // Get transactions for matching
   getTransactions: async (reconciliationId) => {
     try {
-      const response = await api.get(`/api/reconciliation/${reconciliationId}/transactions`);
+      const response = await api.get(`/budget/reconciliation/${reconciliationId}/transactions`);
       return response.data;
     } catch (error) {
       console.error('Error fetching transactions:', error);
@@ -55,7 +50,10 @@ export const reconciliationAPI = {
   // Match a bank transaction to an expense
   matchTransaction: async (reconciliationId, matchData) => {
     try {
-      const response = await api.post(`/api/reconciliation/${reconciliationId}/match`, matchData);
+      const response = await api.post(`/budget/reconciliation/${reconciliationId}/match`, {
+        bank_transaction_id: matchData.bankTransactionId,
+        expense_id: matchData.expenseId
+      });
       return response.data;
     } catch (error) {
       console.error('Error matching transaction:', error);
@@ -66,7 +64,7 @@ export const reconciliationAPI = {
   // Complete the reconciliation
   completeReconciliation: async (reconciliationId) => {
     try {
-      const response = await api.post(`/api/reconciliation/${reconciliationId}/complete`);
+      const response = await api.post(`/budget/reconciliation/${reconciliationId}/complete`);
       return response.data;
     } catch (error) {
       console.error('Error completing reconciliation:', error);
@@ -77,7 +75,7 @@ export const reconciliationAPI = {
   // Generate reconciliation report
   generateReport: async (reconciliationId) => {
     try {
-      const response = await api.get(`/api/reconciliation/${reconciliationId}/report`);
+      const response = await api.get(`/budget/reconciliation/${reconciliationId}/report`);
       return response.data;
     } catch (error) {
       console.error('Error generating report:', error);
