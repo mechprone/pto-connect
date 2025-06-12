@@ -37,6 +37,7 @@ import CreateFundraiser from './modules/fundraisers/pages/CreateFundraiser'
 // Budget
 import BudgetDashboard from './modules/budgets/pages/BudgetDashboard'
 import EnhancedBudgetDashboard from './modules/budgets/pages/EnhancedBudgetDashboard'
+import BudgetContainer from './components/budget'
 import CreateBudgetEntry from './modules/budgets/pages/CreateBudgetEntry'
 import BudgetCategoryDetails from './modules/budgets/pages/BudgetCategoryDetails'
 import CreateEditBudgetCategory from './modules/budgets/pages/CreateEditBudgetCategory'
@@ -144,6 +145,7 @@ export default function App() {
           <Route path="/budget" element={<EnhancedBudgetDashboard />} />
           <Route path="/budget/legacy" element={<BudgetDashboard />} />
           <Route path="/budget/create" element={<CreateBudgetEntry />} />
+          <Route path="/budget/reconciliation" element={<BudgetContainer />} />
           
           {/* Budget Child Pages */}
           <Route path="/budget/category/:id" element={<BudgetCategoryDetails />} />
