@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabaseClient';
+import { supabase } from '../../../utils/supabaseClient';
+import { toast } from 'react-toastify';
 import {
   Card,
   CardContent,
@@ -8,7 +9,6 @@ import {
   CardDescription,
 } from '../../../components/ui/card';
 import { Progress } from '../../../components/ui/progress';
-import { toast } from 'sonner';
 
 const FundraiserAnalytics = ({ fundraiserId }) => {
   const [loading, setLoading] = useState(true);
@@ -33,8 +33,6 @@ const FundraiserAnalytics = ({ fundraiserId }) => {
         .from('fundraiser_analytics')
         .select('*')
         .eq('fundraiser_id', fundraiserId)
-        .order('date', { ascending: false })
-        .limit(1)
         .single();
 
       if (basicError) throw basicError;
@@ -44,7 +42,7 @@ const FundraiserAnalytics = ({ fundraiserId }) => {
         .from('donations')
         .select(`
           *,
-          profiles:donor_id (full_name)
+          donor:profiles(name)
         `)
         .eq('fundraiser_id', fundraiserId)
         .order('created_at', { ascending: false })
@@ -57,12 +55,11 @@ const FundraiserAnalytics = ({ fundraiserId }) => {
         .from('donations')
         .select(`
           donor_id,
-          profiles:donor_id (full_name),
-          sum:amount
+          donor:profiles(name),
+          amount
         `)
         .eq('fundraiser_id', fundraiserId)
-        .group('donor_id, profiles.full_name')
-        .order('sum', { ascending: false })
+        .order('amount', { ascending: false })
         .limit(5);
 
       if (donorsError) throw donorsError;
@@ -84,8 +81,8 @@ const FundraiserAnalytics = ({ fundraiserId }) => {
         donation_trends: trends
       });
     } catch (error) {
-      console.error('Error fetching analytics:', error);
-      toast.error('Failed to load analytics');
+      toast.error('Error fetching analytics');
+      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
@@ -98,9 +95,7 @@ const FundraiserAnalytics = ({ fundraiserId }) => {
     }).format(amount);
   };
 
-  if (loading) {
-    return <div>Loading analytics...</div>;
-  }
+  if (loading) return <div>Loading analytics...</div>;
 
   return (
     <div className="space-y-6">
@@ -167,7 +162,7 @@ const FundraiserAnalytics = ({ fundraiserId }) => {
                   className="flex justify-between items-center"
                 >
                   <div>
-                    <p className="font-medium">{donation.profiles.full_name}</p>
+                    <p className="font-medium">{donation.donor.name}</p>
                     <p className="text-sm text-gray-500">
                       {new Date(donation.created_at).toLocaleDateString()}
                     </p>
@@ -188,14 +183,19 @@ const FundraiserAnalytics = ({ fundraiserId }) => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {analytics.top_donors.map((donor) => (
+              {analytics.top_donors.map((donor, index) => (
                 <div
                   key={donor.donor_id}
                   className="flex justify-between items-center"
                 >
-                  <p className="font-medium">{donor.profiles.full_name}</p>
+                  <div>
+                    <p className="font-medium">{donor.donor.name}</p>
+                    <p className="text-sm text-gray-500">
+                      {index + 1} {index === 0 ? 'st' : index === 1 ? 'nd' : index === 2 ? 'rd' : 'th'} Place
+                    </p>
+                  </div>
                   <p className="font-bold text-green-600">
-                    {formatCurrency(donor.sum)}
+                    {formatCurrency(donor.amount)}
                   </p>
                 </div>
               ))}
@@ -216,7 +216,7 @@ const FundraiserAnalytics = ({ fundraiserId }) => {
               {analytics.donation_trends.map((trend, index) => (
                 <div
                   key={index}
-                  className="flex-1 bg-green-100 rounded-t"
+                  className="flex-1 bg-blue-500"
                   style={{
                     height: `${(trend.amount / Math.max(...analytics.donation_trends.map(t => t.amount))) * 100}%`
                   }}

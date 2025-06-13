@@ -1,22 +1,10 @@
-import React, { useState } from 'react';
-import { supabase } from '../../../lib/supabaseClient';
-import { useAuth } from '../../../contexts/AuthContext';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
-import { Input } from '../../../components/ui/input';
-import { Label } from '../../../components/ui/label';
-import { Textarea } from '../../../components/ui/textarea';
-import { toast } from 'sonner';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../../../utils/supabaseClient';
+import { toast } from 'react-toastify';
 
-const DonationTierManager = ({ fundraiserId, onTierAdded }) => {
-  const { user } = useAuth();
+const DonationTierManager = ({ fundraiserId }) => {
   const [loading, setLoading] = useState(false);
+  const [tiers, setTiers] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
     amount: '',
@@ -24,42 +12,23 @@ const DonationTierManager = ({ fundraiserId, onTierAdded }) => {
     benefits: ''
   });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  useEffect(() => {
+    fetchTiers();
+  }, [fundraiserId]);
 
+  const fetchTiers = async () => {
     try {
-      const tierData = {
-        ...formData,
-        fundraiser_id: fundraiserId,
-        amount: parseFloat(formData.amount),
-        created_by: user.id
-      };
-
       const { data, error } = await supabase
         .from('donation_tiers')
-        .insert([tierData])
-        .select()
-        .single();
+        .select('*')
+        .eq('fundraiser_id', fundraiserId)
+        .order('amount', { ascending: true });
 
       if (error) throw error;
-
-      setFormData({
-        name: '',
-        amount: '',
-        description: '',
-        benefits: ''
-      });
-
-      toast.success('Donation tier added successfully');
-      if (onTierAdded) {
-        onTierAdded(data);
-      }
+      setTiers(data);
     } catch (error) {
-      console.error('Error adding donation tier:', error);
-      toast.error('Failed to add donation tier');
-    } finally {
-      setLoading(false);
+      toast.error('Error fetching donation tiers');
+      console.error('Error:', error);
     }
   };
 
@@ -71,74 +40,133 @@ const DonationTierManager = ({ fundraiserId, onTierAdded }) => {
     }));
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('donation_tiers')
+        .insert([{
+          ...formData,
+          fundraiser_id: fundraiserId,
+          amount: parseFloat(formData.amount)
+        }]);
+
+      if (error) throw error;
+      toast.success('Donation tier created successfully');
+      setFormData({
+        name: '',
+        amount: '',
+        description: '',
+        benefits: ''
+      });
+      fetchTiers();
+    } catch (error) {
+      toast.error('Error creating donation tier');
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Add Donation Tier</CardTitle>
-        <CardDescription>
-          Create a new donation tier for your fundraiser
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="name">Tier Name</Label>
-            <Input
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              placeholder="e.g., Bronze Supporter"
-            />
-          </div>
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-xl font-semibold mb-4">Donation Tiers</h2>
 
-          <div>
-            <Label htmlFor="amount">Amount</Label>
-            <Input
-              id="amount"
-              name="amount"
-              type="number"
-              min="0"
-              step="0.01"
-              value={formData.amount}
-              onChange={handleChange}
-              required
-              placeholder="Enter donation amount"
-            />
-          </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Tier Name
+          </label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          />
+        </div>
 
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-              placeholder="Describe what this tier represents"
-              rows={2}
-            />
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Amount
+          </label>
+          <input
+            type="number"
+            name="amount"
+            value={formData.amount}
+            onChange={handleChange}
+            required
+            min="0"
+            step="0.01"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          />
+        </div>
 
-          <div>
-            <Label htmlFor="benefits">Benefits</Label>
-            <Textarea
-              id="benefits"
-              name="benefits"
-              value={formData.benefits}
-              onChange={handleChange}
-              placeholder="List any benefits or perks for this tier"
-              rows={2}
-            />
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Description
+          </label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            rows={2}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          />
+        </div>
 
-          <Button type="submit" disabled={loading}>
-            {loading ? 'Adding...' : 'Add Donation Tier'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Benefits
+          </label>
+          <textarea
+            name="benefits"
+            value={formData.benefits}
+            onChange={handleChange}
+            rows={2}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50"
+        >
+          {loading ? 'Creating...' : 'Create Tier'}
+        </button>
+      </form>
+
+      <div className="mt-6 space-y-4">
+        {tiers.map((tier) => (
+          <div
+            key={tier.id}
+            className="border rounded-lg p-4"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="font-semibold">{tier.name}</h3>
+                <p className="text-2xl font-bold text-green-600">
+                  ${tier.amount}
+                </p>
+              </div>
+            </div>
+            {tier.description && (
+              <p className="mt-2 text-gray-600">{tier.description}</p>
+            )}
+            {tier.benefits && (
+              <div className="mt-2">
+                <h4 className="font-medium text-gray-700">Benefits:</h4>
+                <p className="text-sm text-gray-600">{tier.benefits}</p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
