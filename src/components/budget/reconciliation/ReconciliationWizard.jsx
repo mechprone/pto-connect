@@ -12,6 +12,8 @@ const ReconciliationWizard = ({ onComplete, onCancel }) => {
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
     bankStatement: null,
+    bankTransactions: [],
+    systemExpenses: [],
   });
   const [loading, setLoading] = useState(false);
 
@@ -26,11 +28,36 @@ const ReconciliationWizard = ({ onComplete, onCancel }) => {
     setReconciliationData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleStatementUpload = (file) => {
-    setReconciliationData(prev => ({ ...prev, bankStatement: file }));
-    // In a real implementation, we would now call the API to upload and process the file.
-    // For now, we'll just move to the next step.
-    nextStep();
+  const handleStatementUpload = async (uploadData) => {
+    setLoading(true);
+    try {
+      // Upload the OCR-processed transactions to the backend
+      const response = await reconciliationAPI.uploadStatement(reconciliationData.id, {
+        transactions: uploadData.transactions
+      });
+
+      if (response.success) {
+        // Fetch the complete transaction data for matching
+        const transactionData = await reconciliationAPI.getTransactions(reconciliationData.id);
+        
+        if (transactionData.success) {
+          setReconciliationData(prev => ({
+            ...prev,
+            bankStatement: uploadData.file,
+            bankTransactions: transactionData.data.bankTransactions,
+            systemExpenses: transactionData.data.systemExpenses
+          }));
+          setCurrentStep(currentStep + 1);
+        }
+      } else {
+        alert('Failed to upload transactions: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Failed to upload statement:', error);
+      alert('Failed to upload statement. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const nextStep = async () => {
@@ -101,7 +128,13 @@ const ReconciliationWizard = ({ onComplete, onCancel }) => {
       case 2:
         return <StatementUploader onUpload={handleStatementUpload} />;
       case 3:
-        return <TransactionMatchingUI reconciliationId={reconciliationData.id} />;
+        return (
+          <TransactionMatchingUI 
+            reconciliationId={reconciliationData.id}
+            bankTransactions={reconciliationData.bankTransactions}
+            systemExpenses={reconciliationData.systemExpenses}
+          />
+        );
       case 4:
         return <ReconciliationReport reconciliation={reconciliationData} />;
       default:

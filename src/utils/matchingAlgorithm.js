@@ -1,41 +1,49 @@
-// Smart Transaction Matching Algorithm for Bank Statement Reconciliation
+/**
+ * Smart Transaction Matching Algorithm
+ * Uses fuzzy string matching, amount comparison, and date proximity
+ * to intelligently match bank transactions with system expenses
+ */
 
 class MatchingAlgorithm {
   constructor() {
-    this.matchingThreshold = 0.7; // Minimum confidence score for auto-matching
-    this.amountTolerance = 0.01; // $0.01 tolerance for amount matching
+    this.config = {
+      // Confidence thresholds
+      autoMatchThreshold: 0.85,
+      suggestMatchThreshold: 0.6,
+      
+      // Scoring weights
+      weights: {
+        amount: 0.4,        // 40% - Amount similarity
+        description: 0.3,   // 30% - Description similarity
+        date: 0.2,          // 20% - Date proximity
+        vendor: 0.1         // 10% - Vendor matching
+      },
+      
+      // Matching tolerances
+      amountTolerance: 0.01,  // $0.01 tolerance for exact matches
+      dateWindow: 7,          // 7 days window for date matching
+      
+      // Fuzzy matching parameters
+      fuzzyThreshold: 0.6     // Minimum similarity for fuzzy matches
+    };
   }
 
   /**
-   * Find potential matches between bank transactions and system expenses
-   * @param {Array} bankTransactions - Transactions from OCR
-   * @param {Array} systemExpenses - Expenses from the system
-   * @returns {Array} Array of match suggestions with confidence scores
+   * Find matches for all bank transactions against system expenses
    */
   findMatches(bankTransactions, systemExpenses) {
     const matches = [];
 
     for (const bankTx of bankTransactions) {
-      const potentialMatches = this.findPotentialMatches(bankTx, systemExpenses);
+      const suggestions = this.findSuggestionsForTransaction(bankTx, systemExpenses);
       
-      if (potentialMatches.length > 0) {
-        // Sort by confidence score (highest first)
-        potentialMatches.sort((a, b) => b.confidence - a.confidence);
-        
-        matches.push({
-          bankTransaction: bankTx,
-          suggestions: potentialMatches,
-          bestMatch: potentialMatches[0],
-          autoMatch: potentialMatches[0].confidence >= this.matchingThreshold
-        });
-      } else {
-        matches.push({
-          bankTransaction: bankTx,
-          suggestions: [],
-          bestMatch: null,
-          autoMatch: false
-        });
-      }
+      matches.push({
+        bankTransaction: bankTx,
+        suggestions: suggestions,
+        bestMatch: suggestions.length > 0 ? suggestions[0] : null,
+        autoMatch: suggestions.length > 0 && suggestions[0].confidence >= this.config.autoMatchThreshold,
+        isMatched: false
+      });
     }
 
     return matches;
@@ -43,275 +51,245 @@ class MatchingAlgorithm {
 
   /**
    * Find potential matches for a single bank transaction
-   * @param {Object} bankTransaction - Single bank transaction
-   * @param {Array} systemExpenses - Array of system expenses
-   * @returns {Array} Array of potential matches with confidence scores
    */
-  findPotentialMatches(bankTransaction, systemExpenses) {
-    const matches = [];
+  findSuggestionsForTransaction(bankTransaction, systemExpenses) {
+    const suggestions = [];
 
     for (const expense of systemExpenses) {
-      if (expense.is_matched) continue; // Skip already matched expenses
-
-      const confidence = this.calculateMatchConfidence(bankTransaction, expense);
+      const score = this.calculateMatchScore(bankTransaction, expense);
       
-      if (confidence > 0.3) { // Only include matches with reasonable confidence
-        matches.push({
+      if (score.totalScore >= this.config.suggestMatchThreshold) {
+        suggestions.push({
           expense: expense,
-          confidence: confidence,
-          matchReasons: this.getMatchReasons(bankTransaction, expense, confidence)
+          confidence: score.totalScore,
+          matchReasons: score.reasons,
+          scoreBreakdown: score.breakdown
         });
       }
     }
 
-    return matches;
+    // Sort by confidence (highest first)
+    return suggestions.sort((a, b) => b.confidence - a.confidence);
   }
 
   /**
-   * Calculate confidence score for a potential match
-   * @param {Object} bankTx - Bank transaction
-   * @param {Object} expense - System expense
-   * @returns {number} Confidence score between 0 and 1
+   * Calculate comprehensive match score between bank transaction and expense
    */
-  calculateMatchConfidence(bankTx, expense) {
-    let confidence = 0;
-    const weights = {
-      amount: 0.4,      // Amount matching is most important
-      description: 0.3, // Description similarity
-      date: 0.2,        // Date proximity
-      vendor: 0.1       // Vendor matching
+  calculateMatchScore(bankTransaction, expense) {
+    const scores = {
+      amount: this.calculateAmountScore(bankTransaction.amount, expense.amount),
+      description: this.calculateDescriptionScore(bankTransaction.description, expense.description || expense.vendor),
+      date: this.calculateDateScore(bankTransaction.date, expense.expense_date || expense.date),
+      vendor: this.calculateVendorScore(bankTransaction.description, expense.vendor)
     };
 
-    // Amount matching
-    const amountScore = this.calculateAmountScore(bankTx.amount, expense.amount);
-    confidence += amountScore * weights.amount;
+    // Calculate weighted total score
+    const totalScore = Object.keys(scores).reduce((total, key) => {
+      return total + (scores[key] * this.config.weights[key]);
+    }, 0);
 
-    // Description similarity
-    const descriptionScore = this.calculateDescriptionScore(bankTx.description, expense.description || expense.vendor);
-    confidence += descriptionScore * weights.description;
+    // Generate match reasons
+    const reasons = this.generateMatchReasons(scores, bankTransaction, expense);
 
-    // Date proximity (within 7 days)
-    const dateScore = this.calculateDateScore(bankTx.date, expense.date);
-    confidence += dateScore * weights.date;
-
-    // Vendor matching (if available)
-    if (expense.vendor) {
-      const vendorScore = this.calculateDescriptionScore(bankTx.description, expense.vendor);
-      confidence += vendorScore * weights.vendor;
-    }
-
-    return Math.min(confidence, 1.0);
+    return {
+      totalScore: Math.min(totalScore, 1.0),
+      breakdown: scores,
+      reasons: reasons
+    };
   }
 
   /**
-   * Calculate amount matching score
-   * @param {number} bankAmount - Bank transaction amount
-   * @param {number} expenseAmount - System expense amount
-   * @returns {number} Score between 0 and 1
+   * Calculate amount similarity score
    */
   calculateAmountScore(bankAmount, expenseAmount) {
     const difference = Math.abs(bankAmount - expenseAmount);
     
-    if (difference <= this.amountTolerance) {
-      return 1.0; // Perfect match
+    // Exact match (within tolerance)
+    if (difference <= this.config.amountTolerance) {
+      return 1.0;
     }
     
-    // Calculate score based on percentage difference
-    const percentageDiff = difference / Math.max(bankAmount, expenseAmount);
+    // Calculate percentage difference
+    const percentDiff = difference / Math.max(bankAmount, expenseAmount);
     
-    if (percentageDiff <= 0.01) return 0.9;  // 1% difference
-    if (percentageDiff <= 0.05) return 0.7;  // 5% difference
-    if (percentageDiff <= 0.10) return 0.5;  // 10% difference
-    if (percentageDiff <= 0.20) return 0.3;  // 20% difference
+    // Score decreases as percentage difference increases
+    if (percentDiff <= 0.01) return 0.95;  // 1% difference
+    if (percentDiff <= 0.05) return 0.85;  // 5% difference
+    if (percentDiff <= 0.10) return 0.70;  // 10% difference
+    if (percentDiff <= 0.20) return 0.50;  // 20% difference
     
-    return 0; // Too different
+    return 0.0; // Too different
   }
 
   /**
-   * Calculate description similarity score using fuzzy matching
-   * @param {string} desc1 - First description
-   * @param {string} desc2 - Second description
-   * @returns {number} Score between 0 and 1
+   * Calculate description similarity using fuzzy string matching
    */
-  calculateDescriptionScore(desc1, desc2) {
-    if (!desc1 || !desc2) return 0;
+  calculateDescriptionScore(bankDescription, expenseDescription) {
+    if (!bankDescription || !expenseDescription) return 0.0;
 
     // Normalize descriptions
-    const normalized1 = this.normalizeDescription(desc1);
-    const normalized2 = this.normalizeDescription(desc2);
+    const bankDesc = this.normalizeDescription(bankDescription);
+    const expenseDesc = this.normalizeDescription(expenseDescription);
 
-    // Exact match
-    if (normalized1 === normalized2) return 1.0;
-
-    // Check for substring matches
-    if (normalized1.includes(normalized2) || normalized2.includes(normalized1)) {
-      return 0.8;
-    }
-
-    // Fuzzy string matching using Levenshtein distance
-    const distance = this.levenshteinDistance(normalized1, normalized2);
-    const maxLength = Math.max(normalized1.length, normalized2.length);
-    const similarity = 1 - (distance / maxLength);
-
-    // Boost score for common vendor patterns
-    const vendorBoost = this.checkVendorPatterns(desc1, desc2);
+    // Calculate Levenshtein distance-based similarity
+    const similarity = this.calculateStringSimilarity(bankDesc, expenseDesc);
     
-    return Math.min(similarity + vendorBoost, 1.0);
+    // Boost score for exact word matches
+    const wordMatchBoost = this.calculateWordMatchBoost(bankDesc, expenseDesc);
+    
+    return Math.min(similarity + wordMatchBoost, 1.0);
   }
 
   /**
    * Calculate date proximity score
-   * @param {string} bankDate - Bank transaction date
-   * @param {string} expenseDate - System expense date
-   * @returns {number} Score between 0 and 1
    */
   calculateDateScore(bankDate, expenseDate) {
-    const date1 = new Date(bankDate);
-    const date2 = new Date(expenseDate);
+    if (!bankDate || !expenseDate) return 0.0;
+
+    const bank = new Date(bankDate);
+    const expense = new Date(expenseDate);
+    const daysDiff = Math.abs((bank - expense) / (1000 * 60 * 60 * 24));
+
+    if (daysDiff === 0) return 1.0;           // Same day
+    if (daysDiff <= 1) return 0.9;           // 1 day difference
+    if (daysDiff <= 3) return 0.8;           // 3 days difference
+    if (daysDiff <= 7) return 0.6;           // Within a week
+    if (daysDiff <= 14) return 0.4;          // Within 2 weeks
+    if (daysDiff <= 30) return 0.2;          // Within a month
     
-    const daysDifference = Math.abs((date1 - date2) / (1000 * 60 * 60 * 24));
+    return 0.0; // Too far apart
+  }
+
+  /**
+   * Calculate vendor-specific matching score
+   */
+  calculateVendorScore(bankDescription, vendor) {
+    if (!vendor) return 0.0;
+
+    const bankDesc = this.normalizeDescription(bankDescription);
+    const vendorName = this.normalizeDescription(vendor);
+
+    // Check if vendor name appears in bank description
+    if (bankDesc.includes(vendorName)) return 1.0;
     
-    if (daysDifference === 0) return 1.0;      // Same day
-    if (daysDifference <= 1) return 0.9;       // 1 day difference
-    if (daysDifference <= 3) return 0.7;       // 3 days difference
-    if (daysDifference <= 7) return 0.5;       // 1 week difference
-    if (daysDifference <= 14) return 0.3;      // 2 weeks difference
+    // Check for partial matches
+    const vendorWords = vendorName.split(' ').filter(word => word.length > 2);
+    const matchedWords = vendorWords.filter(word => bankDesc.includes(word));
     
-    return 0; // More than 2 weeks
+    return matchedWords.length / vendorWords.length;
   }
 
   /**
    * Normalize description for better matching
-   * @param {string} description - Raw description
-   * @returns {string} Normalized description
    */
   normalizeDescription(description) {
     return description
       .toLowerCase()
-      .replace(/[^\w\s]/g, '') // Remove special characters
-      .replace(/\b(pos|atm|ach|chk|dep|wd|tfr|fee|debit|credit)\b/g, '') // Remove bank codes
-      .replace(/\b\d+\b/g, '') // Remove numbers
-      .replace(/\s+/g, ' ') // Normalize whitespace
+      .replace(/[^\w\s]/g, ' ')           // Remove special characters
+      .replace(/\b(pos|atm|ach|chk|dep|wd|tfr|fee)\b/g, '') // Remove bank codes
+      .replace(/\b\d+\b/g, '')            // Remove numbers
+      .replace(/\s+/g, ' ')               // Normalize whitespace
       .trim();
   }
 
   /**
-   * Check for common vendor patterns
-   * @param {string} desc1 - First description
-   * @param {string} desc2 - Second description
-   * @returns {number} Boost score
+   * Calculate string similarity using Levenshtein distance
    */
-  checkVendorPatterns(desc1, desc2) {
-    const commonVendors = [
-      'walmart', 'target', 'amazon', 'costco', 'home depot', 'lowes',
-      'starbucks', 'mcdonalds', 'subway', 'pizza', 'gas', 'shell',
-      'exxon', 'bp', 'chevron', 'office depot', 'staples'
-    ];
-
-    const normalized1 = desc1.toLowerCase();
-    const normalized2 = desc2.toLowerCase();
-
-    for (const vendor of commonVendors) {
-      if (normalized1.includes(vendor) && normalized2.includes(vendor)) {
-        return 0.2; // Boost for common vendor match
-      }
-    }
-
-    return 0;
-  }
-
-  /**
-   * Calculate Levenshtein distance between two strings
-   * @param {string} str1 - First string
-   * @param {string} str2 - Second string
-   * @returns {number} Edit distance
-   */
-  levenshteinDistance(str1, str2) {
+  calculateStringSimilarity(str1, str2) {
     const matrix = [];
+    const len1 = str1.length;
+    const len2 = str2.length;
 
-    for (let i = 0; i <= str2.length; i++) {
+    // Initialize matrix
+    for (let i = 0; i <= len1; i++) {
       matrix[i] = [i];
     }
-
-    for (let j = 0; j <= str1.length; j++) {
+    for (let j = 0; j <= len2; j++) {
       matrix[0][j] = j;
     }
 
-    for (let i = 1; i <= str2.length; i++) {
-      for (let j = 1; j <= str1.length; j++) {
-        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1];
-        } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j - 1] + 1, // substitution
-            matrix[i][j - 1] + 1,     // insertion
-            matrix[i - 1][j] + 1      // deletion
-          );
-        }
+    // Fill matrix
+    for (let i = 1; i <= len1; i++) {
+      for (let j = 1; j <= len2; j++) {
+        const cost = str1[i - 1] === str2[j - 1] ? 0 : 1;
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1,      // deletion
+          matrix[i][j - 1] + 1,      // insertion
+          matrix[i - 1][j - 1] + cost // substitution
+        );
       }
     }
 
-    return matrix[str2.length][str1.length];
+    const distance = matrix[len1][len2];
+    const maxLength = Math.max(len1, len2);
+    
+    return maxLength === 0 ? 1.0 : 1 - (distance / maxLength);
   }
 
   /**
-   * Get human-readable reasons for a match
-   * @param {Object} bankTx - Bank transaction
-   * @param {Object} expense - System expense
-   * @param {number} confidence - Match confidence
-   * @returns {Array} Array of match reasons
+   * Calculate boost for exact word matches
    */
-  getMatchReasons(bankTx, expense, confidence) {
+  calculateWordMatchBoost(str1, str2) {
+    const words1 = str1.split(' ').filter(word => word.length > 2);
+    const words2 = str2.split(' ').filter(word => word.length > 2);
+    
+    if (words1.length === 0 || words2.length === 0) return 0.0;
+
+    const matchedWords = words1.filter(word => words2.includes(word));
+    const matchRatio = matchedWords.length / Math.max(words1.length, words2.length);
+    
+    return matchRatio * 0.2; // Up to 20% boost
+  }
+
+  /**
+   * Generate human-readable match reasons
+   */
+  generateMatchReasons(scores, bankTransaction, expense) {
     const reasons = [];
 
-    // Amount matching
-    const amountDiff = Math.abs(bankTx.amount - expense.amount);
-    if (amountDiff <= this.amountTolerance) {
+    if (scores.amount >= 0.95) {
       reasons.push('Exact amount match');
-    } else if (amountDiff / expense.amount <= 0.05) {
-      reasons.push('Very close amount match');
+    } else if (scores.amount >= 0.8) {
+      reasons.push('Very close amount');
+    } else if (scores.amount >= 0.6) {
+      reasons.push('Similar amount');
     }
 
-    // Date proximity
-    const daysDiff = Math.abs((new Date(bankTx.date) - new Date(expense.date)) / (1000 * 60 * 60 * 24));
-    if (daysDiff === 0) {
-      reasons.push('Same date');
-    } else if (daysDiff <= 3) {
-      reasons.push(`${Math.round(daysDiff)} day(s) apart`);
-    }
-
-    // Description similarity
-    const descScore = this.calculateDescriptionScore(bankTx.description, expense.description || expense.vendor);
-    if (descScore > 0.8) {
+    if (scores.description >= 0.8) {
       reasons.push('Strong description match');
-    } else if (descScore > 0.5) {
-      reasons.push('Partial description match');
+    } else if (scores.description >= 0.6) {
+      reasons.push('Similar description');
     }
 
-    // Vendor matching
-    if (expense.vendor && this.calculateDescriptionScore(bankTx.description, expense.vendor) > 0.6) {
+    if (scores.date >= 0.9) {
+      reasons.push('Same/next day');
+    } else if (scores.date >= 0.6) {
+      reasons.push('Within a week');
+    }
+
+    if (scores.vendor >= 0.8) {
       reasons.push('Vendor name match');
+    }
+
+    if (reasons.length === 0) {
+      reasons.push('Potential match');
     }
 
     return reasons;
   }
 
   /**
-   * Auto-match transactions with high confidence
-   * @param {Array} matches - Array of match suggestions
-   * @returns {Array} Array of auto-matched pairs
+   * Perform automatic matching for high-confidence matches
    */
   performAutoMatching(matches) {
     const autoMatches = [];
 
     for (const match of matches) {
       if (match.autoMatch && match.bestMatch) {
-        autoMatches.push({
-          bankTransaction: match.bankTransaction,
-          expense: match.bestMatch.expense,
-          confidence: match.bestMatch.confidence,
-          reasons: match.bestMatch.matchReasons
-        });
+        // Mark as auto-matched
+        match.isMatched = true;
+        match.matchedExpense = match.bestMatch.expense;
+        autoMatches.push(match);
       }
     }
 
@@ -319,16 +297,25 @@ class MatchingAlgorithm {
   }
 
   /**
-   * Update matching parameters
-   * @param {Object} params - New parameters
+   * Update configuration
    */
-  updateParameters(params) {
-    if (params.matchingThreshold !== undefined) {
-      this.matchingThreshold = params.matchingThreshold;
-    }
-    if (params.amountTolerance !== undefined) {
-      this.amountTolerance = params.amountTolerance;
-    }
+  updateConfig(newConfig) {
+    this.config = { ...this.config, ...newConfig };
+  }
+
+  /**
+   * Get matching statistics
+   */
+  getMatchingStats(matches) {
+    return {
+      total: matches.length,
+      withSuggestions: matches.filter(m => m.suggestions.length > 0).length,
+      autoMatched: matches.filter(m => m.autoMatch).length,
+      highConfidence: matches.filter(m => m.bestMatch && m.bestMatch.confidence >= 0.8).length,
+      mediumConfidence: matches.filter(m => m.bestMatch && m.bestMatch.confidence >= 0.6 && m.bestMatch.confidence < 0.8).length,
+      lowConfidence: matches.filter(m => m.bestMatch && m.bestMatch.confidence < 0.6).length,
+      noMatches: matches.filter(m => m.suggestions.length === 0).length
+    };
   }
 }
 
