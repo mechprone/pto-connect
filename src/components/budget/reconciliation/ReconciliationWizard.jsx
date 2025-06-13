@@ -61,27 +61,42 @@ const ReconciliationWizard = ({ onComplete, onCancel }) => {
   };
 
   const nextStep = async () => {
+    console.log('🔍 [FRONTEND DEBUG] nextStep called, currentStep:', currentStep);
+    
     if (currentStep === 1) {
+      console.log('🔍 [FRONTEND DEBUG] Starting reconciliation process');
+      console.log('🔍 [FRONTEND DEBUG] Reconciliation data:', {
+        month: reconciliationData.month,
+        year: reconciliationData.year
+      });
+      
       setLoading(true);
       try {
+        console.log('🔍 [FRONTEND DEBUG] Calling reconciliationAPI.startReconciliation');
         const response = await reconciliationAPI.startReconciliation({
           month: reconciliationData.month,
           year: reconciliationData.year
         });
+        
+        console.log('🔍 [FRONTEND DEBUG] startReconciliation response:', response);
+        
         if (response.success) {
+          console.log('✅ [FRONTEND DEBUG] Reconciliation started successfully, ID:', response.data.id);
           setReconciliationData(prev => ({ ...prev, id: response.data.id }));
           setCurrentStep(currentStep + 1);
         } else {
-          console.error('Failed to start reconciliation:', response.error);
+          console.error('❌ [FRONTEND DEBUG] Failed to start reconciliation:', response.error);
           alert('Failed to start reconciliation: ' + response.error);
         }
       } catch (error) {
-        console.error('Failed to start reconciliation:', error);
+        console.error('❌ [FRONTEND DEBUG] Exception in nextStep:', error);
         alert('Failed to start reconciliation. Please try again.');
       } finally {
+        console.log('🔍 [FRONTEND DEBUG] Setting loading to false');
         setLoading(false);
       }
     } else if (currentStep < steps.length) {
+      console.log('🔍 [FRONTEND DEBUG] Moving to next step:', currentStep + 1);
       setCurrentStep(currentStep + 1);
     }
   };

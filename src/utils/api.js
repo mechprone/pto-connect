@@ -13,26 +13,56 @@ const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
   async (config) => {
+    console.log('🔍 [FRONTEND DEBUG] API Request interceptor started');
+    console.log('🔍 [FRONTEND DEBUG] Request URL:', config.url);
+    console.log('🔍 [FRONTEND DEBUG] Request method:', config.method);
+    
     try {
       const { data: { session } } = await supabase.auth.getSession();
+      console.log('🔍 [FRONTEND DEBUG] Session retrieved:', !!session);
+      console.log('🔍 [FRONTEND DEBUG] Access token present:', !!session?.access_token);
+      
       if (session?.access_token) {
         config.headers.Authorization = `Bearer ${session.access_token}`;
+        console.log('🔍 [FRONTEND DEBUG] Auth header set, token length:', session.access_token.length);
+      } else {
+        console.warn('⚠️ [FRONTEND DEBUG] No access token found in session');
       }
     } catch (error) {
-      console.error('Error getting session:', error);
+      console.error('❌ [FRONTEND DEBUG] Error getting session:', error);
     }
+    
+    console.log('🔍 [FRONTEND DEBUG] Final request headers:', config.headers);
     return config;
   },
   (error) => {
+    console.error('❌ [FRONTEND DEBUG] Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
 
 // Response interceptor for error handling
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('✅ [FRONTEND DEBUG] API Response received:', {
+      url: response.config.url,
+      status: response.status,
+      statusText: response.statusText,
+      dataKeys: Object.keys(response.data || {})
+    });
+    return response;
+  },
   (error) => {
+    console.error('❌ [FRONTEND DEBUG] API Response error:', {
+      url: error.config?.url,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      errorData: error.response?.data,
+      errorMessage: error.message
+    });
+    
     if (error.response?.status === 401) {
+      console.warn('🚫 [FRONTEND DEBUG] Unauthorized - redirecting to login');
       // Redirect to login on unauthorized
       window.location.href = '/login';
     }
