@@ -24,11 +24,9 @@ export const reconciliationAPI = {
   },
 
   // Upload bank statement
-  uploadStatement: async (reconciliationId, transactions) => {
+  uploadStatement: async (reconciliationId, data) => {
     try {
-      const response = await api.post(`/budget/reconciliation/${reconciliationId}/upload`, {
-        transactions: transactions
-      });
+      const response = await api.post(`/budget/reconciliation/${reconciliationId}/upload`, data);
       return response.data;
     } catch (error) {
       console.error('Error uploading statement:', error);
