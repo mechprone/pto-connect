@@ -126,11 +126,11 @@ const EnhancedBudgetDashboard = () => {
   };
 
   const handleGetStellaHelp = () => {
-    navigate('/budget/create?mode=ai-assisted');
+    navigate('/communications/ai?context=budget&mode=assisted');
   };
 
   const handleLetStellaGenerate = () => {
-    navigate('/budget/create?mode=ai-automated');
+    navigate('/ai-workflow-orchestrator?context=budget&mode=automated');
   };
 
   const handleViewDetails = (categoryId) => {
