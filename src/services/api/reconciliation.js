@@ -5,10 +5,16 @@ export const reconciliationAPI = {
   startReconciliation: async (data) => {
     try {
       const response = await api.post('/budget/reconciliation/start', data);
-      return response.data;
+      // Handle new standardized response format
+      return {
+        success: response.data.success,
+        data: response.data.data,
+        error: response.data.errors?.[0]?.message || null
+      };
     } catch (error) {
       console.error('Error starting reconciliation:', error);
-      return { success: false, error: error.message };
+      const errorMessage = error.response?.data?.errors?.[0]?.message || error.message;
+      return { success: false, error: errorMessage };
     }
   },
 
@@ -16,10 +22,15 @@ export const reconciliationAPI = {
   getReconciliations: async () => {
     try {
       const response = await api.get('/budget/reconciliation');
-      return response.data;
+      return {
+        success: response.data.success,
+        data: response.data.data,
+        error: response.data.errors?.[0]?.message || null
+      };
     } catch (error) {
       console.error('Error fetching reconciliations:', error);
-      return { success: false, error: error.message };
+      const errorMessage = error.response?.data?.errors?.[0]?.message || error.message;
+      return { success: false, error: errorMessage };
     }
   },
 
@@ -27,10 +38,15 @@ export const reconciliationAPI = {
   uploadStatement: async (reconciliationId, data) => {
     try {
       const response = await api.post(`/budget/reconciliation/${reconciliationId}/upload`, data);
-      return response.data;
+      return {
+        success: response.data.success,
+        data: response.data.data,
+        error: response.data.errors?.[0]?.message || null
+      };
     } catch (error) {
       console.error('Error uploading statement:', error);
-      return { success: false, error: error.message };
+      const errorMessage = error.response?.data?.errors?.[0]?.message || error.message;
+      return { success: false, error: errorMessage };
     }
   },
 
@@ -38,10 +54,15 @@ export const reconciliationAPI = {
   getTransactions: async (reconciliationId) => {
     try {
       const response = await api.get(`/budget/reconciliation/${reconciliationId}/transactions`);
-      return response.data;
+      return {
+        success: response.data.success,
+        data: response.data.data,
+        error: response.data.errors?.[0]?.message || null
+      };
     } catch (error) {
       console.error('Error fetching transactions:', error);
-      return { success: false, error: error.message };
+      const errorMessage = error.response?.data?.errors?.[0]?.message || error.message;
+      return { success: false, error: errorMessage };
     }
   },
 
@@ -52,10 +73,15 @@ export const reconciliationAPI = {
         bank_transaction_id: matchData.bankTransactionId,
         expense_id: matchData.expenseId
       });
-      return response.data;
+      return {
+        success: response.data.success,
+        data: response.data.data,
+        error: response.data.errors?.[0]?.message || null
+      };
     } catch (error) {
       console.error('Error matching transaction:', error);
-      return { success: false, error: error.message };
+      const errorMessage = error.response?.data?.errors?.[0]?.message || error.message;
+      return { success: false, error: errorMessage };
     }
   },
 
@@ -63,10 +89,15 @@ export const reconciliationAPI = {
   completeReconciliation: async (reconciliationId) => {
     try {
       const response = await api.post(`/budget/reconciliation/${reconciliationId}/complete`);
-      return response.data;
+      return {
+        success: response.data.success,
+        data: response.data.data,
+        error: response.data.errors?.[0]?.message || null
+      };
     } catch (error) {
       console.error('Error completing reconciliation:', error);
-      return { success: false, error: error.message };
+      const errorMessage = error.response?.data?.errors?.[0]?.message || error.message;
+      return { success: false, error: errorMessage };
     }
   },
 
@@ -74,10 +105,15 @@ export const reconciliationAPI = {
   generateReport: async (reconciliationId) => {
     try {
       const response = await api.get(`/budget/reconciliation/${reconciliationId}/report`);
-      return response.data;
+      return {
+        success: response.data.success,
+        data: response.data.data,
+        error: response.data.errors?.[0]?.message || null
+      };
     } catch (error) {
       console.error('Error generating report:', error);
-      return { success: false, error: error.message };
+      const errorMessage = error.response?.data?.errors?.[0]?.message || error.message;
+      return { success: false, error: errorMessage };
     }
   }
 };
