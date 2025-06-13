@@ -1,106 +1,118 @@
-import React from 'react';
-import { useEffect, useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { supabase } from '@/utils/supabaseClient'
-import { Bell } from 'lucide-react'
+import React, { useState, useEffect } from 'react';
+import { Bell } from 'lucide-react';
+import { api } from '@/utils/api';
+import { handleError, handleSuccess } from '@/utils/errorHandling';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 export default function NotificationBell() {
-  const [notifications, setNotifications] = useState([])
-  const [panelOpen, setPanelOpen] = useState(false)
-  const panelRef = useRef()
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    fetchNotifications()
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchNotifications = async () => {
-    const res = await fetch('/api/notifications', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-      },
-    })
-    const data = await res.json()
-    setNotifications(data)
-  }
-
-  const handleClickOutside = (e) => {
-    if (panelRef.current && !panelRef.current.contains(e.target)) {
-      setPanelOpen(false)
+    try {
+      setLoading(true);
+      const { data } = await api.get('/notifications');
+      setNotifications(data);
+      setError(null);
+    } catch (error) {
+      setError('Failed to fetch notifications');
+      handleError(error, 'Failed to fetch notifications');
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
-  const handleNotificationClick = async (notification) => {
-    await fetch(`/api/notifications/${notification.id}/read`, {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-      },
-    })
-    navigate(notification.module_link || '/')
-    setPanelOpen(false)
-  }
+  const handleNotificationClick = async (notificationId) => {
+    try {
+      setLoading(true);
+      await api.put(`/notifications/${notificationId}/read`);
+      setNotifications(notifications.map(n => 
+        n.id === notificationId ? { ...n, read: true } : n
+      ));
+      handleSuccess('Notification marked as read');
+    } catch (error) {
+      handleError(error, 'Failed to update notification');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleClearAll = async () => {
-    await fetch('/api/notifications/clear', {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-      },
-    })
-    setNotifications([])
+    try {
+      setLoading(true);
+      await api.delete('/notifications/clear-all');
+      setNotifications([]);
+      handleSuccess('All notifications cleared');
+    } catch (error) {
+      handleError(error, 'Failed to clear notifications');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  if (loading) {
+    return <LoadingSpinner size="sm" />;
   }
 
-  const unreadCount = notifications.length
-
   return (
-    <div className="relative" ref={panelRef}>
+    <div className="relative">
       <button
-        onClick={() => setPanelOpen((prev) => !prev)}
-        className="relative p-2 hover:bg-gray-100 rounded-full"
+        onClick={() => setShowDropdown(!showDropdown)}
+        className="p-2 rounded-full hover:bg-gray-100 focus:outline-none"
       >
-        <Bell className="w-6 h-6 text-gray-700" />
-        {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 h-2 w-2 bg-red-600 rounded-full animate-pulse"></span>
+        <Bell className="h-6 w-6 text-gray-600" />
+        {notifications.length > 0 && (
+          <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
+            {notifications.length}
+          </span>
         )}
       </button>
 
-      {panelOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-lg overflow-hidden z-50">
-          <div className="flex justify-between items-center px-4 py-2 border-b">
-            <h3 className="font-semibold text-sm">Notifications</h3>
-            <button
-              onClick={handleClearAll}
-              className="text-xs text-blue-600 hover:underline"
-            >
-              Clear All
-            </button>
-          </div>
-          <div className="max-h-80 overflow-y-auto">
-            {notifications.length === 0 ? (
-              <p className="text-sm text-gray-500 p-4">No new notifications</p>
-            ) : (
-              notifications.map((note) => (
+      {showDropdown && (
+        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50">
+          <div className="p-4 border-b">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold">Notifications</h3>
+              {notifications.length > 0 && (
                 <button
-                  key={note.id}
-                  onClick={() => handleNotificationClick(note)}
-                  className="w-full text-left px-4 py-3 hover:bg-gray-100 border-b"
+                  onClick={handleClearAll}
+                  className="text-sm text-gray-500 hover:text-gray-700"
                 >
-                  <p className="font-medium text-sm">{note.title}</p>
-                  {note.message && (
-                    <p className="text-xs text-gray-600 mt-1">{note.message}</p>
-                  )}
-                  <p className="text-xs text-gray-400 mt-1">
-                    {new Date(note.created_at).toLocaleString()}
-                  </p>
+                  Clear all
                 </button>
+              )}
+            </div>
+          </div>
+
+          <div className="max-h-96 overflow-y-auto">
+            {notifications.length === 0 ? (
+              <div className="p-4 text-center text-gray-500">
+                No notifications
+              </div>
+            ) : (
+              notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`p-4 border-b hover:bg-gray-50 cursor-pointer ${
+                    !notification.read ? 'bg-blue-50' : ''
+                  }`}
+                  onClick={() => handleNotificationClick(notification.id)}
+                >
+                  <p className="text-sm">{notification.message}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {new Date(notification.created_at).toLocaleString()}
+                  </p>
+                </div>
               ))
             )}
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
