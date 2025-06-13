@@ -69,27 +69,27 @@ const EnhancedCommunicationsDashboard = () => {
 
   // Button handlers
   const handleCreateEmail = (mode) => {
-    navigate(`/communications/email/create?mode=${mode}`);
+    navigate(`/communications/email?mode=${mode}`);
   };
 
   const handleCreateSocial = (mode) => {
-    navigate(`/communications/social/create?mode=${mode}`);
+    navigate(`/communications/social?mode=${mode}`);
   };
 
   const handleCreateSMS = (mode) => {
-    navigate(`/communications/sms/create?mode=${mode}`);
+    navigate(`/communications/sms?mode=${mode}`);
   };
 
   const handleCreateNewsletter = (mode) => {
-    navigate(`/communications/newsletter/create?mode=${mode}`);
+    navigate(`/communications/create?type=newsletter&mode=${mode}`);
   };
 
   const handleViewCommunication = (id) => {
-    navigate(`/communications/${id}`);
+    navigate(`/communications/create?view=${id}`);
   };
 
   const handleEditCommunication = (id) => {
-    navigate(`/communications/${id}/edit`);
+    navigate(`/communications/create?edit=${id}`);
   };
 
   const handleSendCommunication = (id) => {
@@ -98,19 +98,19 @@ const EnhancedCommunicationsDashboard = () => {
   };
 
   const handleAskStella = () => {
-    navigate('/communications/stella-assistant');
+    navigate('/communications/ai');
   };
 
   const handleViewAnalytics = () => {
-    navigate('/communications/analytics');
+    navigate('/communications/create?tab=analytics');
   };
 
   const handleSchedule = () => {
-    navigate('/communications/schedule');
+    navigate('/communications/create?tab=schedule');
   };
 
   const handleManageAudiences = () => {
-    navigate('/communications/audiences');
+    navigate('/communications/create?tab=audiences');
   };
 
   const handleCreateFirstCommunication = () => {

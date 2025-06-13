@@ -134,19 +134,19 @@ const EnhancedBudgetDashboard = () => {
   };
 
   const handleViewDetails = (categoryId) => {
-    navigate(`/budget/category/${categoryId}`);
+    navigate(`/budget/create?category=${categoryId}&mode=view`);
   };
 
   const handleEditCategory = (categoryId) => {
-    navigate(`/budget/category/${categoryId}/edit`);
+    navigate(`/budget/create?category=${categoryId}&mode=edit`);
   };
 
   const handleAskStellaOptimize = (categoryId) => {
-    navigate(`/budget/category/${categoryId}/optimize`);
+    navigate(`/budget/create?category=${categoryId}&mode=optimize`);
   };
 
   const handleLetStellaCreateReallocation = () => {
-    navigate('/budget/reallocation/create');
+    navigate('/budget/create?mode=reallocation');
   };
 
   const BudgetOverview = () => (
