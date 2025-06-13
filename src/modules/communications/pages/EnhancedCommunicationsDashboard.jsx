@@ -5,9 +5,11 @@ import {
   Plus, Search, Filter, Grid, List, Clock,
   Facebook, Instagram, Twitter, Smartphone
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import AIAssistanceToggle from '../../../components/common/AIAssistanceToggle';
 
 const EnhancedCommunicationsDashboard = () => {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('grid');
   const [creationMode, setCreationMode] = useState('manual');
   const [searchTerm, setSearchTerm] = useState('');
@@ -63,6 +65,56 @@ const EnhancedCommunicationsDashboard = () => {
   const handleCreationModeChange = (mode, settings) => {
     setCreationMode(mode);
     console.log('Creation mode changed:', mode, settings);
+  };
+
+  // Button handlers
+  const handleCreateEmail = (mode) => {
+    navigate(`/communications/email/create?mode=${mode}`);
+  };
+
+  const handleCreateSocial = (mode) => {
+    navigate(`/communications/social/create?mode=${mode}`);
+  };
+
+  const handleCreateSMS = (mode) => {
+    navigate(`/communications/sms/create?mode=${mode}`);
+  };
+
+  const handleCreateNewsletter = (mode) => {
+    navigate(`/communications/newsletter/create?mode=${mode}`);
+  };
+
+  const handleViewCommunication = (id) => {
+    navigate(`/communications/${id}`);
+  };
+
+  const handleEditCommunication = (id) => {
+    navigate(`/communications/${id}/edit`);
+  };
+
+  const handleSendCommunication = (id) => {
+    console.log('Sending communication:', id);
+    // Add send logic here
+  };
+
+  const handleAskStella = () => {
+    navigate('/communications/stella-assistant');
+  };
+
+  const handleViewAnalytics = () => {
+    navigate('/communications/analytics');
+  };
+
+  const handleSchedule = () => {
+    navigate('/communications/schedule');
+  };
+
+  const handleManageAudiences = () => {
+    navigate('/communications/audiences');
+  };
+
+  const handleCreateFirstCommunication = () => {
+    navigate('/communications/create');
   };
 
   const getStatusColor = (status) => {
@@ -152,16 +204,25 @@ const EnhancedCommunicationsDashboard = () => {
 
           {/* Action Buttons */}
           <div className="flex space-x-2">
-            <button className="flex-1 flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button 
+              onClick={() => handleViewCommunication(communication.id)}
+              className="flex-1 flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
               <Eye className="w-4 h-4 mr-2" />
               View
             </button>
-            <button className="flex-1 flex items-center justify-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+            <button 
+              onClick={() => handleEditCommunication(communication.id)}
+              className="flex-1 flex items-center justify-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
               <Edit className="w-4 h-4 mr-2" />
               Edit
             </button>
             {communication.status === 'draft' && (
-              <button className="flex-1 flex items-center justify-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+              <button 
+                onClick={() => handleSendCommunication(communication.id)}
+                className="flex-1 flex items-center justify-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
                 <Send className="w-4 h-4 mr-2" />
                 Send
               </button>
@@ -187,13 +248,22 @@ const EnhancedCommunicationsDashboard = () => {
             </div>
           </div>
           <div className="space-y-3 mb-4">
-            <button className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+            <button 
+              onClick={() => handleCreateEmail('manual')}
+              className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+            >
               Manual Creation
             </button>
-            <button className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm">
+            <button 
+              onClick={() => handleCreateEmail('assisted')}
+              className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm"
+            >
               Let Stella Help
             </button>
-            <button className="w-full py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm">
+            <button 
+              onClick={() => handleCreateEmail('automated')}
+              className="w-full py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm"
+            >
               Stella Auto-Generate
             </button>
           </div>
@@ -209,13 +279,22 @@ const EnhancedCommunicationsDashboard = () => {
             </div>
           </div>
           <div className="space-y-3 mb-4">
-            <button className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+            <button 
+              onClick={() => handleCreateSocial('manual')}
+              className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+            >
               Manual Creation
             </button>
-            <button className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm">
+            <button 
+              onClick={() => handleCreateSocial('assisted')}
+              className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm"
+            >
               Let Stella Help
             </button>
-            <button className="w-full py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm">
+            <button 
+              onClick={() => handleCreateSocial('automated')}
+              className="w-full py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm"
+            >
               Stella Auto-Generate
             </button>
           </div>
@@ -231,13 +310,22 @@ const EnhancedCommunicationsDashboard = () => {
             </div>
           </div>
           <div className="space-y-3 mb-4">
-            <button className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+            <button 
+              onClick={() => handleCreateSMS('manual')}
+              className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+            >
               Manual Creation
             </button>
-            <button className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm">
+            <button 
+              onClick={() => handleCreateSMS('assisted')}
+              className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm"
+            >
               Let Stella Help
             </button>
-            <button className="w-full py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm">
+            <button 
+              onClick={() => handleCreateSMS('automated')}
+              className="w-full py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm"
+            >
               Stella Auto-Generate
             </button>
           </div>
@@ -253,13 +341,22 @@ const EnhancedCommunicationsDashboard = () => {
             </div>
           </div>
           <div className="space-y-3 mb-4">
-            <button className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+            <button 
+              onClick={() => handleCreateNewsletter('manual')}
+              className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+            >
               Manual Creation
             </button>
-            <button className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm">
+            <button 
+              onClick={() => handleCreateNewsletter('assisted')}
+              className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm"
+            >
               Let Stella Help
             </button>
-            <button className="w-full py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm">
+            <button 
+              onClick={() => handleCreateNewsletter('automated')}
+              className="w-full py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm"
+            >
               Stella Auto-Generate
             </button>
           </div>
@@ -310,25 +407,37 @@ const EnhancedCommunicationsDashboard = () => {
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <button className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors">
+        <button 
+          onClick={handleAskStella}
+          className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
+        >
           <Sparkles className="w-6 h-6 text-purple-600 mb-2" />
           <span className="text-sm font-medium">Ask Stella</span>
           <span className="text-xs text-gray-500">Get content ideas</span>
         </button>
         
-        <button className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors">
+        <button 
+          onClick={handleViewAnalytics}
+          className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors"
+        >
           <BarChart3 className="w-6 h-6 text-green-600 mb-2" />
           <span className="text-sm font-medium">Analytics</span>
           <span className="text-xs text-gray-500">View performance</span>
         </button>
         
-        <button className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-yellow-300 hover:bg-yellow-50 transition-colors">
+        <button 
+          onClick={handleSchedule}
+          className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-yellow-300 hover:bg-yellow-50 transition-colors"
+        >
           <Clock className="w-6 h-6 text-yellow-600 mb-2" />
           <span className="text-sm font-medium">Schedule</span>
           <span className="text-xs text-gray-500">Plan campaigns</span>
         </button>
         
-        <button className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors">
+        <button 
+          onClick={handleManageAudiences}
+          className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
+        >
           <Users className="w-6 h-6 text-blue-600 mb-2" />
           <span className="text-sm font-medium">Audiences</span>
           <span className="text-xs text-gray-500">Manage lists</span>
@@ -406,7 +515,10 @@ const EnhancedCommunicationsDashboard = () => {
             <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No communications found</h3>
             <p className="text-gray-600 mb-4">Get started by creating your first communication</p>
-            <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button 
+              onClick={handleCreateFirstCommunication}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
               Create Your First Communication
             </button>
           </div>

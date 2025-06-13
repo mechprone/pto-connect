@@ -120,6 +120,35 @@ const EnhancedBudgetDashboard = () => {
     console.log('Creation mode changed:', mode, settings);
   };
 
+  // Button handlers
+  const handleCreateManually = () => {
+    navigate('/budget/create');
+  };
+
+  const handleGetStellaHelp = () => {
+    navigate('/budget/create?mode=ai-assisted');
+  };
+
+  const handleLetStellaGenerate = () => {
+    navigate('/budget/create?mode=ai-automated');
+  };
+
+  const handleViewDetails = (categoryId) => {
+    navigate(`/budget/category/${categoryId}`);
+  };
+
+  const handleEditCategory = (categoryId) => {
+    navigate(`/budget/category/${categoryId}/edit`);
+  };
+
+  const handleAskStellaOptimize = (categoryId) => {
+    navigate(`/budget/category/${categoryId}/optimize`);
+  };
+
+  const handleLetStellaCreateReallocation = () => {
+    navigate('/budget/reallocation/create');
+  };
+
   const BudgetOverview = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <div className="bg-white rounded-lg shadow-lg p-6">
@@ -217,7 +246,10 @@ const EnhancedBudgetDashboard = () => {
           "Your Events & Programs category is performing well! Consider reallocating $1,000 from Administrative 
           to Educational Support to maximize impact on students. I can create a reallocation plan for you."
         </div>
-        <button className="mt-3 px-4 py-2 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 transition-colors">
+        <button 
+          onClick={handleLetStellaCreateReallocation}
+          className="mt-3 px-4 py-2 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 transition-colors"
+        >
           Let Stella Create Reallocation Plan
         </button>
       </div>
@@ -300,16 +332,25 @@ const EnhancedBudgetDashboard = () => {
               </div>
               
               <div className="flex space-x-2 mt-4">
-                <button className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                <button 
+                  onClick={() => handleViewDetails(category.id)}
+                  className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                >
                   <Eye className="w-4 h-4 mr-2" />
                   View Details
                 </button>
-                <button className="flex items-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm">
+                <button 
+                  onClick={() => handleEditCategory(category.id)}
+                  className="flex items-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                >
                   <Edit className="w-4 h-4 mr-2" />
                   Edit
                 </button>
                 {category.createdBy === 'manual' && (
-                  <button className="flex items-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm">
+                  <button 
+                    onClick={() => handleAskStellaOptimize(category.id)}
+                    className="flex items-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
+                  >
                     <Sparkles className="w-4 h-4 mr-2" />
                     Ask Stella to Optimize
                   </button>
@@ -432,7 +473,10 @@ const EnhancedBudgetDashboard = () => {
             <li>• Detailed line items</li>
             <li>• Manual calculations</li>
           </ul>
-          <button className="w-full py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+          <button 
+            onClick={handleCreateManually}
+            className="w-full py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
             Create Manually
           </button>
         </div>
@@ -450,7 +494,10 @@ const EnhancedBudgetDashboard = () => {
             <li>• Historical comparisons</li>
             <li>• Optimization suggestions</li>
           </ul>
-          <button className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button 
+            onClick={handleGetStellaHelp}
+            className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
             Get Stella's Help
           </button>
         </div>
@@ -468,7 +515,10 @@ const EnhancedBudgetDashboard = () => {
             <li>• Predictive modeling</li>
             <li>• Optimization algorithms</li>
           </ul>
-          <button className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+          <button 
+            onClick={handleLetStellaGenerate}
+            className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          >
             Let Stella Generate
           </button>
         </div>

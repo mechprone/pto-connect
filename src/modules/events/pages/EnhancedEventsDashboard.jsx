@@ -4,13 +4,47 @@ import {
   Sparkles, User, Clock, DollarSign, Users,
   ArrowRight, Eye, Edit, Trash2
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import AIAssistanceToggle from '../../../components/common/AIAssistanceToggle';
 
 const EnhancedEventsDashboard = () => {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('grid');
   const [creationMode, setCreationMode] = useState('manual');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+
+  // Button handlers
+  const handleCreateManually = () => {
+    navigate('/events/create');
+  };
+
+  const handleCreateWithAI = () => {
+    navigate('/events/create?mode=ai-assisted');
+  };
+
+  const handleGenerateFullWorkflow = () => {
+    navigate('/events/create?mode=ai-automated');
+  };
+
+  const handleViewEvent = (eventId) => {
+    navigate(`/events/${eventId}`);
+  };
+
+  const handleEditEvent = (eventId) => {
+    navigate(`/events/${eventId}/edit`);
+  };
+
+  const handleDeleteEvent = (eventId) => {
+    if (window.confirm('Are you sure you want to delete this event?')) {
+      console.log('Deleting event:', eventId);
+      // Add delete logic here
+    }
+  };
+
+  const handleCreateFirstEvent = () => {
+    navigate('/events/create');
+  };
 
   // Sample events data
   const events = [
@@ -124,11 +158,17 @@ const EnhancedEventsDashboard = () => {
 
         {/* Action Buttons */}
         <div className="flex space-x-2">
-          <button className="flex-1 flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button 
+            onClick={() => handleViewEvent(event.id)}
+            className="flex-1 flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
             <Eye className="w-4 h-4 mr-2" />
             View
           </button>
-          <button className="flex-1 flex items-center justify-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+          <button 
+            onClick={() => handleEditEvent(event.id)}
+            className="flex-1 flex items-center justify-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
             <Edit className="w-4 h-4 mr-2" />
             Edit
           </button>
@@ -176,13 +216,22 @@ const EnhancedEventsDashboard = () => {
         </div>
         
         <div className="flex items-center space-x-2">
-          <button className="p-2 text-blue-600 hover:bg-blue-50 rounded">
+          <button 
+            onClick={() => handleViewEvent(event.id)}
+            className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+          >
             <Eye className="w-4 h-4" />
           </button>
-          <button className="p-2 text-gray-600 hover:bg-gray-50 rounded">
+          <button 
+            onClick={() => handleEditEvent(event.id)}
+            className="p-2 text-gray-600 hover:bg-gray-50 rounded"
+          >
             <Edit className="w-4 h-4" />
           </button>
-          <button className="p-2 text-red-600 hover:bg-red-50 rounded">
+          <button 
+            onClick={() => handleDeleteEvent(event.id)}
+            className="p-2 text-red-600 hover:bg-red-50 rounded"
+          >
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
@@ -210,7 +259,10 @@ const EnhancedEventsDashboard = () => {
             <li>• Manual budget planning</li>
             <li>• Individual task assignment</li>
           </ul>
-          <button className="w-full py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+          <button 
+            onClick={handleCreateManually}
+            className="w-full py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
             Create Manually
           </button>
         </div>
@@ -230,7 +282,10 @@ const EnhancedEventsDashboard = () => {
             <li>• Automated task suggestions</li>
             <li>• Budget estimation help</li>
           </ul>
-          <button className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button 
+            onClick={handleCreateWithAI}
+            className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
             Create with AI Help
           </button>
         </div>
@@ -250,7 +305,10 @@ const EnhancedEventsDashboard = () => {
             <li>• Budget & profit projections</li>
             <li>• Communication campaigns</li>
           </ul>
-          <button className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+          <button 
+            onClick={handleGenerateFullWorkflow}
+            className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          >
             Generate Full Workflow
           </button>
         </div>
@@ -323,7 +381,10 @@ const EnhancedEventsDashboard = () => {
             <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
             <p className="text-gray-600 mb-4">Get started by creating your first event</p>
-            <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button 
+              onClick={handleCreateFirstEvent}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
               Create Your First Event
             </button>
           </div>
