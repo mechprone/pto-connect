@@ -28,8 +28,8 @@ import EditEventPage from './modules/events/pages/EditEventPage'
 import EventsCalendarPage from './modules/events/pages/EventsCalendarPage'
 
 // Fundraisers
-import FundraiserDashboard from './modules/fundraisers/pages/FundraiserDashboard'
-import CreateFundraiser from './modules/fundraisers/pages/CreateFundraiser'
+import FundraiserManager from './modules/fundraisers/pages/FundraiserManager'
+import FundraiserForm from './modules/fundraisers/pages/FundraiserForm'
 
 // Budget
 import BudgetDashboard from './modules/budgets/pages/BudgetDashboard'
@@ -118,8 +118,8 @@ export default function App() {
           <Route path="/events/edit/:id" element={<EditEventPage />} />
           <Route path="/events/calendar" element={<EventsCalendarPage />} />
 
-          <Route path="/fundraisers" element={<FundraiserDashboard />} />
-          <Route path="/fundraisers/create" element={<CreateFundraiser />} />
+          <Route path="/fundraisers" element={<FundraiserManager />} />
+          <Route path="/fundraisers/create" element={<FundraiserForm />} />
 
           <Route path="/budget" element={<EnhancedBudgetDashboard />} />
           <Route path="/budget/legacy" element={<BudgetDashboard />} />
