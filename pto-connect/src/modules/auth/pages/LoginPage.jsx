@@ -16,39 +16,87 @@ export default function LoginPage() {
       e.preventDefault()
     }
     
+    console.log('🔍 [LOGIN DEBUG] Login attempt started');
+    console.log('🔍 [LOGIN DEBUG] Email:', email);
+    
     setLoading(true)
     setError('')
 
     if (!email || !password) {
+      console.log('❌ [LOGIN DEBUG] Missing email or password');
       setError('Email and password are required.')
       setLoading(false)
       return
     }
 
+    console.log('🔍 [LOGIN DEBUG] Calling Supabase signInWithPassword...');
     const { data, error: loginError } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
 
+    console.log('🔍 [LOGIN DEBUG] Supabase response:', {
+      user: !!data?.user,
+      session: !!data?.session,
+      error: loginError
+    });
+
     if (loginError || !data?.user) {
-      console.error('Login error:', loginError)
+      console.error('❌ [LOGIN DEBUG] Login error:', loginError)
       setError(loginError?.message || 'Login failed.')
       setLoading(false)
       return
     }
 
     const user = data.user
-    const role = user?.user_metadata?.role
+    console.log('🔍 [LOGIN DEBUG] User authenticated:', {
+      id: user.id,
+      email: user.email,
+      user_metadata: user.user_metadata
+    });
+
+    // Get role from profiles table instead of user metadata
+    console.log('🔍 [LOGIN DEBUG] Fetching user profile...');
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('role, org_id, approved')
+      .eq('id', user.id)
+      .single();
+
+    console.log('🔍 [LOGIN DEBUG] Profile query result:', {
+      profile,
+      profileError
+    });
+
+    if (profileError || !profile) {
+      console.error('❌ [LOGIN DEBUG] Profile fetch error:', profileError);
+      setError('Unable to load user profile. Please contact support.');
+      setLoading(false)
+      return
+    }
+
+    if (!profile.approved) {
+      console.log('❌ [LOGIN DEBUG] User not approved');
+      setError('Your account is pending approval. Please contact an administrator.');
+      setLoading(false)
+      return
+    }
+
+    const role = profile.role;
+    console.log('🔍 [LOGIN DEBUG] User role:', role);
 
     if (!role) {
+      console.log('❌ [LOGIN DEBUG] No role assigned');
       setError('Your account does not have a role assigned.')
       setLoading(false)
       return
     }
 
+    console.log('🔍 [LOGIN DEBUG] Getting dashboard route for role:', role);
     const dashboardPath = getDashboardRouteForRole(role)
-    navigate(dashboardPath)
+    console.log('🔍 [LOGIN DEBUG] Navigating to:', dashboardPath);
     
+    navigate(dashboardPath)
     setLoading(false)
   }
 

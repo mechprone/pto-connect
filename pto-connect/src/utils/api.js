@@ -3,7 +3,7 @@ import { supabase } from './supabaseClient';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://pto-connect-backend.onrender.com/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://api.ptoconnect.com/api',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -13,26 +13,56 @@ const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
   async (config) => {
+    console.log('🔍 [FRONTEND DEBUG] API Request interceptor started');
+    console.log('🔍 [FRONTEND DEBUG] Request URL:', config.url);
+    console.log('🔍 [FRONTEND DEBUG] Request method:', config.method);
+    
     try {
       const { data: { session } } = await supabase.auth.getSession();
+      console.log('🔍 [FRONTEND DEBUG] Session retrieved:', !!session);
+      console.log('🔍 [FRONTEND DEBUG] Access token present:', !!session?.access_token);
+      
       if (session?.access_token) {
         config.headers.Authorization = `Bearer ${session.access_token}`;
+        console.log('🔍 [FRONTEND DEBUG] Auth header set, token length:', session.access_token.length);
+      } else {
+        console.warn('⚠️ [FRONTEND DEBUG] No access token found in session');
       }
     } catch (error) {
-      console.error('Error getting session:', error);
+      console.error('❌ [FRONTEND DEBUG] Error getting session:', error);
     }
+    
+    console.log('🔍 [FRONTEND DEBUG] Final request headers:', config.headers);
     return config;
   },
   (error) => {
+    console.error('❌ [FRONTEND DEBUG] Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
 
 // Response interceptor for error handling
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('✅ [FRONTEND DEBUG] API Response received:', {
+      url: response.config.url,
+      status: response.status,
+      statusText: response.statusText,
+      dataKeys: Object.keys(response.data || {})
+    });
+    return response;
+  },
   (error) => {
+    console.error('❌ [FRONTEND DEBUG] API Response error:', {
+      url: error.config?.url,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      errorData: error.response?.data,
+      errorMessage: error.message
+    });
+    
     if (error.response?.status === 401) {
+      console.warn('🚫 [FRONTEND DEBUG] Unauthorized - redirecting to login');
       // Redirect to login on unauthorized
       window.location.href = '/login';
     }
@@ -112,6 +142,62 @@ export const budgetAPI = {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
   },
+};
+
+// Reconciliation API calls
+export const reconciliationAPI = {
+  // Get all reconciliation records
+  getReconciliations: () => apiRequest('GET', '/reconciliation'),
+  
+  // Get specific reconciliation by ID
+  getReconciliation: (id) => apiRequest('GET', `/reconciliation/${id}`),
+  
+  // Create new reconciliation
+  createReconciliation: (data) => apiRequest('POST', '/reconciliation', data),
+  
+  // Update reconciliation
+  updateReconciliation: (id, data) => apiRequest('PUT', `/reconciliation/${id}`, data),
+  
+  // Delete reconciliation
+  deleteReconciliation: (id) => apiRequest('DELETE', `/reconciliation/${id}`),
+  
+  // Upload bank statement for reconciliation
+  uploadStatement: (file, reconciliationId) => {
+    const formData = new FormData();
+    formData.append('statement', file);
+    formData.append('reconciliationId', reconciliationId);
+    return apiRequest('POST', '/reconciliation/upload-statement', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  },
+  
+  // Get transactions for matching
+  getTransactionsForMatching: (reconciliationId, startDate, endDate) => 
+    apiRequest('GET', `/reconciliation/${reconciliationId}/transactions`, {
+      params: { startDate, endDate }
+    }),
+  
+  // Match transactions
+  matchTransactions: (reconciliationId, matches) => 
+    apiRequest('POST', `/reconciliation/${reconciliationId}/match`, { matches }),
+  
+  // Get reconciliation report
+  getReconciliationReport: (reconciliationId) => 
+    apiRequest('GET', `/reconciliation/${reconciliationId}/report`),
+  
+  // Save reconciliation progress
+  saveProgress: (reconciliationId, progressData) => 
+    apiRequest('PUT', `/reconciliation/${reconciliationId}/progress`, progressData),
+  
+  // Finalize reconciliation
+  finalizeReconciliation: (reconciliationId, finalData) => 
+    apiRequest('POST', `/reconciliation/${reconciliationId}/finalize`, finalData),
+  
+  // Get reconciliation history/dashboard data
+  getDashboardData: (startDate, endDate) => 
+    apiRequest('GET', '/reconciliation/dashboard', {
+      params: { startDate, endDate }
+    }),
 };
 
 // Communications API calls

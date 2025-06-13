@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ChevronLeftIcon, ChevronRightIcon, CheckIcon } from '@heroicons/react/24/outline';
-import { reconciliationAPI } from '../../../services/api';
+import { ChevronLeftIcon, ChevronRightIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { reconciliationAPI } from '../../../services/api/reconciliation';
 import StatementUploader from './StatementUploader';
 import TransactionMatchingUI from './TransactionMatchingUI';
 import ReconciliationReport from './ReconciliationReport';
@@ -12,45 +12,91 @@ const ReconciliationWizard = ({ onComplete, onCancel }) => {
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
     bankStatement: null,
+    bankTransactions: [],
+    systemExpenses: [],
   });
   const [loading, setLoading] = useState(false);
 
   const steps = [
-    { id: 1, name: 'Setup', description: 'Select period' },
-    { id: 2, name: 'Upload Statement', description: 'Provide bank statement' },
-    { id: 3, name: 'Review & Match', description: 'Match transactions' },
-    { id: 4, name: 'Finalize', description: 'Review and complete' },
+    { id: 1, name: 'Period Selection', description: 'Select reconciliation period' },
+    { id: 2, name: 'Upload Statement', description: 'Upload bank statement' },
+    { id: 3, name: 'Match Transactions', description: 'Review and match transactions' },
+    { id: 4, name: 'Finalize Report', description: 'Complete reconciliation' },
   ];
 
   const handleDataChange = (field, value) => {
     setReconciliationData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleStatementUpload = (file) => {
-    setReconciliationData(prev => ({ ...prev, bankStatement: file }));
-    // In a real implementation, we would now call the API to upload and process the file.
-    // For now, we'll just move to the next step.
-    nextStep();
+  const handleStatementUpload = async (uploadData) => {
+    setLoading(true);
+    try {
+      // Upload the OCR-processed transactions to the backend
+      const response = await reconciliationAPI.uploadStatement(reconciliationData.id, {
+        transactions: uploadData.transactions
+      });
+
+      if (response.success) {
+        // Fetch the complete transaction data for matching
+        const transactionData = await reconciliationAPI.getTransactions(reconciliationData.id);
+        
+        if (transactionData.success) {
+          setReconciliationData(prev => ({
+            ...prev,
+            bankStatement: uploadData.file,
+            bankTransactions: transactionData.data.bankTransactions,
+            systemExpenses: transactionData.data.systemExpenses
+          }));
+          setCurrentStep(currentStep + 1);
+        }
+      } else {
+        alert('Failed to upload transactions: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Failed to upload statement:', error);
+      alert('Failed to upload statement. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const nextStep = async () => {
+    console.log('🔍 [FRONTEND DEBUG] nextStep called, currentStep:', currentStep);
+    
     if (currentStep === 1) {
+      console.log('🔍 [FRONTEND DEBUG] Starting reconciliation process');
+      console.log('🔍 [FRONTEND DEBUG] Reconciliation data:', {
+        month: reconciliationData.month,
+        year: reconciliationData.year
+      });
+      
       setLoading(true);
       try {
-        const response = await reconciliationAPI.startReconciliation(
-          reconciliationData.month,
-          reconciliationData.year
-        );
+        console.log('🔍 [FRONTEND DEBUG] Calling reconciliationAPI.startReconciliation');
+        const response = await reconciliationAPI.startReconciliation({
+          month: reconciliationData.month,
+          year: reconciliationData.year
+        });
+        
+        console.log('🔍 [FRONTEND DEBUG] startReconciliation response:', response);
+        
         if (response.success) {
+          console.log('✅ [FRONTEND DEBUG] Reconciliation started successfully, ID:', response.data.id);
           setReconciliationData(prev => ({ ...prev, id: response.data.id }));
           setCurrentStep(currentStep + 1);
+        } else {
+          console.error('❌ [FRONTEND DEBUG] Failed to start reconciliation:', response.error);
+          alert('Failed to start reconciliation: ' + response.error);
         }
       } catch (error) {
-        console.error('Failed to start reconciliation:', error);
+        console.error('❌ [FRONTEND DEBUG] Exception in nextStep:', error);
+        alert('Failed to start reconciliation. Please try again.');
       } finally {
+        console.log('🔍 [FRONTEND DEBUG] Setting loading to false');
         setLoading(false);
       }
     } else if (currentStep < steps.length) {
+      console.log('🔍 [FRONTEND DEBUG] Moving to next step:', currentStep + 1);
       setCurrentStep(currentStep + 1);
     }
   };
@@ -97,7 +143,13 @@ const ReconciliationWizard = ({ onComplete, onCancel }) => {
       case 2:
         return <StatementUploader onUpload={handleStatementUpload} />;
       case 3:
-        return <TransactionMatchingUI reconciliationId={reconciliationData.id} />;
+        return (
+          <TransactionMatchingUI 
+            reconciliationId={reconciliationData.id}
+            bankTransactions={reconciliationData.bankTransactions}
+            systemExpenses={reconciliationData.systemExpenses}
+          />
+        );
       case 4:
         return <ReconciliationReport reconciliation={reconciliationData} />;
       default:
@@ -106,47 +158,85 @@ const ReconciliationWizard = ({ onComplete, onCancel }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-10 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-2/3 shadow-lg rounded-md bg-white">
-        {/* Progress Steps */}
-        <div className="mb-8">
-          {/* Progress bar will go here */}
-        </div>
-
-        {/* Step Content */}
-        <div className="p-6 mb-6">
-          {renderStepContent()}
-        </div>
-
-        {/* Navigation */}
-        <div className="flex justify-between px-6 pb-4">
-          <button
-            onClick={prevStep}
-            disabled={currentStep === 1}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md"
-          >
-            Previous
-          </button>
-          {currentStep < steps.length ? (
-            <button
-              onClick={nextStep}
-              disabled={loading || (currentStep === 2 && !reconciliationData.bankStatement)}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600"
-            >
-              {loading ? 'Starting...' : 'Next'}
-            </button>
-          ) : (
-            <button
-              onClick={() => onComplete(reconciliationData)}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600"
-            >
-              Finish
-            </button>
-          )}
-        </div>
-        <button onClick={onCancel} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
-          Close
+    <div className="max-w-4xl mx-auto">
+      {/* Header with Close Button */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Monthly Reconciliation</h1>
+        <button
+          onClick={onCancel}
+          className="inline-flex items-center p-2 border border-gray-300 rounded-md text-gray-400 hover:text-gray-500 hover:border-gray-400"
+        >
+          <XMarkIcon className="h-5 w-5" />
         </button>
+      </div>
+
+      {/* Progress Steps */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          {steps.map((step, index) => (
+            <div key={step.id} className="flex items-center">
+              <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 ${
+                currentStep >= step.id
+                  ? 'bg-blue-600 border-blue-600 text-white'
+                  : 'border-gray-300 text-gray-500'
+              }`}>
+                {currentStep > step.id ? (
+                  <CheckIcon className="h-5 w-5" />
+                ) : (
+                  <span className="text-sm font-medium">{step.id}</span>
+                )}
+              </div>
+              <div className="ml-3">
+                <div className={`text-sm font-medium ${
+                  currentStep >= step.id ? 'text-blue-600' : 'text-gray-500'
+                }`}>
+                  {step.name}
+                </div>
+                <div className="text-xs text-gray-500">{step.description}</div>
+              </div>
+              {index < steps.length - 1 && (
+                <div className={`flex-1 h-0.5 mx-4 ${
+                  currentStep > step.id ? 'bg-blue-600' : 'bg-gray-300'
+                }`} />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Step Content */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        {renderStepContent()}
+      </div>
+
+      {/* Navigation */}
+      <div className="flex justify-between">
+        <button
+          onClick={prevStep}
+          disabled={currentStep === 1}
+          className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <ChevronLeftIcon className="h-4 w-4 mr-2" />
+          Previous
+        </button>
+
+        {currentStep < steps.length ? (
+          <button
+            onClick={nextStep}
+            disabled={loading || (currentStep === 2 && !reconciliationData.bankStatement)}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Starting...' : 'Next'}
+            <ChevronRightIcon className="h-4 w-4 ml-2" />
+          </button>
+        ) : (
+          <button
+            onClick={() => onComplete(reconciliationData)}
+            className="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+          >
+            Complete Reconciliation
+          </button>
+        )}
       </div>
     </div>
   );

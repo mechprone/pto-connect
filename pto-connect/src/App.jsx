@@ -2,7 +2,6 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import MainLayout from '@/modules/components/layout/MainLayout'
-import StellaProvider from './components/common/StellaProvider'
 
 // Auth
 import LoginPage from '@/modules/auth/pages/LoginPage'
@@ -27,8 +26,6 @@ import EnhancedEventsDashboard from './modules/events/pages/EnhancedEventsDashbo
 import CreateEvent from './modules/events/pages/CreateEvent'
 import EditEventPage from './modules/events/pages/EditEventPage'
 import EventsCalendarPage from './modules/events/pages/EventsCalendarPage'
-import RSVPTestPage from './modules/events/pages/RSVPTestPage'
-import EventDetails from './modules/events/pages/EventDetails'
 
 // Fundraisers
 import FundraiserDashboard from './modules/fundraisers/pages/FundraiserDashboard'
@@ -38,15 +35,11 @@ import CreateFundraiser from './modules/fundraisers/pages/CreateFundraiser'
 import BudgetDashboard from './modules/budgets/pages/BudgetDashboard'
 import EnhancedBudgetDashboard from './modules/budgets/pages/EnhancedBudgetDashboard'
 import CreateBudgetEntry from './modules/budgets/pages/CreateBudgetEntry'
-import BudgetCategoryDetails from './modules/budgets/pages/BudgetCategoryDetails'
-import CreateEditBudgetCategory from './modules/budgets/pages/CreateEditBudgetCategory'
-import BudgetSubcategoryDetails from './modules/budgets/pages/BudgetSubcategoryDetails'
-import CreateEditBudgetSubcategory from './modules/budgets/pages/CreateEditBudgetSubcategory'
-import TransactionDetails from './modules/budgets/pages/TransactionDetails'
-import CreateEditTransaction from './modules/budgets/pages/CreateEditTransaction'
 
-// Budget Reconciliation
+// Reconciliation
 import ReconciliationDashboard from './components/budget/reconciliation/ReconciliationDashboard'
+import ReconciliationWizard from './components/budget/reconciliation/ReconciliationWizard'
+import ReconciliationReport from './components/budget/reconciliation/ReconciliationReport'
 
 // Communications
 import CommunicationsDashboard from './modules/communications/pages/CommunicationsDashboard'
@@ -56,16 +49,6 @@ import EmailComposer from './modules/communications/pages/EmailComposer'
 import SmsComposer from './modules/communications/pages/SmsComposer'
 import SocialPostComposer from './modules/communications/pages/SocialPostComposer'
 import AiContentAssistant from './modules/communications/pages/AiContentAssistant'
-import CommunicationAnalytics from './modules/communications/pages/CommunicationAnalytics'
-import CommunicationSchedule from './modules/communications/pages/CommunicationSchedule'
-import CommunicationAudiences from './modules/communications/pages/CommunicationAudiences'
-import CommunicationDetails from './modules/communications/pages/CommunicationDetails'
-
-// Phase 4 Communication Components
-import CommunicationDashboard from './components/Communication/CommunicationDashboard'
-import EmailTemplateBuilder from './components/Communication/EmailTemplateBuilder'
-import SMSCampaignManager from './components/Communication/SMSCampaignManager'
-import EmailTemplateManager from './components/Communication/EmailTemplateManager'
 
 // Documents
 import DocumentsDashboard from './modules/documents/pages/DocumentsDashboard'
@@ -95,17 +78,12 @@ import NextStepPage from './modules/onboarding/pages/NextStepPage'
 
 export default function App() {
   return (
-    <StellaProvider>
-      <Routes>
+    <Routes>
       {/* Public Routes */}
       <Route path="/" element={<LoginPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
-      
-      {/* Temporary Testing Routes - Remove in Production */}
-      <Route path="/test-event-wizard" element={<CreateEvent />} />
-      <Route path="/test-rsvp-system" element={<RSVPTestPage />} />
       
       {/* Onboarding Routes */}
       <Route path="/onboarding/create-pto" element={<CreatePtoPage />} />
@@ -138,7 +116,6 @@ export default function App() {
           <Route path="/events/legacy" element={<EventsDashboard />} />
           <Route path="/events/create" element={<CreateEvent />} />
           <Route path="/events/edit/:id" element={<EditEventPage />} />
-          <Route path="/events/details/:id" element={<EventDetails />} />
           <Route path="/events/calendar" element={<EventsCalendarPage />} />
 
           <Route path="/fundraisers" element={<FundraiserDashboard />} />
@@ -147,45 +124,18 @@ export default function App() {
           <Route path="/budget" element={<EnhancedBudgetDashboard />} />
           <Route path="/budget/legacy" element={<BudgetDashboard />} />
           <Route path="/budget/create" element={<CreateBudgetEntry />} />
-          
-          {/* Budget Child Pages */}
-          <Route path="/budget/category/:id" element={<BudgetCategoryDetails />} />
-          <Route path="/budget/category/create" element={<CreateEditBudgetCategory />} />
-          <Route path="/budget/category/edit/:id" element={<CreateEditBudgetCategory />} />
-          <Route path="/budget/category/optimize/:id" element={<CreateEditBudgetCategory />} />
-          <Route path="/budget/subcategory/:id" element={<BudgetSubcategoryDetails />} />
-          <Route path="/budget/subcategory/create" element={<CreateEditBudgetSubcategory />} />
-          <Route path="/budget/subcategory/edit/:id" element={<CreateEditBudgetSubcategory />} />
-          <Route path="/budget/transaction/:id" element={<TransactionDetails />} />
-          <Route path="/budget/transaction/create" element={<CreateEditTransaction />} />
-          <Route path="/budget/transaction/edit/:id" element={<CreateEditTransaction />} />
-          
-          {/* Budget Reconciliation Routes */}
           <Route path="/budget/reconciliation" element={<ReconciliationDashboard />} />
+          <Route path="/budget/reconciliation/new" element={<ReconciliationWizard />} />
+          <Route path="/budget/reconciliation/:id" element={<ReconciliationReport />} />
 
           <Route path="/communications" element={<EnhancedCommunicationsDashboard />} />
           <Route path="/communications/legacy" element={<CommunicationsDashboard />} />
           <Route path="/communications/create" element={<CreateCommunication />} />
-          <Route path="/communications/details/:id" element={<CommunicationDetails />} />
           <Route path="/communications/email" element={<EmailComposer />} />
-          <Route path="/communications/email/edit/:id" element={<EmailComposer />} />
           <Route path="/communications/sms" element={<SmsComposer />} />
-          <Route path="/communications/sms/edit/:id" element={<SmsComposer />} />
           <Route path="/communications/social" element={<SocialPostComposer />} />
-          <Route path="/communications/social/edit/:id" element={<SocialPostComposer />} />
           <Route path="/communications/ai" element={<AiContentAssistant />} />
-          <Route path="/communications/analytics" element={<CommunicationAnalytics />} />
-          <Route path="/communications/schedule" element={<CommunicationSchedule />} />
-          <Route path="/communications/audiences" element={<CommunicationAudiences />} />
           <Route path="/communications/design-studio" element={<AdvancedDesignStudioPage />} />
-          
-          {/* New Phase 4 Communication Routes */}
-          <Route path="/communications/dashboard" element={<CommunicationDashboard />} />
-          <Route path="/communications/email-templates" element={<EmailTemplateManager />} />
-          <Route path="/communications/email-templates/create" element={<EmailTemplateBuilder />} />
-          <Route path="/communications/email-templates/edit/:id" element={<EmailTemplateBuilder />} />
-          <Route path="/communications/sms-campaigns" element={<SMSCampaignManager />} />
-          <Route path="/communications/sms-campaigns/create" element={<SMSCampaignManager />} />
 
           <Route path="/documents" element={<DocumentsDashboard />} />
           <Route path="/documents/upload" element={<UploadDocument />} />
@@ -229,7 +179,6 @@ export default function App() {
           <Route path="/dashboard/parent" element={<ParentDashboard />} />
         </Route>
       </Route>
-      </Routes>
-    </StellaProvider>
+    </Routes>
   )
 }

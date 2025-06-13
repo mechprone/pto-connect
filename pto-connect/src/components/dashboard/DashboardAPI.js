@@ -28,7 +28,7 @@ export const DashboardAPI = {
 
   async getTotalMembers(orgId) {
     const { count } = await supabase
-      .from('users')
+      .from('profiles')
       .select('*', { count: 'exact', head: true })
       .eq('org_id', orgId);
     return count || 0;
@@ -67,13 +67,13 @@ export const DashboardAPI = {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const { count: activeUsers } = await supabase
-      .from('users')
+      .from('profiles')
       .select('*', { count: 'exact', head: true })
       .eq('org_id', orgId)
       .gte('last_sign_in_at', thirtyDaysAgo.toISOString());
 
     const { count: totalUsers } = await supabase
-      .from('users')
+      .from('profiles')
       .select('*', { count: 'exact', head: true })
       .eq('org_id', orgId);
 
@@ -90,7 +90,7 @@ export const DashboardAPI = {
       .limit(5);
 
     const { data: recentUsers } = await supabase
-      .from('users')
+      .from('profiles')
       .select('first_name, last_name, created_at')
       .eq('org_id', orgId)
       .order('created_at', { ascending: false })
@@ -195,7 +195,7 @@ export const DashboardAPI = {
       const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
       
       const { count } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*', { count: 'exact', head: true })
         .eq('org_id', orgId)
         .lte('created_at', monthEnd.toISOString());
@@ -378,13 +378,13 @@ export const DashboardAPI = {
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       
       const { count: newMembers } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*', { count: 'exact', head: true })
         .eq('org_id', orgId)
         .gte('created_at', thirtyDaysAgo.toISOString());
 
       const { count: totalMembers } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*', { count: 'exact', head: true })
         .eq('org_id', orgId);
 
