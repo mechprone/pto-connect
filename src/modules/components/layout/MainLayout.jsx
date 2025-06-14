@@ -6,6 +6,7 @@ import NotificationBell from '@/modules/components/notifications/NotificationBel
 import LogoutButton from '@/modules/components/auth/LogoutButton'
 import SidebarNav from '@/modules/components/layout/SidebarNav'
 import Footer from '@/modules/components/layout/Footer'
+import RenewalBanner from '@/components/RenewalBanner'
 
 export default function MainLayout() {
   const [user, setUser] = useState(null)
@@ -40,7 +41,7 @@ export default function MainLayout() {
           <LogoutButton />
         </div>
       </header>
-
+      <RenewalBanner />
       {/* Sidebar + Main content area */}
       <div className="flex flex-1">
         <SidebarNav role={role} />

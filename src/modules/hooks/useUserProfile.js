@@ -89,14 +89,26 @@ export function useUserProfile() {
 
   const isSubscriptionActive = () => {
     if (!organization) return false;
-    
     const { subscription_status, trial_ends_at } = organization;
-    
-    if (subscription_status === 'active') return true;
-    if (subscription_status === 'trial' && trial_ends_at) {
-      return new Date(trial_ends_at) > new Date();
+    return (
+      subscription_status === 'active' ||
+      (subscription_status === 'trial' && trial_ends_at && new Date(trial_ends_at) > new Date())
+    );
+  };
+
+  // Show renewal banner for annual plans expiring soon
+  const showRenewalBanner = () => {
+    if (!organization) return false;
+    const { plan_type, subscription_status, cancel_at_period_end, current_period_end } = organization;
+    if (
+      plan_type === 'annual' &&
+      subscription_status === 'active' &&
+      cancel_at_period_end &&
+      current_period_end &&
+      (new Date(current_period_end) - new Date() < 15 * 24 * 60 * 60 * 1000)
+    ) {
+      return true;
     }
-    
     return false;
   };
 
@@ -109,6 +121,7 @@ export function useUserProfile() {
     hasRole,
     hasAnyRole,
     isSubscriptionActive,
+    showRenewalBanner,
     isAuthenticated: !!profile,
   };
 }
