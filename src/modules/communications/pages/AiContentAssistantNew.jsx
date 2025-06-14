@@ -14,4 +14,4 @@ const AiContentAssistant = () => {
   );
 };
 
-export default AiContentAssistant;
+export default AiContentAssistant; 

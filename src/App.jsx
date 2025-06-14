@@ -48,7 +48,7 @@ import CreateCommunication from './modules/communications/pages/CreateCommunicat
 import EmailComposer from './modules/communications/pages/EmailComposer'
 import SmsComposer from './modules/communications/pages/SmsComposer'
 import SocialPostComposer from './modules/communications/pages/SocialPostComposer'
-import AiContentAssistant from './modules/communications/pages/AiContentAssistant'
+import AiContentAssistant from '@/modules/communications/pages/AiContentAssistantNew'
 
 // Documents
 import DocumentsDashboard from './modules/documents/pages/DocumentsDashboard'
