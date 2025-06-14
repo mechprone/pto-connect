@@ -58,7 +58,7 @@ import UploadDocument from './modules/documents/pages/UploadDocument'
 import SharedLibraryDashboard from './modules/sharedLibrary/pages/SharedLibraryDashboard'
 import AiEventIdeas from './modules/ai/pages/AiEventIdeas'
 import EventWorkflowOrchestratorPage from './modules/ai/pages/EventWorkflowOrchestratorPage'
-import AdvancedDesignStudioPage from './modules/communications/pages/AdvancedDesignStudioPage'
+import AdvancedDesignStudio from './modules/communications/pages/AdvancedDesignStudio'
 
 // Teacher
 import TeacherRequestsDashboard from './modules/teacherRequests/pages/TeacherRequestsDashboard'
@@ -135,7 +135,7 @@ export default function App() {
           <Route path="/communications/sms" element={<SmsComposer />} />
           <Route path="/communications/social" element={<SocialPostComposer />} />
           <Route path="/communications/ai" element={<AiContentAssistant />} />
-          <Route path="/communications/design-studio" element={<AdvancedDesignStudioPage />} />
+          <Route path="/communications/design-studio" element={<AdvancedDesignStudio />} />
 
           <Route path="/documents" element={<DocumentsDashboard />} />
           <Route path="/documents/upload" element={<UploadDocument />} />
