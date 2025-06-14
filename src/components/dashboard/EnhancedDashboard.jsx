@@ -73,7 +73,7 @@ const EnhancedDashboard = () => {
 
   const fetchTotalMembers = async () => {
     const { count } = await supabase
-      .from('users')
+      .from('profiles')
       .select('*', { count: 'exact', head: true })
       .eq('org_id', userProfile.org_id);
     return count || 0;
@@ -130,17 +130,17 @@ const EnhancedDashboard = () => {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const { count: activeUsers } = await supabase
-      .from('users')
+      .from('profiles')
       .select('*', { count: 'exact', head: true })
       .eq('org_id', userProfile.org_id)
       .gte('last_sign_in_at', thirtyDaysAgo.toISOString());
 
-    const { count: totalUsers } = await supabase
-      .from('users')
+    const { count: totalMembers } = await supabase
+      .from('profiles')
       .select('*', { count: 'exact', head: true })
       .eq('org_id', userProfile.org_id);
 
-    return totalUsers > 0 ? Math.round((activeUsers / totalUsers) * 100) : 0;
+    return totalMembers > 0 ? Math.round((activeUsers / totalMembers) * 100) : 0;
   };
 
   const fetchRecentActivity = async () => {
@@ -154,7 +154,7 @@ const EnhancedDashboard = () => {
       .limit(5);
 
     const { data: recentUsers } = await supabase
-      .from('users')
+      .from('profiles')
       .select('first_name, last_name, created_at')
       .eq('org_id', userProfile.org_id)
       .order('created_at', { ascending: false })

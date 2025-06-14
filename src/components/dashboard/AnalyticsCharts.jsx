@@ -71,7 +71,7 @@ const AnalyticsCharts = () => {
       const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
       
       const { count } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*', { count: 'exact', head: true })
         .eq('org_id', userProfile.org_id)
         .lte('created_at', monthEnd.toISOString());

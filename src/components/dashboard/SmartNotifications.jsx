@@ -141,13 +141,13 @@ const SmartNotifications = () => {
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       
       const { count: newMembers } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*', { count: 'exact', head: true })
         .eq('org_id', userProfile.org_id)
         .gte('created_at', thirtyDaysAgo.toISOString());
 
       const { count: totalMembers } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*', { count: 'exact', head: true })
         .eq('org_id', userProfile.org_id);
 
@@ -181,13 +181,13 @@ const SmartNotifications = () => {
       }
 
       // Engagement insights
-      const { count: activeMembers } = await supabase
-        .from('users')
+      const { count: activeUsers } = await supabase
+        .from('profiles')
         .select('*', { count: 'exact', head: true })
         .eq('org_id', userProfile.org_id)
         .gte('last_sign_in_at', thirtyDaysAgo.toISOString());
 
-      const engagementRate = totalMembers > 0 ? (activeMembers / totalMembers) * 100 : 0;
+      const engagementRate = totalMembers > 0 ? (activeUsers / totalMembers) * 100 : 0;
 
       if (engagementRate < 40) {
         insights.push({
