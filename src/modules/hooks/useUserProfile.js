@@ -24,19 +24,27 @@ export function useUserProfile() {
           return;
         }
 
-        // Get user profile with organization data
+        // Get user profile
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
-          .select(`
-            *
-          `)
+          .select(`*`)
           .eq('id', user.id)
           .single();
 
         if (profileError) throw profileError;
-
         setProfile(profileData);
-        setOrganization(profileData?.organizations);
+
+        // Fetch organization using org_id from profile
+        let orgData = null;
+        if (profileData?.org_id) {
+          const { data: org, error: orgError } = await supabase
+            .from('organizations')
+            .select('*')
+            .eq('id', profileData.org_id)
+            .single();
+          if (!orgError) orgData = org;
+        }
+        setOrganization(orgData);
       } catch (err) {
         console.error('Error fetching user profile:', err);
         setError(err.message);
