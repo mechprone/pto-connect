@@ -21,11 +21,11 @@ export default function SignupPage() {
       return
     }
 
-    // Step 1: Lookup PTO by code (case-insensitive)
+    // Step 1: Lookup organization by code (case-insensitive)
     const { data: org, error: orgError } = await supabase
-      .from('ptos')
+      .from('organizations')
       .select('id')
-      .ilike('code', ptoCode)
+      .ilike('signup_code', ptoCode)
       .single()
 
     if (orgError || !org?.id) {
