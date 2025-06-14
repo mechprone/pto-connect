@@ -1,8 +1,8 @@
 import React from 'react';
 import AdvancedDesignStudio from '../../../components/communications/AdvancedDesignStudio';
 
-const AdvancedDesignStudioPage = () => {
+const AiContentAssistant = () => {
   return <AdvancedDesignStudio />;
 };
 
-export default AdvancedDesignStudioPage;
+export default AiContentAssistant;
