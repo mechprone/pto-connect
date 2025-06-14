@@ -8,6 +8,7 @@ export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const fetchNotifications = async () => {
     try {
