@@ -2892,9 +2892,9 @@ undici-types@~7.8.0:
   integrity sha512-9UJ2xGDvQ43tYyVMpuHlsgApydB8ZKfVYTsLDhXkFL/6gfkp+U8xTGdh8pMJv1SpZna0zxG1DwsKZsreLbXBxw==
 
 unlayer-types@latest:
-  version "1.277.0"
-  resolved "https://registry.yarnpkg.com/unlayer-types/-/unlayer-types-1.277.0.tgz#a6be67c9ef0195e318c98e6d3b72c1dd073e6c6a"
-  integrity sha512-wbxvBiaMOx7mgWa0rGRLgjaB5Pe7XB6VCpIJnJA97Xr6TjzuyqEG5mjFNrNm0m6z5gY9DWjAQ/b069jT8ZfGLg==
+  version "1.278.0"
+  resolved "https://registry.yarnpkg.com/unlayer-types/-/unlayer-types-1.278.0.tgz#923020ccc6e751819c79fadf179bce5289909606"
+  integrity sha512-5GpkhTsDyBBtjcGOFxTKHrIwdP2x/qrYC2iDC3z20hFI6KMlQLRryN/ch1EiHbSN3gfILEv3eb7fp4Ox4iTX0A==
 
 update-browserslist-db@^1.1.3:
   version "1.1.3"

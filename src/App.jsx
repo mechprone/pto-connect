@@ -37,9 +37,9 @@ import EnhancedBudgetDashboard from './modules/budgets/pages/EnhancedBudgetDashb
 import CreateBudgetEntry from './modules/budgets/pages/CreateBudgetEntry'
 
 // Reconciliation
-import ReconciliationDashboard from './components/budget/reconciliation/ReconciliationDashboard'
-import ReconciliationWizard from './components/budget/reconciliation/ReconciliationWizard'
-import ReconciliationReport from './components/budget/reconciliation/ReconciliationReport'
+import ReconciliationDashboard from '@/components/budget/reconciliation/ReconciliationDashboard'
+import ReconciliationWizard from '@/components/budget/reconciliation/ReconciliationWizard'
+import ReconciliationReport from '@/components/budget/reconciliation/ReconciliationReport'
 
 // Communications
 import CommunicationsDashboard from './modules/communications/pages/CommunicationsDashboard'

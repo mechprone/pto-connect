@@ -16,15 +16,23 @@ export default function FundraiserForm() {
     title: '',
     description: '',
     goal_amount: '',
+    category_id: '',
     start_date: '',
     end_date: '',
-    status: 'draft'
+    status: 'draft',
+    visibility: 'public',
   });
 
   const statusOptions = [
     { value: 'draft', label: 'Draft' },
     { value: 'active', label: 'Active' },
+    { value: 'paused', label: 'Paused' },
     { value: 'completed', label: 'Completed' }
+  ];
+
+  const visibilityOptions = [
+    { value: 'public', label: 'Public' },
+    { value: 'private', label: 'Private' }
   ];
 
   useEffect(() => {
@@ -116,6 +124,14 @@ export default function FundraiserForm() {
           step="0.01"
         />
 
+        <Input
+          label="Category"
+          id="category_id"
+          name="category_id"
+          value={formData.category_id}
+          onChange={handleChange}
+        />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Input
             label="Start Date"
@@ -138,15 +154,26 @@ export default function FundraiserForm() {
           />
         </div>
 
-        <Select
-          label="Status"
-          id="status"
-          name="status"
-          value={formData.status}
-          onChange={handleChange}
-          required
-          options={statusOptions}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Select
+            label="Status"
+            id="status"
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            required
+            options={statusOptions}
+          />
+          <Select
+            label="Visibility"
+            id="visibility"
+            name="visibility"
+            value={formData.visibility}
+            onChange={handleChange}
+            required
+            options={visibilityOptions}
+          />
+        </div>
 
         <div className="flex justify-end space-x-4">
           <Button

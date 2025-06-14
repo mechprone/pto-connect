@@ -14,7 +14,8 @@ export default function FundraiserAnalytics() {
     total_donations: 0,
     total_donors: 0,
     average_donation: 0,
-    progress: 0
+    progress: 0,
+    top_donor: null,
   });
 
   useEffect(() => {
@@ -25,7 +26,15 @@ export default function FundraiserAnalytics() {
     try {
       setLoading(true);
       const { data } = await api.get(`/fundraisers/${id}/analytics`);
-      setAnalytics(data);
+      let topDonor = null;
+      // Optionally fetch top donor if not included in analytics
+      if (!data.top_donor) {
+        const { data: topDonorData } = await api.get(`/fundraisers/${id}/top-donor`);
+        topDonor = topDonorData;
+      } else {
+        topDonor = data.top_donor;
+      }
+      setAnalytics({ ...data, top_donor: topDonor });
       setError(null);
     } catch (error) {
       const message = 'Failed to fetch fundraiser analytics';
@@ -88,6 +97,25 @@ export default function FundraiserAnalytics() {
               <p className="text-2xl font-semibold text-gray-900">
                 {formatCurrency(analytics.average_donation)}
               </p>
+            </div>
+          </div>
+        </Card>
+
+        <Card>
+          <div className="flex items-center space-x-4">
+            <div className="p-3 bg-yellow-100 rounded-full">
+              <Users className="h-6 w-6 text-yellow-600" />
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Top Donor</h3>
+              {analytics.top_donor ? (
+                <>
+                  <p className="text-lg font-semibold text-gray-900">{analytics.top_donor.name}</p>
+                  <p className="text-sm text-green-600">{formatCurrency(analytics.top_donor.amount)}</p>
+                </>
+              ) : (
+                <p className="text-gray-400">No donations yet</p>
+              )}
             </div>
           </div>
         </Card>

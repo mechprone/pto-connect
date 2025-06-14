@@ -36,8 +36,7 @@ C:\Dev\
 ├── pto-connect/                 # Frontend application
 ├── pto-connect-backend/         # Backend API server
 ├── pto-connect-public/          # Public marketing site
-├── Development Archive/         # Archived legacy files and documentation
-└── *.md files                   # Current phase documentation only
+└── Development Archive/         # Archived legacy files and documentation
 ```
 
 ### Deployment Architecture
@@ -53,6 +52,107 @@ C:\Dev\
 - **Working Directory**: C:\Dev (current documentation only, legacy archived)
 - **Deployment**: Railway auto-deploys from GitHub main branch
 - **Cleanup Strategy**: Automatic archival of legacy files after each major phase completion
+
+## 🎨 UI/UX DESIGN PRINCIPLES
+
+### Design Philosophy
+- **User-Centric**: Design for varying technological comfort levels
+- **Accessibility First**: WCAG 2.1 AA compliance
+- **Mobile Responsive**: Mobile-first design approach
+- **Intuitive Navigation**: Clear information architecture
+- **Consistent Branding**: Customizable per organization while maintaining platform consistency
+
+### Component Architecture
+- **Design System**: Tailwind CSS with custom component library
+- **Reusable Components**: Standardized UI components across modules
+- **Theme System**: Customizable branding per organization
+- **Responsive Design**: Desktop, tablet, and mobile optimization
+
+### Common Components
+```jsx
+// Standard components available in @/components/common/
+- Button.jsx      // Standardized button with variants (primary, secondary, danger, outline)
+- Card.jsx        // Card container with title, description, and content sections
+- Input.jsx       // Form input with label, error handling, and various types
+- Select.jsx      // Dropdown select with label and error handling
+- LoadingSpinner.jsx // Loading indicator with size variants
+```
+
+### Page Layout Structure
+```jsx
+// Standard page layout in @/modules/components/layout/PageLayout.jsx
+- Title
+- Loading state
+- Error handling
+- Content area
+- Consistent spacing and structure
+```
+
+### Error Handling
+```jsx
+// Standard error handling in @/utils/errorHandling.js
+- handleError(error, message)    // Consistent error display and logging
+- handleSuccess(message)         // Success notifications
+```
+
+### API Integration
+```jsx
+// Standard API client in @/utils/api.js
+- GET, POST, PUT, DELETE methods
+- Automatic error handling
+- Consistent response formatting
+- Authentication header management
+```
+
+### User Experience Considerations
+- **Onboarding**: Guided setup for new PTOs and users
+- **Progressive Disclosure**: Advanced features revealed as needed
+- **Error Handling**: Clear, actionable error messages
+- **Performance**: Fast loading times and smooth interactions
+
+## 🔧 DEVELOPMENT ENVIRONMENT
+
+### Developer Profile
+- **Experience Level**: Non-technical founder with zero web development experience
+- **Learning Approach**: Step-by-step instructions required for all technical tasks
+- **Tool Proficiency**: VS Code, GitHub Desktop, basic command line
+- **Support Needs**: Senior-level AI assistance for all development decisions
+
+### AI Assistant Requirements
+- **Technical Level**: Act as senior-level, forward-thinking web app engineers
+- **Industry Standards**: Incorporate leading UI/UX and system engineering practices
+- **Communication Style**: Explain technical concepts in accessible terms
+- **Task Approach**: Provide step-by-step instructions for all implementation tasks
+- **Code Quality**: Write production-ready, well-documented, maintainable code
+
+### Development Tools
+- **Primary IDE**: VS Code with Cline extension
+- **AI Model**: Claude Sonnet 3.5 (primary), ChatGPT (research)
+- **Version Control**: Git with GitHub Desktop for complex operations
+- **Database Management**: Supabase dashboard and SQL editor
+- **Deployment**: Railway dashboard and CLI tools
+- **Testing**: Autonomous testing scripts and manual verification
+- **File Management**: Automated cleanup and archival system for legacy files
+
+## 📈 FEATURE ROADMAP & MVP
+
+### Current Phase (v1.4.0)
+- **UI Component Standardization**: Complete
+- **Error Handling Standardization**: Complete
+- **API Integration Standardization**: Complete
+- **Page Layout Standardization**: Complete
+
+### Next Phase (v1.5.0)
+- **File Management System**: In progress
+- **Security Enhancements**: Planned
+- **Performance Optimization**: Planned
+- **Analytics Dashboard**: Planned
+
+### Future Enhancements
+- **Mobile App Development**: Planned
+- **Advanced Analytics**: Planned
+- **Integration Marketplace**: Planned
+- **AI-Powered Insights**: Planned
 
 ## 🎯 ORGANIZATIONAL HIERARCHY & MULTI-TENANCY
 
@@ -201,134 +301,6 @@ CREATE POLICY "reconciliations_access" ON reconciliations
 - **Sprint Planning**: Detailed technical specifications with deliverables
 - **Testing Strategy**: Unit tests, integration tests, autonomous testing
 - **Deployment**: Railway auto-deployment with rollback capabilities
-
-## 🎨 UI/UX DESIGN PRINCIPLES
-
-### Design Philosophy
-- **User-Centric**: Design for varying technological comfort levels
-- **Accessibility First**: WCAG 2.1 AA compliance
-- **Mobile Responsive**: Mobile-first design approach
-- **Intuitive Navigation**: Clear information architecture
-- **Consistent Branding**: Customizable per organization while maintaining platform consistency
-
-### Component Architecture
-- **Design System**: Tailwind CSS with custom component library
-- **Reusable Components**: Standardized UI components across modules
-- **Theme System**: Customizable branding per organization
-- **Responsive Design**: Desktop, tablet, and mobile optimization
-
-### User Experience Considerations
-- **Onboarding**: Guided setup for new PTOs and users
-- **Progressive Disclosure**: Advanced features revealed as needed
-- **Error Handling**: Clear, actionable error messages
-- **Performance**: Fast loading times and smooth interactions
-
-## 🔧 DEVELOPMENT ENVIRONMENT
-
-### Developer Profile
-- **Experience Level**: Non-technical founder with zero web development experience
-- **Learning Approach**: Step-by-step instructions required for all technical tasks
-- **Tool Proficiency**: VS Code, GitHub Desktop, basic command line
-- **Support Needs**: Senior-level AI assistance for all development decisions
-
-### AI Assistant Requirements
-- **Technical Level**: Act as senior-level, forward-thinking web app engineers
-- **Industry Standards**: Incorporate leading UI/UX and system engineering practices
-- **Communication Style**: Explain technical concepts in accessible terms
-- **Task Approach**: Provide step-by-step instructions for all implementation tasks
-- **Code Quality**: Write production-ready, well-documented, maintainable code
-
-### Development Tools
-- **Primary IDE**: VS Code with Cline extension
-- **AI Model**: Claude Sonnet 3.5 (primary), ChatGPT (research)
-- **Version Control**: Git with GitHub Desktop for complex operations
-- **Database Management**: Supabase dashboard and SQL editor
-- **Deployment**: Railway dashboard and CLI tools
-- **Testing**: Autonomous testing scripts and manual verification
-- **File Management**: Automated cleanup and archival system for legacy files
-
-## 📈 FEATURE ROADMAP & MVP
-
-### Core Modules (Post-Foundation)
-1. **Event Management**: Event creation, RSVP, volunteer coordination
-2. **Budget Management**: Financial tracking, expense approval, reporting
-3. **Communication**: Email/SMS notifications, announcements, messaging
-4. **Fundraising**: Campaign management, donation tracking, reporting
-5. **Document Management**: File storage, sharing, version control
-6. **Teacher Coordination**: Teacher requests, wish lists, classroom support
-7. **Volunteer Management**: Opportunity posting, skill matching, hour tracking
-8. **Analytics & Reporting**: Data insights, performance metrics, compliance
-
-### Advanced Features
-- **AI Assistant (Stella)**: Intelligent help and automation
-- **Mobile App**: Native iOS/Android applications
-- **Advanced Analytics**: Predictive insights and recommendations
-- **Third-party Integrations**: Payment processors, email services, calendar apps
-- **API Platform**: External integrations and custom development
-
-### Enterprise Features
-- **District Dashboard**: Multi-school oversight and analytics
-- **Policy Management**: District-wide standards and compliance
-- **Advanced Reporting**: Cross-school performance metrics
-- **Custom Integrations**: District-specific system integrations
-- **Training & Support**: Dedicated enterprise support team
-
-## 💰 BUSINESS MODEL
-
-### Subscription Tiers
-- **Basic (Free)**: Single PTO management, basic features, community support
-- **Premium ($29.99/month)**: Advanced features, custom branding, priority support
-- **Enterprise (Custom)**: District-wide management, dedicated support, custom integrations
-
-### Revenue Streams
-- **Subscription Revenue**: Monthly/annual subscriptions
-- **Enterprise Contracts**: District-wide licensing deals
-- **Professional Services**: Implementation, training, custom development
-- **Template Marketplace**: Revenue sharing on premium templates
-
-### Growth Strategy
-- **Organic Growth**: PTO-to-PTO recommendations within districts
-- **Content Marketing**: Educational content for PTO management
-- **Social Media**: Targeted advertising to PTO board members
-- **Partnership Program**: Integrations with education technology providers
-
-## 🔒 SECURITY & COMPLIANCE
-
-### Security Framework
-- **Authentication**: Supabase Auth with multi-factor authentication
-- **Authorization**: Role-based access control with granular permissions
-- **Data Protection**: Row Level Security (RLS) policies
-- **Encryption**: Data encryption at rest and in transit
-- **Audit Trails**: Comprehensive logging for all user actions
-
-### Compliance Requirements
-- **FERPA**: Student privacy protection for education records
-- **COPPA**: Children's online privacy protection
-- **GDPR**: European data protection regulation compliance
-- **Financial Compliance**: Audit trails for financial transactions
-- **Accessibility**: WCAG 2.1 AA compliance for all users
-
-### Data Backup & Recovery
-- **Automated Backups**: Daily database backups with point-in-time recovery
-- **Version Control**: Git-based code backup and recovery
-- **Disaster Recovery**: Multi-region deployment capabilities
-- **Data Export**: User data portability and export features
-
-## 🔐 TEST CREDENTIALS
-
-### Production Test Accounts
-All test accounts use the **Sunset Elementary PTO** organization (`@sunsetpto.com` domain):
-
-| Role | Email | Password | Access Level |
-|------|-------|----------|--------------|
-| **Admin** | admin@sunsetpto.com | TestPass123! | Full system access, all modules |
-| **Teacher** | teacher@sunsetpto.com | TestPass123! | Teacher requests, events, communications |
-| **Parent** | parent@sunsetpto.com | TestPass123! | Events, volunteer opportunities, basic access |
-| **Volunteer** | volunteer@sunsetpto.com | TestPass123! | Volunteer coordination, events |
-| **Committee Lead** | committee@sunsetpto.com | TestPass123! | Committee management, communications |
-| **Board Member** | board@sunsetpto.com | TestPass123! | Board-level access, financial oversight |
-
-**IMPORTANT**: Always use these credentials for testing. Never use fake credentials like admin@ptoconnect.com.
 
 ## 🎯 CURRENT PROJECT STATUS
 
