@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/utils/supabaseClient'
 import axios from 'axios'
+import UserRoleManager from '@/components/UserRoleManager'
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState([])
@@ -69,6 +70,9 @@ export default function AdminDashboard() {
           </tbody>
         </table>
       )}
+
+      {/* User Role Management Section */}
+      <UserRoleManager users={users} setUsers={setUsers} />
     </div>
   )
 }
