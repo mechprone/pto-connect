@@ -4,6 +4,8 @@ import EmailEditor from 'react-email-editor'
 import { supabase } from '@/utils/supabaseClient'
 import axios from 'axios'
 
+const API_BASE_URL = 'https://api.ptoconnect.com';
+
 export default function EmailComposer() {
   const editorRef = useRef(null)
   const [status, setStatus] = useState('Loading...')
@@ -29,7 +31,7 @@ export default function EmailComposer() {
       setToken(session.access_token)
 
       try {
-        const res = await axios.get('/api/communications/email-drafts', {
+        const res = await axios.get(`${API_BASE_URL}/api/communications/email-drafts`, {
           headers: { Authorization: `Bearer ${session.access_token}` }
         })
 
@@ -63,12 +65,12 @@ export default function EmailComposer() {
 
       try {
         if (draftId) {
-          await axios.put(`/api/communications/email-drafts/${draftId}`, payload, {
+          await axios.put(`${API_BASE_URL}/api/communications/email-drafts/${draftId}`, payload, {
             headers: { Authorization: `Bearer ${token}` }
           })
           setStatus('Draft updated')
         } else {
-          const res = await axios.post('/api/communications/email-drafts', payload, {
+          const res = await axios.post(`${API_BASE_URL}/api/communications/email-drafts`, payload, {
             headers: { Authorization: `Bearer ${token}` }
           })
           setDraftId(res.data.id)

@@ -1,8 +1,9 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useUserProfile } from './useUserProfile';
 import { supabase } from '@/utils/supabaseClient';
 import axios from 'axios';
+
+const API_BASE_URL = 'https://api.ptoconnect.com';
 
 /**
  * Core permission checking hook for permission-aware UI
@@ -30,7 +31,7 @@ export function usePermissions() {
       }
 
       // Get all permission templates to check against
-      const templatesResponse = await axios.get('/api/admin/organization-permissions/templates', {
+      const templatesResponse = await axios.get(`${API_BASE_URL}/api/admin/organization-permissions/templates`, {
         headers: { Authorization: `Bearer ${session.access_token}` }
       });
 

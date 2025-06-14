@@ -3,6 +3,8 @@ import { useUserProfile } from './useUserProfile';
 import { supabase } from '@/utils/supabaseClient';
 import axios from 'axios';
 
+const API_BASE_URL = 'https://api.ptoconnect.com';
+
 /**
  * Admin permission management hook
  * Provides functionality for admins to manage organization permissions
@@ -36,10 +38,10 @@ export function useAdminPermissions() {
 
       // Fetch permission templates and organization permissions in parallel
       const [templatesResponse, orgPermissionsResponse] = await Promise.all([
-        axios.get('/api/admin/organization-permissions/templates', {
+        axios.get(`${API_BASE_URL}/api/admin/organization-permissions/templates`, {
           headers: { Authorization: `Bearer ${session.access_token}` }
         }),
-        axios.get('/api/admin/organization-permissions', {
+        axios.get(`${API_BASE_URL}/api/admin/organization-permissions`, {
           headers: { Authorization: `Bearer ${session.access_token}` }
         })
       ]);
@@ -80,7 +82,7 @@ export function useAdminPermissions() {
       }
 
       const response = await axios.put(
-        `/api/admin/organization-permissions/${permissionKey}`,
+        `${API_BASE_URL}/api/admin/organization-permissions/${permissionKey}`,
         settings,
         {
           headers: { Authorization: `Bearer ${session.access_token}` }
@@ -120,7 +122,7 @@ export function useAdminPermissions() {
       }
 
       const response = await axios.post(
-        '/api/admin/organization-permissions/bulk-update',
+        `${API_BASE_URL}/api/admin/organization-permissions/bulk-update`,
         { permissions },
         {
           headers: { Authorization: `Bearer ${session.access_token}` }
@@ -160,7 +162,7 @@ export function useAdminPermissions() {
       }
 
       const response = await axios.delete(
-        `/api/admin/organization-permissions/${permissionKey}`,
+        `${API_BASE_URL}/api/admin/organization-permissions/${permissionKey}`,
         {
           headers: { Authorization: `Bearer ${session.access_token}` }
         }
@@ -196,7 +198,7 @@ export function useAdminPermissions() {
       }
 
       const response = await axios.get(
-        `/api/admin/organization-permissions/user/${userId}`,
+        `${API_BASE_URL}/api/admin/organization-permissions/user/${userId}`,
         {
           headers: { Authorization: `Bearer ${session.access_token}` }
         }

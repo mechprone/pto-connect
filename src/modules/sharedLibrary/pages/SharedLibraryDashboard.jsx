@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/utils/supabaseClient'
 import axios from 'axios'
 
+const API_BASE_URL = 'https://api.ptoconnect.com'
+
 export default function SharedLibraryDashboard() {
   const [items, setItems] = useState([])
   const [error, setError] = useState('')
@@ -16,7 +18,7 @@ export default function SharedLibraryDashboard() {
       }
 
       try {
-        const res = await axios.get('/api/shared-library', {
+        const res = await axios.get(`${API_BASE_URL}/api/shared-library`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         setItems(res.data)

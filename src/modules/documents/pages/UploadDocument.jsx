@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { supabase } from '@/utils/supabaseClient'
 import axios from 'axios'
 
+const API_BASE_URL = 'https://api.ptoconnect.com'
+
 export default function UploadDocument() {
   const [title, setTitle] = useState('')
   const [file, setFile] = useState(null)
@@ -21,7 +23,7 @@ export default function UploadDocument() {
     formData.append('file', file)
 
     try {
-      await axios.post('/api/documents', formData, {
+      await axios.post(`${API_BASE_URL}/api/documents`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'

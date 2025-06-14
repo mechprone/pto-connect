@@ -20,7 +20,7 @@ export default function AdminDashboard() {
           return
         }
 
-        const res = await axios.get('/api/admin-users', {
+        const res = await axios.get('https://api.ptoconnect.com/api/admin-users', {
           headers: { Authorization: `Bearer ${token}` }
         })
 

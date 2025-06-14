@@ -4,6 +4,8 @@ import { supabase } from '@/utils/supabaseClient'
 import axios from 'axios'
 import { jsPDF } from 'jspdf'
 
+const API_BASE_URL = 'https://api.ptoconnect.com';
+
 export default function CreateEvent() {
   const [form, setForm] = useState({
     title: '',
@@ -52,7 +54,7 @@ export default function CreateEvent() {
     }
 
     try {
-      const res = await fetch('/api/events', {
+      const res = await fetch(`${API_BASE_URL}/api/events`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +98,7 @@ export default function CreateEvent() {
   const handleAIGenerate = async () => {
     setAiResult('Generating...')
     try {
-      const { data } = await axios.post('/api/ai/generate-event', aiForm)
+      const { data } = await axios.post(`${API_BASE_URL}/api/ai/generate-event`, aiForm)
       setAiResult(data.result)
     } catch (err) {
       setAiResult('AI generation failed.')

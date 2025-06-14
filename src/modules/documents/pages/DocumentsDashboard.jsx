@@ -3,6 +3,8 @@ import { supabase } from '@/utils/supabaseClient'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 
+const API_BASE_URL = 'https://api.ptoconnect.com'
+
 export default function DocumentsDashboard() {
   const [documents, setDocuments] = useState([])
   const [error, setError] = useState('')
@@ -14,7 +16,7 @@ export default function DocumentsDashboard() {
       if (!token) return setError('Not authenticated.')
 
       try {
-        const res = await axios.get('/api/documents', {
+        const res = await axios.get(`${API_BASE_URL}/api/documents`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         setDocuments(res.data)
