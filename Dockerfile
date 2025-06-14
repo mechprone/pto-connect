@@ -5,7 +5,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Install dependencies first (better caching)
-COPY pto-connect/package*.json ./
+COPY package*.json ./
 
 # Clear npm cache and remove lock file to fix rollup issue
 RUN rm -f package-lock.json && npm cache clean --force
@@ -14,7 +14,7 @@ RUN rm -f package-lock.json && npm cache clean --force
 RUN npm install --legacy-peer-deps
 
 # Copy source code
-COPY pto-connect/. .
+COPY . .
 
 # Declare build arguments for environment variables
 ARG VITE_SUPABASE_URL
