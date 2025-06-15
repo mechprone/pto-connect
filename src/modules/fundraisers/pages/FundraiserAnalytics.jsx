@@ -98,8 +98,9 @@ export default function FundraiserAnalytics() {
       } else {
         ({ data, error } = await fundraisersAPI.getAllFundraisersAnalytics({ dateRange }));
       }
+      console.log('Analytics API full response:', { data, error });
       if (error) throw new Error(error);
-      setAnalytics(normalizeAnalytics(data));
+      setAnalytics(normalizeAnalytics(typeof data === 'object' && data !== null ? data : {}));
       setError(null);
     } catch (error) {
       const message = id
