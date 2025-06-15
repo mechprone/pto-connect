@@ -30,18 +30,27 @@ export default function PermissionsConsole() {
         apiRequest('GET', '/admin/organization-permissions'),
         apiRequest('GET', '/admin-users'),
       ])
+      console.log('[PermissionsConsole] /admin/organization-permissions response:', permData)
+      console.log('[PermissionsConsole] /admin-users response:', userData)
       if (permError || userError) {
         setError('Failed to load permissions or users.')
         setLoading(false)
         return
       }
-      setPermissions(permData.permissions)
-      setGrouped(permData.grouped)
-      setUsers(userData.profiles || userData) // fallback for array response
+      setPermissions(Array.isArray(permData?.permissions) ? permData.permissions : [])
+      setGrouped(permData?.grouped && typeof permData.grouped === 'object' ? permData.grouped : {})
+      setUsers(userData?.profiles || (Array.isArray(userData) ? userData : []))
       setLoading(false)
     }
     fetchData()
   }, [])
+
+  // Defensive checks
+  if (loading) return <div className="py-8 text-center text-gray-500">Loading permissions...</div>
+  if (error) return <div className="py-8 text-center text-red-600">{error}</div>
+  if (!Array.isArray(permissions) || !grouped || typeof grouped !== 'object') {
+    return <div className="py-8 text-center text-red-600">Permissions data is unavailable or malformed.</div>
+  }
 
   // Filter users by role
   const filteredUsers = roleFilter
@@ -96,9 +105,6 @@ export default function PermissionsConsole() {
     setSaving(false)
   }
 
-  if (loading) return <div className="py-8 text-center text-gray-500">Loading permissions...</div>
-  if (error) return <div className="py-8 text-center text-red-600">{error}</div>
-
   return (
     <div className="bg-white rounded shadow p-4">
       <h2 className="text-xl font-semibold mb-4">Permissions Management</h2>
@@ -115,56 +121,60 @@ export default function PermissionsConsole() {
         </select>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full table-auto border mb-2">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="p-2 border">Name</th>
-              <th className="p-2 border">Email</th>
-              <th className="p-2 border">Role</th>
-              {allPerms.map(perm => (
-                <th key={perm.key} className="p-2 border">
-                  <div className="flex flex-col items-center">
-                    <span>{perm.name}</span>
-                    <button
-                      className="text-xs text-blue-600 underline mt-1"
-                      onClick={() => handleBulkApply(perm.key, true)}
-                      title="Enable for all filtered users"
-                    >Enable All</button>
-                    <button
-                      className="text-xs text-red-600 underline"
-                      onClick={() => handleBulkApply(perm.key, false)}
-                      title="Disable for all filtered users"
-                    >Disable All</button>
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUsers.map(user => (
-              <tr key={user.id} className="border-b">
-                <td className="p-2 border font-medium">{user.full_name || user.email}</td>
-                <td className="p-2 border">{user.email}</td>
-                <td className="p-2 border capitalize">{user.role}</td>
-                {allPerms.map(perm => {
-                  // Use override if set, else default
-                  const override = userOverrides[user.id]?.[perm.key]
-                  const checked = override !== undefined ? override : perm.defaultEnabled
-                  return (
-                    <td key={perm.key} className="p-2 border text-center">
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={e => handleUserPermChange(user.id, perm.key, e.target.checked)}
-                        className="w-5 h-5 accent-blue-600"
-                      />
-                    </td>
-                  )
-                })}
+        {Object.keys(grouped).length === 0 ? (
+          <div className="text-gray-500 text-center py-8">No permissions found.</div>
+        ) : (
+          <table className="w-full table-auto border mb-2">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="p-2 border">Name</th>
+                <th className="p-2 border">Email</th>
+                <th className="p-2 border">Role</th>
+                {allPerms.map(perm => (
+                  <th key={perm.key} className="p-2 border">
+                    <div className="flex flex-col items-center">
+                      <span>{perm.name}</span>
+                      <button
+                        className="text-xs text-blue-600 underline mt-1"
+                        onClick={() => handleBulkApply(perm.key, true)}
+                        title="Enable for all filtered users"
+                      >Enable All</button>
+                      <button
+                        className="text-xs text-red-600 underline"
+                        onClick={() => handleBulkApply(perm.key, false)}
+                        title="Disable for all filtered users"
+                      >Disable All</button>
+                    </div>
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredUsers.map(user => (
+                <tr key={user.id} className="border-b">
+                  <td className="p-2 border font-medium">{user.full_name || user.email}</td>
+                  <td className="p-2 border">{user.email}</td>
+                  <td className="p-2 border capitalize">{user.role}</td>
+                  {allPerms.map(perm => {
+                    // Use override if set, else default
+                    const override = userOverrides[user.id]?.[perm.key]
+                    const checked = override !== undefined ? override : perm.defaultEnabled
+                    return (
+                      <td key={perm.key} className="p-2 border text-center">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={e => handleUserPermChange(user.id, perm.key, e.target.checked)}
+                          className="w-5 h-5 accent-blue-600"
+                        />
+                      </td>
+                    )
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
       <div className="flex gap-4 items-center mt-4">
         <button
