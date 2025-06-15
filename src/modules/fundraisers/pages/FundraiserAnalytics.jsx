@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { api } from '@/utils/api';
+import { fundraisersAPI } from '@/utils/api';
 import { handleError, handleSuccess } from '@/utils/errorHandling';
 import PageLayout from '@/modules/components/layout/PageLayout';
 import Card from '@/components/common/Card';
@@ -25,11 +25,12 @@ export default function FundraiserAnalytics() {
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get(`/fundraisers/${id}/analytics`);
+      const { data, error } = await fundraisersAPI.getFundraiserAnalytics(id);
+      if (error) throw new Error(error);
       let topDonor = null;
-      // Optionally fetch top donor if not included in analytics
       if (!data.top_donor) {
-        const { data: topDonorData } = await api.get(`/fundraisers/${id}/top-donor`);
+        const { data: topDonorData, error: topDonorError } = await fundraisersAPI.getFundraiserTopDonor(id);
+        if (topDonorError) throw new Error(topDonorError);
         topDonor = topDonorData;
       } else {
         topDonor = data.top_donor;

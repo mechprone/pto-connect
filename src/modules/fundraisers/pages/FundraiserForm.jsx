@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { api } from '@/utils/api';
+import { fundraisersAPI } from '@/utils/api';
 import { handleError, handleSuccess } from '@/utils/errorHandling';
 import PageLayout from '@/modules/components/layout/PageLayout';
 import Button from '@/components/common/Button';
@@ -46,7 +46,8 @@ export default function FundraiserForm() {
   const fetchFundraiser = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get(`/fundraisers/${id}`);
+      const { data, error } = await fundraisersAPI.getFundraiser(id);
+      if (error) throw new Error(error);
       setFormData(data);
       setError(null);
     } catch (error) {
@@ -63,10 +64,12 @@ export default function FundraiserForm() {
     try {
       setLoading(true);
       if (id) {
-        await api.put(`/fundraisers/${id}`, formData);
+        const { error } = await fundraisersAPI.updateFundraiser(id, formData);
+        if (error) throw new Error(error);
         handleSuccess('Fundraiser updated successfully');
       } else {
-        await api.post('/fundraisers', formData);
+        const { error } = await fundraisersAPI.createFundraiser(formData);
+        if (error) throw new Error(error);
         handleSuccess('Fundraiser created successfully');
       }
       navigate('/fundraisers');

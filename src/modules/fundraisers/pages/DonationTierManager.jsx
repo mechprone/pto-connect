@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { api } from '@/utils/api';
+import { fundraisersAPI } from '@/utils/api';
 import { handleError, handleSuccess } from '@/utils/errorHandling';
 import PageLayout from '@/modules/components/layout/PageLayout';
 import Button from '@/components/common/Button';
@@ -28,7 +28,8 @@ export default function DonationTierManager() {
   const fetchTiers = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get(`/fundraisers/${id}/tiers`);
+      const { data, error } = await fundraisersAPI.getDonationTiers(id);
+      if (error) throw new Error(error);
       setTiers(data);
       setError(null);
     } catch (error) {
@@ -44,7 +45,8 @@ export default function DonationTierManager() {
     e.preventDefault();
     try {
       setLoading(true);
-      const { data } = await api.post(`/fundraisers/${id}/tiers`, newTier);
+      const { data, error } = await fundraisersAPI.createDonationTier(id, newTier);
+      if (error) throw new Error(error);
       setTiers([...tiers, data]);
       setNewTier({
         name: '',
@@ -63,7 +65,8 @@ export default function DonationTierManager() {
   const handleUpdateTier = async (tierId, updatedData) => {
     try {
       setLoading(true);
-      const { data } = await api.put(`/fundraisers/${id}/tiers/${tierId}`, updatedData);
+      const { data, error } = await fundraisersAPI.updateDonationTier(id, tierId, updatedData);
+      if (error) throw new Error(error);
       setTiers(tiers.map(tier => tier.id === tierId ? data : tier));
       setEditingTier(null);
       handleSuccess('Donation tier updated successfully');
@@ -81,7 +84,8 @@ export default function DonationTierManager() {
 
     try {
       setLoading(true);
-      await api.delete(`/fundraisers/${id}/tiers/${tierId}`);
+      const { error } = await fundraisersAPI.deleteDonationTier(id, tierId);
+      if (error) throw new Error(error);
       setTiers(tiers.filter(tier => tier.id !== tierId));
       handleSuccess('Donation tier deleted successfully');
     } catch (error) {

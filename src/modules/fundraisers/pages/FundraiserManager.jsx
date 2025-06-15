@@ -17,6 +17,7 @@ export default function FundraiserManager() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedFundraiser, setSelectedFundraiser] = useState(null);
+  const [activeTab, setActiveTab] = useState('fundraisers');
 
   useEffect(() => {
     fetchFundraisers();
@@ -92,77 +93,112 @@ export default function FundraiserManager() {
       loading={loading}
       error={error}
     >
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-900">Active Fundraisers</h2>
-          <Button onClick={() => navigate('/fundraisers/create')}>
-            Create New Fundraiser
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredFundraisers.map((fundraiser) => (
-            <Card
-              key={fundraiser.id}
-              title={fundraiser.title}
-              description={fundraiser.description}
-            >
-              <div className="space-y-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Goal:</span>
-                  <span className="font-medium">{formatCurrency(fundraiser.goal_amount)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Status:</span>
-                  <span className={`font-medium ${
-                    fundraiser.status === 'active' ? 'text-green-600' :
-                    fundraiser.status === 'completed' ? 'text-blue-600' :
-                    'text-gray-600'
-                  }`}>
-                    {fundraiser.status.charAt(0).toUpperCase() + fundraiser.status.slice(1)}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Dates:</span>
-                  <span className="font-medium">
-                    {formatDate(fundraiser.start_date)} - {formatDate(fundraiser.end_date)}
-                  </span>
-                </div>
-
-                <div className="flex justify-end space-x-2 pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => handleEditFundraiser(fundraiser.id)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="danger"
-                    onClick={() => handleDelete(fundraiser.id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-
-        {filteredFundraisers.length === 0 && !loading && (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No fundraisers found</p>
-          </div>
-        )}
-
-        {selectedFundraiser && (
-          <div className="mt-8">
-            <h2 className="text-xl font-bold mb-4">Fundraiser Details</h2>
-            <DonationTierManager fundraiserId={selectedFundraiser.id} />
-            <FundraiserAnalytics fundraiserId={selectedFundraiser.id} />
-            <SocialShare fundraiserId={selectedFundraiser.id} />
-          </div>
-        )}
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 mb-6">
+        <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+          <button
+            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'fundraisers' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+            onClick={() => setActiveTab('fundraisers')}
+          >
+            Active Fundraisers
+          </button>
+          <button
+            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'analytics' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+            onClick={() => setActiveTab('analytics')}
+          >
+            Analytics
+          </button>
+          <button
+            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'tiers' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+            onClick={() => setActiveTab('tiers')}
+          >
+            Donation Tiers
+          </button>
+          <button
+            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'share' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+            onClick={() => setActiveTab('share')}
+          >
+            Share
+          </button>
+        </nav>
       </div>
+      {/* Tab Content */}
+      {activeTab === 'fundraisers' && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-gray-900">Active Fundraisers</h2>
+            <Button onClick={() => navigate('/fundraisers/create')}>
+              Create New Fundraiser
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredFundraisers.map((fundraiser) => (
+              <Card
+                key={fundraiser.id}
+                title={fundraiser.title}
+                description={fundraiser.description}
+              >
+                <div className="space-y-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Goal:</span>
+                    <span className="font-medium">{formatCurrency(fundraiser.goal_amount)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Status:</span>
+                    <span className={`font-medium ${
+                      fundraiser.status === 'active' ? 'text-green-600' :
+                      fundraiser.status === 'completed' ? 'text-blue-600' :
+                      'text-gray-600'
+                    }`}>
+                      {fundraiser.status.charAt(0).toUpperCase() + fundraiser.status.slice(1)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Dates:</span>
+                    <span className="font-medium">
+                      {formatDate(fundraiser.start_date)} - {formatDate(fundraiser.end_date)}
+                    </span>
+                  </div>
+                  <div className="flex justify-end space-x-2 pt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => handleEditFundraiser(fundraiser.id)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="danger"
+                      onClick={() => handleDelete(fundraiser.id)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+          {filteredFundraisers.length === 0 && !loading && (
+            <div className="text-center py-12">
+              <p className="text-gray-500">No fundraisers found</p>
+            </div>
+          )}
+        </div>
+      )}
+      {activeTab === 'analytics' && (
+        <div className="mt-8">
+          <FundraiserAnalytics />
+        </div>
+      )}
+      {activeTab === 'tiers' && (
+        <div className="mt-8">
+          <DonationTierManager />
+        </div>
+      )}
+      {activeTab === 'share' && (
+        <div className="mt-8">
+          <SocialShare />
+        </div>
+      )}
     </PageLayout>
   );
 } 

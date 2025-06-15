@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { api } from '@/utils/api';
+import { fundraisersAPI } from '@/utils/api';
 import { handleError, handleSuccess } from '@/utils/errorHandling';
 import PageLayout from '@/modules/components/layout/PageLayout';
 import Button from '@/components/common/Button';
@@ -21,7 +21,8 @@ export default function SocialShare() {
   const fetchFundraiser = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get(`/fundraisers/${id}`);
+      const { data, error } = await fundraisersAPI.getFundraiser(id);
+      if (error) throw new Error(error);
       setFundraiser(data);
       setError(null);
     } catch (error) {
