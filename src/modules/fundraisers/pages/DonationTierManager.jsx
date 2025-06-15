@@ -6,9 +6,9 @@ import PageLayout from '@/modules/components/layout/PageLayout';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Card from '@/components/common/Card';
+import Select from '@/components/common/Select';
 import { Plus, Trash2, Edit2, Check, X } from 'lucide-react';
 import { Chart, PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { Dropdown } from '@/components/common/Dropdown';
 
 export default function DonationTierManager() {
   const { id } = useParams();
@@ -282,7 +282,7 @@ export default function DonationTierManager() {
         <Card title="Donor Data">
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Dropdown
+              <Select
                 label="Year"
                 value={selectedYear}
                 onChange={(e) => {
@@ -294,7 +294,7 @@ export default function DonationTierManager() {
                   label: new Date().getFullYear() - i
                 }))}
               />
-              <Dropdown
+              <Select
                 label="Fundraiser"
                 value={selectedFundraiser}
                 onChange={(e) => {
@@ -306,7 +306,7 @@ export default function DonationTierManager() {
                   label: `Fundraiser ${i + 1}`
                 }))}
               />
-              <Dropdown
+              <Select
                 label="Donor Type"
                 value={selectedDonorType}
                 onChange={(e) => {
