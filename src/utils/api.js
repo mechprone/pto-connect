@@ -126,6 +126,12 @@ export const fundraisersAPI = {
   updateFundraiser: (id, data) => apiRequest('PUT', `/fundraiser/${id}`, data),
   deleteFundraiser: (id) => apiRequest('DELETE', `/fundraiser/${id}`),
   getDonations: (fundraiserId) => apiRequest('GET', `/fundraiser/${fundraiserId}/donations`),
+  getFundraiserAnalytics: (id) => apiRequest('GET', `/fundraiser/${id}/analytics`),
+  getFundraiserTopDonor: (id) => apiRequest('GET', `/fundraiser/${id}/top-donor`),
+  getDonationTiers: (id) => apiRequest('GET', `/fundraiser/${id}/tiers`),
+  createDonationTier: (id, data) => apiRequest('POST', `/fundraiser/${id}/tiers`, data),
+  updateDonationTier: (id, tierId, data) => apiRequest('PUT', `/fundraiser/${id}/tiers/${tierId}`, data),
+  deleteDonationTier: (id, tierId) => apiRequest('DELETE', `/fundraiser/${id}/tiers/${tierId}`),
 };
 
 // Budget API calls
