@@ -132,6 +132,11 @@ export const fundraisersAPI = {
   createDonationTier: (id, data) => apiRequest('POST', `/fundraiser/${id}/tiers`, data),
   updateDonationTier: (id, tierId, data) => apiRequest('PUT', `/fundraiser/${id}/tiers/${tierId}`, data),
   deleteDonationTier: (id, tierId) => apiRequest('DELETE', `/fundraiser/${id}/tiers/${tierId}`),
+  getAnalyticsYears: () => apiRequest('GET', '/fundraiser/analytics/years'),
+  getAnalytics: (params) => apiRequest('GET', `/fundraiser/analytics${params ? `?${new URLSearchParams(params)}` : ''}`),
+  getDonorYears: () => apiRequest('GET', '/fundraiser/donors/years'),
+  getDonorData: (id, year, fundraiserId, type) => apiRequest('GET', `/fundraiser/donors${year || fundraiserId || type ? `?${new URLSearchParams({ year, fundraiserId, type })}` : ''}`),
+  getDonorTypes: () => apiRequest('GET', '/fundraiser/donor-types'),
 };
 
 // Budget API calls

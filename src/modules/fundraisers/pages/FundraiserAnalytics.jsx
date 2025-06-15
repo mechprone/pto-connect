@@ -5,6 +5,8 @@ import { handleError, handleSuccess } from '@/utils/errorHandling';
 import PageLayout from '@/modules/components/layout/PageLayout';
 import Card from '@/components/common/Card';
 import { DollarSign, Users, TrendingUp } from 'lucide-react';
+import { Chart } from 'chart.js';
+import { Dropdown } from '@/components/common/Dropdown';
 
 export default function FundraiserAnalytics() {
   const { id } = useParams();

@@ -7,6 +7,8 @@ import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Card from '@/components/common/Card';
 import { Plus, Trash2, Edit2, Check, X } from 'lucide-react';
+import { Chart, PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { Dropdown } from '@/components/common/Dropdown';
 
 export default function DonationTierManager() {
   const { id } = useParams();
@@ -20,9 +22,14 @@ export default function DonationTierManager() {
     description: '',
     benefits: ''
   });
+  const [donorData, setDonorData] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedFundraiser, setSelectedFundraiser] = useState('');
+  const [selectedDonorType, setSelectedDonorType] = useState('');
 
   useEffect(() => {
     fetchTiers();
+    fetchDonorData();
   }, [id]);
 
   const fetchTiers = async () => {
@@ -34,6 +41,22 @@ export default function DonationTierManager() {
       setError(null);
     } catch (error) {
       const message = 'Failed to fetch donation tiers';
+      setError(message);
+      handleError(error, message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDonorData = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await fundraisersAPI.getDonorData(id, selectedYear, selectedFundraiser, selectedDonorType);
+      if (error) throw new Error(error);
+      setDonorData(data);
+      setError(null);
+    } catch (error) {
+      const message = 'Failed to fetch donor data';
       setError(message);
       handleError(error, message);
     } finally {
@@ -255,6 +278,78 @@ export default function DonationTierManager() {
             </Card>
           ))}
         </div>
+
+        <Card title="Donor Data">
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Dropdown
+                label="Year"
+                value={selectedYear}
+                onChange={(e) => {
+                  setSelectedYear(e.target.value);
+                  fetchDonorData();
+                }}
+                options={Array.from({ length: 10 }, (_, i) => ({
+                  value: new Date().getFullYear() - i,
+                  label: new Date().getFullYear() - i
+                }))}
+              />
+              <Dropdown
+                label="Fundraiser"
+                value={selectedFundraiser}
+                onChange={(e) => {
+                  setSelectedFundraiser(e.target.value);
+                  fetchDonorData();
+                }}
+                options={Array.from({ length: 10 }, (_, i) => ({
+                  value: `Fundraiser ${i + 1}`,
+                  label: `Fundraiser ${i + 1}`
+                }))}
+              />
+              <Dropdown
+                label="Donor Type"
+                value={selectedDonorType}
+                onChange={(e) => {
+                  setSelectedDonorType(e.target.value);
+                  fetchDonorData();
+                }}
+                options={Array.from({ length: 10 }, (_, i) => ({
+                  value: `Donor Type ${i + 1}`,
+                  label: `Donor Type ${i + 1}`
+                }))}
+              />
+            </div>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={donorData}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="name"
+                    tickFormatter={(str) => {
+                      return str.length > 20 ? str.slice(0, 20) + '...' : str;
+                    }}
+                  />
+                  <YAxis />
+                  <Tooltip
+                    labelFormatter={(value) => {
+                      return `Amount: ${value}`;
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="amount" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </Card>
       </div>
     </PageLayout>
   );
