@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { supabase } from '@/utils/supabaseClient'
-import axios from 'axios'
+import { profileAPI } from '@/utils/api'
 import UserRoleManager from '@/components/UserRoleManager'
 
 export default function AdminDashboard() {
@@ -11,26 +10,12 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        console.log('Supabase session:', session)
-
-        const token = session?.access_token
-        if (!token) {
-          setError('Not authenticated.')
-          return
+        const { data, error } = await profileAPI.getUsers()
+        if (error) throw new Error(error)
+        if (!data?.profiles || !Array.isArray(data.profiles)) {
+          throw new Error('Invalid API response format (expected { profiles: [...] })')
         }
-
-        const res = await axios.get('https://api.ptoconnect.com/api/admin-users', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-
-        console.log('API response:', res.data)
-
-        if (!Array.isArray(res.data)) {
-          throw new Error('Invalid API response format (expected array)')
-        }
-
-        setUsers(res.data)
+        setUsers(data.profiles)
       } catch (err) {
         console.error('Error fetching users:', err)
         setError('Failed to load user list.')
@@ -38,7 +23,6 @@ export default function AdminDashboard() {
         setLoading(false)
       }
     }
-
     fetchUsers()
   }, [])
 
