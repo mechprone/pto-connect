@@ -59,18 +59,30 @@ export default function FundraiserAnalytics() {
   });
 
   useEffect(() => {
+    if (id === undefined && !window.currentOrgId) {
+      setError('No fundraiser or organization context found.');
+      setLoading(false);
+      return;
+    }
     fetchAnalytics();
   }, [id, dateRange]);
 
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
-      const { data, error } = await fundraisersAPI.getFundraiserAnalytics(id, { dateRange });
+      let data, error;
+      if (id) {
+        ({ data, error } = await fundraisersAPI.getFundraiserAnalytics(id, { dateRange }));
+      } else {
+        ({ data, error } = await fundraisersAPI.getAllFundraisersAnalytics({ dateRange }));
+      }
       if (error) throw new Error(error);
       setAnalytics(data);
       setError(null);
     } catch (error) {
-      const message = 'Failed to fetch fundraiser analytics';
+      const message = id
+        ? 'Failed to fetch fundraiser analytics'
+        : 'Failed to fetch organization-wide fundraiser analytics';
       setError(message);
       handleError(error, message);
     } finally {
@@ -382,6 +394,10 @@ export default function FundraiserAnalytics() {
       </Card>
     </div>
   );
+
+  if (error) {
+    return <div className="text-red-500 text-center mt-8">{error}</div>;
+  }
 
   return (
     <PageLayout

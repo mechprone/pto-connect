@@ -44,6 +44,7 @@ export default function FundraiserForm() {
   }, [id]);
 
   const fetchFundraiser = async () => {
+    if (!id) return;
     try {
       setLoading(true);
       const { data, error } = await fundraisersAPI.getFundraiser(id);
@@ -87,6 +88,10 @@ export default function FundraiserForm() {
       [name]: value
     }));
   };
+
+  if (!id && window.location.pathname.includes('edit')) {
+    return <div className="text-red-500 text-center mt-8">No fundraiser selected. Please select a fundraiser to edit.</div>;
+  }
 
   return (
     <PageLayout

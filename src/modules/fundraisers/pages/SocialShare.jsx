@@ -15,10 +15,16 @@ export default function SocialShare() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    if (!id) {
+      setError('No fundraiser selected. Please select a fundraiser to share.');
+      setLoading(false);
+      return;
+    }
     fetchFundraiser();
   }, [id]);
 
   const fetchFundraiser = async () => {
+    if (!id) return;
     try {
       setLoading(true);
       const { data, error } = await fundraisersAPI.getFundraiser(id);
@@ -69,6 +75,10 @@ export default function SocialShare() {
       handleError(error, 'Failed to copy link');
     }
   };
+
+  if (error) {
+    return <div className="text-red-500 text-center mt-8">{error}</div>;
+  }
 
   if (!fundraiser) return null;
 
