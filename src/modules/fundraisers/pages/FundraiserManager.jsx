@@ -28,7 +28,7 @@ export default function FundraiserManager() {
       setLoading(true);
       const { data, error } = await fundraisersAPI.getFundraisers();
       if (error) throw new Error(error);
-      setFundraisers(data);
+      setFundraisers(data?.data || []);
       setError(null);
     } catch (error) {
       const message = 'Failed to fetch fundraisers';
