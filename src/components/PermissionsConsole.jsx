@@ -37,9 +37,14 @@ export default function PermissionsConsole() {
         setLoading(false)
         return
       }
-      setPermissions(Array.isArray(permData?.permissions) ? permData.permissions : [])
-      setGrouped(permData?.grouped && typeof permData.grouped === 'object' ? permData.grouped : {})
-      setUsers(userData?.profiles || (Array.isArray(userData) ? userData : []))
+      // Always use .data.permissions and .data.grouped for compatibility with global response envelope
+      const perms = permData?.data?.permissions
+      const groupedPerms = permData?.data?.grouped
+      setPermissions(Array.isArray(perms) ? perms : [])
+      setGrouped(groupedPerms && typeof groupedPerms === 'object' ? groupedPerms : {})
+      // For users, support both envelope and flat array
+      const userList = userData?.data?.profiles || userData?.profiles || (Array.isArray(userData?.data) ? userData.data : [])
+      setUsers(userList)
       setLoading(false)
     }
     fetchData()
