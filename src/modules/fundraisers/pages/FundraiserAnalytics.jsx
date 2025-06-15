@@ -45,7 +45,7 @@ export default function FundraiserAnalytics() {
     campaign_performance: [],
     volunteer_metrics: [],
     supply_categories: [],
-    donors: [], // Add donors array for donor tab
+    donors: [],
     top_donors: [],
     recurring_donor_list: [],
     donor_retention: []
@@ -75,6 +75,20 @@ export default function FundraiserAnalytics() {
     fetchAnalytics();
   }, [id, dateRange, org_id, profileLoading]);
 
+  const normalizeAnalytics = (data) => ({
+    ...analytics,
+    ...data,
+    monthly_trends: Array.isArray(data?.monthly_trends) ? data.monthly_trends : [],
+    donor_demographics: Array.isArray(data?.donor_demographics) ? data.donor_demographics : [],
+    campaign_performance: Array.isArray(data?.campaign_performance) ? data.campaign_performance : [],
+    volunteer_metrics: Array.isArray(data?.volunteer_metrics) ? data.volunteer_metrics : [],
+    supply_categories: Array.isArray(data?.supply_categories) ? data.supply_categories : [],
+    donors: Array.isArray(data?.donors) ? data.donors : [],
+    top_donors: Array.isArray(data?.top_donors) ? data.top_donors : [],
+    recurring_donor_list: Array.isArray(data?.recurring_donor_list) ? data.recurring_donor_list : [],
+    donor_retention: Array.isArray(data?.donor_retention) ? data.donor_retention : [],
+  });
+
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
@@ -85,7 +99,7 @@ export default function FundraiserAnalytics() {
         ({ data, error } = await fundraisersAPI.getAllFundraisersAnalytics({ dateRange }));
       }
       if (error) throw new Error(error);
-      setAnalytics(data);
+      setAnalytics(normalizeAnalytics(data));
       setError(null);
     } catch (error) {
       const message = id
@@ -262,7 +276,7 @@ export default function FundraiserAnalytics() {
               </tr>
             </thead>
             <tbody>
-              {analytics.donors && analytics.donors.length > 0 ? (
+              {Array.isArray(analytics.donors) && analytics.donors.length > 0 ? (
                 analytics.donors.map((donor, idx) => (
                   <tr key={idx} className="bg-white even:bg-gray-50">
                     <td className="px-4 py-2 whitespace-nowrap">{donor.donor_name}</td>
@@ -282,7 +296,7 @@ export default function FundraiserAnalytics() {
       <Card>
         <h3 className="text-lg font-medium text-gray-900 mb-4">Top Donors</h3>
         <ul className="divide-y divide-gray-200">
-          {analytics.top_donors && analytics.top_donors.length > 0 ? (
+          {Array.isArray(analytics.top_donors) && analytics.top_donors.length > 0 ? (
             analytics.top_donors.map((donor, idx) => (
               <li key={idx} className="py-2 flex justify-between">
                 <span>{donor.donor_name}</span>
@@ -297,7 +311,7 @@ export default function FundraiserAnalytics() {
       <Card>
         <h3 className="text-lg font-medium text-gray-900 mb-4">Recurring Donors</h3>
         <ul className="divide-y divide-gray-200">
-          {analytics.recurring_donor_list && analytics.recurring_donor_list.length > 0 ? (
+          {Array.isArray(analytics.recurring_donor_list) && analytics.recurring_donor_list.length > 0 ? (
             analytics.recurring_donor_list.map((donor, idx) => (
               <li key={idx} className="py-2 flex justify-between">
                 <span>{donor.donor_name}</span>
@@ -323,7 +337,7 @@ export default function FundraiserAnalytics() {
               </tr>
             </thead>
             <tbody>
-              {analytics.donor_retention && analytics.donor_retention.length > 0 ? (
+              {Array.isArray(analytics.donor_retention) && analytics.donor_retention.length > 0 ? (
                 analytics.donor_retention.map((row, idx) => (
                   <tr key={idx} className="bg-white even:bg-gray-50">
                     <td className="px-4 py-2 whitespace-nowrap">{row.donor_name}</td>
