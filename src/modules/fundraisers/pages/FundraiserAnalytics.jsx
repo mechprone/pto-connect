@@ -14,11 +14,14 @@ import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { useUserProfile } from '@/modules/hooks/useUserProfile';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
 export default function FundraiserAnalytics() {
   const { id } = useParams();
+  const { profile, organization, loading: profileLoading } = useUserProfile();
+  const org_id = profile?.org_id;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
@@ -41,7 +44,11 @@ export default function FundraiserAnalytics() {
     donor_demographics: [],
     campaign_performance: [],
     volunteer_metrics: [],
-    supply_categories: []
+    supply_categories: [],
+    donors: [], // Add donors array for donor tab
+    top_donors: [],
+    recurring_donor_list: [],
+    donor_retention: []
   });
 
   const [newDonation, setNewDonation] = useState({
@@ -59,13 +66,14 @@ export default function FundraiserAnalytics() {
   });
 
   useEffect(() => {
-    if (id === undefined && !window.currentOrgId) {
+    if (profileLoading) return;
+    if (!id && !org_id) {
       setError('No fundraiser or organization context found.');
       setLoading(false);
       return;
     }
     fetchAnalytics();
-  }, [id, dateRange]);
+  }, [id, dateRange, org_id, profileLoading]);
 
   const fetchAnalytics = async () => {
     try {
@@ -240,36 +248,98 @@ export default function FundraiserAnalytics() {
 
   const renderDonorTab = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Donor Demographics</h3>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={analytics.donor_demographics}>
-                <PolarGrid />
-                <PolarAngleAxis dataKey="category" />
-                <PolarRadiusAxis />
-                <Radar name="Donors" dataKey="value" stroke="#2563eb" fill="#93c5fd" fillOpacity={0.6} />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-
-        <Card>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Donor Retention</h3>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={analytics.campaign_performance}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="retention" fill="#2563eb" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-      </div>
+      <Card>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Donor List</h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total Donated</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Last Donation</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Recurring</th>
+              </tr>
+            </thead>
+            <tbody>
+              {analytics.donors && analytics.donors.length > 0 ? (
+                analytics.donors.map((donor, idx) => (
+                  <tr key={idx} className="bg-white even:bg-gray-50">
+                    <td className="px-4 py-2 whitespace-nowrap">{donor.donor_name}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{donor.donor_email}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{formatCurrency(donor.total_donations)}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{formatDate(donor.last_donation_date)}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{donor.is_recurring ? 'Yes' : 'No'}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr><td colSpan={5} className="text-center py-4 text-gray-500">No donors found.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+      <Card>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Top Donors</h3>
+        <ul className="divide-y divide-gray-200">
+          {analytics.top_donors && analytics.top_donors.length > 0 ? (
+            analytics.top_donors.map((donor, idx) => (
+              <li key={idx} className="py-2 flex justify-between">
+                <span>{donor.donor_name}</span>
+                <span className="font-semibold">{formatCurrency(donor.total_donations)}</span>
+              </li>
+            ))
+          ) : (
+            <li className="text-center py-4 text-gray-500">No top donors found.</li>
+          )}
+        </ul>
+      </Card>
+      <Card>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Recurring Donors</h3>
+        <ul className="divide-y divide-gray-200">
+          {analytics.recurring_donor_list && analytics.recurring_donor_list.length > 0 ? (
+            analytics.recurring_donor_list.map((donor, idx) => (
+              <li key={idx} className="py-2 flex justify-between">
+                <span>{donor.donor_name}</span>
+                <span className="font-semibold">{formatCurrency(donor.total_donations)}</span>
+              </li>
+            ))
+          ) : (
+            <li className="text-center py-4 text-gray-500">No recurring donors found.</li>
+          )}
+        </ul>
+      </Card>
+      <Card>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Donor Retention</h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Donor</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Months Active</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">First Donation</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Last Donation</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total Donated</th>
+              </tr>
+            </thead>
+            <tbody>
+              {analytics.donor_retention && analytics.donor_retention.length > 0 ? (
+                analytics.donor_retention.map((row, idx) => (
+                  <tr key={idx} className="bg-white even:bg-gray-50">
+                    <td className="px-4 py-2 whitespace-nowrap">{row.donor_name}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{row.months_active}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{formatDate(row.first_donation)}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{formatDate(row.last_donation)}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{formatCurrency(row.total_donated)}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr><td colSpan={5} className="text-center py-4 text-gray-500">No donor retention data found.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
     </div>
   );
 
@@ -418,7 +488,7 @@ export default function FundraiserAnalytics() {
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'donors' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
               onClick={() => setActiveTab('donors')}
             >
-              Donor Analytics
+              Donors
             </button>
             <button
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'entry' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
