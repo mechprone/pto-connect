@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '@/utils/api';
+import { fundraisersAPI } from '@/utils/api';
 import { handleError, handleSuccess } from '@/utils/errorHandling';
 import PageLayout from '@/modules/components/layout/PageLayout';
 import Button from '@/components/common/Button';
@@ -25,7 +25,8 @@ export default function FundraiserManager() {
   const fetchFundraisers = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get('/fundraisers');
+      const { data, error } = await fundraisersAPI.getFundraisers();
+      if (error) throw new Error(error);
       setFundraisers(data);
       setError(null);
     } catch (error) {
@@ -44,7 +45,8 @@ export default function FundraiserManager() {
 
     try {
       setLoading(true);
-      await api.delete(`/fundraisers/${id}`);
+      const { error } = await fundraisersAPI.deleteFundraiser(id);
+      if (error) throw new Error(error);
       handleSuccess('Fundraiser deleted successfully');
       fetchFundraisers();
     } catch (error) {
