@@ -175,60 +175,60 @@ const AdvancedDesignStudio = () => {
       
       // For now, use placeholder data until we implement the Unlayer API integration
       // This will be replaced with actual API calls once we set up the backend integration
-      const placeholderTemplates = [
-        {
-          id: 'unlayer-1',
-          name: 'School Newsletter',
-          category: 'Newsletter',
-          source: 'unlayer',
-          thumbnail: '/api/placeholder/300/200',
-          description: 'Professional school newsletter template',
-          elements: [
-            { type: 'header', content: 'Monthly Newsletter', style: { fontSize: '32px', color: '#2563eb', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
-            { type: 'image', src: '/api/placeholder/600/200', style: { width: '100%', height: '200px' } },
-            { type: 'text', content: 'Stay connected with the latest news and updates from our school community.', style: { fontSize: '18px', color: '#374151', padding: '20px' } }
-          ]
-        },
-        {
-          id: 'unlayer-2',
-          name: 'Event Announcement',
-          category: 'Events',
-          source: 'unlayer',
-          thumbnail: '/api/placeholder/300/200',
-          description: 'Eye-catching event announcement template',
-          elements: [
-            { type: 'header', content: 'Special Event', style: { fontSize: '28px', color: '#dc2626', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
-            { type: 'text', content: 'Join us for an unforgettable experience!', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '10px' } },
-            { type: 'button', content: 'RSVP Now', style: { backgroundColor: '#dc2626', color: 'white', padding: '12px 24px', borderRadius: '6px', margin: '20px auto', display: 'block' } }
-          ]
-        },
-        {
-          id: 'unlayer-3',
-          name: 'Fundraiser Progress',
-          category: 'Fundraising',
-          source: 'unlayer',
-          thumbnail: '/api/placeholder/300/200',
-          description: 'Professional fundraising campaign template',
-          elements: [
-            { type: 'header', content: 'Fundraiser Update', style: { fontSize: '28px', color: '#059669', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
-            { type: 'progress-bar', value: 75, goal: 5000, style: { backgroundColor: '#d1fae5', margin: '20px', borderRadius: '10px' } },
-            { type: 'text', content: 'We\'re 75% to our goal! Thank you for your amazing support.', style: { fontSize: '16px', textAlign: 'center', padding: '20px' } }
-          ]
-        },
-        {
-          id: 'unlayer-4',
-          name: 'Volunteer Recruitment',
-          category: 'Volunteers',
-          source: 'unlayer',
-          thumbnail: '/api/placeholder/300/200',
-          description: 'Engaging volunteer recruitment template',
-          elements: [
-            { type: 'header', content: 'Volunteers Needed!', style: { fontSize: '30px', color: '#7c3aed', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
-            { type: 'text', content: 'Help make our events successful by volunteering your time and talents.', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '15px' } },
-            { type: 'button', content: 'Sign Up to Volunteer', style: { backgroundColor: '#7c3aed', color: 'white', padding: '15px 30px', borderRadius: '8px', margin: '20px auto', display: 'block' } }
-          ]
-        }
-      ];
+             const placeholderTemplates = [
+         {
+           id: 'unlayer-1',
+           name: 'School Newsletter',
+           category: 'Newsletter',
+           source: 'unlayer',
+           thumbnail: 'https://via.placeholder.com/300x200/2563eb/ffffff?text=Newsletter',
+           description: 'Professional school newsletter template',
+           elements: [
+             { type: 'header', content: 'Monthly Newsletter', style: { fontSize: '32px', color: '#2563eb', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
+             { type: 'image', src: 'https://via.placeholder.com/600x200/dbeafe/2563eb?text=School+Image', style: { width: '100%', height: '200px' } },
+             { type: 'text', content: 'Stay connected with the latest news and updates from our school community.', style: { fontSize: '18px', color: '#374151', padding: '20px' } }
+           ]
+         },
+         {
+           id: 'unlayer-2',
+           name: 'Event Announcement',
+           category: 'Events',
+           source: 'unlayer',
+           thumbnail: 'https://via.placeholder.com/300x200/dc2626/ffffff?text=Event',
+           description: 'Eye-catching event announcement template',
+           elements: [
+             { type: 'header', content: 'Special Event', style: { fontSize: '28px', color: '#dc2626', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
+             { type: 'text', content: 'Join us for an unforgettable experience!', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '10px' } },
+             { type: 'button', content: 'RSVP Now', style: { backgroundColor: '#dc2626', color: 'white', padding: '12px 24px', borderRadius: '6px', margin: '20px auto', display: 'block' } }
+           ]
+         },
+         {
+           id: 'unlayer-3',
+           name: 'Fundraiser Progress',
+           category: 'Fundraising',
+           source: 'unlayer',
+           thumbnail: 'https://via.placeholder.com/300x200/059669/ffffff?text=Fundraiser',
+           description: 'Professional fundraising campaign template',
+           elements: [
+             { type: 'header', content: 'Fundraiser Update', style: { fontSize: '28px', color: '#059669', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
+             { type: 'progress-bar', value: 75, goal: 5000, style: { backgroundColor: '#d1fae5', margin: '20px', borderRadius: '10px' } },
+             { type: 'text', content: 'We\'re 75% to our goal! Thank you for your amazing support.', style: { fontSize: '16px', textAlign: 'center', padding: '20px' } }
+           ]
+         },
+         {
+           id: 'unlayer-4',
+           name: 'Volunteer Recruitment',
+           category: 'Volunteers',
+           source: 'unlayer',
+           thumbnail: 'https://via.placeholder.com/300x200/7c3aed/ffffff?text=Volunteers',
+           description: 'Engaging volunteer recruitment template',
+           elements: [
+             { type: 'header', content: 'Volunteers Needed!', style: { fontSize: '30px', color: '#7c3aed', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
+             { type: 'text', content: 'Help make our events successful by volunteering your time and talents.', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '15px' } },
+             { type: 'button', content: 'Sign Up to Volunteer', style: { backgroundColor: '#7c3aed', color: 'white', padding: '15px 30px', borderRadius: '8px', margin: '20px auto', display: 'block' } }
+           ]
+         }
+       ];
 
       setUnlayerTemplates(placeholderTemplates);
     } catch (error) {
@@ -359,11 +359,16 @@ const AdvancedDesignStudio = () => {
   const DraggableElement = ({ element }) => {
     const [{ isDragging }, drag] = useDrag(() => ({
       type: 'design-element',
-      item: { type: element.type, element },
+      item: { 
+        type: element.type, 
+        defaultContent: element.defaultContent || '',
+        defaultSrc: element.defaultSrc || '',
+        label: element.label
+      },
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
-    }));
+    }), [element]);
 
     const Icon = element.icon;
 
@@ -387,30 +392,34 @@ const AdvancedDesignStudio = () => {
       accept: 'design-element',
       drop: (item, monitor) => {
         const offset = monitor.getClientOffset();
-        const canvasRect = canvasRef.current.getBoundingClientRect();
+        const canvasRect = canvasRef.current?.getBoundingClientRect();
+        
+        if (!canvasRect) return;
         
         const newElement = {
-          id: Date.now(),
+          id: Date.now() + Math.random(), // More unique ID
           type: item.type,
-          x: offset.x - canvasRect.left,
-          y: offset.y - canvasRect.top,
-          content: item.element.defaultContent || '',
-          src: item.element.defaultSrc || '',
+          x: Math.max(0, offset.x - canvasRect.left - 50), // Center the element
+          y: Math.max(0, offset.y - canvasRect.top - 20),
+          content: item.defaultContent || 'New Content',
+          src: item.defaultSrc || '',
           style: {
             fontSize: '16px',
             color: '#374151',
             backgroundColor: 'transparent',
-            padding: '8px',
-            borderRadius: '4px'
+            padding: '12px',
+            borderRadius: '4px',
+            fontFamily: 'Inter, sans-serif'
           }
         };
         
         setCanvas(prev => [...prev, newElement]);
+        setSelectedElement(newElement);
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),
       }),
-    }));
+    }), [canvasRef]);
 
     return (
       <div
@@ -418,10 +427,14 @@ const AdvancedDesignStudio = () => {
           drop(node);
           canvasRef.current = node;
         }}
-        className={`relative bg-white border-2 border-dashed border-gray-300 rounded-lg min-h-[600px] ${
+        className={`relative bg-white border-2 border-dashed border-gray-300 rounded-lg min-h-[600px] w-full ${
           isOver ? 'border-blue-500 bg-blue-50' : ''
         }`}
-        style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top left' }}
+        style={{ 
+          transform: `scale(${zoomLevel / 100})`, 
+          transformOrigin: 'top left',
+          minHeight: '600px'
+        }}
       >
         {canvas.map((element) => (
           <CanvasElement
@@ -1077,27 +1090,27 @@ const AdvancedDesignStudio = () => {
               </div>
             </div>
             
-            {/* Communication Type Tabs */}
-            <div className="px-6">
-              <div className="flex space-x-8 border-b border-gray-200">
-                {Object.values(BuilderModes).map(mode => {
-                  const config = getModeConfig(mode);
-                  return (
-                    <button
-                      key={mode}
-                      onClick={() => setBuilderMode(mode)}
-                      className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                        builderMode === mode 
-                          ? 'border-blue-600 text-blue-600' 
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                      }`}
-                    >
-                      {config.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+                         {/* Communication Type Tabs */}
+             <div className="px-6">
+               <div className="flex border-b border-gray-200">
+                 {Object.values(BuilderModes).map(mode => {
+                   const config = getModeConfig(mode);
+                   return (
+                     <button
+                       key={mode}
+                       onClick={() => setBuilderMode(mode)}
+                       className={`flex-1 py-4 px-4 border-b-2 font-medium text-sm transition-colors text-center ${
+                         builderMode === mode 
+                           ? 'border-blue-600 text-blue-600' 
+                           : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                       }`}
+                     >
+                       {config.label}
+                     </button>
+                   );
+                 })}
+               </div>
+             </div>
           </div>
           
           {/* Canvas Area */}
