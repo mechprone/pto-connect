@@ -32,7 +32,7 @@ const AdvancedDesignStudio = () => {
   const [showStellaPopup, setShowStellaPopup] = useState(false);
   const [builderMode, setBuilderMode] = useState(BuilderModes.EMAIL);
   const [unlayerTemplates, setUnlayerTemplates] = useState([]);
-  const [isLoadingTemplates, setIsLoadingTemplates] = useState(true);
+  const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [orgId, setOrgId] = useState(null);
@@ -58,216 +58,17 @@ const AdvancedDesignStudio = () => {
   }, [showStellaPopup]);
 
   const initializeAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.access_token) {
-      const orgId = session.user.user_metadata?.org_id || session.user.app_metadata?.org_id;
-      setOrgId(orgId);
-      setToken(session.access_token);
-    }
-  };
-
-  // Template data for different formats
-  const smsTemplates = [
-    {
-      id: 'sms-1',
-      name: 'Event Reminder',
-      category: 'Events',
-      source: 'pto-connect',
-      description: 'Simple event reminder message',
-      elements: [
-        { type: 'text', content: 'Reminder: Fall Festival tomorrow at 11 AM! See you there! 🎃', style: { fontSize: '16px' } }
-      ]
-    }
-  ];
-
-  const flyerTemplates = [
-    {
-      id: 'flyer-1',
-      name: 'Event Flyer',
-      category: 'Events',
-      source: 'pto-connect',
-      description: 'Print-ready event flyer',
-      elements: [
-        { type: 'header', content: 'FALL FESTIVAL 2024', style: { fontSize: '48px', fontWeight: 'bold', textAlign: 'center' } }
-      ]
-    }
-  ];
-
-  const socialTemplates = [
-    {
-      id: 'social-1',
-      name: 'Instagram Post',
-      category: 'Social',
-      source: 'pto-connect',
-      description: 'Square social media post',
-      elements: [
-        { type: 'header', content: 'Follow Us!', style: { fontSize: '32px', textAlign: 'center' } }
-      ]
-    }
-  ];
-
-  const announcementTemplates = [
-    {
-      id: 'announcement-1',
-      name: 'Urgent Notice',
-      category: 'Announcements',
-      source: 'pto-connect',
-      description: 'Important announcement template',
-      elements: [
-        { type: 'header', content: 'IMPORTANT NOTICE', style: { fontSize: '28px', color: '#dc2626', fontWeight: 'bold' } }
-      ]
-    }
-  ];
-
-  // Mode configuration for multi-format builder
-  const getModeConfig = (mode) => ({
-    email: {
-      label: '📧 Email',
-      description: 'Professional email campaigns and newsletters',
-      templates: [...professionalTemplates, ...unlayerTemplates],
-      blocks: enhancedBlocks,
-      preview: 'email-preview',
-      export: ['html', 'pdf'],
-      canvasStyle: { maxWidth: '600px', backgroundColor: '#f7f7f7' }
-    },
-    sms: {
-      label: '📱 SMS',
-      description: 'Text message campaigns with character limits',
-      templates: smsTemplates,
-      blocks: enhancedBlocks.filter(b => b.category === 'content'),
-      preview: 'sms-preview',
-      export: ['text'],
-      canvasStyle: { maxWidth: '320px', backgroundColor: '#ffffff' }
-    },
-    flyer: {
-      label: '📄 Flyer',
-      description: 'Print-ready designs and announcements',
-      templates: flyerTemplates,
-      blocks: enhancedBlocks,
-      preview: 'print-preview',
-      export: ['pdf', 'png'],
-      canvasStyle: { width: '8.5in', height: '11in', backgroundColor: '#ffffff' }
-    },
-    social: {
-      label: '📱 Social Post',
-      description: 'Platform-specific social media designs',
-      templates: socialTemplates,
-      blocks: enhancedBlocks.filter(b => ['visual', 'content', 'design'].includes(b.category)),
-      preview: 'social-preview',
-      export: ['png', 'jpg'],
-      canvasStyle: { width: '1080px', height: '1080px', backgroundColor: '#ffffff' }
-    },
-    announcement: {
-      label: '📢 Announcement',
-      description: 'Urgent notices and important updates',
-      templates: announcementTemplates,
-      blocks: enhancedBlocks.filter(b => ['content', 'layout'].includes(b.category)),
-      preview: 'announcement-preview',
-      export: ['html', 'pdf', 'png'],
-      canvasStyle: { maxWidth: '600px', backgroundColor: '#fff3cd' }
-    }
-  }[mode]);
-
-  // Load Unlayer templates via API
-  const loadUnlayerTemplates = async () => {
     try {
-      setIsLoadingTemplates(true);
-      
-      // For now, use placeholder data until we implement the Unlayer API integration
-      // This will be replaced with actual API calls once we set up the backend integration
-             const placeholderTemplates = [
-         {
-           id: 'unlayer-1',
-           name: 'School Newsletter',
-           category: 'Newsletter',
-           source: 'unlayer',
-           thumbnail: 'https://via.placeholder.com/300x200/2563eb/ffffff?text=Newsletter',
-           description: 'Professional school newsletter template',
-           elements: [
-             { type: 'header', content: 'Monthly Newsletter', style: { fontSize: '32px', color: '#2563eb', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
-             { type: 'image', src: 'https://via.placeholder.com/600x200/dbeafe/2563eb?text=School+Image', style: { width: '100%', height: '200px' } },
-             { type: 'text', content: 'Stay connected with the latest news and updates from our school community.', style: { fontSize: '18px', color: '#374151', padding: '20px' } }
-           ]
-         },
-         {
-           id: 'unlayer-2',
-           name: 'Event Announcement',
-           category: 'Events',
-           source: 'unlayer',
-           thumbnail: 'https://via.placeholder.com/300x200/dc2626/ffffff?text=Event',
-           description: 'Eye-catching event announcement template',
-           elements: [
-             { type: 'header', content: 'Special Event', style: { fontSize: '28px', color: '#dc2626', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
-             { type: 'text', content: 'Join us for an unforgettable experience!', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '10px' } },
-             { type: 'button', content: 'RSVP Now', style: { backgroundColor: '#dc2626', color: 'white', padding: '12px 24px', borderRadius: '6px', margin: '20px auto', display: 'block' } }
-           ]
-         },
-         {
-           id: 'unlayer-3',
-           name: 'Fundraiser Progress',
-           category: 'Fundraising',
-           source: 'unlayer',
-           thumbnail: 'https://via.placeholder.com/300x200/059669/ffffff?text=Fundraiser',
-           description: 'Professional fundraising campaign template',
-           elements: [
-             { type: 'header', content: 'Fundraiser Update', style: { fontSize: '28px', color: '#059669', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
-             { type: 'progress-bar', value: 75, goal: 5000, style: { backgroundColor: '#d1fae5', margin: '20px', borderRadius: '10px' } },
-             { type: 'text', content: 'We\'re 75% to our goal! Thank you for your amazing support.', style: { fontSize: '16px', textAlign: 'center', padding: '20px' } }
-           ]
-         },
-         {
-           id: 'unlayer-4',
-           name: 'Volunteer Recruitment',
-           category: 'Volunteers',
-           source: 'unlayer',
-           thumbnail: 'https://via.placeholder.com/300x200/7c3aed/ffffff?text=Volunteers',
-           description: 'Engaging volunteer recruitment template',
-           elements: [
-             { type: 'header', content: 'Volunteers Needed!', style: { fontSize: '30px', color: '#7c3aed', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
-             { type: 'text', content: 'Help make our events successful by volunteering your time and talents.', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '15px' } },
-             { type: 'button', content: 'Sign Up to Volunteer', style: { backgroundColor: '#7c3aed', color: 'white', padding: '15px 30px', borderRadius: '8px', margin: '20px auto', display: 'block' } }
-           ]
-         }
-       ];
-
-      setUnlayerTemplates(placeholderTemplates);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        const orgId = session.user.user_metadata?.org_id || session.user.app_metadata?.org_id;
+        setOrgId(orgId);
+        setToken(session.access_token);
+      }
     } catch (error) {
-      console.error('Error loading Unlayer templates:', error);
-      setUnlayerTemplates([]);
-    } finally {
-      setIsLoadingTemplates(false);
+      console.error('Auth initialization error:', error);
     }
   };
-
-  // Enhanced template system with professional templates
-  const professionalTemplates = [
-    {
-      id: 'pto-1',
-      name: 'Welcome Back Newsletter',
-      category: 'Newsletter',
-      source: 'pto-connect',
-      thumbnail: 'https://via.placeholder.com/300x200/1e40af/ffffff?text=Welcome+Back',
-      description: 'Professional welcome back to school newsletter',
-      elements: [
-        { type: 'header', content: 'Welcome Back to School!', style: { fontSize: '36px', color: '#1e40af', fontWeight: 'bold', textAlign: 'center', padding: '30px', backgroundColor: '#dbeafe' } },
-        { type: 'text', content: 'We\'re excited to start another amazing school year together!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px' } },
-        { type: 'image', src: 'https://via.placeholder.com/600x300/dbeafe/1e40af?text=School+Image', style: { width: '100%', height: '300px', borderRadius: '8px', margin: '20px 0' } }
-      ]
-    },
-    {
-      id: 'pto-2', 
-      name: 'Fall Festival Invitation',
-      category: 'Events',
-      source: 'pto-connect',
-      thumbnail: 'https://via.placeholder.com/300x200/d97706/ffffff?text=Fall+Festival',
-      description: 'Festive fall event invitation template',
-      elements: [
-        { type: 'header', content: 'Fall Festival 2024', style: { fontSize: '32px', color: '#d97706', fontWeight: 'bold', textAlign: 'center', padding: '25px', backgroundColor: '#fef3c7' } },
-        { type: 'text', content: 'Join us for a day of fun, food, and community spirit!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px' } },
-        { type: 'text', content: 'Date: October 15th | Time: 11 AM - 4 PM | Location: School Playground', style: { fontSize: '16px', color: '#6b7280', textAlign: 'center', padding: '10px', fontWeight: 'bold' } }
-      ]
-    }
-  ];
 
   // Enhanced block library with PTO-specific blocks
   const enhancedBlocks = [
@@ -304,9 +105,286 @@ const AdvancedDesignStudio = () => {
     { type: 'border', icon: Square, label: 'Border', category: 'design' }
   ];
 
+  // Template data for different formats
+  const smsTemplates = [
+    {
+      id: 'sms-1',
+      name: 'Event Reminder',
+      category: 'Events',
+      source: 'pto-connect',
+      thumbnail: 'https://via.placeholder.com/300x200/10b981/ffffff?text=SMS+Event',
+      description: 'Simple event reminder message',
+      elements: [
+        { type: 'text', content: 'Reminder: Fall Festival tomorrow at 11 AM! See you there! 🎃', style: { fontSize: '16px', color: '#374151', padding: '10px' } }
+      ]
+    }
+  ];
+
+  const flyerTemplates = [
+    {
+      id: 'flyer-1',
+      name: 'Event Flyer',
+      category: 'Events',
+      source: 'pto-connect',
+      thumbnail: 'https://via.placeholder.com/300x200/8b5cf6/ffffff?text=Event+Flyer',
+      description: 'Print-ready event flyer',
+      elements: [
+        { type: 'header', content: 'FALL FESTIVAL 2024', style: { fontSize: '48px', fontWeight: 'bold', textAlign: 'center', padding: '30px', color: '#8b5cf6' } }
+      ]
+    }
+  ];
+
+  const socialTemplates = [
+    {
+      id: 'social-1',
+      name: 'Instagram Post',
+      category: 'Social',
+      source: 'pto-connect',
+      thumbnail: 'https://via.placeholder.com/300x200/ec4899/ffffff?text=Social+Post',
+      description: 'Square social media post',
+      elements: [
+        { type: 'header', content: 'Follow Us!', style: { fontSize: '32px', textAlign: 'center', color: '#ec4899', padding: '20px' } }
+      ]
+    }
+  ];
+
+  const announcementTemplates = [
+    {
+      id: 'announcement-1',
+      name: 'Urgent Notice',
+      category: 'Announcements',
+      source: 'pto-connect',
+      thumbnail: 'https://via.placeholder.com/300x200/f59e0b/ffffff?text=Announcement',
+      description: 'Important announcement template',
+      elements: [
+        { type: 'header', content: 'IMPORTANT NOTICE', style: { fontSize: '28px', color: '#dc2626', fontWeight: 'bold', padding: '20px', textAlign: 'center' } }
+      ]
+    }
+  ];
+
+  // Enhanced template system with professional templates
+  const professionalTemplates = [
+    {
+      id: 'pto-1',
+      name: 'Welcome Back Newsletter',
+      category: 'Newsletter',
+      source: 'pto-connect',
+      thumbnail: 'https://via.placeholder.com/300x200/1e40af/ffffff?text=Welcome+Back',
+      description: 'Professional welcome back to school newsletter',
+      elements: [
+        { 
+          type: 'header', 
+          content: 'Welcome Back to School!', 
+          style: { 
+            fontSize: '36px', 
+            color: '#1e40af', 
+            fontWeight: 'bold', 
+            textAlign: 'center', 
+            padding: '30px',
+            backgroundColor: '#dbeafe',
+            marginBottom: '20px'
+          } 
+        },
+        { 
+          type: 'text', 
+          content: 'We\'re excited to start another amazing school year together!', 
+          style: { 
+            fontSize: '18px', 
+            color: '#374151', 
+            textAlign: 'center', 
+            padding: '20px',
+            marginBottom: '20px'
+          } 
+        }
+      ]
+    },
+    {
+      id: 'pto-2', 
+      name: 'Fall Festival Invitation',
+      category: 'Events',
+      source: 'pto-connect',
+      thumbnail: 'https://via.placeholder.com/300x200/d97706/ffffff?text=Fall+Festival',
+      description: 'Festive fall event invitation template',
+      elements: [
+        { 
+          type: 'header', 
+          content: 'Fall Festival 2024', 
+          style: { 
+            fontSize: '32px', 
+            color: '#d97706', 
+            fontWeight: 'bold', 
+            textAlign: 'center', 
+            padding: '25px',
+            backgroundColor: '#fef3c7',
+            marginBottom: '20px'
+          } 
+        },
+        { 
+          type: 'text', 
+          content: 'Join us for a day of fun, food, and community spirit!', 
+          style: { 
+            fontSize: '18px', 
+            color: '#374151', 
+            textAlign: 'center', 
+            padding: '20px',
+            marginBottom: '15px'
+          } 
+        },
+        { 
+          type: 'text', 
+          content: 'Date: October 15th | Time: 11 AM - 4 PM | Location: School Playground', 
+          style: { 
+            fontSize: '16px', 
+            color: '#6b7280', 
+            textAlign: 'center', 
+            padding: '10px', 
+            fontWeight: 'bold'
+          } 
+        }
+      ]
+    }
+  ];
+
+  // Load Unlayer templates via API
+  const loadUnlayerTemplates = async () => {
+    try {
+      setIsLoadingTemplates(true);
+      
+      // Simulated Unlayer templates
+      const placeholderTemplates = [
+        {
+          id: 'unlayer-1',
+          name: 'School Newsletter',
+          category: 'Newsletter',
+          source: 'unlayer',
+          thumbnail: 'https://via.placeholder.com/300x200/2563eb/ffffff?text=Newsletter',
+          description: 'Professional school newsletter template',
+          elements: [
+            { 
+              type: 'header', 
+              content: 'Monthly Newsletter', 
+              style: { 
+                fontSize: '32px', 
+                color: '#2563eb', 
+                fontWeight: 'bold', 
+                textAlign: 'center', 
+                padding: '20px',
+                marginBottom: '20px'
+              } 
+            },
+            { 
+              type: 'text', 
+              content: 'Stay connected with the latest news and updates from our school community.', 
+              style: { 
+                fontSize: '18px', 
+                color: '#374151', 
+                padding: '20px',
+                textAlign: 'center'
+              } 
+            }
+          ]
+        },
+        {
+          id: 'unlayer-2',
+          name: 'Event Announcement',
+          category: 'Events',
+          source: 'unlayer',
+          thumbnail: 'https://via.placeholder.com/300x200/dc2626/ffffff?text=Event',
+          description: 'Eye-catching event announcement template',
+          elements: [
+            { 
+              type: 'header', 
+              content: 'Special Event', 
+              style: { 
+                fontSize: '28px', 
+                color: '#dc2626', 
+                fontWeight: 'bold', 
+                textAlign: 'center', 
+                padding: '20px',
+                marginBottom: '15px'
+              } 
+            },
+            { 
+              type: 'text', 
+              content: 'Join us for an unforgettable experience!', 
+              style: { 
+                fontSize: '16px', 
+                color: '#374151', 
+                textAlign: 'center', 
+                padding: '10px',
+                marginBottom: '20px'
+              } 
+            }
+          ]
+        }
+      ];
+
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate loading
+      setUnlayerTemplates(placeholderTemplates);
+    } catch (error) {
+      console.error('Error loading templates:', error);
+      setUnlayerTemplates([]);
+    } finally {
+      setIsLoadingTemplates(false);
+    }
+  };
+
+  // Mode configuration for multi-format builder
+  const getModeConfig = (mode) => {
+    const configs = {
+      email: {
+        label: '📧 Email',
+        description: 'Professional email campaigns and newsletters',
+        templates: [...professionalTemplates, ...unlayerTemplates],
+        blocks: enhancedBlocks,
+        preview: 'email-preview',
+        export: ['html', 'pdf'],
+        canvasStyle: { maxWidth: '600px', backgroundColor: '#f7f7f7', minHeight: '600px' }
+      },
+      sms: {
+        label: '📱 SMS',
+        description: 'Text message campaigns with character limits',
+        templates: smsTemplates,
+        blocks: enhancedBlocks.filter(b => b.category === 'content'),
+        preview: 'sms-preview',
+        export: ['text'],
+        canvasStyle: { maxWidth: '320px', backgroundColor: '#ffffff', minHeight: '400px' }
+      },
+      flyer: {
+        label: '📄 Flyer',
+        description: 'Print-ready designs and announcements',
+        templates: flyerTemplates,
+        blocks: enhancedBlocks,
+        preview: 'print-preview',
+        export: ['pdf', 'png'],
+        canvasStyle: { width: '8.5in', height: '11in', backgroundColor: '#ffffff' }
+      },
+      social: {
+        label: '📱 Social Post',
+        description: 'Platform-specific social media designs',
+        templates: socialTemplates,
+        blocks: enhancedBlocks.filter(b => ['visual', 'content', 'design'].includes(b.category)),
+        preview: 'social-preview',
+        export: ['png', 'jpg'],
+        canvasStyle: { width: '400px', height: '400px', backgroundColor: '#ffffff' }
+      },
+      announcement: {
+        label: '📢 Announcement',
+        description: 'Urgent notices and important updates',
+        templates: announcementTemplates,
+        blocks: enhancedBlocks.filter(b => ['content', 'layout'].includes(b.category)),
+        preview: 'announcement-preview',
+        export: ['html', 'pdf', 'png'],
+        canvasStyle: { maxWidth: '600px', backgroundColor: '#fff3cd', minHeight: '400px' }
+      }
+    };
+    return configs[mode] || configs.email;
+  };
+
   // Get filtered templates based on search and category
   const getFilteredTemplates = () => {
-    let allTemplates = [...professionalTemplates, ...unlayerTemplates];
+    const currentConfig = getModeConfig(builderMode);
+    let allTemplates = currentConfig.templates || [];
     
     if (selectedCategory !== 'all') {
       allTemplates = allTemplates.filter(template => 
@@ -334,17 +412,6 @@ const AdvancedDesignStudio = () => {
     { id: 'announcements', name: 'Announcements', count: 1 }
   ];
 
-  // Draggable Elements
-  const designElements = [
-    { type: 'text', icon: Type, label: 'Text', defaultContent: 'Add your text here' },
-    { type: 'header', icon: Type, label: 'Header', defaultContent: 'Header Text' },
-    { type: 'image', icon: Image, label: 'Image', defaultSrc: '/placeholder-image.jpg' },
-    { type: 'button', icon: Square, label: 'Button', defaultContent: 'Click Here' },
-    { type: 'divider', icon: Minus, label: 'Divider' },
-    { type: 'shape', icon: Circle, label: 'Shape' },
-    { type: 'link', icon: Link, label: 'Link', defaultContent: 'Link Text' }
-  ];
-
   // Brand Assets
   const brandAssets = {
     colors: ['#1f2937', '#374151', '#6b7280', '#d97706', '#059669', '#dc2626', '#7c3aed'],
@@ -355,12 +422,33 @@ const AdvancedDesignStudio = () => {
     ]
   };
 
+  // Fixed Use Template functionality
+  const useTemplate = (template) => {
+    const processedElements = template.elements.map((element, index) => ({
+      ...element,
+      id: `template-${template.id}-${index}-${Date.now()}`,
+      x: 20, // Start with a small offset from the left
+      y: 20 + (index * 80), // Space elements vertically with reasonable gaps
+      style: {
+        ...element.style,
+        position: 'absolute',
+        maxWidth: '550px', // Prevent overflow
+        display: 'block',
+        zIndex: 1
+      }
+    }));
+    
+    setCanvas(processedElements);
+    setSelectedElement(null);
+    console.log('Template applied:', template.name, processedElements);
+  };
+
   // Drag and Drop Handlers
   const DraggableElement = ({ element }) => {
-    const [{ isDragging }, drag] = useDrag(() => ({
+    const [{ isDragging }, dragRef] = useDrag({
       type: 'design-element',
       item: { 
-        type: element.type, 
+        elementType: element.type,
         defaultContent: element.defaultContent || '',
         defaultSrc: element.defaultSrc || '',
         label: element.label
@@ -368,13 +456,13 @@ const AdvancedDesignStudio = () => {
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
-    }), [element]);
+    }, [element]);
 
     const Icon = element.icon;
 
     return (
       <div
-        ref={drag}
+        ref={dragRef}
         className={`p-3 border border-gray-200 rounded-lg cursor-move hover:bg-gray-50 transition-colors ${
           isDragging ? 'opacity-50' : ''
         }`}
@@ -388,19 +476,22 @@ const AdvancedDesignStudio = () => {
   };
 
   const CanvasDropZone = () => {
-    const [{ isOver }, drop] = useDrop(() => ({
+    const [{ isOver }, dropRef] = useDrop({
       accept: 'design-element',
       drop: (item, monitor) => {
-        const offset = monitor.getClientOffset();
+        const clientOffset = monitor.getClientOffset();
         const canvasRect = canvasRef.current?.getBoundingClientRect();
         
-        if (!canvasRect) return;
+        if (!clientOffset || !canvasRect) {
+          console.log('Drop failed: missing offset or canvas rect');
+          return;
+        }
         
         const newElement = {
-          id: Date.now() + Math.random(), // More unique ID
-          type: item.type,
-          x: Math.max(0, offset.x - canvasRect.left - 50), // Center the element
-          y: Math.max(0, offset.y - canvasRect.top - 20),
+          id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          type: item.elementType,
+          x: Math.max(0, clientOffset.x - canvasRect.left - 50),
+          y: Math.max(0, clientOffset.y - canvasRect.top - 20),
           content: item.defaultContent || 'New Content',
           src: item.defaultSrc || '',
           style: {
@@ -409,31 +500,37 @@ const AdvancedDesignStudio = () => {
             backgroundColor: 'transparent',
             padding: '12px',
             borderRadius: '4px',
-            fontFamily: 'Inter, sans-serif'
+            fontFamily: 'Inter, sans-serif',
+            position: 'absolute',
+            minWidth: '100px',
+            minHeight: '30px'
           }
         };
         
+        console.log('Dropping element:', newElement);
         setCanvas(prev => [...prev, newElement]);
         setSelectedElement(newElement);
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),
       }),
-    }), [canvasRef]);
+    });
 
     return (
       <div
         ref={(node) => {
-          drop(node);
+          dropRef(node);
           canvasRef.current = node;
         }}
-        className={`relative bg-white border-2 border-dashed border-gray-300 rounded-lg min-h-[600px] w-full ${
+        className={`relative bg-white border-2 border-dashed border-gray-300 rounded-lg transition-colors ${
           isOver ? 'border-blue-500 bg-blue-50' : ''
         }`}
         style={{ 
+          ...getModeConfig(builderMode).canvasStyle,
           transform: `scale(${zoomLevel / 100})`, 
           transformOrigin: 'top left',
-          minHeight: '600px'
+          minHeight: '600px',
+          position: 'relative'
         }}
       >
         {canvas.map((element) => (
@@ -860,7 +957,7 @@ const AdvancedDesignStudio = () => {
                         <div
                           key={template.id}
                           className="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors group"
-                          onClick={() => setCanvas(template.elements.map((el, idx) => ({ ...el, id: Date.now() + idx, x: 0, y: idx * 20 })))}
+                          onClick={() => useTemplate(template)}
                         >
                           <div className="aspect-video bg-gray-100 rounded mb-3 flex items-center justify-center relative overflow-hidden">
                             {template.thumbnail ? (
