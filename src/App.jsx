@@ -120,6 +120,7 @@ export default function App() {
 
           <Route path="/fundraisers" element={<FundraiserManager />} />
           <Route path="/fundraisers/create" element={<FundraiserForm />} />
+          <Route path="/fundraisers/:id/edit" element={<FundraiserForm />} />
 
           <Route path="/budget" element={<EnhancedBudgetDashboard />} />
           <Route path="/budget/legacy" element={<BudgetDashboard />} />
