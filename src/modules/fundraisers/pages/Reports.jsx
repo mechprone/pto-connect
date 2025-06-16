@@ -46,32 +46,32 @@ export default function Reports() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-end md:space-x-4 space-y-4 md:space-y-0">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Report Type</label>
-          <select
-            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-base px-4 py-3 mb-2 h-12"
-            value={selectedReport}
-            onChange={e => setSelectedReport(e.target.value)}
-          >
-            {REPORT_OPTIONS.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
-          <select
-            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-base px-4 py-3 mb-2 h-12"
-            value={dateRange}
-            onChange={e => setDateRange(e.target.value)}
-          >
-            <option value="6m">Last 6 Months</option>
-            <option value="1y">Last Year</option>
-            <option value="all">All Time</option>
-          </select>
-        </div>
-        <Button onClick={generateReport} disabled={loading} className="h-12 py-0 flex items-center">Generate Report</Button>
+      <div className="flex items-center space-x-4 mb-6">
+        <select
+          className="px-4 py-2 h-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          value={selectedReport}
+          onChange={e => setSelectedReport(e.target.value)}
+        >
+          {REPORT_OPTIONS.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+        <select
+          className="px-4 py-2 h-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          value={dateRange}
+          onChange={e => setDateRange(e.target.value)}
+        >
+          <option value="6m">Last 6 Months</option>
+          <option value="1y">Last Year</option>
+          <option value="all">All Time</option>
+        </select>
+        <button
+          onClick={generateReport}
+          disabled={loading}
+          className="bg-blue-600 text-white px-4 py-2 h-12 rounded-lg flex items-center"
+        >
+          Generate Report
+        </button>
       </div>
       <Card>
         <div className="flex justify-between items-center mb-4">
