@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { 
@@ -37,10 +37,26 @@ const AdvancedDesignStudio = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [orgId, setOrgId] = useState(null);
   const [token, setToken] = useState(null);
+  const [debugLog, setDebugLog] = useState([]);
   const canvasRef = useRef(null);
+
+  // Debug logging function
+  const addDebugLog = (message, data = null) => {
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry = `[${timestamp}] ${message}`;
+    console.log(logEntry, data || '');
+    setDebugLog(prev => [...prev.slice(-9), logEntry]); // Keep last 10 logs
+  };
 
   // Initialize authentication and load data
   useEffect(() => {
+    addDebugLog('🚀 AdvancedDesignStudio component mounted');
+    addDebugLog('📦 React DnD packages check', {
+      DndProvider: typeof DndProvider,
+      useDrag: typeof useDrag,
+      useDrop: typeof useDrop,
+      HTML5Backend: typeof HTML5Backend
+    });
     initializeAuth();
     loadUnlayerTemplates();
   }, []);
@@ -424,23 +440,24 @@ const AdvancedDesignStudio = () => {
 
   // Fixed Use Template functionality
   const useTemplate = (template) => {
-    const processedElements = template.elements.map((element, index) => ({
-      ...element,
-      id: `template-${template.id}-${index}-${Date.now()}`,
-      x: 20, // Start with a small offset from the left
-      y: 20 + (index * 80), // Space elements vertically with reasonable gaps
-      style: {
-        ...element.style,
-        position: 'absolute',
-        maxWidth: '550px', // Prevent overflow
-        display: 'block',
-        zIndex: 1
-      }
-    }));
-    
-    setCanvas(processedElements);
-    setSelectedElement(null);
-    console.log('Template applied:', template.name, processedElements);
+    try {
+      addDebugLog(`📋 Using template: ${template.name}`, template);
+      
+      const newElements = template.elements.map((element, index) => ({
+        ...element,
+        id: `element_${Date.now()}_${index}`,
+        x: 50,
+        y: 50 + (index * 100)
+      }));
+      
+      addDebugLog(`✅ Created ${newElements.length} elements from template`, newElements);
+      setCanvas(newElements);
+      setSelectedElement(null);
+      addDebugLog(`🎨 Canvas updated with template elements`);
+    } catch (error) {
+      addDebugLog(`❌ Error using template: ${error.message}`, error);
+      console.error('Template error:', error);
+    }
   };
 
   // Drag and Drop Handlers
@@ -460,88 +477,139 @@ const AdvancedDesignStudio = () => {
 
     const Icon = element.icon;
 
+    useEffect(() => {
+      if (isDragging) {
+        addDebugLog(`🔄 Element ${element.label} is being dragged`);
+      }
+    }, [isDragging, element.label]);
+
     return (
       <div
         ref={dragRef}
         className={`p-3 border border-gray-200 rounded-lg cursor-move hover:bg-gray-50 transition-colors ${
-          isDragging ? 'opacity-50' : ''
+          isDragging ? 'opacity-50 bg-blue-100' : ''
         }`}
+        data-testid={`drag-element-${element.type}`}
       >
         <div className="flex flex-col items-center space-y-2">
           <Icon className="w-6 h-6 text-gray-600" />
           <span className="text-sm text-gray-700">{element.label}</span>
+          {isDragging && <span className="text-xs text-blue-600">Dragging...</span>}
         </div>
       </div>
     );
   };
 
   const CanvasDropZone = () => {
-    const [{ isOver }, dropRef] = useDrop({
+    const [{ isOver, canDrop }, dropRef] = useDrop({
       accept: 'design-element',
-      drop: (item, monitor) => {
-        const clientOffset = monitor.getClientOffset();
-        const canvasRect = canvasRef.current?.getBoundingClientRect();
-        
-        if (!clientOffset || !canvasRect) {
-          console.log('Drop failed: missing offset or canvas rect');
-          return;
+      canDrop: () => {
+        addDebugLog('🎯 Can drop check - TRUE');
+        return true;
+      },
+      hover: (item, monitor) => {
+        if (monitor.isOver({ shallow: true })) {
+          addDebugLog('🔄 Hovering over drop zone');
         }
-        
-        const newElement = {
-          id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          type: item.elementType,
-          x: Math.max(0, clientOffset.x - canvasRect.left - 50),
-          y: Math.max(0, clientOffset.y - canvasRect.top - 20),
-          content: item.defaultContent || 'New Content',
-          src: item.defaultSrc || '',
-          style: {
-            fontSize: '16px',
-            color: '#374151',
-            backgroundColor: 'transparent',
-            padding: '12px',
-            borderRadius: '4px',
-            fontFamily: 'Inter, sans-serif',
-            position: 'absolute',
-            minWidth: '100px',
-            minHeight: '30px'
+      },
+      drop: (item, monitor) => {
+        try {
+          addDebugLog('🎯 DROP EVENT TRIGGERED!', item);
+          
+          const offset = monitor.getClientOffset();
+          const canvasRect = canvasRef.current?.getBoundingClientRect();
+          
+          addDebugLog('📍 Drop coordinates', {
+            offset,
+            canvasRect,
+            canvasRefCurrent: !!canvasRef.current
+          });
+          
+          if (!offset || !canvasRect) {
+            addDebugLog('❌ Missing offset or canvas rect');
+            return;
           }
-        };
-        
-        console.log('Dropping element:', newElement);
-        setCanvas(prev => [...prev, newElement]);
-        setSelectedElement(newElement);
+          
+          const newElement = {
+            id: `element_${Date.now()}_${Math.random()}`,
+            type: item.elementType,
+            content: item.defaultContent || 'New Content',
+            src: item.defaultSrc || '',
+            x: offset.x - canvasRect.left - 50,
+            y: offset.y - canvasRect.top - 20,
+            style: {
+              fontSize: '16px',
+              color: '#374151',
+              padding: '10px',
+              backgroundColor: 'transparent'
+            }
+          };
+          
+          addDebugLog('✅ Created new element', newElement);
+          setCanvas(prev => {
+            const updated = [...prev, newElement];
+            addDebugLog(`🎨 Canvas updated: ${updated.length} elements total`);
+            return updated;
+          });
+          setSelectedElement(newElement);
+          addDebugLog('🎯 Drop completed successfully!');
+        } catch (error) {
+          addDebugLog(`❌ Drop error: ${error.message}`, error);
+          console.error('Drop error:', error);
+        }
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
       }),
     });
+
+    useEffect(() => {
+      if (isOver) {
+        addDebugLog('🔄 Drop zone is being hovered');
+      }
+    }, [isOver]);
 
     return (
       <div
         ref={(node) => {
           dropRef(node);
           canvasRef.current = node;
+          if (node) {
+            addDebugLog('📌 Canvas ref attached to DOM node');
+          }
         }}
-        className={`relative bg-white border-2 border-dashed border-gray-300 rounded-lg transition-colors ${
-          isOver ? 'border-blue-500 bg-blue-50' : ''
-        }`}
+        className={`relative bg-white border-2 border-dashed border-gray-300 rounded-lg min-h-[600px] transition-all ${
+          isOver ? 'border-blue-500 bg-blue-50 shadow-lg' : ''
+        } ${canDrop ? 'border-green-300' : ''}`}
         style={{ 
-          ...getModeConfig(builderMode).canvasStyle,
-          transform: `scale(${zoomLevel / 100})`, 
+          transform: `scale(${zoomLevel / 100})`,
           transformOrigin: 'top left',
-          minHeight: '600px',
-          position: 'relative'
+          maxWidth: '600px',
+          margin: '0 auto'
         }}
+        data-testid="canvas-drop-zone"
       >
+        {/* Debug overlay */}
+        {isOver && (
+          <div className="absolute top-2 left-2 bg-blue-600 text-white px-2 py-1 rounded text-xs z-50">
+            DROP ZONE ACTIVE
+          </div>
+        )}
+        
         {canvas.map((element) => (
           <CanvasElement
             key={element.id}
             element={element}
             isSelected={selectedElement?.id === element.id}
-            onSelect={() => setSelectedElement(element)}
-            onUpdate={(updatedElement) => {
-              setCanvas(prev => prev.map(el => el.id === element.id ? updatedElement : el));
-              setSelectedElement(updatedElement);
+            onSelect={() => {
+              addDebugLog(`🖱️ Selected element: ${element.type}`);
+              setSelectedElement(element);
+            }}
+            onUpdate={(updated) => {
+              addDebugLog(`📝 Updated element: ${element.type}`);
+              setCanvas(prev => prev.map(el => el.id === element.id ? updated : el));
+              setSelectedElement(updated);
             }}
           />
         ))}
@@ -552,6 +620,9 @@ const AdvancedDesignStudio = () => {
               <Image className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p className="text-lg">Drag elements here to start designing</p>
               <p className="text-sm">Choose from templates or build from scratch</p>
+              <div className="mt-4 text-xs bg-gray-100 p-2 rounded">
+                Canvas Elements: {canvas.length} | Drop Zone Ready: {canDrop ? 'Yes' : 'No'}
+              </div>
             </div>
           </div>
         )}
@@ -564,16 +635,25 @@ const AdvancedDesignStudio = () => {
 
     const handleDoubleClick = () => {
       if (element.type === 'text' || element.type === 'header' || element.type === 'button') {
+        addDebugLog(`✏️ Started editing: ${element.type}`);
         setIsEditing(true);
       }
     };
 
     const handleContentChange = (newContent) => {
+      addDebugLog(`📝 Content changed: ${element.type} -> ${newContent}`);
       onUpdate({ ...element, content: newContent });
       setIsEditing(false);
     };
 
     const renderElement = () => {
+      const baseStyle = {
+        ...element.style,
+        cursor: 'pointer',
+        outline: isSelected ? '2px solid #3b82f6' : 'none',
+        outlineOffset: '2px'
+      };
+
       switch (element.type) {
         case 'text':
           return isEditing ? (
@@ -587,7 +667,7 @@ const AdvancedDesignStudio = () => {
               autoFocus
             />
           ) : (
-            <p style={element.style}>{element.content}</p>
+            <div style={baseStyle}>{element.content}</div>
           );
           
         case 'header':
@@ -602,7 +682,7 @@ const AdvancedDesignStudio = () => {
               autoFocus
             />
           ) : (
-            <h2 style={{ ...element.style, fontSize: '24px', fontWeight: 'bold' }}>
+            <h2 style={{ ...baseStyle, fontSize: '24px', fontWeight: 'bold' }}>
               {element.content}
             </h2>
           );
@@ -612,8 +692,13 @@ const AdvancedDesignStudio = () => {
             <img
               src={element.src}
               alt="Design element"
-              style={element.style}
-              className="max-w-full h-auto"
+              style={{ ...baseStyle, maxWidth: '300px', height: 'auto' }}
+              onLoad={() => addDebugLog(`🖼️ Image loaded: ${element.src}`)}
+              onError={(e) => {
+                addDebugLog(`❌ Image failed to load: ${element.src}`);
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
             />
           );
           
@@ -621,13 +706,12 @@ const AdvancedDesignStudio = () => {
           return (
             <button
               style={{
-                ...element.style,
-                backgroundColor: element.style.backgroundColor || '#3b82f6',
-                color: element.style.color || 'white',
+                ...baseStyle,
+                backgroundColor: '#3b82f6',
+                color: 'white',
                 padding: '12px 24px',
                 borderRadius: '6px',
-                border: 'none',
-                cursor: 'pointer'
+                border: 'none'
               }}
             >
               {isEditing ? (
@@ -649,36 +733,38 @@ const AdvancedDesignStudio = () => {
           return (
             <hr
               style={{
-                ...element.style,
+                ...baseStyle,
                 border: 'none',
                 height: '2px',
-                backgroundColor: element.style.backgroundColor || '#e5e7eb',
-                margin: '16px 0'
+                backgroundColor: '#e5e7eb',
+                width: '100%'
               }}
             />
           );
           
         default:
-          return <div>Unknown element</div>;
+          return <div style={baseStyle}>Unknown element: {element.type}</div>;
       }
     };
 
     return (
       <div
-        className={`absolute cursor-pointer ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
+        className="absolute"
         style={{
           left: element.x,
           top: element.y,
-          minWidth: '100px',
+          minWidth: '50px',
           minHeight: '30px'
         }}
         onClick={onSelect}
         onDoubleClick={handleDoubleClick}
+        data-testid={`canvas-element-${element.type}`}
       >
         {renderElement()}
-        
         {isSelected && (
-          <div className="absolute -top-2 -right-2 w-4 h-4 bg-blue-500 rounded-full cursor-move"></div>
+          <div className="absolute -top-1 -left-1 text-xs bg-blue-600 text-white px-1 rounded">
+            {element.type}
+          </div>
         )}
       </div>
     );
@@ -870,12 +956,23 @@ const AdvancedDesignStudio = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="h-screen bg-gray-100 flex">
+        {/* Debug Panel */}
+        <div className="fixed bottom-4 right-4 w-80 bg-black text-green-400 p-3 rounded-lg text-xs z-50 max-h-48 overflow-y-auto font-mono">
+          <div className="font-bold mb-2">🐛 Debug Log</div>
+          {debugLog.map((log, i) => (
+            <div key={i} className="mb-1">{log}</div>
+          ))}
+        </div>
+
         {/* Left Panel - Tools & Templates */}
         <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
           {/* Tab Navigation */}
           <div className="flex border-b border-gray-200">
             <button
-              onClick={() => setActiveTab('templates')}
+              onClick={() => {
+                setActiveTab('templates');
+                addDebugLog('📋 Switched to Templates tab');
+              }}
               className={`flex-1 py-3 px-4 text-sm font-medium ${
                 activeTab === 'templates' ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-700' : 'text-gray-500 hover:text-gray-700'
               }`}
@@ -883,7 +980,10 @@ const AdvancedDesignStudio = () => {
               Templates
             </button>
             <button
-              onClick={() => setActiveTab('elements')}
+              onClick={() => {
+                setActiveTab('elements');
+                addDebugLog('🧩 Switched to Elements tab');
+              }}
               className={`flex-1 py-3 px-4 text-sm font-medium ${
                 activeTab === 'elements' ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-700' : 'text-gray-500 hover:text-gray-700'
               }`}
@@ -891,7 +991,10 @@ const AdvancedDesignStudio = () => {
               Elements
             </button>
             <button
-              onClick={() => setActiveTab('brand')}
+              onClick={() => {
+                setActiveTab('brand');
+                addDebugLog('🎨 Switched to Brand tab');
+              }}
               className={`flex-1 py-3 px-4 text-sm font-medium ${
                 activeTab === 'brand' ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-700' : 'text-gray-500 hover:text-gray-700'
               }`}
@@ -912,7 +1015,10 @@ const AdvancedDesignStudio = () => {
                       type="text"
                       placeholder="Search templates..."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        addDebugLog(`🔍 Search: ${e.target.value}`);
+                      }}
                       className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
@@ -921,7 +1027,10 @@ const AdvancedDesignStudio = () => {
                     {templateCategories.map(category => (
                       <button
                         key={category.id}
-                        onClick={() => setSelectedCategory(category.id)}
+                        onClick={() => {
+                          setSelectedCategory(category.id);
+                          addDebugLog(`🏷️ Category filter: ${category.name}`);
+                        }}
                         className={`px-3 py-1 text-xs rounded-full border transition-colors ${
                           selectedCategory === category.id
                             ? 'bg-blue-100 border-blue-300 text-blue-800'
@@ -957,7 +1066,11 @@ const AdvancedDesignStudio = () => {
                         <div
                           key={template.id}
                           className="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors group"
-                          onClick={() => useTemplate(template)}
+                          onClick={() => {
+                            addDebugLog(`🖱️ Template clicked: ${template.name}`);
+                            useTemplate(template);
+                          }}
+                          data-testid={`template-${template.id}`}
                         >
                           <div className="aspect-video bg-gray-100 rounded mb-3 flex items-center justify-center relative overflow-hidden">
                             {template.thumbnail ? (
@@ -965,10 +1078,19 @@ const AdvancedDesignStudio = () => {
                                 src={template.thumbnail} 
                                 alt={template.name}
                                 className="w-full h-full object-cover"
+                                onLoad={() => addDebugLog(`🖼️ Template thumbnail loaded: ${template.name}`)}
+                                onError={(e) => {
+                                  addDebugLog(`❌ Template thumbnail failed: ${template.name} - ${template.thumbnail}`);
+                                  e.target.style.display = 'none';
+                                  e.target.nextSibling.style.display = 'flex';
+                                }}
                               />
                             ) : (
                               <Image className="w-8 h-8 text-gray-400" />
                             )}
+                            <div className="hidden w-full h-full bg-red-100 items-center justify-center text-red-600 text-xs">
+                              Failed to load thumbnail
+                            </div>
                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
                               <button className="bg-white text-gray-800 px-3 py-1 rounded-full text-xs font-medium opacity-0 group-hover:opacity-100 transition-all">
                                 Use Template
@@ -1025,7 +1147,10 @@ const AdvancedDesignStudio = () => {
                         key={color}
                         className="w-8 h-8 rounded cursor-pointer border border-gray-200 hover:scale-110 transition-transform"
                         style={{ backgroundColor: color }}
-                        onClick={() => selectedElement && updateElementStyle({ color })}
+                        onClick={() => {
+                          addDebugLog(`🎨 Color applied: ${color}`);
+                          selectedElement && updateElementStyle({ color });
+                        }}
                         title={color}
                       />
                     ))}
@@ -1124,14 +1249,20 @@ const AdvancedDesignStudio = () => {
                 {/* Action Buttons */}
                 <button 
                   className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                  onClick={() => console.log('Save draft')}
+                  onClick={() => {
+                    addDebugLog('💾 Save draft clicked');
+                    console.log('Save draft');
+                  }}
                 >
                   <Save className="w-4 h-4 mr-2" />
                   Save Draft
                 </button>
                 <button 
                   className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  onClick={() => console.log('Preview', builderMode)}
+                  onClick={() => {
+                    addDebugLog(`👁️ Preview clicked: ${builderMode}`);
+                    console.log('Preview', builderMode);
+                  }}
                 >
                   <Eye className="w-4 h-4 mr-2" />
                   Preview
@@ -1140,8 +1271,10 @@ const AdvancedDesignStudio = () => {
                 <div className="relative stella-popup-container">
                   <button 
                     className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                    onClick={() => setShowStellaPopup(!showStellaPopup)}
-                    title="Stella AI Assistant"
+                    onClick={() => {
+                      setShowStellaPopup(!showStellaPopup);
+                      addDebugLog(`✨ Stella popup: ${!showStellaPopup ? 'opened' : 'closed'}`);
+                    }}
                   >
                     <Sparkles className="w-4 h-4 mr-2" />
                     Stella
@@ -1156,7 +1289,7 @@ const AdvancedDesignStudio = () => {
                           <h3 className="font-semibold text-gray-900">Stella's Content Assistant</h3>
                         </div>
                         <p className="text-sm text-gray-600 mb-4">
-                          Hi! I'm Stella. I can help create content for your designs, or you can create everything manually. Your choice!
+                          Hi! I'm Stella. I can help create content for your designs.
                         </p>
                         
                         <div className="space-y-2">
@@ -1168,9 +1301,6 @@ const AdvancedDesignStudio = () => {
                           </button>
                           <button className="w-full py-2 px-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg text-sm transition-colors">
                             Let Stella Create Social Post
-                          </button>
-                          <button className="w-full py-2 px-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg text-sm transition-colors">
-                            Let Stella Write Flyer Content
                           </button>
                         </div>
                         
@@ -1195,7 +1325,10 @@ const AdvancedDesignStudio = () => {
                    return (
                      <button
                        key={mode}
-                       onClick={() => setBuilderMode(mode)}
+                       onClick={() => {
+                         setBuilderMode(mode);
+                         addDebugLog(`📱 Mode changed: ${config.label}`);
+                       }}
                        className={`flex-1 py-4 px-4 border-b-2 font-medium text-sm transition-colors text-center ${
                          builderMode === mode 
                            ? 'border-blue-600 text-blue-600' 
