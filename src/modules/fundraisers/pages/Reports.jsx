@@ -65,13 +65,13 @@ export default function Reports() {
           <option value="1y">Last Year</option>
           <option value="all">All Time</option>
         </select>
-        <button
+        <Button
+          variant="outline"
           onClick={generateReport}
           disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 h-12 rounded-lg flex items-center"
         >
           Generate Report
-        </button>
+        </Button>
       </div>
       <Card>
         <div className="flex justify-between items-center mb-4">

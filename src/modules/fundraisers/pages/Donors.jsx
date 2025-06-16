@@ -84,7 +84,7 @@ export default function Donors() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold text-gray-900">Donor Analytics</h2>
-        <Button onClick={() => navigate('/fundraisers/record-donation')}>Add Donation</Button>
+        <Button variant="outline" onClick={() => navigate('/fundraisers/record-donation')}>Add Donation</Button>
       </div>
       <Card>
         <h3 className="text-lg font-medium text-gray-900 mb-4">Donor List</h3>
