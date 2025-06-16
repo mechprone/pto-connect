@@ -29,7 +29,7 @@ const AdvancedDesignStudio = () => {
   const [selectedElement, setSelectedElement] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(100);
   const [activeTab, setActiveTab] = useState('templates');
-  const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [showStellaPopup, setShowStellaPopup] = useState(false);
   const [builderMode, setBuilderMode] = useState(BuilderModes.EMAIL);
   const [unlayerTemplates, setUnlayerTemplates] = useState([]);
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(true);
@@ -44,6 +44,18 @@ const AdvancedDesignStudio = () => {
     initializeAuth();
     loadUnlayerTemplates();
   }, []);
+
+  // Close Stella popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showStellaPopup && !event.target.closest('.stella-popup-container')) {
+        setShowStellaPopup(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showStellaPopup]);
 
   const initializeAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -750,30 +762,6 @@ const AdvancedDesignStudio = () => {
       <div className="h-screen bg-gray-100 flex">
         {/* Left Panel - Tools & Templates */}
         <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-          {/* Multi-Format Builder Mode Selector */}
-          <div className="border-b border-gray-200 p-4">
-            <h3 className="font-medium text-gray-900 mb-3">Communication Type</h3>
-            <div className="grid grid-cols-1 gap-2">
-              {Object.values(BuilderModes).map(mode => {
-                const config = getModeConfig(mode);
-                return (
-                  <button
-                    key={mode}
-                    onClick={() => setBuilderMode(mode)}
-                    className={`p-3 text-left rounded-lg border transition-colors ${
-                      builderMode === mode 
-                        ? 'bg-blue-50 border-blue-300 text-blue-900' 
-                        : 'border-gray-200 hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className="font-medium text-sm">{config.label}</div>
-                    <div className="text-xs text-gray-500 mt-1">{config.description}</div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Tab Navigation */}
           <div className="flex border-b border-gray-200">
             <button
@@ -966,96 +954,159 @@ const AdvancedDesignStudio = () => {
               </div>
             )}
           </div>
-          
-          {/* Stella AI Assistant */}
-          <div className="border-t border-gray-200 p-4">
-            <StellaAssistant />
-          </div>
         </div>
         
         {/* Center - Canvas */}
         <div className="flex-1 flex flex-col">
           {/* Enhanced Toolbar */}
-          <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  {getModeConfig(builderMode).label} Designer
-                </h1>
-                <p className="text-sm text-gray-500">{getModeConfig(builderMode).description}</p>
+          <div className="bg-white border-b border-gray-200">
+            {/* Header Section */}
+            <div className="px-6 py-3 flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div>
+                  <h1 className="text-xl font-semibold text-gray-900">Communication Designer</h1>
+                  <p className="text-sm text-gray-500">Create professional communications for your PTO</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button 
+                    className="p-2 hover:bg-gray-100 rounded transition-colors"
+                    title="Undo"
+                  >
+                    <Undo className="w-4 h-4" />
+                  </button>
+                  <button 
+                    className="p-2 hover:bg-gray-100 rounded transition-colors"
+                    title="Redo"
+                  >
+                    <Redo className="w-4 h-4" />
+                  </button>
+                  <div className="h-6 w-px bg-gray-300 mx-2"></div>
+                  <button 
+                    className="p-2 hover:bg-gray-100 rounded transition-colors"
+                    title="Clear Canvas"
+                    onClick={() => setCanvas([])}
+                  >
+                    <Layers className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
+              
+              <div className="flex items-center space-x-3">
+                {/* Zoom Controls */}
+                <div className="flex items-center space-x-2 bg-gray-50 rounded-lg px-3 py-1">
+                  <button
+                    onClick={() => setZoomLevel(Math.max(50, zoomLevel - 25))}
+                    className="p-1 hover:bg-gray-200 rounded transition-colors"
+                    title="Zoom Out"
+                  >
+                    <ZoomOut className="w-4 h-4" />
+                  </button>
+                  <span className="text-sm font-medium min-w-[3rem] text-center">{zoomLevel}%</span>
+                  <button
+                    onClick={() => setZoomLevel(Math.min(200, zoomLevel + 25))}
+                    className="p-1 hover:bg-gray-200 rounded transition-colors"
+                    title="Zoom In"
+                  >
+                    <ZoomIn className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                {/* Action Buttons */}
                 <button 
-                  className="p-2 hover:bg-gray-100 rounded transition-colors"
-                  title="Undo"
+                  className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                  onClick={() => console.log('Save draft')}
                 >
-                  <Undo className="w-4 h-4" />
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Draft
                 </button>
                 <button 
-                  className="p-2 hover:bg-gray-100 rounded transition-colors"
-                  title="Redo"
+                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  onClick={() => console.log('Preview', builderMode)}
                 >
-                  <Redo className="w-4 h-4" />
+                  <Eye className="w-4 h-4 mr-2" />
+                  Preview
                 </button>
-                <div className="h-6 w-px bg-gray-300 mx-2"></div>
-                <button 
-                  className="p-2 hover:bg-gray-100 rounded transition-colors"
-                  title="Clear Canvas"
-                  onClick={() => setCanvas([])}
-                >
-                  <Layers className="w-4 h-4" />
-                </button>
+                {/* Stella AI Assistant */}
+                <div className="relative stella-popup-container">
+                  <button 
+                    className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    onClick={() => setShowStellaPopup(!showStellaPopup)}
+                    title="Stella AI Assistant"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Stella
+                  </button>
+                  
+                  {/* Stella Popup */}
+                  {showStellaPopup && (
+                    <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                      <div className="p-4">
+                        <div className="flex items-center space-x-2 mb-3">
+                          <Sparkles className="w-5 h-5 text-purple-600" />
+                          <h3 className="font-semibold text-gray-900">Stella's Content Assistant</h3>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-4">
+                          Hi! I'm Stella. I can help create content for your designs, or you can create everything manually. Your choice!
+                        </p>
+                        
+                        <div className="space-y-2">
+                          <button className="w-full py-2 px-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg text-sm transition-colors">
+                            Let Stella Write Email Subject
+                          </button>
+                          <button className="w-full py-2 px-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg text-sm transition-colors">
+                            Let Stella Write Email Content
+                          </button>
+                          <button className="w-full py-2 px-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg text-sm transition-colors">
+                            Let Stella Create Social Post
+                          </button>
+                          <button className="w-full py-2 px-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg text-sm transition-colors">
+                            Let Stella Write Flyer Content
+                          </button>
+                        </div>
+                        
+                        <button 
+                          onClick={() => setShowStellaPopup(false)}
+                          className="absolute top-2 right-2 p-1 hover:bg-gray-100 rounded"
+                        >
+                          <span className="text-gray-400">×</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             
-            <div className="flex items-center space-x-3">
-              {/* Zoom Controls */}
-              <div className="flex items-center space-x-2 bg-gray-50 rounded-lg px-3 py-1">
-                <button
-                  onClick={() => setZoomLevel(Math.max(50, zoomLevel - 25))}
-                  className="p-1 hover:bg-gray-200 rounded transition-colors"
-                  title="Zoom Out"
-                >
-                  <ZoomOut className="w-4 h-4" />
-                </button>
-                <span className="text-sm font-medium min-w-[3rem] text-center">{zoomLevel}%</span>
-                <button
-                  onClick={() => setZoomLevel(Math.min(200, zoomLevel + 25))}
-                  className="p-1 hover:bg-gray-200 rounded transition-colors"
-                  title="Zoom In"
-                >
-                  <ZoomIn className="w-4 h-4" />
-                </button>
+            {/* Communication Type Tabs */}
+            <div className="px-6">
+              <div className="flex space-x-8 border-b border-gray-200">
+                {Object.values(BuilderModes).map(mode => {
+                  const config = getModeConfig(mode);
+                  return (
+                    <button
+                      key={mode}
+                      onClick={() => setBuilderMode(mode)}
+                      className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                        builderMode === mode 
+                          ? 'border-blue-600 text-blue-600' 
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      {config.label}
+                    </button>
+                  );
+                })}
               </div>
-              
-              {/* Action Buttons */}
-              <button 
-                className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                onClick={() => console.log('Save draft')}
-              >
-                <Save className="w-4 h-4 mr-2" />
-                Save Draft
-              </button>
-              <button 
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                onClick={() => console.log('Preview', builderMode)}
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                Preview
-              </button>
-              <button 
-                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                onClick={() => console.log('Export', getModeConfig(builderMode).export)}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Export {getModeConfig(builderMode).export[0].toUpperCase()}
-              </button>
             </div>
           </div>
           
           {/* Canvas Area */}
           <div className="flex-1 p-6 overflow-auto">
-            <CanvasDropZone />
+            <div className="flex justify-center">
+              <div style={getModeConfig(builderMode).canvasStyle}>
+                <CanvasDropZone />
+              </div>
+            </div>
           </div>
         </div>
         
