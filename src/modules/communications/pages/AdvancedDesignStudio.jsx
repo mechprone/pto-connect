@@ -1,12 +1,28 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { 
   Type, Image, Square, Circle, Minus, Link, 
   Palette, Download, Save, Eye, Sparkles, 
   Layers, ZoomIn, ZoomOut, Undo, Redo,
-  AlignLeft, AlignCenter, AlignRight, Bold, Italic
+  AlignLeft, AlignCenter, AlignRight, Bold, Italic,
+  Mail, MessageSquare, FileImage, Share2, Megaphone,
+  Grid, Layout, Star, Search, Filter, Upload, Plus,
+  Calendar, Users, Target
 } from 'lucide-react';
+import { supabase } from '@/utils/supabaseClient';
+import axios from 'axios';
+
+const API_BASE_URL = 'https://api.ptoconnect.com';
+
+// Multi-Format Builder Modes
+const BuilderModes = {
+  EMAIL: 'email',
+  SMS: 'sms',
+  FLYER: 'flyer',
+  SOCIAL: 'social',
+  ANNOUNCEMENT: 'announcement'
+};
 
 const AdvancedDesignStudio = () => {
   const [canvas, setCanvas] = useState([]);
@@ -14,43 +30,296 @@ const AdvancedDesignStudio = () => {
   const [zoomLevel, setZoomLevel] = useState(100);
   const [activeTab, setActiveTab] = useState('templates');
   const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [builderMode, setBuilderMode] = useState(BuilderModes.EMAIL);
+  const [unlayerTemplates, setUnlayerTemplates] = useState([]);
+  const [isLoadingTemplates, setIsLoadingTemplates] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [orgId, setOrgId] = useState(null);
+  const [token, setToken] = useState(null);
   const canvasRef = useRef(null);
 
-  // Design Templates
-  const emailTemplates = [
+  // Initialize authentication and load data
+  useEffect(() => {
+    initializeAuth();
+    loadUnlayerTemplates();
+  }, []);
+
+  const initializeAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.access_token) {
+      const orgId = session.user.user_metadata?.org_id || session.user.app_metadata?.org_id;
+      setOrgId(orgId);
+      setToken(session.access_token);
+    }
+  };
+
+  // Template data for different formats
+  const smsTemplates = [
     {
-      id: 1,
-      name: 'Fall Festival Announcement',
+      id: 'sms-1',
+      name: 'Event Reminder',
       category: 'Events',
-      thumbnail: '/templates/fall-festival.jpg',
+      source: 'pto-connect',
+      description: 'Simple event reminder message',
       elements: [
-        { type: 'header', content: 'Fall Festival 2024', style: { fontSize: '32px', color: '#d97706', fontWeight: 'bold' } },
-        { type: 'image', src: '/images/fall-leaves.jpg', style: { width: '100%', height: '200px' } },
-        { type: 'text', content: 'Join us for a day of fun, food, and community!', style: { fontSize: '18px', color: '#374151' } }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Fundraiser Progress',
-      category: 'Fundraising',
-      thumbnail: '/templates/fundraiser.jpg',
-      elements: [
-        { type: 'header', content: 'Fundraiser Update', style: { fontSize: '28px', color: '#059669', fontWeight: 'bold' } },
-        { type: 'progress-bar', value: 75, goal: 5000, style: { backgroundColor: '#d1fae5' } },
-        { type: 'text', content: 'We\'re 75% to our goal! Thank you for your support.', style: { fontSize: '16px' } }
-      ]
-    },
-    {
-      id: 3,
-      name: 'Volunteer Call',
-      category: 'Volunteers',
-      thumbnail: '/templates/volunteer.jpg',
-      elements: [
-        { type: 'header', content: 'Volunteers Needed!', style: { fontSize: '30px', color: '#dc2626', fontWeight: 'bold' } },
-        { type: 'button', content: 'Sign Up Now', style: { backgroundColor: '#dc2626', color: 'white', padding: '12px 24px' } },
-        { type: 'text', content: 'Help make our events successful by volunteering your time.', style: { fontSize: '16px' } }
+        { type: 'text', content: 'Reminder: Fall Festival tomorrow at 11 AM! See you there! 🎃', style: { fontSize: '16px' } }
       ]
     }
+  ];
+
+  const flyerTemplates = [
+    {
+      id: 'flyer-1',
+      name: 'Event Flyer',
+      category: 'Events',
+      source: 'pto-connect',
+      description: 'Print-ready event flyer',
+      elements: [
+        { type: 'header', content: 'FALL FESTIVAL 2024', style: { fontSize: '48px', fontWeight: 'bold', textAlign: 'center' } }
+      ]
+    }
+  ];
+
+  const socialTemplates = [
+    {
+      id: 'social-1',
+      name: 'Instagram Post',
+      category: 'Social',
+      source: 'pto-connect',
+      description: 'Square social media post',
+      elements: [
+        { type: 'header', content: 'Follow Us!', style: { fontSize: '32px', textAlign: 'center' } }
+      ]
+    }
+  ];
+
+  const announcementTemplates = [
+    {
+      id: 'announcement-1',
+      name: 'Urgent Notice',
+      category: 'Announcements',
+      source: 'pto-connect',
+      description: 'Important announcement template',
+      elements: [
+        { type: 'header', content: 'IMPORTANT NOTICE', style: { fontSize: '28px', color: '#dc2626', fontWeight: 'bold' } }
+      ]
+    }
+  ];
+
+  // Mode configuration for multi-format builder
+  const getModeConfig = (mode) => ({
+    email: {
+      label: '📧 Email',
+      description: 'Professional email campaigns and newsletters',
+      templates: [...professionalTemplates, ...unlayerTemplates],
+      blocks: enhancedBlocks,
+      preview: 'email-preview',
+      export: ['html', 'pdf'],
+      canvasStyle: { maxWidth: '600px', backgroundColor: '#f7f7f7' }
+    },
+    sms: {
+      label: '📱 SMS',
+      description: 'Text message campaigns with character limits',
+      templates: smsTemplates,
+      blocks: enhancedBlocks.filter(b => b.category === 'content'),
+      preview: 'sms-preview',
+      export: ['text'],
+      canvasStyle: { maxWidth: '320px', backgroundColor: '#ffffff' }
+    },
+    flyer: {
+      label: '📄 Flyer',
+      description: 'Print-ready designs and announcements',
+      templates: flyerTemplates,
+      blocks: enhancedBlocks,
+      preview: 'print-preview',
+      export: ['pdf', 'png'],
+      canvasStyle: { width: '8.5in', height: '11in', backgroundColor: '#ffffff' }
+    },
+    social: {
+      label: '📱 Social Post',
+      description: 'Platform-specific social media designs',
+      templates: socialTemplates,
+      blocks: enhancedBlocks.filter(b => ['visual', 'content', 'design'].includes(b.category)),
+      preview: 'social-preview',
+      export: ['png', 'jpg'],
+      canvasStyle: { width: '1080px', height: '1080px', backgroundColor: '#ffffff' }
+    },
+    announcement: {
+      label: '📢 Announcement',
+      description: 'Urgent notices and important updates',
+      templates: announcementTemplates,
+      blocks: enhancedBlocks.filter(b => ['content', 'layout'].includes(b.category)),
+      preview: 'announcement-preview',
+      export: ['html', 'pdf', 'png'],
+      canvasStyle: { maxWidth: '600px', backgroundColor: '#fff3cd' }
+    }
+  }[mode]);
+
+  // Load Unlayer templates via API
+  const loadUnlayerTemplates = async () => {
+    try {
+      setIsLoadingTemplates(true);
+      
+      // For now, use placeholder data until we implement the Unlayer API integration
+      // This will be replaced with actual API calls once we set up the backend integration
+      const placeholderTemplates = [
+        {
+          id: 'unlayer-1',
+          name: 'School Newsletter',
+          category: 'Newsletter',
+          source: 'unlayer',
+          thumbnail: '/api/placeholder/300/200',
+          description: 'Professional school newsletter template',
+          elements: [
+            { type: 'header', content: 'Monthly Newsletter', style: { fontSize: '32px', color: '#2563eb', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
+            { type: 'image', src: '/api/placeholder/600/200', style: { width: '100%', height: '200px' } },
+            { type: 'text', content: 'Stay connected with the latest news and updates from our school community.', style: { fontSize: '18px', color: '#374151', padding: '20px' } }
+          ]
+        },
+        {
+          id: 'unlayer-2',
+          name: 'Event Announcement',
+          category: 'Events',
+          source: 'unlayer',
+          thumbnail: '/api/placeholder/300/200',
+          description: 'Eye-catching event announcement template',
+          elements: [
+            { type: 'header', content: 'Special Event', style: { fontSize: '28px', color: '#dc2626', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
+            { type: 'text', content: 'Join us for an unforgettable experience!', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '10px' } },
+            { type: 'button', content: 'RSVP Now', style: { backgroundColor: '#dc2626', color: 'white', padding: '12px 24px', borderRadius: '6px', margin: '20px auto', display: 'block' } }
+          ]
+        },
+        {
+          id: 'unlayer-3',
+          name: 'Fundraiser Progress',
+          category: 'Fundraising',
+          source: 'unlayer',
+          thumbnail: '/api/placeholder/300/200',
+          description: 'Professional fundraising campaign template',
+          elements: [
+            { type: 'header', content: 'Fundraiser Update', style: { fontSize: '28px', color: '#059669', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
+            { type: 'progress-bar', value: 75, goal: 5000, style: { backgroundColor: '#d1fae5', margin: '20px', borderRadius: '10px' } },
+            { type: 'text', content: 'We\'re 75% to our goal! Thank you for your amazing support.', style: { fontSize: '16px', textAlign: 'center', padding: '20px' } }
+          ]
+        },
+        {
+          id: 'unlayer-4',
+          name: 'Volunteer Recruitment',
+          category: 'Volunteers',
+          source: 'unlayer',
+          thumbnail: '/api/placeholder/300/200',
+          description: 'Engaging volunteer recruitment template',
+          elements: [
+            { type: 'header', content: 'Volunteers Needed!', style: { fontSize: '30px', color: '#7c3aed', fontWeight: 'bold', textAlign: 'center', padding: '20px' } },
+            { type: 'text', content: 'Help make our events successful by volunteering your time and talents.', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '15px' } },
+            { type: 'button', content: 'Sign Up to Volunteer', style: { backgroundColor: '#7c3aed', color: 'white', padding: '15px 30px', borderRadius: '8px', margin: '20px auto', display: 'block' } }
+          ]
+        }
+      ];
+
+      setUnlayerTemplates(placeholderTemplates);
+    } catch (error) {
+      console.error('Error loading Unlayer templates:', error);
+      setUnlayerTemplates([]);
+    } finally {
+      setIsLoadingTemplates(false);
+    }
+  };
+
+  // Enhanced template system with professional templates
+  const professionalTemplates = [
+    {
+      id: 'pto-1',
+      name: 'Welcome Back Newsletter',
+      category: 'Newsletter',
+      source: 'pto-connect',
+      thumbnail: '/api/placeholder/300/200',
+      description: 'Professional welcome back to school newsletter',
+      elements: [
+        { type: 'header', content: 'Welcome Back to School!', style: { fontSize: '36px', color: '#1e40af', fontWeight: 'bold', textAlign: 'center', padding: '30px', backgroundColor: '#dbeafe' } },
+        { type: 'text', content: 'We\'re excited to start another amazing school year together!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px' } },
+        { type: 'image', src: '/api/placeholder/600/300', style: { width: '100%', height: '300px', borderRadius: '8px', margin: '20px 0' } }
+      ]
+    },
+    {
+      id: 'pto-2', 
+      name: 'Fall Festival Invitation',
+      category: 'Events',
+      source: 'pto-connect',
+      thumbnail: '/api/placeholder/300/200',
+      description: 'Festive fall event invitation template',
+      elements: [
+        { type: 'header', content: 'Fall Festival 2024', style: { fontSize: '32px', color: '#d97706', fontWeight: 'bold', textAlign: 'center', padding: '25px', backgroundColor: '#fef3c7' } },
+        { type: 'text', content: 'Join us for a day of fun, food, and community spirit!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px' } },
+        { type: 'text', content: 'Date: October 15th | Time: 11 AM - 4 PM | Location: School Playground', style: { fontSize: '16px', color: '#6b7280', textAlign: 'center', padding: '10px', fontWeight: 'bold' } }
+      ]
+    }
+  ];
+
+  // Enhanced block library with PTO-specific blocks
+  const enhancedBlocks = [
+    // Content Blocks
+    { type: 'text', icon: Type, label: 'Text Block', category: 'content', defaultContent: 'Add your message here' },
+    { type: 'header', icon: Type, label: 'Header', category: 'content', defaultContent: 'Header Text' },
+    { type: 'subheader', icon: Type, label: 'Subheader', category: 'content', defaultContent: 'Subheader Text' },
+    
+    // Visual Blocks
+    { type: 'image', icon: Image, label: 'Image', category: 'visual', defaultSrc: '/api/placeholder/400/300' },
+    { type: 'gallery', icon: Grid, label: 'Image Gallery', category: 'visual' },
+    { type: 'video', icon: Square, label: 'Video', category: 'visual' },
+    
+    // Interactive Blocks
+    { type: 'button', icon: Square, label: 'Button', category: 'interactive', defaultContent: 'Click Here' },
+    { type: 'social-links', icon: Share2, label: 'Social Links', category: 'interactive' },
+    { type: 'contact-info', icon: Mail, label: 'Contact Info', category: 'interactive' },
+    
+    // PTO-Specific Blocks
+    { type: 'event-details', icon: Calendar, label: 'Event Details', category: 'pto-specific' },
+    { type: 'volunteer-signup', icon: Users, label: 'Volunteer Signup', category: 'pto-specific' },
+    { type: 'fundraiser-progress', icon: Target, label: 'Fundraiser Progress', category: 'pto-specific' },
+    { type: 'teacher-spotlight', icon: Star, label: 'Teacher Spotlight', category: 'pto-specific' },
+    { type: 'calendar-widget', icon: Calendar, label: 'Calendar Widget', category: 'pto-specific' },
+    
+    // Layout Blocks
+    { type: 'divider', icon: Minus, label: 'Divider', category: 'layout' },
+    { type: 'spacer', icon: Layout, label: 'Spacer', category: 'layout' },
+    { type: 'columns', icon: Grid, label: 'Columns', category: 'layout' },
+    
+    // Design Elements
+    { type: 'shape', icon: Circle, label: 'Shape', category: 'design' },
+    { type: 'icon', icon: Star, label: 'Icon', category: 'design' },
+    { type: 'border', icon: Square, label: 'Border', category: 'design' }
+  ];
+
+  // Get filtered templates based on search and category
+  const getFilteredTemplates = () => {
+    let allTemplates = [...professionalTemplates, ...unlayerTemplates];
+    
+    if (selectedCategory !== 'all') {
+      allTemplates = allTemplates.filter(template => 
+        template.category.toLowerCase() === selectedCategory.toLowerCase()
+      );
+    }
+    
+    if (searchTerm) {
+      allTemplates = allTemplates.filter(template =>
+        template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        template.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    return allTemplates;
+  };
+
+  // Template categories for filtering
+  const templateCategories = [
+    { id: 'all', name: 'All Templates', count: professionalTemplates.length + unlayerTemplates.length },
+    { id: 'newsletter', name: 'Newsletter', count: 3 },
+    { id: 'events', name: 'Events', count: 2 },
+    { id: 'fundraising', name: 'Fundraising', count: 2 },
+    { id: 'volunteers', name: 'Volunteers', count: 1 },
+    { id: 'announcements', name: 'Announcements', count: 1 }
   ];
 
   // Draggable Elements
@@ -481,6 +750,30 @@ const AdvancedDesignStudio = () => {
       <div className="h-screen bg-gray-100 flex">
         {/* Left Panel - Tools & Templates */}
         <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+          {/* Multi-Format Builder Mode Selector */}
+          <div className="border-b border-gray-200 p-4">
+            <h3 className="font-medium text-gray-900 mb-3">Communication Type</h3>
+            <div className="grid grid-cols-1 gap-2">
+              {Object.values(BuilderModes).map(mode => {
+                const config = getModeConfig(mode);
+                return (
+                  <button
+                    key={mode}
+                    onClick={() => setBuilderMode(mode)}
+                    className={`p-3 text-left rounded-lg border transition-colors ${
+                      builderMode === mode 
+                        ? 'bg-blue-50 border-blue-300 text-blue-900' 
+                        : 'border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="font-medium text-sm">{config.label}</div>
+                    <div className="text-xs text-gray-500 mt-1">{config.description}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Tab Navigation */}
           <div className="flex border-b border-gray-200">
             <button
@@ -510,69 +803,163 @@ const AdvancedDesignStudio = () => {
           </div>
           
           {/* Tab Content */}
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto">
             {activeTab === 'templates' && (
-              <div className="space-y-4">
-                <h3 className="font-semibold text-gray-900">Email Templates</h3>
-                <div className="grid grid-cols-1 gap-3">
-                  {emailTemplates.map(template => (
-                    <div
-                      key={template.id}
-                      className="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors"
-                      onClick={() => setCanvas(template.elements.map((el, idx) => ({ ...el, id: Date.now() + idx, x: 50, y: 50 + idx * 100 })))}
-                    >
-                      <div className="aspect-video bg-gray-100 rounded mb-2 flex items-center justify-center">
-                        <Image className="w-8 h-8 text-gray-400" />
-                      </div>
-                      <h4 className="font-medium text-sm">{template.name}</h4>
-                      <p className="text-xs text-gray-500">{template.category}</p>
+              <div className="p-4 space-y-4">
+                {/* Template Search and Filter */}
+                <div className="space-y-3">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <input
+                      type="text"
+                      placeholder="Search templates..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    {templateCategories.map(category => (
+                      <button
+                        key={category.id}
+                        onClick={() => setSelectedCategory(category.id)}
+                        className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                          selectedCategory === category.id
+                            ? 'bg-blue-100 border-blue-300 text-blue-800'
+                            : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                        }`}
+                      >
+                        {category.name} ({category.count})
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Professional Templates Section */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-gray-900">Professional Templates</h3>
+                    <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Unlayer Powered</span>
+                  </div>
+                  
+                  {isLoadingTemplates ? (
+                    <div className="space-y-3">
+                      {[1, 2, 3].map(i => (
+                        <div key={i} className="border border-gray-200 rounded-lg p-3 animate-pulse">
+                          <div className="aspect-video bg-gray-200 rounded mb-2"></div>
+                          <div className="h-4 bg-gray-200 rounded mb-1"></div>
+                          <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  ) : (
+                    <div className="grid grid-cols-1 gap-3">
+                      {getFilteredTemplates().map(template => (
+                        <div
+                          key={template.id}
+                          className="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors group"
+                          onClick={() => setCanvas(template.elements.map((el, idx) => ({ ...el, id: Date.now() + idx, x: 0, y: idx * 20 })))}
+                        >
+                          <div className="aspect-video bg-gray-100 rounded mb-3 flex items-center justify-center relative overflow-hidden">
+                            {template.thumbnail ? (
+                              <img 
+                                src={template.thumbnail} 
+                                alt={template.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Image className="w-8 h-8 text-gray-400" />
+                            )}
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
+                              <button className="bg-white text-gray-800 px-3 py-1 rounded-full text-xs font-medium opacity-0 group-hover:opacity-100 transition-all">
+                                Use Template
+                              </button>
+                            </div>
+                          </div>
+                          <h4 className="font-medium text-sm text-gray-900">{template.name}</h4>
+                          <p className="text-xs text-gray-500 mb-2">{template.description}</p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{template.category}</span>
+                            {template.source === 'unlayer' && (
+                              <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
             
             {activeTab === 'elements' && (
-              <div className="space-y-4">
-                <h3 className="font-semibold text-gray-900">Design Elements</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {designElements.map(element => (
-                    <DraggableElement key={element.type} element={element} />
-                  ))}
-                </div>
+              <div className="p-4 space-y-4">
+                <h3 className="font-semibold text-gray-900">Enhanced Block Library</h3>
+                
+                {/* Group blocks by category */}
+                {['content', 'visual', 'interactive', 'pto-specific', 'layout', 'design'].map(category => (
+                  <div key={category}>
+                    <h4 className="font-medium text-sm text-gray-700 mb-2 capitalize">
+                      {category.replace('-', ' ')} Blocks
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      {enhancedBlocks
+                        .filter(block => block.category === category)
+                        .map(element => (
+                          <DraggableElement key={`${element.type}-${element.category}`} element={element} />
+                        ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
             
             {activeTab === 'brand' && (
-              <div className="space-y-4">
+              <div className="p-4 space-y-4">
                 <h3 className="font-semibold text-gray-900">Brand Assets</h3>
                 
                 <div>
-                  <h4 className="font-medium text-sm mb-2">Colors</h4>
+                  <h4 className="font-medium text-sm mb-2">School Colors</h4>
                   <div className="grid grid-cols-4 gap-2">
                     {brandAssets.colors.map(color => (
                       <div
                         key={color}
-                        className="w-8 h-8 rounded cursor-pointer border border-gray-200"
+                        className="w-8 h-8 rounded cursor-pointer border border-gray-200 hover:scale-110 transition-transform"
                         style={{ backgroundColor: color }}
                         onClick={() => selectedElement && updateElementStyle({ color })}
+                        title={color}
                       />
                     ))}
                   </div>
                 </div>
                 
                 <div>
-                  <h4 className="font-medium text-sm mb-2">Fonts</h4>
+                  <h4 className="font-medium text-sm mb-2">Typography</h4>
                   <div className="space-y-1">
                     {brandAssets.fonts.map(font => (
                       <button
                         key={font}
-                        className="w-full text-left p-2 text-sm hover:bg-gray-50 rounded"
+                        className="w-full text-left p-2 text-sm hover:bg-gray-50 rounded transition-colors"
                         style={{ fontFamily: font }}
                         onClick={() => selectedElement && updateElementStyle({ fontFamily: font })}
                       >
                         {font}
                       </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium text-sm mb-2">Logos & Assets</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {brandAssets.logos.map(logo => (
+                      <div key={logo.id} className="border border-gray-200 rounded p-2 cursor-pointer hover:bg-gray-50">
+                        <div className="aspect-square bg-gray-100 rounded mb-1 flex items-center justify-center">
+                          <Image className="w-6 h-6 text-gray-400" />
+                        </div>
+                        <p className="text-xs text-gray-600">{logo.name}</p>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -588,48 +975,80 @@ const AdvancedDesignStudio = () => {
         
         {/* Center - Canvas */}
         <div className="flex-1 flex flex-col">
-          {/* Toolbar */}
+          {/* Enhanced Toolbar */}
           <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <h1 className="text-xl font-semibold text-gray-900">Design Studio</h1>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900">
+                  {getModeConfig(builderMode).label} Designer
+                </h1>
+                <p className="text-sm text-gray-500">{getModeConfig(builderMode).description}</p>
+              </div>
               <div className="flex items-center space-x-2">
-                <button className="p-2 hover:bg-gray-100 rounded">
+                <button 
+                  className="p-2 hover:bg-gray-100 rounded transition-colors"
+                  title="Undo"
+                >
                   <Undo className="w-4 h-4" />
                 </button>
-                <button className="p-2 hover:bg-gray-100 rounded">
+                <button 
+                  className="p-2 hover:bg-gray-100 rounded transition-colors"
+                  title="Redo"
+                >
                   <Redo className="w-4 h-4" />
+                </button>
+                <div className="h-6 w-px bg-gray-300 mx-2"></div>
+                <button 
+                  className="p-2 hover:bg-gray-100 rounded transition-colors"
+                  title="Clear Canvas"
+                  onClick={() => setCanvas([])}
+                >
+                  <Layers className="w-4 h-4" />
                 </button>
               </div>
             </div>
             
             <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2">
+              {/* Zoom Controls */}
+              <div className="flex items-center space-x-2 bg-gray-50 rounded-lg px-3 py-1">
                 <button
                   onClick={() => setZoomLevel(Math.max(50, zoomLevel - 25))}
-                  className="p-2 hover:bg-gray-100 rounded"
+                  className="p-1 hover:bg-gray-200 rounded transition-colors"
+                  title="Zoom Out"
                 >
                   <ZoomOut className="w-4 h-4" />
                 </button>
-                <span className="text-sm font-medium">{zoomLevel}%</span>
+                <span className="text-sm font-medium min-w-[3rem] text-center">{zoomLevel}%</span>
                 <button
                   onClick={() => setZoomLevel(Math.min(200, zoomLevel + 25))}
-                  className="p-2 hover:bg-gray-100 rounded"
+                  className="p-1 hover:bg-gray-200 rounded transition-colors"
+                  title="Zoom In"
                 >
                   <ZoomIn className="w-4 h-4" />
                 </button>
               </div>
               
-              <button className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+              {/* Action Buttons */}
+              <button 
+                className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                onClick={() => console.log('Save draft')}
+              >
                 <Save className="w-4 h-4 mr-2" />
-                Save
+                Save Draft
               </button>
-              <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              <button 
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                onClick={() => console.log('Preview', builderMode)}
+              >
                 <Eye className="w-4 h-4 mr-2" />
                 Preview
               </button>
-              <button className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+              <button 
+                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                onClick={() => console.log('Export', getModeConfig(builderMode).export)}
+              >
                 <Download className="w-4 h-4 mr-2" />
-                Export
+                Export {getModeConfig(builderMode).export[0].toUpperCase()}
               </button>
             </div>
           </div>

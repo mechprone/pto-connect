@@ -135,7 +135,7 @@ export default function App() {
           <Route path="/communications" element={<EnhancedCommunicationsDashboard />} />
           <Route path="/communications/legacy" element={<CommunicationsDashboard />} />
           <Route path="/communications/create" element={<CreateCommunication />} />
-          <Route path="/communications/email" element={<EmailComposer />} />
+          <Route path="/communications/email" element={<AdvancedDesignStudio />} />
           <Route path="/communications/sms" element={<SmsComposer />} />
           <Route path="/communications/social" element={<SocialPostComposer />} />
           <Route path="/communications/ai" element={<AiContentAssistant />} />
