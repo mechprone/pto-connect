@@ -8,6 +8,8 @@ import Card from '@/components/common/Card';
 import DonationTierManager from './DonationTierManager';
 import FundraiserAnalytics from './FundraiserAnalytics';
 import SocialShare from './SocialShare';
+import Donors from './Donors';
+import Reports from './Reports';
 
 export default function FundraiserManager() {
   const navigate = useNavigate();
@@ -93,7 +95,7 @@ export default function FundraiserManager() {
       loading={loading}
       error={error}
     >
-      {/* Tab Navigation */}
+      {/* Top-level Tab Navigation */}
       <div className="border-b border-gray-200 mb-6">
         <nav className="-mb-px flex space-x-8" aria-label="Tabs">
           <button
@@ -109,10 +111,16 @@ export default function FundraiserManager() {
             Analytics
           </button>
           <button
-            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'tiers' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-            onClick={() => setActiveTab('tiers')}
+            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'donors' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+            onClick={() => setActiveTab('donors')}
           >
-            Donation Tiers
+            Donors
+          </button>
+          <button
+            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'reports' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+            onClick={() => setActiveTab('reports')}
+          >
+            Reports
           </button>
           <button
             className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'share' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
@@ -189,9 +197,14 @@ export default function FundraiserManager() {
           <FundraiserAnalytics />
         </div>
       )}
-      {activeTab === 'tiers' && (
+      {activeTab === 'donors' && (
         <div className="mt-8">
-          <DonationTierManager />
+          <Donors />
+        </div>
+      )}
+      {activeTab === 'reports' && (
+        <div className="mt-8">
+          <Reports />
         </div>
       )}
       {activeTab === 'share' && (
