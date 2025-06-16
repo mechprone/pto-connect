@@ -50,6 +50,8 @@ export default function FundraiserForm() {
       setLoading(true);
       const { data, error } = await fundraisersAPI.getFundraiser(id);
       console.log('Raw API response:', { data, error });
+      console.log('Data object keys:', data ? Object.keys(data) : 'no data');
+      console.log('Data object values:', data);
       if (error) throw new Error(error);
       if (!data) throw new Error('No fundraiser found with this ID.');
       
@@ -57,7 +59,7 @@ export default function FundraiserForm() {
       const transformedData = {
         title: data.title || '',
         description: data.description || '',
-        goal_amount: data.goal_amount || data.goal || '',
+        goal_amount: data.goal || data.goal_amount || '',
         category_id: data.category_id || '',
         start_date: data.start_date || '',
         end_date: data.end_date || '',
@@ -65,6 +67,10 @@ export default function FundraiserForm() {
         visibility: data.visibility || 'organization',
       };
       
+      console.log('Individual field values:');
+      console.log('data.title:', data.title);
+      console.log('data.goal:', data.goal);
+      console.log('data.start_date:', data.start_date);
       console.log('Transformed data for form:', transformedData);
       setFormData(transformedData);
       setError(null);
