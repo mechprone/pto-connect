@@ -120,12 +120,12 @@ export const eventsAPI = {
 
 // Fundraisers API calls
 export const fundraisersAPI = {
-  getFundraisers: () => apiRequest('GET', '/fundraisers'),
-  getFundraiser: (id) => apiRequest('GET', `/fundraisers/${id}`),
-  createFundraiser: (data) => apiRequest('POST', '/fundraisers', data),
-  updateFundraiser: (id, data) => apiRequest('PUT', `/fundraisers/${id}`, data),
-  deleteFundraiser: (id) => apiRequest('DELETE', `/fundraisers/${id}`),
-  getDonations: (fundraiserId) => apiRequest('GET', `/fundraisers/${fundraiserId}/donations`),
+  getFundraisers: () => apiRequest('GET', '/fundraiser'),
+  getFundraiser: (id) => apiRequest('GET', `/fundraiser/${id}`),
+  createFundraiser: (data) => apiRequest('POST', '/fundraiser', data),
+  updateFundraiser: (id, data) => apiRequest('PUT', `/fundraiser/${id}`, data),
+  deleteFundraiser: (id) => apiRequest('DELETE', `/fundraiser/${id}`),
+  getDonations: (fundraiserId) => apiRequest('GET', `/fundraiser/${fundraiserId}/donations`),
   getFundraiserAnalytics: (id, params) => apiRequest('GET', `/fundraiser/${id}/analytics${params ? `?${new URLSearchParams(params)}` : ''}`),
   getAllFundraisersAnalytics: (params) => apiRequest('GET', `/fundraiser/analytics${params ? `?${new URLSearchParams(params)}` : ''}`),
   getFundraiserTopDonor: (id) => apiRequest('GET', `/fundraiser/${id}/top-donor`),

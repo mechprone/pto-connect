@@ -59,10 +59,10 @@ export default function FundraiserForm() {
       const transformedData = {
         title: data.title || '',
         description: data.description || '',
-        goal_amount: data.goal || data.goal_amount || '',
-        category_id: data.category_id || '',
-        start_date: data.start_date || '',
-        end_date: data.end_date || '',
+        goal_amount: data.goal_amount || data.goal || '',
+        category_id: data.category_id || data.category || '',
+        start_date: data.start_date ? data.start_date.split('T')[0] : '',
+        end_date: data.end_date ? data.end_date.split('T')[0] : '',
         status: data.status || 'draft',
         visibility: data.visibility || 'organization',
       };
@@ -87,12 +87,25 @@ export default function FundraiserForm() {
     e.preventDefault();
     try {
       setLoading(true);
+      
+      // Transform form data to match backend expectations
+      const submitData = {
+        title: formData.title,
+        description: formData.description,
+        goal_amount: formData.goal_amount,
+        start_date: formData.start_date,
+        end_date: formData.end_date,
+        status: formData.status,
+        visibility: formData.visibility,
+        category: formData.category_id,
+      };
+      
       if (id) {
-        const { error } = await fundraisersAPI.updateFundraiser(id, formData);
+        const { error } = await fundraisersAPI.updateFundraiser(id, submitData);
         if (error) throw new Error(error);
         handleSuccess('Fundraiser updated successfully');
       } else {
-        const { error } = await fundraisersAPI.createFundraiser(formData);
+        const { error } = await fundraisersAPI.createFundraiser(submitData);
         if (error) throw new Error(error);
         handleSuccess('Fundraiser created successfully');
       }

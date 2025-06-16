@@ -30,6 +30,7 @@ import EventsCalendarPage from './modules/events/pages/EventsCalendarPage'
 // Fundraisers
 import FundraiserManager from './modules/fundraisers/pages/FundraiserManager'
 import FundraiserForm from './modules/fundraisers/pages/FundraiserForm'
+import FundraiserAnalytics from './modules/fundraisers/pages/FundraiserAnalytics'
 
 // Budget
 import BudgetDashboard from './modules/budgets/pages/BudgetDashboard'
@@ -121,6 +122,7 @@ export default function App() {
           <Route path="/fundraisers" element={<FundraiserManager />} />
           <Route path="/fundraisers/create" element={<FundraiserForm />} />
           <Route path="/fundraisers/:id/edit" element={<FundraiserForm />} />
+          <Route path="/fundraisers/:id/analytics" element={<FundraiserAnalytics />} />
 
           <Route path="/budget" element={<EnhancedBudgetDashboard />} />
           <Route path="/budget/legacy" element={<BudgetDashboard />} />
