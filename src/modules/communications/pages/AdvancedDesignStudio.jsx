@@ -122,12 +122,12 @@ const AdvancedDesignStudio = () => {
       const newElements = template.elements.map((element, index) => ({
         ...element,
         id: `element_${Date.now()}_${index}`,
-        x: 50,
-        y: 50 + (index * 100)
+        x: 20, // Start closer to left edge
+        y: 20 + (index * 80) // Tighter vertical spacing
       }));
       setCanvas(newElements);
       setSelectedElement(null);
-      console.log('Template applied successfully');
+      console.log('Template applied successfully', newElements);
     } catch (error) {
       console.error('Template error:', error);
     }
@@ -142,6 +142,13 @@ const AdvancedDesignStudio = () => {
         defaultContent: element.defaultContent || '',
         defaultSrc: element.defaultSrc || ''
       },
+      begin: () => {
+        console.log('🖱️ Started dragging:', element.label);
+      },
+      end: (item, monitor) => {
+        const didDrop = monitor.didDrop();
+        console.log('🖱️ Drag ended:', element.label, 'Dropped:', didDrop);
+      },
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
@@ -153,12 +160,15 @@ const AdvancedDesignStudio = () => {
       <div
         ref={drag}
         className={`p-3 border border-gray-200 rounded-lg cursor-move hover:bg-gray-50 transition-colors ${
-          isDragging ? 'opacity-50' : ''
+          isDragging ? 'opacity-50 bg-blue-100' : ''
         }`}
       >
         <div className="flex flex-col items-center space-y-2">
           <Icon className="w-6 h-6 text-gray-600" />
           <span className="text-sm text-gray-700">{element.label}</span>
+          {isDragging && (
+            <span className="text-xs text-blue-600 font-medium">Dragging...</span>
+          )}
         </div>
       </div>
     );
@@ -166,16 +176,24 @@ const AdvancedDesignStudio = () => {
 
   // Canvas Drop Zone
   const DropZone = () => {
-    const [{ isOver }, drop] = useDrop({
+    const [{ isOver, canDrop }, drop] = useDrop({
       accept: 'element',
+      canDrop: () => true,
       drop: (item, monitor) => {
         try {
-          console.log('DROP EVENT:', item);
+          console.log('🎯 DROP EVENT TRIGGERED!', item);
           const offset = monitor.getClientOffset();
           const canvasRect = canvasRef.current?.getBoundingClientRect();
           
+          console.log('📍 Drop details:', {
+            offset,
+            canvasRect,
+            hasCanvasRef: !!canvasRef.current,
+            itemType: item.elementType
+          });
+          
           if (!offset || !canvasRect) {
-            console.log('Missing offset or canvas rect');
+            console.log('❌ Missing offset or canvas rect');
             return;
           }
           
@@ -184,8 +202,8 @@ const AdvancedDesignStudio = () => {
             type: item.elementType,
             content: item.defaultContent || 'New Content',
             src: item.defaultSrc || '',
-            x: Math.max(0, offset.x - canvasRect.left - 50),
-            y: Math.max(0, offset.y - canvasRect.top - 20),
+            x: Math.max(10, offset.x - canvasRect.left - 50),
+            y: Math.max(10, offset.y - canvasRect.top - 20),
             style: {
               fontSize: '16px',
               color: '#374151',
@@ -193,15 +211,20 @@ const AdvancedDesignStudio = () => {
             }
           };
           
-          console.log('Creating element:', newElement);
-          setCanvas(prev => [...prev, newElement]);
+          console.log('✅ Creating element:', newElement);
+          setCanvas(prev => {
+            const updated = [...prev, newElement];
+            console.log('🎨 Canvas updated, total elements:', updated.length);
+            return updated;
+          });
           setSelectedElement(newElement);
         } catch (error) {
-          console.error('Drop error:', error);
+          console.error('❌ Drop error:', error);
         }
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
       }),
     });
 
@@ -213,17 +236,24 @@ const AdvancedDesignStudio = () => {
         }}
         className={`relative bg-white border-2 border-dashed border-gray-300 rounded-lg min-h-[600px] transition-colors ${
           isOver ? 'border-blue-500 bg-blue-50' : ''
-        }`}
+        } ${canDrop ? 'border-green-400' : ''}`}
         style={{ 
           transform: `scale(${zoomLevel / 100})`,
           transformOrigin: 'top left',
-          maxWidth: '600px',
+          width: '100%',
+          maxWidth: '800px',
           margin: '0 auto'
         }}
       >
+        {/* Debug overlays */}
         {isOver && (
           <div className="absolute top-2 left-2 bg-blue-600 text-white px-2 py-1 rounded text-xs z-50">
-            DROP ZONE ACTIVE
+            🎯 DROP ZONE ACTIVE
+          </div>
+        )}
+        {canDrop && (
+          <div className="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs z-50">
+            ✅ CAN DROP
           </div>
         )}
         
@@ -246,6 +276,9 @@ const AdvancedDesignStudio = () => {
               <Image className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p className="text-lg">Drag elements here to start designing</p>
               <p className="text-sm">Choose from templates or build from scratch</p>
+              <div className="mt-4 text-xs bg-gray-100 p-2 rounded">
+                Canvas: {canvas.length} elements | Can Drop: {canDrop ? 'Yes' : 'No'}
+              </div>
             </div>
           </div>
         )}
