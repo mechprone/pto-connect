@@ -15,24 +15,22 @@ export default function FundraiserForm() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    goal_amount: '',
-    category_id: '',
+    goal: '',
+    type: 'donation',
     start_date: '',
     end_date: '',
-    status: 'draft',
-    visibility: 'public',
+    is_active: true,
   });
 
-  const statusOptions = [
-    { value: 'draft', label: 'Draft' },
-    { value: 'active', label: 'Active' },
-    { value: 'paused', label: 'Paused' },
-    { value: 'completed', label: 'Completed' }
+  const typeOptions = [
+    { value: 'donation', label: 'Donation' },
+    { value: 'sales', label: 'Sales' },
+    { value: 'pledge', label: 'Pledge' }
   ];
 
-  const visibilityOptions = [
-    { value: 'public', label: 'Public' },
-    { value: 'private', label: 'Private' }
+  const statusOptions = [
+    { value: true, label: 'Active' },
+    { value: false, label: 'Inactive' }
   ];
 
   useEffect(() => {
@@ -87,7 +85,7 @@ export default function FundraiserForm() {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: name === 'is_active' ? value === 'true' : value
     }));
   };
 
@@ -131,23 +129,25 @@ export default function FundraiserForm() {
         />
 
         <Input
-          label="Goal Amount"
-          id="goal_amount"
-          name="goal_amount"
+          label="Goal"
+          id="goal"
+          name="goal"
           type="number"
-          value={formData.goal_amount}
+          value={formData.goal}
           onChange={handleChange}
           required
           min="0"
           step="0.01"
         />
 
-        <Input
-          label="Category"
-          id="category_id"
-          name="category_id"
-          value={formData.category_id}
+        <Select
+          label="Type"
+          id="type"
+          name="type"
+          value={formData.type}
           onChange={handleChange}
+          required
+          options={typeOptions}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -172,26 +172,15 @@ export default function FundraiserForm() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Select
-            label="Status"
-            id="status"
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            required
-            options={statusOptions}
-          />
-          <Select
-            label="Visibility"
-            id="visibility"
-            name="visibility"
-            value={formData.visibility}
-            onChange={handleChange}
-            required
-            options={visibilityOptions}
-          />
-        </div>
+        <Select
+          label="Status"
+          id="is_active"
+          name="is_active"
+          value={formData.is_active}
+          onChange={handleChange}
+          required
+          options={statusOptions}
+        />
 
         <div className="flex justify-end space-x-4">
           <Button
