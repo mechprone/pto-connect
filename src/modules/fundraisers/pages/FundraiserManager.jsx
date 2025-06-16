@@ -153,7 +153,10 @@ export default function FundraiserManager() {
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold text-gray-900">Active Fundraisers</h2>
-            <Button onClick={() => navigate('/fundraisers/create')}>
+            <Button 
+              variant="outline"
+              onClick={() => navigate('/fundraisers/create')}
+            >
               Create New Fundraiser
             </Button>
           </div>
@@ -212,14 +215,14 @@ export default function FundraiserManager() {
       )}
       {activeTab === 'fundraisers' && editingFundraiser && (
         <div className="space-y-6">
-          <div className="flex items-center space-x-4 mb-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">Edit Fundraiser</h2>
             <Button
               variant="outline"
               onClick={handleCancelEdit}
             >
               ← Back to Fundraisers
             </Button>
-            <h2 className="text-xl font-semibold text-gray-900">Edit Fundraiser</h2>
           </div>
           <FundraiserForm 
             fundraiserId={editingFundraiser}
