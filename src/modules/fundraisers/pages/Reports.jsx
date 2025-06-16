@@ -50,7 +50,7 @@ export default function Reports() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Report Type</label>
           <select
-            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-base px-4 py-3 mb-2"
             value={selectedReport}
             onChange={e => setSelectedReport(e.target.value)}
           >
@@ -62,7 +62,7 @@ export default function Reports() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
           <select
-            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-base px-4 py-3 mb-2"
             value={dateRange}
             onChange={e => setDateRange(e.target.value)}
           >

@@ -208,9 +208,26 @@ export default function FundraiserManager() {
         </div>
       )}
       {activeTab === 'share' && (
-        <div className="mt-8">
-          <SocialShare />
+        <div className="mb-6">
+          <label htmlFor="fundraiser-select" className="block text-sm font-medium text-gray-700 mb-2">Select Fundraiser to Share</label>
+          <select
+            id="fundraiser-select"
+            className="block w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+            value={selectedFundraiser ? selectedFundraiser.id : ''}
+            onChange={e => {
+              const found = fundraisers.find(f => f.id === e.target.value);
+              setSelectedFundraiser(found || null);
+            }}
+          >
+            <option value="">-- Select a Fundraiser --</option>
+            {fundraisers.map(f => (
+              <option key={f.id} value={f.id}>{f.title}</option>
+            ))}
+          </select>
         </div>
+      )}
+      {activeTab === 'share' && (
+        <SocialShare fundraiserId={selectedFundraiser ? selectedFundraiser.id : null} />
       )}
     </PageLayout>
   );
