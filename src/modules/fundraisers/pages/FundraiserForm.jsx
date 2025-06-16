@@ -48,29 +48,33 @@ export default function FundraiserForm() {
     if (!id) return;
     try {
       setLoading(true);
-      const { data, error } = await fundraisersAPI.getFundraiser(id);
-      console.log('Raw API response:', { data, error });
-      console.log('Data object keys:', data ? Object.keys(data) : 'no data');
-      console.log('Data object values:', data);
-      if (error) throw new Error(error);
-      if (!data) throw new Error('No fundraiser found with this ID.');
+      const response = await fundraisersAPI.getFundraiser(id);
+      console.log('Raw API response:', response);
+      
+      // Extract the actual fundraiser data from the nested response
+      const fundraiserData = response.data?.data || response.data || response;
+      console.log('Extracted fundraiser data:', fundraiserData);
+      console.log('Fundraiser data keys:', fundraiserData ? Object.keys(fundraiserData) : 'no data');
+      
+      if (response.error) throw new Error(response.error);
+      if (!fundraiserData) throw new Error('No fundraiser found with this ID.');
       
       // Transform data to match form field names
       const transformedData = {
-        title: data.title || '',
-        description: data.description || '',
-        goal_amount: data.goal_amount || data.goal || '',
-        category_id: data.category_id || data.category || '',
-        start_date: data.start_date ? data.start_date.split('T')[0] : '',
-        end_date: data.end_date ? data.end_date.split('T')[0] : '',
-        status: data.status || 'draft',
-        visibility: data.visibility || 'organization',
+        title: fundraiserData.title || '',
+        description: fundraiserData.description || '',
+        goal_amount: fundraiserData.goal_amount || fundraiserData.goal || '',
+        category_id: fundraiserData.category_id || fundraiserData.category || '',
+        start_date: fundraiserData.start_date ? fundraiserData.start_date.split('T')[0] : '',
+        end_date: fundraiserData.end_date ? fundraiserData.end_date.split('T')[0] : '',
+        status: fundraiserData.status || 'draft',
+        visibility: fundraiserData.visibility || 'organization',
       };
       
       console.log('Individual field values:');
-      console.log('data.title:', data.title);
-      console.log('data.goal:', data.goal);
-      console.log('data.start_date:', data.start_date);
+      console.log('fundraiserData.title:', fundraiserData.title);
+      console.log('fundraiserData.goal:', fundraiserData.goal);
+      console.log('fundraiserData.start_date:', fundraiserData.start_date);
       console.log('Transformed data for form:', transformedData);
       setFormData(transformedData);
       setError(null);
