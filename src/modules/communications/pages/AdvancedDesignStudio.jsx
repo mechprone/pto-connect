@@ -135,24 +135,17 @@ const AdvancedDesignStudio = () => {
 
   // Drag Element Component
   const DragElement = ({ element }) => {
-    const [{ isDragging }, drag] = useDrag({
+    const [{ isDragging }, drag] = useDrag(() => ({
       type: 'element',
       item: { 
         elementType: element.type,
         defaultContent: element.defaultContent || '',
         defaultSrc: element.defaultSrc || ''
       },
-      begin: () => {
-        console.log('🖱️ Started dragging:', element.label);
-      },
-      end: (item, monitor) => {
-        const didDrop = monitor.didDrop();
-        console.log('🖱️ Drag ended:', element.label, 'Dropped:', didDrop);
-      },
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
-    });
+    }), [element]);
 
     const Icon = element.icon;
 
@@ -176,9 +169,8 @@ const AdvancedDesignStudio = () => {
 
   // Canvas Drop Zone
   const DropZone = () => {
-    const [{ isOver, canDrop }, drop] = useDrop({
+    const [{ isOver, canDrop }, drop] = useDrop(() => ({
       accept: 'element',
-      canDrop: () => true,
       drop: (item, monitor) => {
         try {
           console.log('🎯 DROP EVENT TRIGGERED!', item);
@@ -226,7 +218,7 @@ const AdvancedDesignStudio = () => {
         isOver: monitor.isOver(),
         canDrop: monitor.canDrop(),
       }),
-    });
+    }), []);
 
     return (
       <div
@@ -469,6 +461,39 @@ const AdvancedDesignStudio = () => {
     setSelectedElement(updated);
   };
 
+  // Error handling for the component
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    const handleError = (error) => {
+      console.error('AdvancedDesignStudio error:', error);
+      setHasError(true);
+    };
+    
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, []);
+
+  if (hasError) {
+    return (
+      <div className="h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Communication Designer Error</h2>
+          <p className="text-gray-600 mb-4">There was an issue loading the design studio.</p>
+          <button 
+            onClick={() => {
+              setHasError(false);
+              window.location.reload();
+            }}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="h-screen bg-gray-100 flex">
@@ -578,10 +603,24 @@ const AdvancedDesignStudio = () => {
             {activeTab === 'elements' && (
               <div className="p-4 space-y-4">
                 <h3 className="font-semibold text-gray-900">Drag Elements</h3>
+                <div className="text-xs bg-yellow-100 p-2 rounded mb-4">
+                  🐛 Debug: React DnD Elements ({dragElements.length} available)
+                </div>
                 <div className="grid grid-cols-2 gap-3">
-                  {dragElements.map(element => (
-                    <DragElement key={element.type} element={element} />
-                  ))}
+                  {dragElements.map(element => {
+                    try {
+                      return <DragElement key={element.type} element={element} />;
+                    } catch (error) {
+                      console.error('Error rendering drag element:', element.type, error);
+                      return (
+                        <div key={element.type} className="p-3 border border-red-200 rounded-lg bg-red-50">
+                          <div className="flex flex-col items-center space-y-2">
+                            <span className="text-sm text-red-600">Error: {element.label}</span>
+                          </div>
+                        </div>
+                      );
+                    }
+                  })}
                 </div>
               </div>
             )}
