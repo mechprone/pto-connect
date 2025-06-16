@@ -23,17 +23,23 @@ export default function Donors() {
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
-      const { data, error } = await fundraisersAPI.getAllFundraisersAnalytics();
-      if (error) throw new Error(error);
+      
+      // Use the dedicated donor retention endpoint
+      const retentionResponse = await fundraisersAPI.getAnalyticsDonorRetention();
+      console.log('Donor retention response:', retentionResponse);
+      
+      const donorData = retentionResponse?.data?.data || [];
+      
       setAnalytics({
-        donors: Array.isArray(data?.donors) ? data.donors : [],
-        top_donors: Array.isArray(data?.top_donors) ? data.top_donors : [],
-        recurring_donor_list: Array.isArray(data?.recurring_donor_list) ? data.recurring_donor_list : [],
-        donor_retention: Array.isArray(data?.donor_retention) ? data.donor_retention : []
+        donors: donorData, // Use retention data as main donor list
+        top_donors: donorData.slice(0, 10), // Top 10 by total donated
+        recurring_donor_list: donorData.filter(d => d.months_active > 1), // Donors active multiple months
+        donor_retention: donorData
       });
       setError(null);
     } catch (error) {
       setError('Failed to fetch donor analytics');
+      console.error('Donor analytics fetch error:', error);
     } finally {
       setLoading(false);
     }
@@ -80,11 +86,11 @@ export default function Donors() {
               {analytics.donors.length > 0 ? (
                 analytics.donors.map((donor, idx) => (
                   <tr key={idx} className="bg-white even:bg-gray-50">
-                    <td className="px-4 py-2 whitespace-nowrap">{donor.donor_name}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{donor.donor_email}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{formatCurrency(donor.total_donations)}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{formatDate(donor.last_donation_date)}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{donor.is_recurring ? 'Yes' : 'No'}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{donor.donor_email || `Donor ${idx + 1}`}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{donor.donor_email || 'N/A'}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{formatCurrency(donor.total_donated || 0)}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{donor.last_donation ? formatDate(donor.last_donation) : 'N/A'}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{donor.months_active > 1 ? 'Yes' : 'No'}</td>
                   </tr>
                 ))
               ) : (
@@ -100,8 +106,8 @@ export default function Donors() {
           {analytics.top_donors.length > 0 ? (
             analytics.top_donors.map((donor, idx) => (
               <li key={idx} className="py-2 flex justify-between">
-                <span>{donor.donor_name}</span>
-                <span className="font-semibold">{formatCurrency(donor.total_donations)}</span>
+                <span>{donor.donor_email || `Donor ${idx + 1}`}</span>
+                <span className="font-semibold">{formatCurrency(donor.total_donated || 0)}</span>
               </li>
             ))
           ) : (
@@ -115,8 +121,8 @@ export default function Donors() {
           {analytics.recurring_donor_list.length > 0 ? (
             analytics.recurring_donor_list.map((donor, idx) => (
               <li key={idx} className="py-2 flex justify-between">
-                <span>{donor.donor_name}</span>
-                <span className="font-semibold">{formatCurrency(donor.total_donations)}</span>
+                <span>{donor.donor_email || `Donor ${idx + 1}`}</span>
+                <span className="font-semibold">{formatCurrency(donor.total_donated || 0)}</span>
               </li>
             ))
           ) : (
@@ -141,7 +147,7 @@ export default function Donors() {
               {analytics.donor_retention.length > 0 ? (
                 analytics.donor_retention.map((row, idx) => (
                   <tr key={idx} className="bg-white even:bg-gray-50">
-                    <td className="px-4 py-2 whitespace-nowrap">{row.donor_name}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{row.donor_email || `Donor ${idx + 1}`}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{row.months_active}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{formatDate(row.first_donation)}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{formatDate(row.last_donation)}</td>

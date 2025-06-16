@@ -25,6 +25,13 @@ export default function FundraiserManager() {
 
   useEffect(() => {
     fetchFundraisers();
+    
+    // Check if we need to auto-enter edit mode from redirect
+    const editId = sessionStorage.getItem('editFundraiserId');
+    if (editId) {
+      setEditingFundraiser(editId);
+      sessionStorage.removeItem('editFundraiserId');
+    }
   }, []);
 
   const fetchFundraisers = async () => {

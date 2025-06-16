@@ -128,6 +128,12 @@ export const fundraisersAPI = {
   getDonations: (fundraiserId) => apiRequest('GET', `/fundraiser/${fundraiserId}/donations`),
   getFundraiserAnalytics: (id, params) => apiRequest('GET', `/fundraiser/${id}/analytics${params ? `?${new URLSearchParams(params)}` : ''}`),
   getAllFundraisersAnalytics: (params) => apiRequest('GET', `/fundraiser/analytics${params ? `?${new URLSearchParams(params)}` : ''}`),
+  // Fundraiser Analytics API calls (using the dedicated analytics router)
+  getAnalyticsOverview: (params) => apiRequest('GET', `/fundraiser/analytics/overview${params ? `?${new URLSearchParams(params)}` : ''}`),
+  getAnalyticsTrends: (params) => apiRequest('GET', `/fundraiser/analytics/trends${params ? `?${new URLSearchParams(params)}` : ''}`),
+  getAnalyticsDonorRetention: (params) => apiRequest('GET', `/fundraiser/analytics/donor-retention${params ? `?${new URLSearchParams(params)}` : ''}`),
+  getAnalyticsCampaigns: (params) => apiRequest('GET', `/fundraiser/analytics/campaigns${params ? `?${new URLSearchParams(params)}` : ''}`),
+  addDonation: (fundraiserId, data) => apiRequest('POST', '/fundraiser/analytics/donations', { ...data, fundraiser_id: fundraiserId }),
   getFundraiserTopDonor: (id) => apiRequest('GET', `/fundraiser/${id}/top-donor`),
   getDonationTiers: (id) => apiRequest('GET', `/fundraiser/${id}/tiers`),
   createDonationTier: (id, data) => apiRequest('POST', `/fundraiser/${id}/tiers`, data),

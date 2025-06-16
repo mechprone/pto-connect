@@ -92,22 +92,47 @@ export default function FundraiserAnalytics() {
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
-      let data, error;
-      if (id) {
-        ({ data, error } = await fundraisersAPI.getFundraiserAnalytics(id, { dateRange }));
-      } else {
-        ({ data, error } = await fundraisersAPI.getAllFundraisersAnalytics({ dateRange }));
-      }
-      console.log('Analytics API full response:', { data, error });
-      if (error) throw new Error(error);
-      setAnalytics(normalizeAnalytics(typeof data === 'object' && data !== null ? data : {}));
+      
+      // Use the dedicated analytics endpoints
+      const [overviewResponse, trendsResponse, retentionResponse, campaignsResponse] = await Promise.all([
+        fundraisersAPI.getAnalyticsOverview({ dateRange }),
+        fundraisersAPI.getAnalyticsTrends({ dateRange }),
+        fundraisersAPI.getAnalyticsDonorRetention({ dateRange }),
+        fundraisersAPI.getAnalyticsCampaigns({ dateRange })
+      ]);
+
+      console.log('Analytics API responses:', { 
+        overview: overviewResponse, 
+        trends: trendsResponse, 
+        retention: retentionResponse, 
+        campaigns: campaignsResponse 
+      });
+
+      const combinedData = {
+        // Overview data
+        total_donations: overviewResponse?.data?.data?.total_donations || 0,
+        total_donors: overviewResponse?.data?.data?.total_donors || 0,
+        volunteer_hours: overviewResponse?.data?.data?.total_volunteer_hours || 0,
+        supply_value: overviewResponse?.data?.data?.total_supply_value || 0,
+        active_campaigns: overviewResponse?.data?.data?.active_campaigns || 0,
+        
+        // Trends data
+        monthly_trends: trendsResponse?.data?.data || [],
+        
+        // Retention data
+        donor_retention: retentionResponse?.data?.data || [],
+        
+        // Campaign data
+        campaign_performance: campaignsResponse?.data?.data || []
+      };
+
+      setAnalytics(normalizeAnalytics(combinedData));
       setError(null);
     } catch (error) {
-      const message = id
-        ? 'Failed to fetch fundraiser analytics'
-        : 'Failed to fetch organization-wide fundraiser analytics';
+      const message = 'Failed to fetch fundraiser analytics';
       setError(message);
       handleError(error, message);
+      console.error('Analytics fetch error:', error);
     } finally {
       setLoading(false);
     }
