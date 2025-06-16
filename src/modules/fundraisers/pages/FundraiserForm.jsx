@@ -48,12 +48,14 @@ export default function FundraiserForm() {
     try {
       setLoading(true);
       const { data, error } = await fundraisersAPI.getFundraiser(id);
+      console.log('Fetched fundraiser data:', data, 'Error:', error);
       if (error) throw new Error(error);
+      if (!data) throw new Error('No fundraiser found with this ID.');
       setFormData(data);
       setError(null);
     } catch (error) {
       const message = 'Failed to fetch fundraiser details';
-      setError(message);
+      setError(error.message || message);
       handleError(error, message);
     } finally {
       setLoading(false);
@@ -88,6 +90,14 @@ export default function FundraiserForm() {
       [name]: value
     }));
   };
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64"><span className="text-blue-600 text-lg">Loading fundraiser details...</span></div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500 text-center mt-8">{error}</div>;
+  }
 
   if (!id && window.location.pathname.includes('edit')) {
     return <div className="text-red-500 text-center mt-8">No fundraiser selected. Please select a fundraiser to edit.</div>;
