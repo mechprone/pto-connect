@@ -71,7 +71,7 @@ export default function Reports() {
             <option value="all">All Time</option>
           </select>
         </div>
-        <Button onClick={generateReport} disabled={loading} className="h-10 mt-2 md:mt-0">Generate Report</Button>
+        <Button onClick={generateReport} disabled={loading} className="h-12 md:h-12 md:mt-0 mt-0 flex items-center">Generate Report</Button>
       </div>
       <Card>
         <div className="flex justify-between items-center mb-4">
