@@ -246,12 +246,12 @@ const AdvancedDesignStudio = () => {
       name: 'Welcome Back Newsletter',
       category: 'Newsletter',
       source: 'pto-connect',
-      thumbnail: '/api/placeholder/300/200',
+      thumbnail: 'https://via.placeholder.com/300x200/1e40af/ffffff?text=Welcome+Back',
       description: 'Professional welcome back to school newsletter',
       elements: [
         { type: 'header', content: 'Welcome Back to School!', style: { fontSize: '36px', color: '#1e40af', fontWeight: 'bold', textAlign: 'center', padding: '30px', backgroundColor: '#dbeafe' } },
         { type: 'text', content: 'We\'re excited to start another amazing school year together!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px' } },
-        { type: 'image', src: '/api/placeholder/600/300', style: { width: '100%', height: '300px', borderRadius: '8px', margin: '20px 0' } }
+        { type: 'image', src: 'https://via.placeholder.com/600x300/dbeafe/1e40af?text=School+Image', style: { width: '100%', height: '300px', borderRadius: '8px', margin: '20px 0' } }
       ]
     },
     {
@@ -259,7 +259,7 @@ const AdvancedDesignStudio = () => {
       name: 'Fall Festival Invitation',
       category: 'Events',
       source: 'pto-connect',
-      thumbnail: '/api/placeholder/300/200',
+      thumbnail: 'https://via.placeholder.com/300x200/d97706/ffffff?text=Fall+Festival',
       description: 'Festive fall event invitation template',
       elements: [
         { type: 'header', content: 'Fall Festival 2024', style: { fontSize: '32px', color: '#d97706', fontWeight: 'bold', textAlign: 'center', padding: '25px', backgroundColor: '#fef3c7' } },
@@ -277,7 +277,7 @@ const AdvancedDesignStudio = () => {
     { type: 'subheader', icon: Type, label: 'Subheader', category: 'content', defaultContent: 'Subheader Text' },
     
     // Visual Blocks
-    { type: 'image', icon: Image, label: 'Image', category: 'visual', defaultSrc: '/api/placeholder/400/300' },
+    { type: 'image', icon: Image, label: 'Image', category: 'visual', defaultSrc: 'https://via.placeholder.com/400x300/f3f4f6/6b7280?text=Image' },
     { type: 'gallery', icon: Grid, label: 'Image Gallery', category: 'visual' },
     { type: 'video', icon: Square, label: 'Video', category: 'visual' },
     
