@@ -15,22 +15,25 @@ export default function FundraiserForm() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    goal: '',
-    type: 'donation',
+    goal_amount: '',
+    category_id: '',
     start_date: '',
     end_date: '',
-    is_active: true,
+    status: 'draft',
+    visibility: 'organization',
   });
 
-  const typeOptions = [
-    { value: 'donation', label: 'Donation' },
-    { value: 'sales', label: 'Sales' },
-    { value: 'pledge', label: 'Pledge' }
+  const statusOptions = [
+    { value: 'draft', label: 'Draft' },
+    { value: 'active', label: 'Active' },
+    { value: 'paused', label: 'Paused' },
+    { value: 'completed', label: 'Completed' }
   ];
 
-  const statusOptions = [
-    { value: true, label: 'Active' },
-    { value: false, label: 'Inactive' }
+  const visibilityOptions = [
+    { value: 'public', label: 'Public' },
+    { value: 'private', label: 'Private' },
+    { value: 'organization', label: 'Organization Only' }
   ];
 
   useEffect(() => {
@@ -46,10 +49,24 @@ export default function FundraiserForm() {
     try {
       setLoading(true);
       const { data, error } = await fundraisersAPI.getFundraiser(id);
-      console.log('Fetched fundraiser data:', data, 'Error:', error);
+      console.log('Raw API response:', { data, error });
       if (error) throw new Error(error);
       if (!data) throw new Error('No fundraiser found with this ID.');
-      setFormData(data);
+      
+      // Transform data to match form field names
+      const transformedData = {
+        title: data.title || '',
+        description: data.description || '',
+        goal_amount: data.goal_amount || data.goal || '',
+        category_id: data.category_id || '',
+        start_date: data.start_date || '',
+        end_date: data.end_date || '',
+        status: data.status || 'draft',
+        visibility: data.visibility || 'organization',
+      };
+      
+      console.log('Transformed data for form:', transformedData);
+      setFormData(transformedData);
       setError(null);
     } catch (error) {
       const message = 'Failed to fetch fundraiser details';
@@ -85,7 +102,7 @@ export default function FundraiserForm() {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'is_active' ? value === 'true' : value
+      [name]: value
     }));
   };
 
@@ -129,25 +146,23 @@ export default function FundraiserForm() {
         />
 
         <Input
-          label="Goal"
-          id="goal"
-          name="goal"
+          label="Goal Amount"
+          id="goal_amount"
+          name="goal_amount"
           type="number"
-          value={formData.goal}
+          value={formData.goal_amount}
           onChange={handleChange}
           required
           min="0"
           step="0.01"
         />
 
-        <Select
-          label="Type"
-          id="type"
-          name="type"
-          value={formData.type}
+        <Input
+          label="Category"
+          id="category_id"
+          name="category_id"
+          value={formData.category_id}
           onChange={handleChange}
-          required
-          options={typeOptions}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -172,15 +187,27 @@ export default function FundraiserForm() {
           />
         </div>
 
-        <Select
-          label="Status"
-          id="is_active"
-          name="is_active"
-          value={formData.is_active}
-          onChange={handleChange}
-          required
-          options={statusOptions}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Select
+            label="Status"
+            id="status"
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            required
+            options={statusOptions}
+          />
+
+          <Select
+            label="Visibility"
+            id="visibility"
+            name="visibility"
+            value={formData.visibility}
+            onChange={handleChange}
+            required
+            options={visibilityOptions}
+          />
+        </div>
 
         <div className="flex justify-end space-x-4">
           <Button
