@@ -46,11 +46,11 @@ export default function Reports() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-end md:space-x-4 space-y-4 md:space-y-0">
+      <div className="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-4 md:space-y-0">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Report Type</label>
           <select
-            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-base px-4 py-3 mb-2"
+            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-base px-4 py-3 mb-2 h-12"
             value={selectedReport}
             onChange={e => setSelectedReport(e.target.value)}
           >
@@ -62,7 +62,7 @@ export default function Reports() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
           <select
-            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-base px-4 py-3 mb-2"
+            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-base px-4 py-3 mb-2 h-12"
             value={dateRange}
             onChange={e => setDateRange(e.target.value)}
           >
@@ -71,7 +71,7 @@ export default function Reports() {
             <option value="all">All Time</option>
           </select>
         </div>
-        <Button onClick={generateReport} disabled={loading} className="h-12 md:h-12 md:mt-0 mt-0 flex items-center">Generate Report</Button>
+        <Button onClick={generateReport} disabled={loading} className="h-12 flex items-center">Generate Report</Button>
       </div>
       <Card>
         <div className="flex justify-between items-center mb-4">
