@@ -10,6 +10,7 @@ import FundraiserAnalytics from './FundraiserAnalytics';
 import SocialShare from './SocialShare';
 import Donors from './Donors';
 import Reports from './Reports';
+import FundraiserForm from './FundraiserForm';
 
 export default function FundraiserManager() {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export default function FundraiserManager() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedFundraiser, setSelectedFundraiser] = useState(null);
   const [activeTab, setActiveTab] = useState('fundraisers');
+  const [editingFundraiser, setEditingFundraiser] = useState(null);
 
   useEffect(() => {
     fetchFundraisers();
@@ -75,7 +77,16 @@ export default function FundraiserManager() {
   };
 
   const handleEditFundraiser = (id) => {
-    navigate(`/fundraisers/${id}/edit`);
+    setEditingFundraiser(id);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingFundraiser(null);
+  };
+
+  const handleSaveEdit = () => {
+    setEditingFundraiser(null);
+    fetchFundraisers(); // Refresh the list
   };
 
   const handleViewAnalytics = (id) => {
@@ -131,7 +142,7 @@ export default function FundraiserManager() {
         </nav>
       </div>
       {/* Tab Content */}
-      {activeTab === 'fundraisers' && (
+      {activeTab === 'fundraisers' && !editingFundraiser && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold text-gray-900">Active Fundraisers</h2>
@@ -190,6 +201,25 @@ export default function FundraiserManager() {
               <p className="text-gray-500">No fundraisers found</p>
             </div>
           )}
+        </div>
+      )}
+      {activeTab === 'fundraisers' && editingFundraiser && (
+        <div className="space-y-6">
+          <div className="flex items-center space-x-4 mb-6">
+            <Button
+              variant="outline"
+              onClick={handleCancelEdit}
+            >
+              ← Back to Fundraisers
+            </Button>
+            <h2 className="text-xl font-semibold text-gray-900">Edit Fundraiser</h2>
+          </div>
+          <FundraiserForm 
+            fundraiserId={editingFundraiser}
+            onCancel={handleCancelEdit}
+            onSave={handleSaveEdit}
+            embedded={true}
+          />
         </div>
       )}
       {activeTab === 'analytics' && (

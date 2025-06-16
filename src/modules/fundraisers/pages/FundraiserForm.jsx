@@ -7,9 +7,10 @@ import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 
-export default function FundraiserForm() {
+export default function FundraiserForm({ fundraiserId, onCancel, onSave, embedded = false }) {
   const navigate = useNavigate();
   const { id } = useParams();
+  const effectiveId = fundraiserId || id;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
@@ -37,18 +38,18 @@ export default function FundraiserForm() {
   ];
 
   useEffect(() => {
-    if (id) {
+    if (effectiveId) {
       fetchFundraiser();
     } else {
       setLoading(false);
     }
-  }, [id]);
+  }, [effectiveId]);
 
   const fetchFundraiser = async () => {
-    if (!id) return;
+    if (!effectiveId) return;
     try {
       setLoading(true);
-      const response = await fundraisersAPI.getFundraiser(id);
+      const response = await fundraisersAPI.getFundraiser(effectiveId);
       console.log('Raw API response:', response);
       
       // Extract the actual fundraiser data from the nested response
@@ -104,18 +105,27 @@ export default function FundraiserForm() {
         category: formData.category_id,
       };
       
-      if (id) {
-        const { error } = await fundraisersAPI.updateFundraiser(id, submitData);
+      if (effectiveId) {
+        const { error } = await fundraisersAPI.updateFundraiser(effectiveId, submitData);
         if (error) throw new Error(error);
         handleSuccess('Fundraiser updated successfully');
+        if (embedded && onSave) {
+          onSave();
+        } else {
+          navigate('/fundraisers');
+        }
       } else {
         const { error } = await fundraisersAPI.createFundraiser(submitData);
         if (error) throw new Error(error);
         handleSuccess('Fundraiser created successfully');
+        if (embedded && onSave) {
+          onSave();
+        } else {
+          navigate('/fundraisers');
+        }
       }
-      navigate('/fundraisers');
     } catch (error) {
-      handleError(error, id ? 'Failed to update fundraiser' : 'Failed to create fundraiser');
+      handleError(error, effectiveId ? 'Failed to update fundraiser' : 'Failed to create fundraiser');
     } finally {
       setLoading(false);
     }
@@ -137,16 +147,11 @@ export default function FundraiserForm() {
     return <div className="text-red-500 text-center mt-8">{error}</div>;
   }
 
-  if (!id && window.location.pathname.includes('edit')) {
+  if (!effectiveId && (window.location.pathname.includes('edit') || embedded)) {
     return <div className="text-red-500 text-center mt-8">No fundraiser selected. Please select a fundraiser to edit.</div>;
   }
 
-  return (
-    <PageLayout
-      title={id ? 'Edit Fundraiser' : 'Create Fundraiser'}
-      loading={loading}
-      error={error}
-    >
+  const formContent = (
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6">
         <Input
           label="Title"
@@ -236,7 +241,7 @@ export default function FundraiserForm() {
           <Button
             type="button"
             variant="outline"
-            onClick={() => navigate('/fundraisers')}
+            onClick={embedded && onCancel ? onCancel : () => navigate('/fundraisers')}
           >
             Cancel
           </Button>
@@ -244,10 +249,23 @@ export default function FundraiserForm() {
             type="submit"
             isLoading={loading}
           >
-            {id ? 'Update' : 'Create'} Fundraiser
+            {effectiveId ? 'Update' : 'Create'} Fundraiser
           </Button>
         </div>
       </form>
+  );
+
+  if (embedded) {
+    return formContent;
+  }
+
+  return (
+    <PageLayout
+      title={effectiveId ? 'Edit Fundraiser' : 'Create Fundraiser'}
+      loading={loading}
+      error={error}
+    >
+      {formContent}
     </PageLayout>
   );
 } 
