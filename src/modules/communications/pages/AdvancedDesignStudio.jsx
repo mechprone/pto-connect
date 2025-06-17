@@ -45,24 +45,41 @@ const AdvancedDesignStudio = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showStellaPopup]);
 
-  // Working templates with absolute URLs
+  // Professional templates with real previews
   const templates = [
     {
       id: 'welcome-newsletter',
       name: 'Welcome Back Newsletter',
       category: 'Newsletter',
-      thumbnail: 'https://picsum.photos/300/200?random=1',
+      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZGJlYWZlIi8+CjxyZWN0IHg9IjIwIiB5PSIyMCIgd2lkdGg9IjI2MCIgaGVpZ2h0PSI0MCIgZmlsbD0iIzFlNDBhZiIgcng9IjQiLz4KPHRleHQgeD0iMTUwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPldlbGNvbWUgQmFjayE8L3RleHQ+CjxyZWN0IHg9IjIwIiB5PSI4MCIgd2lkdGg9IjI2MCIgaGVpZ2h0PSIxMDAiIGZpbGw9IndoaXRlIiBzdHJva2U9IiNlNWU3ZWIiIHJ4PSI0Ii8+Cjx0ZXh0IHg9IjMwIiB5PSIxMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzM3NDE1MSI+V2UgYXJlIGV4Y2l0ZWQgdG8gc3RhcnQgYW5vdGhlcjwvdGV4dD4KPHRleHQgeD0iMzAiIHk9IjExNSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMzc0MTUxIj5hbWF6aW5nIHNjaG9vbCB5ZWFyIHRvZ2V0aGVyITwvdGV4dD4KPC9zdmc+',
       description: 'Professional welcome back newsletter',
       elements: [
         {
           type: 'header',
           content: 'Welcome Back to School!',
-          style: { fontSize: '32px', fontWeight: 'bold', color: '#1e40af', textAlign: 'center' }
+          style: { 
+            fontSize: '36px', 
+            fontWeight: 'bold', 
+            color: '#1e40af', 
+            textAlign: 'center',
+            padding: '30px',
+            backgroundColor: '#dbeafe',
+            borderRadius: '8px',
+            width: '100%',
+            marginBottom: '20px'
+          }
         },
         {
           type: 'text',
-          content: 'We are excited to start another amazing school year together!',
-          style: { fontSize: '18px', color: '#374151', textAlign: 'center' }
+          content: 'We are excited to start another amazing school year together! This year brings new opportunities, exciting events, and wonderful memories to be made.',
+          style: { 
+            fontSize: '18px', 
+            color: '#374151', 
+            textAlign: 'center',
+            padding: '20px',
+            lineHeight: '1.6',
+            width: '100%'
+          }
         }
       ]
     },
@@ -70,18 +87,35 @@ const AdvancedDesignStudio = () => {
       id: 'fall-festival',
       name: 'Fall Festival Invitation',
       category: 'Events',
-      thumbnail: 'https://picsum.photos/300/200?random=2',
+      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZmVmM2M3Ii8+CjxyZWN0IHg9IjIwIiB5PSIyMCIgd2lkdGg9IjI2MCIgaGVpZ2h0PSI0MCIgZmlsbD0iI2Q5NzcwNiIgcng9IjQiLz4KPHRleHQgeD0iMTUwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkZhbGwgRmVzdGl2YWwgMjAyNDwvdGV4dD4KPGNpcmNsZSBjeD0iNzAiIGN5PSIxMjAiIHI9IjE1IiBmaWxsPSIjZjU5ZTBiIi8+CjxjaXJjbGUgY3g9IjIzMCIgY3k9IjEyMCIgcj0iMTUiIGZpbGw9IiNlZjQ0NDQiLz4KPHRleHQgeD0iMTUwIiB5PSIxMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzM3NDE1MSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Sm9pbiB1cyBmb3IgZm9vZCwgZnVuLCBhbmQgY29tbXVuaXR5ITwvdGV4dD4KPC9zdmc+',
       description: 'Festive fall event invitation',
       elements: [
         {
           type: 'header',
           content: 'Fall Festival 2024',
-          style: { fontSize: '28px', fontWeight: 'bold', color: '#d97706', textAlign: 'center' }
+          style: { 
+            fontSize: '42px', 
+            fontWeight: 'bold', 
+            color: '#d97706', 
+            textAlign: 'center',
+            padding: '25px',
+            backgroundColor: '#fef3c7',
+            borderRadius: '8px',
+            width: '100%',
+            marginBottom: '20px'
+          }
         },
         {
           type: 'text',
-          content: 'Join us for food, fun, and community spirit!',
-          style: { fontSize: '16px', color: '#374151', textAlign: 'center' }
+          content: 'Join us for food, fun, and community spirit! Games, prizes, delicious treats, and memories for the whole family.',
+          style: { 
+            fontSize: '20px', 
+            color: '#374151', 
+            textAlign: 'center',
+            padding: '20px',
+            lineHeight: '1.5',
+            width: '100%'
+          }
         }
       ]
     },
@@ -89,30 +123,108 @@ const AdvancedDesignStudio = () => {
       id: 'event-announcement',
       name: 'Event Announcement',
       category: 'Events',
-      thumbnail: 'https://picsum.photos/300/200?random=3',
+      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZmVlMmUyIi8+CjxyZWN0IHg9IjIwIiB5PSIyMCIgd2lkdGg9IjI2MCIgaGVpZ2h0PSI0MCIgZmlsbD0iI2RjMjYyNiIgcng9IjQiLz4KPHRleHQgeD0iMTUwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlNwZWNpYWwgRXZlbnQ8L3RleHQ+Cjxwb2x5Z29uIHBvaW50cz0iMTUwLDgwIDEzNSwxMTAgMTY1LDExMCIgZmlsbD0iI2RjMjYyNiIvPgo8dGV4dCB4PSIxNTAiIHk9IjE0MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMzc0MTUxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Kb2luIHVzIGZvciBhbiB1bmZvcmdldHRhYmxlIGV4cGVyaWVuY2UhPC90ZXh0Pgo8L3N2Zz4=',
       description: 'Eye-catching event announcement',
       elements: [
         {
           type: 'header',
-          content: 'Special Event',
-          style: { fontSize: '24px', fontWeight: 'bold', color: '#dc2626', textAlign: 'center' }
+          content: 'Important Announcement',
+          style: { 
+            fontSize: '38px', 
+            fontWeight: 'bold', 
+            color: '#dc2626', 
+            textAlign: 'center',
+            padding: '25px',
+            backgroundColor: '#fee2e2',
+            borderRadius: '8px',
+            width: '100%',
+            marginBottom: '20px'
+          }
         },
         {
           type: 'text',
-          content: 'Join us for an unforgettable experience!',
-          style: { fontSize: '16px', color: '#374151', textAlign: 'center' }
+          content: 'Join us for an unforgettable experience! Mark your calendars for this special event.',
+          style: { 
+            fontSize: '18px', 
+            color: '#374151', 
+            textAlign: 'center',
+            padding: '20px',
+            lineHeight: '1.6',
+            width: '100%'
+          }
         }
       ]
     }
   ];
 
-  // Simple drag elements
+  // Professional drag elements
   const dragElements = [
-    { type: 'text', icon: Type, label: 'Text', defaultContent: 'Add your text here' },
-    { type: 'header', icon: Type, label: 'Header', defaultContent: 'Header Text' },
-    { type: 'image', icon: Image, label: 'Image', defaultSrc: 'https://picsum.photos/300/200?random=99' },
-    { type: 'button', icon: Square, label: 'Button', defaultContent: 'Click Here' },
-    { type: 'divider', icon: Minus, label: 'Divider', defaultContent: '' }
+    { 
+      type: 'text', 
+      icon: Type, 
+      label: 'Text', 
+      defaultContent: 'Add your text here',
+      defaultStyle: {
+        fontSize: '16px',
+        color: '#374151',
+        lineHeight: '1.6',
+        padding: '10px',
+        width: '100%'
+      }
+    },
+    { 
+      type: 'header', 
+      icon: Type, 
+      label: 'Header', 
+      defaultContent: 'Your Header Here',
+      defaultStyle: {
+        fontSize: '32px',
+        fontWeight: 'bold',
+        color: '#1f2937',
+        textAlign: 'center',
+        padding: '20px',
+        width: '100%'
+      }
+    },
+    { 
+      type: 'image', 
+      icon: Image, 
+      label: 'Image', 
+      defaultSrc: 'https://picsum.photos/400/250?random=99',
+      defaultStyle: {
+        width: '100%',
+        borderRadius: '8px'
+      }
+    },
+    { 
+      type: 'button', 
+      icon: Square, 
+      label: 'Button', 
+      defaultContent: 'Click Here',
+      defaultStyle: {
+        backgroundColor: '#3b82f6',
+        color: 'white',
+        padding: '15px 30px',
+        borderRadius: '8px',
+        fontSize: '16px',
+        fontWeight: '600',
+        textAlign: 'center',
+        border: 'none',
+        cursor: 'pointer'
+      }
+    },
+    { 
+      type: 'divider', 
+      icon: Minus, 
+      label: 'Divider', 
+      defaultContent: '',
+      defaultStyle: {
+        height: '2px',
+        backgroundColor: '#e5e7eb',
+        width: '100%',
+        margin: '20px 0'
+      }
+    }
   ];
 
   // Use Template function
@@ -140,7 +252,8 @@ const AdvancedDesignStudio = () => {
       item: { 
         elementType: element.type,
         defaultContent: element.defaultContent || '',
-        defaultSrc: element.defaultSrc || ''
+        defaultSrc: element.defaultSrc || '',
+        defaultStyle: element.defaultStyle || {}
       },
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
@@ -197,9 +310,9 @@ const AdvancedDesignStudio = () => {
             x: Math.max(10, offset.x - canvasRect.left - 50),
             y: Math.max(10, offset.y - canvasRect.top - 20),
             style: {
-              fontSize: '16px',
-              color: '#374151',
-              padding: '10px'
+              ...item.defaultStyle,
+              // Ensure proper positioning for elements
+              position: item.defaultStyle?.width === '100%' ? 'static' : 'absolute'
             }
           };
           
@@ -298,23 +411,28 @@ const AdvancedDesignStudio = () => {
         ...element.style,
         cursor: 'pointer',
         outline: isSelected ? '2px solid #3b82f6' : 'none',
-        outlineOffset: '2px'
+        outlineOffset: '2px',
+        display: 'block',
+        boxSizing: 'border-box'
       };
 
       switch (element.type) {
         case 'text':
           return isEditing ? (
-            <input
-              type="text"
+            <textarea
               value={element.content}
               onChange={(e) => handleContentChange(e.target.value)}
               onBlur={() => setIsEditing(false)}
-              onKeyPress={(e) => e.key === 'Enter' && setIsEditing(false)}
-              className="w-full bg-transparent border-none outline-none"
+              className="w-full bg-transparent border-none outline-none resize-none"
+              style={{ ...baseStyle, minHeight: '100px' }}
               autoFocus
             />
           ) : (
-            <div style={baseStyle}>{element.content}</div>
+            <div style={baseStyle}>
+              {element.content.split('\n').map((line, i) => (
+                <div key={i}>{line}</div>
+              ))}
+            </div>
           );
           
         case 'header':
@@ -325,13 +443,14 @@ const AdvancedDesignStudio = () => {
               onChange={(e) => handleContentChange(e.target.value)}
               onBlur={() => setIsEditing(false)}
               onKeyPress={(e) => e.key === 'Enter' && setIsEditing(false)}
-              className="w-full bg-transparent border-none outline-none text-2xl font-bold"
+              className="w-full bg-transparent border-none outline-none"
+              style={{ ...baseStyle, fontSize: 'inherit', fontWeight: 'inherit' }}
               autoFocus
             />
           ) : (
-            <h2 style={{ ...baseStyle, fontSize: '24px', fontWeight: 'bold' }}>
+            <h1 style={baseStyle}>
               {element.content}
-            </h2>
+            </h1>
           );
           
         case 'image':
@@ -339,9 +458,14 @@ const AdvancedDesignStudio = () => {
             <img
               src={element.src}
               alt="Design element"
-              style={{ ...baseStyle, maxWidth: '300px', height: 'auto' }}
+              style={{ 
+                ...baseStyle, 
+                maxWidth: element.style?.width || '100%', 
+                height: 'auto',
+                objectFit: 'cover'
+              }}
               onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/300x200/f3f4f6/6b7280?text=Image';
+                e.target.src = 'https://via.placeholder.com/400x200/f3f4f6/6b7280?text=Image+Placeholder';
               }}
             />
           );
@@ -351,11 +475,23 @@ const AdvancedDesignStudio = () => {
             <button
               style={{
                 ...baseStyle,
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                padding: '12px 24px',
-                borderRadius: '6px',
-                border: 'none'
+                backgroundColor: element.style?.backgroundColor || '#3b82f6',
+                color: element.style?.color || 'white',
+                padding: element.style?.padding || '15px 30px',
+                borderRadius: element.style?.borderRadius || '8px',
+                border: 'none',
+                fontSize: element.style?.fontSize || '16px',
+                fontWeight: element.style?.fontWeight || '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.opacity = '0.9';
+                e.target.style.transform = 'translateY(-1px)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.opacity = '1';
+                e.target.style.transform = 'translateY(0)';
               }}
             >
               {isEditing ? (
@@ -379,9 +515,10 @@ const AdvancedDesignStudio = () => {
               style={{
                 ...baseStyle,
                 border: 'none',
-                height: '2px',
-                backgroundColor: '#e5e7eb',
-                width: '100%'
+                height: element.style?.height || '2px',
+                backgroundColor: element.style?.backgroundColor || '#e5e7eb',
+                width: '100%',
+                margin: element.style?.margin || '20px 0'
               }}
             />
           );
@@ -391,22 +528,39 @@ const AdvancedDesignStudio = () => {
       }
     };
 
+    const elementWidth = element.style?.width === '100%' ? 'calc(100% - 40px)' : 'auto';
+    const isFullWidth = element.style?.width === '100%';
+
     return (
       <div
         className="absolute"
         style={{
-          left: element.x,
+          left: isFullWidth ? 20 : element.x,
           top: element.y,
-          minWidth: '50px',
-          minHeight: '30px'
+          width: elementWidth,
+          minWidth: isFullWidth ? 'auto' : '50px',
+          minHeight: '30px',
+          zIndex: isSelected ? 10 : 1
         }}
         onClick={onSelect}
         onDoubleClick={handleDoubleClick}
       >
         {renderElement()}
         {isSelected && (
-          <div className="absolute -top-1 -left-1 text-xs bg-blue-600 text-white px-1 rounded">
-            {element.type}
+          <div className="absolute -top-6 -left-1 text-xs bg-blue-600 text-white px-2 py-1 rounded flex items-center space-x-2 z-20">
+            <span>{element.type}</span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                // Delete element
+                setCanvas(prev => prev.filter(el => el.id !== element.id));
+                setSelectedElement(null);
+              }}
+              className="text-white hover:text-red-200 text-xs"
+              title="Delete element"
+            >
+              ×
+            </button>
           </div>
         )}
       </div>
@@ -769,51 +923,245 @@ const AdvancedDesignStudio = () => {
         </div>
         
         {/* Right Panel - Properties */}
-        <div className="w-80 bg-white border-l border-gray-200">
+        <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
           <div className="border-b border-gray-200 px-4 py-3">
             <h2 className="font-semibold text-gray-900">Properties</h2>
           </div>
-          <div className="p-4">
+          <div className="flex-1 overflow-y-auto p-4">
             {selectedElement ? (
-              <div className="space-y-4">
+              <div className="space-y-6">
+                {/* Content Section */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Text Content</label>
-                  <textarea
-                    value={selectedElement.content || ''}
-                    onChange={(e) => {
-                      const updated = { ...selectedElement, content: e.target.value };
-                      setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
-                      setSelectedElement(updated);
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Content</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Text Content</label>
+                      <textarea
+                        value={selectedElement.content || ''}
+                        onChange={(e) => {
+                          const updated = { ...selectedElement, content: e.target.value };
+                          setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
+                          setSelectedElement(updated);
+                        }}
+                        className="w-full p-3 border border-gray-300 rounded-lg text-sm"
+                        rows="4"
+                        placeholder="Enter your text here..."
+                      />
+                    </div>
+                    
+                    {selectedElement.type === 'image' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                        <input
+                          type="url"
+                          value={selectedElement.src || ''}
+                          onChange={(e) => {
+                            const updated = { ...selectedElement, src: e.target.value };
+                            setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
+                            setSelectedElement(updated);
+                          }}
+                          className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                          placeholder="https://example.com/image.jpg"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Typography Section */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Typography</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Font Size: {parseInt(selectedElement.style?.fontSize) || 16}px
+                      </label>
+                      <input
+                        type="range"
+                        min="8"
+                        max="72"
+                        value={parseInt(selectedElement.style?.fontSize) || 16}
+                        onChange={(e) => updateElementStyle({ fontSize: `${e.target.value}px` })}
+                        className="w-full"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Font Weight</label>
+                      <select
+                        value={selectedElement.style?.fontWeight || 'normal'}
+                        onChange={(e) => updateElementStyle({ fontWeight: e.target.value })}
+                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                      >
+                        <option value="300">Light</option>
+                        <option value="normal">Normal</option>
+                        <option value="600">Semi Bold</option>
+                        <option value="bold">Bold</option>
+                        <option value="800">Extra Bold</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Text Alignment</label>
+                      <div className="flex space-x-1">
+                        {['left', 'center', 'right', 'justify'].map(align => (
+                          <button
+                            key={align}
+                            onClick={() => updateElementStyle({ textAlign: align })}
+                            className={`flex-1 p-2 text-xs border rounded ${
+                              selectedElement.style?.textAlign === align 
+                                ? 'bg-blue-100 border-blue-300 text-blue-700' 
+                                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            {align.charAt(0).toUpperCase() + align.slice(1)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Line Height: {parseFloat(selectedElement.style?.lineHeight) || 1.4}
+                      </label>
+                      <input
+                        type="range"
+                        min="1"
+                        max="3"
+                        step="0.1"
+                        value={parseFloat(selectedElement.style?.lineHeight) || 1.4}
+                        onChange={(e) => updateElementStyle({ lineHeight: e.target.value })}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Colors Section */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Colors</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Text Color</label>
+                      <div className="flex space-x-2">
+                        <input
+                          type="color"
+                          value={selectedElement.style?.color || '#374151'}
+                          onChange={(e) => updateElementStyle({ color: e.target.value })}
+                          className="w-12 h-10 rounded border border-gray-300"
+                        />
+                        <input
+                          type="text"
+                          value={selectedElement.style?.color || '#374151'}
+                          onChange={(e) => updateElementStyle({ color: e.target.value })}
+                          className="flex-1 p-2 border border-gray-300 rounded-lg text-sm font-mono"
+                          placeholder="#374151"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
+                      <div className="flex space-x-2">
+                        <input
+                          type="color"
+                          value={selectedElement.style?.backgroundColor || 'transparent'}
+                          onChange={(e) => updateElementStyle({ backgroundColor: e.target.value })}
+                          className="w-12 h-10 rounded border border-gray-300"
+                        />
+                        <input
+                          type="text"
+                          value={selectedElement.style?.backgroundColor || 'transparent'}
+                          onChange={(e) => updateElementStyle({ backgroundColor: e.target.value })}
+                          className="flex-1 p-2 border border-gray-300 rounded-lg text-sm font-mono"
+                          placeholder="transparent"
+                        />
+                      </div>
+                      <button
+                        onClick={() => updateElementStyle({ backgroundColor: 'transparent' })}
+                        className="mt-1 text-xs text-gray-500 hover:text-gray-700"
+                      >
+                        Remove background
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Layout Section */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Layout</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Width</label>
+                      <select
+                        value={selectedElement.style?.width || 'auto'}
+                        onChange={(e) => updateElementStyle({ width: e.target.value })}
+                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                      >
+                        <option value="auto">Auto</option>
+                        <option value="100%">Full Width</option>
+                        <option value="75%">75%</option>
+                        <option value="50%">50%</option>
+                        <option value="25%">25%</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Padding</label>
+                      <input
+                        type="text"
+                        value={selectedElement.style?.padding || '10px'}
+                        onChange={(e) => updateElementStyle({ padding: e.target.value })}
+                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                        placeholder="10px 20px"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Margin</label>
+                      <input
+                        type="text"
+                        value={selectedElement.style?.margin || '0px'}
+                        onChange={(e) => updateElementStyle({ margin: e.target.value })}
+                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                        placeholder="10px 0px"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Border Radius</label>
+                      <input
+                        type="text"
+                        value={selectedElement.style?.borderRadius || '0px'}
+                        onChange={(e) => updateElementStyle({ borderRadius: e.target.value })}
+                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                        placeholder="8px"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="pt-4 border-t border-gray-200">
+                  <button
+                    onClick={() => {
+                      setCanvas(prev => prev.filter(el => el.id !== selectedElement.id));
+                      setSelectedElement(null);
                     }}
-                    className="w-full p-2 border border-gray-300 rounded-lg"
-                    rows="3"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Font Size</label>
-                  <input
-                    type="range"
-                    min="12"
-                    max="48"
-                    value={parseInt(selectedElement.style?.fontSize) || 16}
-                    onChange={(e) => updateElementStyle({ fontSize: `${e.target.value}px` })}
-                    className="w-full"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Text Color</label>
-                  <input
-                    type="color"
-                    value={selectedElement.style?.color || '#374151'}
-                    onChange={(e) => updateElementStyle({ color: e.target.value })}
-                    className="w-full h-10 rounded border"
-                  />
+                    className="w-full py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                  >
+                    Delete Element
+                  </button>
                 </div>
               </div>
             ) : (
-              <p className="text-gray-500 text-sm">Select an element to edit its properties</p>
+              <div className="text-center py-8">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                  <Square className="w-8 h-8 text-gray-400" />
+                </div>
+                <p className="text-gray-500 text-sm mb-2">No element selected</p>
+                <p className="text-gray-400 text-xs">Click on an element to edit its properties</p>
+              </div>
             )}
           </div>
         </div>
