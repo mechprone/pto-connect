@@ -124,7 +124,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'School Carnival', style: { fontSize: '36px', fontWeight: 'bold', color: '#60340c', textAlign: 'center', padding: '30px', backgroundColor: '#fb60cf', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Games, prizes, and fun for all ages! Join us for a day of excitement.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Games, prizes, and fun for all ages! Join us for a day of excitement.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 7. Volunteer Signup
@@ -137,7 +137,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Volunteer Signup', style: { fontSize: '36px', fontWeight: 'bold', color: '#265668', textAlign: 'center', padding: '30px', backgroundColor: '#60f6b0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'We need your help! Sign up to volunteer and make a difference.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'We need your help! Sign up to volunteer and make a difference.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 8. Meeting Reminder
@@ -150,7 +150,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Meeting Reminder', style: { fontSize: '36px', fontWeight: 'bold', color: '#265668', textAlign: 'center', padding: '30px', backgroundColor: '#60f6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Don\'t forget our next meeting! Check the agenda and RSVP below.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Don\'t forget our next meeting! Check the agenda and RSVP below.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 9. RSVP Request
@@ -163,7 +163,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'RSVP Request', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6b0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Please let us know if you can attend. Your response helps us plan!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Please let us know if you can attend. Your response helps us plan!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 10. Principal's Message
@@ -176,7 +176,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'A Message from the Principal', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Dear families, we are excited to share important updates and celebrate our successes together.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Dear families, we are excited to share important updates and celebrate our successes together.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 11. Thank You Volunteers
@@ -189,7 +189,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Thank You, Volunteers!', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6b0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'We couldn\'t do it without you! Thank you for your time and dedication.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'We couldn\'t do it without you! Thank you for your time and dedication.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 12. Teacher Spotlight
@@ -202,7 +202,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Teacher Spotlight', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'This month, we celebrate the dedication and passion of our amazing teachers.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'This month, we celebrate the dedication and passion of our amazing teachers.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 13. Spirit Week
@@ -215,7 +215,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Spirit Week', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Show your school spirit! Dress up, participate, and have fun all week long.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Show your school spirit! Dress up, participate, and have fun all week long.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 14. Field Day
@@ -228,7 +228,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Field Day', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Join us for a day of games, teamwork, and outdoor fun!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Join us for a day of games, teamwork, and outdoor fun!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 15. Donation Drive
@@ -241,7 +241,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Donation Drive', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Help us reach our goal! Every contribution makes a difference.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Help us reach our goal! Every contribution makes a difference.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 16. Parent-Teacher Conference
@@ -254,7 +254,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Parent-Teacher Conference', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Meet with your child\'s teacher to discuss progress and goals.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Meet with your child\'s teacher to discuss progress and goals.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 17. School Newsletter
@@ -267,7 +267,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'School Newsletter', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Stay up to date with the latest news, events, and announcements.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Stay up to date with the latest news, events, and announcements.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 18. Spirit Wear Sale
@@ -280,7 +280,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Spirit Wear Sale', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Show your school spirit! Order your spirit wear today.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Show your school spirit! Order your spirit wear today.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 19. End of Year Celebration
@@ -293,7 +293,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'End of Year Celebration', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Join us for a celebration of our students\' achievements and a great year!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Join us for a celebration of our students\' achievements and a great year!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 20. General Announcement
@@ -306,7 +306,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Announcement', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Stay tuned for important updates and information.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Stay tuned for important updates and information.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     }
   ];
