@@ -58,14 +58,24 @@ const AdvancedDesignStudio = () => {
       description: 'Invite families to Back to School Night with this welcoming template.',
       isProfessional: true,
       elements: [
-        { type: 'image', src: '/images/school-banner.jpg', style: { width: '100%', borderRadius: '8px', marginBottom: '20px' } },
-        { type: 'header', content: 'Back to School Night', style: { fontSize: '36px', fontWeight: 'bold', color: '#172845', textAlign: 'center', padding: '30px', backgroundColor: '#fbc860', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'divider', style: { margin: '24px 0', borderColor: '#fbc860' } },
-        { type: 'text', content: 'Join us for an evening of fun, learning, and community as we kick off the new school year!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } },
-        { type: 'button', content: 'RSVP Now', url: 'https://...', style: { backgroundColor: '#2563eb', color: '#fff', padding: '16px 32px', borderRadius: '6px', fontWeight: 'bold', margin: '24px auto', display: 'block' } },
-        { type: 'divider', style: { margin: '24px 0', borderColor: '#e5e7eb' } },
-        { type: 'social', icons: ['facebook', 'twitter', 'instagram'], style: { justifyContent: 'center', margin: '16px 0' } },
-        { type: 'footer', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '14px', marginTop: '24px' } }
+        // Banner image
+        { type: 'image', src: '/src/modules/communications/templates/bring_joy/images/image-1.png', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        // Header block
+        { type: 'header', content: 'Back to School Night', style: { fontSize: '38px', fontWeight: 'bold', color: '#172845', textAlign: 'center', padding: '28px', backgroundColor: '#fbc860', borderRadius: '8px', width: '100%', marginBottom: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        // Divider
+        { type: 'divider', style: { borderTop: '2px solid #fbc860', margin: '24px 0', width: '80%', marginLeft: 'auto', marginRight: 'auto' } },
+        // Event details card
+        { type: 'text', content: 'Join us for an evening of fun, learning, and community as we kick off the new school year!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 16px auto', width: '90%' } },
+        // RSVP Button
+        { type: 'button', content: 'RSVP Now', url: 'https://example.com/rsvp', style: { backgroundColor: '#2563eb', color: '#fff', padding: '16px 40px', borderRadius: '6px', fontWeight: 'bold', fontSize: '18px', margin: '0 auto 24px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.08)' } },
+        // Divider
+        { type: 'divider', style: { borderTop: '1px solid #e5e7eb', margin: '24px 0', width: '80%', marginLeft: 'auto', marginRight: 'auto' } },
+        // Social media row (as images for now)
+        { type: 'image', src: '/src/modules/communications/templates/bring_joy/images/image-7.png', style: { width: '36px', height: '36px', margin: '0 8px', display: 'inline-block' } },
+        { type: 'image', src: '/src/modules/communications/templates/bring_joy/images/image-6.png', style: { width: '36px', height: '36px', margin: '0 8px', display: 'inline-block' } },
+        { type: 'image', src: '/src/modules/communications/templates/bring_joy/images/image-5.png', style: { width: '36px', height: '36px', margin: '0 8px', display: 'inline-block' } },
+        // Footer block
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '15px', marginTop: '32px', marginBottom: '0', padding: '12px 0 0 0' } }
       ]
     },
     // 2. Fall Festival
