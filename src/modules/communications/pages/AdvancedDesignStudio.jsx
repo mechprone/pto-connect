@@ -224,7 +224,7 @@ const AdvancedDesignStudio = () => {
       name: 'Field Day',
       category: 'Event',
       thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmY2ZjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RmllbGQgRGF5PC90ZXh0Pjwvc3ZnPg==',
-      description: 'Announce your school's annual Field Day with this energetic template.',
+      description: 'Announce your school\'s annual Field Day with this energetic template.',
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Field Day', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
