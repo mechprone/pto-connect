@@ -30,6 +30,8 @@ const AdvancedDesignStudio = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const canvasRef = useRef(null);
+  const [history, setHistory] = useState([]); // for undo
+  const [future, setFuture] = useState([]); // for redo
 
   // Console logging for debugging
   useEffect(() => {
@@ -49,276 +51,138 @@ const AdvancedDesignStudio = () => {
 
   // Professional Unlayer-style templates
   const professionalTemplates = [
-    // 1. Back to School Night
     {
-      id: 'back-to-school-night',
-      name: 'Back to School Night',
-      category: 'Event',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmM4NjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzE3Mjg0NSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QmFjayB0byBTY2hvb2w8L3RleHQ+PC9zdmc+',
-      description: 'Invite families to Back to School Night with this welcoming template.',
-      isProfessional: true,
-      elements: [
-        // Banner image (public Unsplash for demo)
-        { type: 'image', src: 'https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
-        // Header block
-        { type: 'header', content: 'Back to School Night', style: { fontSize: '38px', fontWeight: 'bold', color: '#172845', textAlign: 'center', padding: '28px', backgroundColor: '#fbc860', borderRadius: '8px', width: '100%', marginBottom: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
-        // More visible divider
-        { type: 'divider', style: { borderTop: '3px solid #2563eb', margin: '24px 0', width: '100%' } },
-        // Event details card
-        { type: 'text', content: 'Join us for an evening of fun, learning, and community as we kick off the new school year!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 16px auto', width: '90%' } },
-        // Centered RSVP Button (as a button element)
-        { type: 'button', content: 'RSVP Now', url: 'https://example.com/rsvp', style: { backgroundColor: '#2563eb', color: '#fff', padding: '16px 40px', borderRadius: '6px', fontWeight: 'bold', fontSize: '18px', margin: '0 auto 24px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.08)' } },
-        // More visible divider
-        { type: 'divider', style: { borderTop: '2px solid #2563eb', margin: '24px 0', width: '100%' } },
-        // Footer block
-        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '15px', marginTop: '32px', marginBottom: '0', padding: '12px 0 0 0' } }
-      ]
-    },
-    // 2. Fall Festival
-    {
-      id: 'fall-festival',
-      name: 'Fall Festival',
-      category: 'Event',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmZTYyMDAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzg0NDMwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RmFsbCBGZXN0aXZhbDwvdGV4dD48L3N2Zz4=',
-      description: 'Celebrate autumn with a festive invitation for your school community.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'Fall Festival', style: { fontSize: '36px', fontWeight: 'bold', color: '#844300', textAlign: 'center', padding: '30px', backgroundColor: '#fe6200', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Games, food, and fun for the whole family! Don\'t miss our annual Fall Festival.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 3. Book Fair
-    {
-      id: 'book-fair',
-      name: 'Book Fair',
-      category: 'Fundraiser',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiM2YmM2ZWIiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzI2NTY2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Qm9vayBGYWlyPC90ZXh0Pjwvc3ZnPg==',
-      description: 'Promote your school book fair and encourage reading!',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'Book Fair', style: { fontSize: '36px', fontWeight: 'bold', color: '#265668', textAlign: 'center', padding: '30px', backgroundColor: '#6bc6eb', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Support our library and foster a love of reading. Shop the Book Fair this week!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 4. Fun Run
-    {
-      id: 'fun-run',
-      name: 'Fun Run Fundraiser',
-      category: 'Fundraiser',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYjYwNjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RnVuIFJ1bjwvdGV4dD48L3N2Zz4=',
-      description: 'Get everyone moving and giving with a fun run event template.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'Fun Run Fundraiser', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fb6060', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Lace up your sneakers and join us for a day of fitness and fun!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 5. Auction Night
-    {
-      id: 'auction-night',
-      name: 'Auction Night',
-      category: 'Fundraiser',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmYwYzAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwNTYwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QXVjdGlvbjwvdGV4dD48L3N2Zz4=',
-      description: 'Elegant invitation for your annual auction fundraiser.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'Auction Night', style: { fontSize: '36px', fontWeight: 'bold', color: '#605600', textAlign: 'center', padding: '30px', backgroundColor: '#fbf0c0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Bid on amazing items and support our school programs!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 6. Carnival
-    {
-      id: 'school-carnival',
-      name: 'School Carnival',
-      category: 'Event',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYjYwY2YiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwYyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q2Fybml2YWw8L3RleHQ+PC9zdmc+',
-      description: 'Bright and playful template for your school carnival.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'School Carnival', style: { fontSize: '36px', fontWeight: 'bold', color: '#60340c', textAlign: 'center', padding: '30px', backgroundColor: '#fb60cf', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Games, prizes, and fun for all ages! Join us for a day of excitement.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 7. Volunteer Signup
-    {
-      id: 'volunteer-signup',
-      name: 'Volunteer Signup',
-      category: 'Community',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiM2MGY2YjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzI2NTY2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Vm9sdW50ZWVyPC90ZXh0Pjwvc3ZnPg==',
-      description: 'Encourage parents and community members to volunteer.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'Volunteer Signup', style: { fontSize: '36px', fontWeight: 'bold', color: '#265668', textAlign: 'center', padding: '30px', backgroundColor: '#60f6b0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'We need your help! Sign up to volunteer and make a difference.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 8. Meeting Reminder
-    {
-      id: 'meeting-reminder',
-      name: 'Meeting Reminder',
-      category: 'Reminder',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiM2MGY2ZjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzI2NTY2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TWVldGluZzwvdGV4dD48L3N2Zz4=',
-      description: 'Remind your group about upcoming meetings.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'Meeting Reminder', style: { fontSize: '36px', fontWeight: 'bold', color: '#265668', textAlign: 'center', padding: '30px', backgroundColor: '#60f6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Don\'t forget our next meeting! Check the agenda and RSVP below.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 9. RSVP Request
-    {
-      id: 'rsvp-request',
-      name: 'RSVP Request',
-      category: 'Reminder',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmY2YjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UlNWUDwvdGV4dD48L3N2Zz4=',
-      description: 'Request RSVPs for events and meetings.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'RSVP Request', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6b0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Please let us know if you can attend. Your response helps us plan!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 10. Principal's Message
-    {
-      id: 'principal-message',
-      name: 'Principal\'s Message',
-      category: 'Announcement',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmY2ZjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UHJpbmNpcGFsPC90ZXh0Pjwvc3ZnPg==',
-      description: 'Share a message from the principal or school leader.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'A Message from the Principal', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Dear families, we are excited to share important updates and celebrate our successes together.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 11. Thank You Volunteers
-    {
-      id: 'thank-you-volunteers',
-      name: 'Thank You Volunteers',
-      category: 'Community',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmY2YjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+VGhhbmsgWW91PC90ZXh0Pjwvc3ZnPg==',
-      description: 'Show appreciation for your amazing volunteers.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'Thank You, Volunteers!', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6b0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'We couldn\'t do it without you! Thank you for your time and dedication.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 12. Teacher Spotlight
-    {
-      id: 'teacher-spotlight',
-      name: 'Teacher Spotlight',
-      category: 'Announcement',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmY2ZjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+VGVhY2hlcjwvdGV4dD48L3N2Zz4=',
-      description: 'Highlight a teacher or staff member making a difference.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'Teacher Spotlight', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'This month, we celebrate the dedication and passion of our amazing teachers.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 13. Spirit Week
-    {
-      id: 'spirit-week',
-      name: 'Spirit Week',
-      category: 'Event',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmY2ZjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U3Bpcml0IFdlZWs8L3RleHQ+PC9zdmc+',
-      description: 'Get everyone excited for Spirit Week with this colorful template.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'Spirit Week', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Show your school spirit! Dress up, participate, and have fun all week long.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 14. Field Day
-    {
-      id: 'field-day',
-      name: 'Field Day',
-      category: 'Event',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmY2ZjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RmllbGQgRGF5PC90ZXh0Pjwvc3ZnPg==',
-      description: 'Announce your school\'s annual Field Day with this energetic template.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'Field Day', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Join us for a day of games, teamwork, and outdoor fun!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 15. Donation Drive
-    {
-      id: 'donation-drive',
-      name: 'Donation Drive',
-      category: 'Fundraiser',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmY2ZjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RG9uYXRpb24gRHJpdmU8L3RleHQ+PC9zdmc+',
-      description: 'Encourage donations for your next drive or campaign.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'Donation Drive', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Help us reach our goal! Every contribution makes a difference.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 16. Parent-Teacher Conference
-    {
-      id: 'parent-teacher-conference',
-      name: 'Parent-Teacher Conference',
-      category: 'Event',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmY2ZjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UGFyZW50LVRlYWNoZXI8L3RleHQ+PC9zdmc+',
-      description: 'Schedule and remind families about conferences.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'Parent-Teacher Conference', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Meet with your child\'s teacher to discuss progress and goals.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 17. School Newsletter
-    {
-      id: 'school-newsletter',
-      name: 'School Newsletter',
+      id: 'newsletter-modern',
+      name: 'Modern Newsletter',
       category: 'Newsletter',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmY2ZjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U2Nob29sIE5ld3NsZXR0ZXI8L3RleHQ+PC9zdmc+',
-      description: 'A classic school newsletter template for regular updates.',
+      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnMSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzY2NmFkMSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzM3NDE1MSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI2cxKSIvPjx0ZXh0IHg9IjE1MCIgeT0iNDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5OZXdzbGV0dGVyPC90ZXh0PjxyZWN0IHg9IjIwIiB5PSI2MCIgd2lkdGg9IjI2MCIgaGVpZ2h0PSIxMjAiIGZpbGw9IndoaXRlIiBvcGFjaXR5PSIwLjkiIHJ4PSI4Ii8+PC9zdmc+',
+      description: 'Professional gradient newsletter template',
       isProfessional: true,
       elements: [
-        { type: 'header', content: 'School Newsletter', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Stay up to date with the latest news, events, and announcements.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
+        {
+          type: 'header',
+          content: 'Monthly Newsletter',
+          style: { 
+            fontSize: '48px', 
+            fontWeight: 'bold', 
+            color: '#ffffff', 
+            textAlign: 'center',
+            padding: '40px',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            borderRadius: '12px',
+            width: '100%',
+            marginBottom: '30px'
+          }
+        },
+        {
+          type: 'text',
+          content: 'Stay connected with the latest updates, events, and announcements from our community.',
+          style: { 
+            fontSize: '20px', 
+            color: '#374151', 
+            textAlign: 'center',
+            padding: '25px',
+            lineHeight: '1.7',
+            width: '100%',
+            backgroundColor: '#f9fafb',
+            borderRadius: '8px'
+          }
+        }
       ]
     },
-    // 18. Spirit Wear Sale
     {
-      id: 'spirit-wear-sale',
-      name: 'Spirit Wear Sale',
-      category: 'Fundraiser',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmY2ZjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U3Bpcml0IFdlYXI8L3RleHQ+PC9zdmc+',
-      description: 'Promote your spirit wear sale and boost school pride.',
+      id: 'ecommerce-promo',
+      name: 'E-commerce Promotion',
+      category: 'Marketing',
+      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnMiIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6I2VmNDQ0NCIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2RjMjYyNiIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI2cyKSIvPjx0ZXh0IHg9IjE1MCIgeT0iNDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyOCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TQUxFPC90ZXh0Pjx0ZXh0IHg9IjE1MCIgeT0iNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj41MCUgT0ZGPC90ZXh0PjxyZWN0IHg9IjEwMCIgeT0iMTIwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjQwIiBmaWxsPSJ3aGl0ZSIgcng9IjIwIi8+PHRleHQgeD0iMTUwIiB5PSIxNDUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiNkYzI2MjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlNIT1AgTk9XPC90ZXh0Pjwvc3ZnPg==',
+      description: 'Eye-catching promotional template',
       isProfessional: true,
       elements: [
-        { type: 'header', content: 'Spirit Wear Sale', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Show your school spirit! Order your spirit wear today.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
+        {
+          type: 'header',
+          content: 'FLASH SALE - 50% OFF',
+          style: { 
+            fontSize: '44px', 
+            fontWeight: 'bold', 
+            color: '#ffffff', 
+            textAlign: 'center',
+            padding: '35px',
+            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            borderRadius: '12px',
+            width: '100%',
+            marginBottom: '25px'
+          }
+        },
+        {
+          type: 'text',
+          content: 'Limited time offer! Don\'t miss out on incredible savings across our entire collection.',
+          style: { 
+            fontSize: '18px', 
+            color: '#374151', 
+            textAlign: 'center',
+            padding: '20px',
+            lineHeight: '1.6',
+            width: '100%'
+          }
+        },
+        {
+          type: 'button',
+          content: 'SHOP NOW',
+          style: {
+            backgroundColor: '#dc2626',
+            color: 'white',
+            padding: '18px 40px',
+            borderRadius: '25px',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            border: 'none',
+            cursor: 'pointer',
+            width: '200px',
+            margin: '0 auto',
+            display: 'block'
+          }
+        }
       ]
     },
-    // 19. End of Year Celebration
     {
-      id: 'end-of-year-celebration',
-      name: 'End of Year Celebration',
-      category: 'Event',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmY2ZjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RW5kIG9mIFllYXI8L3RleHQ+PC9zdmc+',
-      description: 'Celebrate the end of the school year with this festive template.',
+      id: 'business-announcement',
+      name: 'Business Announcement',
+      category: 'Business',
+      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnMyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzEwYjk4MSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzA1OWY3ZiIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI2czKSIvPjx0ZXh0IHg9IjE1MCIgeT0iNDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JTVBPUlRBTlQ8L3RleHQ+PHRleHQgeD0iMTUwIiB5PSI3MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMyIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFubm91bmNlbWVudDwvdGV4dD48cmVjdCB4PSIyMCIgeT0iMTAwIiB3aWR0aD0iMjYwIiBoZWlnaHQ9IjgwIiBmaWxsPSJ3aGl0ZSIgb3BhY2l0eT0iMC45NSIgcng9IjgiLz48L3N2Zz4=',
+      description: 'Professional business communication',
       isProfessional: true,
       elements: [
-        { type: 'header', content: 'End of Year Celebration', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Join us for a celebration of our students\' achievements and a great year!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
-      ]
-    },
-    // 20. General Announcement
-    {
-      id: 'general-announcement',
-      name: 'General Announcement',
-      category: 'Announcement',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmY2ZjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QW5ub3VuY2VtZW50PC90ZXh0Pjwvc3ZnPg==',
-      description: 'A flexible template for any school-related announcement.',
-      isProfessional: true,
-      elements: [
-        { type: 'header', content: 'Announcement', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Stay tuned for important updates and information.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
+        {
+          type: 'header',
+          content: 'Important Business Update',
+          style: { 
+            fontSize: '40px', 
+            fontWeight: 'bold', 
+            color: '#ffffff', 
+            textAlign: 'center',
+            padding: '35px',
+            background: 'linear-gradient(135deg, #10b981 0%, #059f7f 100%)',
+            borderRadius: '12px',
+            width: '100%',
+            marginBottom: '25px'
+          }
+        },
+        {
+          type: 'text',
+          content: 'We are excited to share important updates about our organization and upcoming changes that will benefit our community.',
+          style: { 
+            fontSize: '18px', 
+            color: '#374151', 
+            textAlign: 'left',
+            padding: '25px',
+            lineHeight: '1.7',
+            width: '100%',
+            backgroundColor: '#f0fdf4',
+            borderRadius: '8px',
+            border: '1px solid #bbf7d0'
+          }
+        }
       ]
     }
   ];
@@ -916,11 +780,7 @@ const AdvancedDesignStudio = () => {
           width: elementWidth,
           minWidth: isFullWidth ? 'auto' : '50px',
           minHeight: '30px',
-          zIndex: isSelected ? 10 : 1,
-          position: element.style?.position || 'static',
-          marginLeft: element.style?.elementJustify === 'center' ? 'auto' : element.style?.elementJustify === 'right' ? 'auto' : undefined,
-          marginRight: element.style?.elementJustify === 'center' ? 'auto' : element.style?.elementJustify === 'right' ? 0 : undefined,
-          display: element.style?.elementJustify ? 'block' : undefined,
+          zIndex: isSelected ? 10 : 1
         }}
         onClick={onSelect}
         onDoubleClick={handleDoubleClick}
@@ -1022,6 +882,54 @@ const AdvancedDesignStudio = () => {
     window.addEventListener('error', handleError);
     return () => window.removeEventListener('error', handleError);
   }, []);
+
+  // Add beforeunload warning
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
+  // Update autosave and versioning on canvas change
+  useEffect(() => {
+    localStorage.setItem('pto-advanced-design-canvas', JSON.stringify(canvas));
+    // Only push to history if not triggered by undo/redo
+    setHistory(prev => {
+      if (prev.length > 0 && JSON.stringify(prev[prev.length - 1]) === JSON.stringify(canvas)) return prev;
+      const newHistory = [...prev, canvas];
+      return newHistory.length > 5 ? newHistory.slice(newHistory.length - 5) : newHistory;
+    });
+    setFuture([]); // clear redo stack on new change
+  }, [canvas]);
+
+  // Undo/Redo handlers
+  const handleUndo = () => {
+    setHistory(prev => {
+      if (prev.length < 2) return prev;
+      setFuture(f => [canvas, ...f].slice(0, 5));
+      setCanvas(prev[prev.length - 2]);
+      return prev.slice(0, prev.length - 1);
+    });
+  };
+  const handleRedo = () => {
+    setFuture(f => {
+      if (f.length === 0) return f;
+      setHistory(h => [...h, f[0]].slice(-5));
+      setCanvas(f[0]);
+      return f.slice(1);
+    });
+  };
+
+  // Clear Draft handler
+  const handleClearDraft = () => {
+    setCanvas([]);
+    setHistory([]);
+    setFuture([]);
+    localStorage.removeItem('pto-advanced-design-canvas');
+  };
 
   if (hasError) {
     return (
@@ -1198,20 +1106,45 @@ const AdvancedDesignStudio = () => {
                 </div>
                 
                 {/* Action Buttons */}
-                <button 
-                  className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                  onClick={() => console.log('Save draft')}
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Draft
-                </button>
-                <button 
-                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  onClick={() => console.log('Preview', builderMode)}
-                >
-                  <Eye className="w-4 h-4 mr-2" />
-                  Preview
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={handleUndo}
+                    disabled={history.length < 2}
+                    className="p-2 rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50"
+                    title="Undo"
+                  >
+                    <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M9 4L4 9l5 5" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 9h7a5 5 0 110 10H6" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </button>
+                  <button
+                    onClick={handleRedo}
+                    disabled={future.length === 0}
+                    className="p-2 rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50"
+                    title="Redo"
+                  >
+                    <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M11 4l5 5-5 5" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M16 9H9a5 5 0 100 10h7" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </button>
+                  <button
+                    onClick={handleClearDraft}
+                    className="ml-2 px-4 py-2 rounded border border-gray-300 bg-white text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
+                    title="Clear Draft"
+                  >
+                    Clear Draft
+                  </button>
+                  <button
+                    onClick={handleSaveDraft}
+                    className="ml-2 px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-900 transition-colors"
+                    title="Save Draft"
+                  >
+                    Save Draft
+                  </button>
+                  <button 
+                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    onClick={() => console.log('Preview', builderMode)}
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    Preview
+                  </button>
+                </div>
                 
                 {/* Stella AI Assistant */}
                 <div className="relative stella-popup-container">
@@ -1506,34 +1439,6 @@ const AdvancedDesignStudio = () => {
                         placeholder="8px"
                       />
                     </div>
-                  </div>
-                </div>
-
-                {/* In PropertiesPanel, after Layout section, add: */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Wrap (Positioning)</label>
-                  <select
-                    value={selectedElement.style?.position || 'static'}
-                    onChange={e => updateElementStyle({ position: e.target.value })}
-                    className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-                  >
-                    <option value="static">None (No Overlap)</option>
-                    <option value="absolute">Through (Allow Overlap)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Element Justification</label>
-                  <div className="flex space-x-1">
-                    {['left', 'center', 'right'].map(justify => (
-                      <button
-                        key={justify}
-                        onClick={() => updateElementStyle({ elementJustify: justify })}
-                        className={`flex-1 p-2 text-xs border rounded ${selectedElement.style?.elementJustify === justify ? 'bg-blue-100 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
-                      >
-                        {justify.charAt(0).toUpperCase() + justify.slice(1)}
-                      </button>
-                    ))}
                   </div>
                 </div>
 
