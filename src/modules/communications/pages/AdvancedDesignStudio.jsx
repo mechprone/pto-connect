@@ -948,6 +948,13 @@ const AdvancedDesignStudio = () => {
     localStorage.removeItem('pto-advanced-design-canvas');
   };
 
+  // Add this function near other handlers (e.g., handleUndo, handleClearDraft):
+  const handleSaveDraft = () => {
+    localStorage.setItem('pto-advanced-design-canvas', JSON.stringify(canvas));
+    // Optionally show a confirmation (replace with toast if available)
+    console.log('Draft saved!');
+  };
+
   if (hasError) {
     return (
       <div className="h-screen bg-gray-100 flex items-center justify-center">
