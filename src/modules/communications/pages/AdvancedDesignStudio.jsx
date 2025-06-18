@@ -132,7 +132,7 @@ const AdvancedDesignStudio = () => {
         },
         {
           type: 'text',
-          content: 'Limited time offer! Don't miss out on incredible savings across our entire collection.',
+          content: "Limited time offer! Don't miss out on incredible savings across our entire collection.",
           style: { 
             fontSize: '18px', 
             color: '#374151', 
