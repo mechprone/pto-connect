@@ -58,8 +58,14 @@ const AdvancedDesignStudio = () => {
       description: 'Invite families to Back to School Night with this welcoming template.',
       isProfessional: true,
       elements: [
+        { type: 'image', src: '/images/school-banner.jpg', style: { width: '100%', borderRadius: '8px', marginBottom: '20px' } },
         { type: 'header', content: 'Back to School Night', style: { fontSize: '36px', fontWeight: 'bold', color: '#172845', textAlign: 'center', padding: '30px', backgroundColor: '#fbc860', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Join us for an evening of fun, learning, and community as we kick off the new school year!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
+        { type: 'divider', style: { margin: '24px 0', borderColor: '#fbc860' } },
+        { type: 'text', content: 'Join us for an evening of fun, learning, and community as we kick off the new school year!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } },
+        { type: 'button', content: 'RSVP Now', url: 'https://...', style: { backgroundColor: '#2563eb', color: '#fff', padding: '16px 32px', borderRadius: '6px', fontWeight: 'bold', margin: '24px auto', display: 'block' } },
+        { type: 'divider', style: { margin: '24px 0', borderColor: '#e5e7eb' } },
+        { type: 'social', icons: ['facebook', 'twitter', 'instagram'], style: { justifyContent: 'center', margin: '16px 0' } },
+        { type: 'footer', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '14px', marginTop: '24px' } }
       ]
     },
     // 2. Fall Festival
