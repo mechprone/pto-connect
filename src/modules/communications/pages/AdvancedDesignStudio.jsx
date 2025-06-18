@@ -72,7 +72,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Fall Festival', style: { fontSize: '36px', fontWeight: 'bold', color: '#844300', textAlign: 'center', padding: '30px', backgroundColor: '#fe6200', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Games, food, and fun for the whole family! Don't miss our annual Fall Festival.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Games, food, and fun for the whole family! Don\'t miss our annual Fall Festival.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 3. Book Fair
@@ -150,7 +150,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Meeting Reminder', style: { fontSize: '36px', fontWeight: 'bold', color: '#265668', textAlign: 'center', padding: '30px', backgroundColor: '#60f6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Don't forget our next meeting! Check the agenda and RSVP below.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Don\'t forget our next meeting! Check the agenda and RSVP below.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 9. RSVP Request
@@ -169,7 +169,7 @@ const AdvancedDesignStudio = () => {
     // 10. Principal's Message
     {
       id: 'principal-message',
-      name: 'Principal's Message',
+      name: 'Principal\'s Message',
       category: 'Announcement',
       thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDMwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmYmY2ZjAiLz48dGV4dCB4PSIxNTAiIHk9IjcwIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzYwMzQwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UHJpbmNpcGFsPC90ZXh0Pjwvc3ZnPg==',
       description: 'Share a message from the principal or school leader.',
@@ -189,7 +189,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Thank You, Volunteers!', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6b0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'We couldn't do it without you! Thank you for your time and dedication.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'We couldn\'t do it without you! Thank you for your time and dedication.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 12. Teacher Spotlight
@@ -254,7 +254,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Parent-Teacher Conference', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Meet with your child's teacher to discuss progress and goals.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Meet with your child\'s teacher to discuss progress and goals.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 17. School Newsletter
@@ -293,7 +293,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'End of Year Celebration', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fbf6f0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Join us for a celebration of our students' achievements and a great year!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Join us for a celebration of our students\' achievements and a great year!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 20. General Announcement
