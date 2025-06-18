@@ -5,7 +5,7 @@ import {
   Type, Image, Square, Minus, 
   Save, Eye, Sparkles, 
   ZoomIn, ZoomOut,
-  Search,
+  Search, Palette,
   Mail, MessageSquare, Share2
 } from 'lucide-react';
 
