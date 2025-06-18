@@ -916,7 +916,11 @@ const AdvancedDesignStudio = () => {
           width: elementWidth,
           minWidth: isFullWidth ? 'auto' : '50px',
           minHeight: '30px',
-          zIndex: isSelected ? 10 : 1
+          zIndex: isSelected ? 10 : 1,
+          position: element.style?.position || 'static',
+          marginLeft: element.style?.elementJustify === 'center' ? 'auto' : element.style?.elementJustify === 'right' ? 'auto' : undefined,
+          marginRight: element.style?.elementJustify === 'center' ? 'auto' : element.style?.elementJustify === 'right' ? 0 : undefined,
+          display: element.style?.elementJustify ? 'block' : undefined,
         }}
         onClick={onSelect}
         onDoubleClick={handleDoubleClick}
@@ -1502,6 +1506,34 @@ const AdvancedDesignStudio = () => {
                         placeholder="8px"
                       />
                     </div>
+                  </div>
+                </div>
+
+                {/* In PropertiesPanel, after Layout section, add: */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Wrap (Positioning)</label>
+                  <select
+                    value={selectedElement.style?.position || 'static'}
+                    onChange={e => updateElementStyle({ position: e.target.value })}
+                    className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                  >
+                    <option value="static">None (No Overlap)</option>
+                    <option value="absolute">Through (Allow Overlap)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Element Justification</label>
+                  <div className="flex space-x-1">
+                    {['left', 'center', 'right'].map(justify => (
+                      <button
+                        key={justify}
+                        onClick={() => updateElementStyle({ elementJustify: justify })}
+                        className={`flex-1 p-2 text-xs border rounded ${selectedElement.style?.elementJustify === justify ? 'bg-blue-100 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                      >
+                        {justify.charAt(0).toUpperCase() + justify.slice(1)}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
