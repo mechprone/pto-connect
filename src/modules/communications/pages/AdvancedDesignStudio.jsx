@@ -1081,137 +1081,30 @@ const AdvancedDesignStudio = () => {
         <div className="flex-1 flex flex-col">
           {/* Toolbar */}
           <div className="bg-white border-b border-gray-200">
-            <div className="px-6 py-3 flex items-center justify-between">
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">Communication Designer</h1>
-                <p className="text-sm text-gray-500">Create professional communications for your PTO</p>
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                {/* Zoom Controls */}
-                <div className="flex items-center space-x-2 bg-gray-50 rounded-lg px-3 py-1">
-                  <button
-                    onClick={() => setZoomLevel(Math.max(50, zoomLevel - 25))}
-                    className="p-1 hover:bg-gray-200 rounded transition-colors"
-                  >
-                    <ZoomOut className="w-4 h-4" />
-                  </button>
-                  <span className="text-sm font-medium min-w-[3rem] text-center">{zoomLevel}%</span>
-                  <button
-                    onClick={() => setZoomLevel(Math.min(200, zoomLevel + 25))}
-                    className="p-1 hover:bg-gray-200 rounded transition-colors"
-                  >
-                    <ZoomIn className="w-4 h-4" />
-                  </button>
-                </div>
-                
-                {/* Action Buttons */}
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={handleUndo}
-                    disabled={history.length < 2}
-                    className="p-2 rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50"
-                    title="Undo"
-                  >
-                    <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M9 4L4 9l5 5" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 9h7a5 5 0 110 10H6" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </button>
-                  <button
-                    onClick={handleRedo}
-                    disabled={future.length === 0}
-                    className="p-2 rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50"
-                    title="Redo"
-                  >
-                    <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M11 4l5 5-5 5" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M16 9H9a5 5 0 100 10h7" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </button>
-                  <button
-                    onClick={handleClearDraft}
-                    className="ml-2 px-4 py-2 rounded border border-gray-300 bg-white text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
-                    title="Clear Draft"
-                  >
-                    Clear Draft
-                  </button>
-                  <button
-                    onClick={handleSaveDraft}
-                    className="ml-2 px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-900 transition-colors"
-                    title="Save Draft"
-                  >
-                    Save Draft
-                  </button>
-                  <button 
-                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    onClick={() => console.log('Preview', builderMode)}
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    Preview
-                  </button>
-                </div>
-                
-                {/* Stella AI Assistant */}
-                <div className="relative stella-popup-container">
-                  <button 
-                    className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                    onClick={() => setShowStellaPopup(!showStellaPopup)}
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Stella
-                  </button>
-                  
-                  {showStellaPopup && (
-                    <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                      <div className="p-4">
-                        <div className="flex items-center space-x-2 mb-3">
-                          <Sparkles className="w-5 h-5 text-purple-600" />
-                          <h3 className="font-semibold text-gray-900">Stella's Content Assistant</h3>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-4">
-                          Hi! I'm Stella. I can help create content for your designs.
-                        </p>
-                        
-                        <div className="space-y-2">
-                          <button className="w-full py-2 px-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg text-sm transition-colors">
-                            Let Stella Write Email Subject
-                          </button>
-                          <button className="w-full py-2 px-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg text-sm transition-colors">
-                            Let Stella Write Email Content
-                          </button>
-                          <button className="w-full py-2 px-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg text-sm transition-colors">
-                            Let Stella Create Social Post
-                          </button>
-                        </div>
-                        
-                        <button 
-                          onClick={() => setShowStellaPopup(false)}
-                          className="absolute top-2 right-2 p-1 hover:bg-gray-100 rounded"
-                        >
-                          <span className="text-gray-400">×</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+            <div className="px-6 py-4">
+              <h1 className="text-xl font-semibold text-gray-900">Communication Designer</h1>
             </div>
-            
-            {/* Communication Type Tabs */}
-            <div className="px-6">
-              <div className="flex border-b border-gray-200">
-                {Object.values(BuilderModes).map(mode => {
-                  const config = getModeConfig(mode);
-                  return (
-                    <button
-                      key={mode}
-                      onClick={() => setBuilderMode(mode)}
-                      className={`flex-1 py-4 px-4 border-b-2 font-medium text-sm transition-colors text-center ${
-                        builderMode === mode 
-                          ? 'border-blue-600 text-blue-600' 
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                      }`}
-                    >
-                      {config.label}
-                    </button>
-                  );
-                })}
-              </div>
+          </div>
+          
+          {/* Communication Type Tabs */}
+          <div className="px-6">
+            <div className="flex border-b border-gray-200">
+              {Object.values(BuilderModes).map(mode => {
+                const config = getModeConfig(mode);
+                return (
+                  <button
+                    key={mode}
+                    onClick={() => setBuilderMode(mode)}
+                    className={`flex-1 py-4 px-4 border-b-2 font-medium text-sm transition-colors text-center ${
+                      builderMode === mode 
+                        ? 'border-blue-600 text-blue-600' 
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    {config.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
           
