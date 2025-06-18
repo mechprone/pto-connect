@@ -52,6 +52,23 @@ const AdvancedDesignStudio = () => {
   // Professional Unlayer-style templates
   const professionalTemplates = [
     {
+      id: 'back-to-school-night',
+      name: 'Back to School Night',
+      category: 'Event',
+      thumbnail: 'https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=300&q=80',
+      description: 'Invite families to Back to School Night with this welcoming template.',
+      isProfessional: true,
+      elements: [
+        { type: 'image', src: 'https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'header', content: 'Back to School Night', style: { fontSize: '24px', fontWeight: 'bold', color: '#172845', textAlign: 'center', padding: '20px', backgroundColor: '#fbc860', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        { type: 'divider', style: { borderTop: '2px solid #2563eb', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Join us for an evening of fun, learning, and community as we kick off the new school year!', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'button', content: 'RSVP Now', url: 'https://example.com/rsvp', style: { backgroundColor: '#2563eb', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.08)' } },
+        { type: 'divider', style: { borderTop: '1px solid #2563eb', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
+      ]
+    },
+    {
       id: 'newsletter-modern',
       name: 'Modern Newsletter',
       category: 'Newsletter',
@@ -115,7 +132,7 @@ const AdvancedDesignStudio = () => {
         },
         {
           type: 'text',
-          content: 'Limited time offer! Don\'t miss out on incredible savings across our entire collection.',
+          content: 'Limited time offer! Don't miss out on incredible savings across our entire collection.',
           style: { 
             fontSize: '18px', 
             color: '#374151', 
@@ -1081,8 +1098,17 @@ const AdvancedDesignStudio = () => {
         <div className="flex-1 flex flex-col">
           {/* Toolbar */}
           <div className="bg-white border-b border-gray-200">
-            <div className="px-6 py-4">
-              <h1 className="text-xl font-semibold text-gray-900">Communication Designer</h1>
+            <div className="px-6 py-2 flex items-center space-x-2 border-b border-gray-200 bg-white">
+              <button onClick={handleUndo} disabled={history.length < 2} className="p-2 rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50" title="Undo" aria-label="Undo">
+                <svg width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M9 4L4 9l5 5" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 9h7a5 5 0 110 10H6" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+              <button onClick={handleRedo} disabled={future.length === 0} className="p-2 rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50" title="Redo" aria-label="Redo">
+                <svg width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M11 4l5 5-5 5" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M16 9H9a5 5 0 100 10h7" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+              <button onClick={handleClearDraft} className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors" title="Clear Draft" aria-label="Clear Draft">Clear Draft</button>
+              <button onClick={handleSaveDraft} className="px-3 py-2 rounded bg-gray-800 text-white hover:bg-gray-900 transition-colors" title="Save Draft" aria-label="Save Draft">Save Draft</button>
+              <button className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" onClick={() => console.log('Preview', builderMode)} title="Preview" aria-label="Preview"><Eye className="w-4 h-4 mr-2" />Preview</button>
+              <button className="flex items-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors" onClick={() => setShowStellaPopup(!showStellaPopup)} title="Stella" aria-label="Stella"><Sparkles className="w-4 h-4 mr-2" />Stella</button>
             </div>
           </div>
           
