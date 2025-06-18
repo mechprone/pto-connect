@@ -59,7 +59,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Back to School Night', style: { fontSize: '36px', fontWeight: 'bold', color: '#172845', textAlign: 'center', padding: '30px', backgroundColor: '#fbc860', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Join us for an evening of fun, learning, and community as we kick off the new school year!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Join us for an evening of fun, learning, and community as we kick off the new school year!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 2. Fall Festival
@@ -72,7 +72,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Fall Festival', style: { fontSize: '36px', fontWeight: 'bold', color: '#844300', textAlign: 'center', padding: '30px', backgroundColor: '#fe6200', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Games, food, and fun for the whole family! Don\'t miss our annual Fall Festival.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Games, food, and fun for the whole family! Don\'t miss our annual Fall Festival.', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 3. Book Fair
@@ -85,7 +85,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Book Fair', style: { fontSize: '36px', fontWeight: 'bold', color: '#265668', textAlign: 'center', padding: '30px', backgroundColor: '#6bc6eb', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Support our library and foster a love of reading. Shop the Book Fair this week!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Support our library and foster a love of reading. Shop the Book Fair this week!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 4. Fun Run
@@ -98,7 +98,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Fun Run Fundraiser', style: { fontSize: '36px', fontWeight: 'bold', color: '#603400', textAlign: 'center', padding: '30px', backgroundColor: '#fb6060', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Lace up your sneakers and help us reach our fundraising goal!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Lace up your sneakers and join us for a day of fitness and fun!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 5. Auction Night
@@ -111,7 +111,7 @@ const AdvancedDesignStudio = () => {
       isProfessional: true,
       elements: [
         { type: 'header', content: 'Auction Night', style: { fontSize: '36px', fontWeight: 'bold', color: '#605600', textAlign: 'center', padding: '30px', backgroundColor: '#fbf0c0', borderRadius: '8px', width: '100%', marginBottom: '20px' } },
-        { type: 'text', content: 'Bid on amazing items and support our school programs!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '20px', lineHeight: '1.6', width: '100%' } }
+        { type: 'text', content: 'Bid on amazing items and support our school programs!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', lineHeight: '1.6', width: '100%' } }
       ]
     },
     // 6. Carnival
