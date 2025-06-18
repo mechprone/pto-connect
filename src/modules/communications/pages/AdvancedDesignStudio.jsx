@@ -58,22 +58,20 @@ const AdvancedDesignStudio = () => {
       description: 'Invite families to Back to School Night with this welcoming template.',
       isProfessional: true,
       elements: [
-        // Banner image
-        { type: 'image', src: '/src/modules/communications/templates/bring_joy/images/image-1.png', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        // Banner image (public Unsplash for demo)
+        { type: 'image', src: 'https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
         // Header block
         { type: 'header', content: 'Back to School Night', style: { fontSize: '38px', fontWeight: 'bold', color: '#172845', textAlign: 'center', padding: '28px', backgroundColor: '#fbc860', borderRadius: '8px', width: '100%', marginBottom: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
-        // Divider
-        { type: 'divider', style: { borderTop: '2px solid #fbc860', margin: '24px 0', width: '80%', marginLeft: 'auto', marginRight: 'auto' } },
+        // Full-width divider
+        { type: 'divider', style: { borderTop: '2px solid #fbc860', margin: '24px 0', width: '100%' } },
         // Event details card
         { type: 'text', content: 'Join us for an evening of fun, learning, and community as we kick off the new school year!', style: { fontSize: '18px', color: '#374151', textAlign: 'center', padding: '32px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 16px auto', width: '90%' } },
-        // RSVP Button
-        { type: 'button', content: 'RSVP Now', url: 'https://example.com/rsvp', style: { backgroundColor: '#2563eb', color: '#fff', padding: '16px 40px', borderRadius: '6px', fontWeight: 'bold', fontSize: '18px', margin: '0 auto 24px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.08)' } },
-        // Divider
-        { type: 'divider', style: { borderTop: '1px solid #e5e7eb', margin: '24px 0', width: '80%', marginLeft: 'auto', marginRight: 'auto' } },
-        // Social media row (as images for now)
-        { type: 'image', src: '/src/modules/communications/templates/bring_joy/images/image-7.png', style: { width: '36px', height: '36px', margin: '0 8px', display: 'inline-block' } },
-        { type: 'image', src: '/src/modules/communications/templates/bring_joy/images/image-6.png', style: { width: '36px', height: '36px', margin: '0 8px', display: 'inline-block' } },
-        { type: 'image', src: '/src/modules/communications/templates/bring_joy/images/image-5.png', style: { width: '36px', height: '36px', margin: '0 8px', display: 'inline-block' } },
+        // Centered RSVP Button (using text wrapper)
+        { type: 'text', content: '<a href="https://example.com/rsvp" style="background:#2563eb;color:#fff;padding:16px 40px;border-radius:6px;font-weight:bold;font-size:18px;text-decoration:none;display:inline-block;">RSVP Now</a>', style: { textAlign: 'center', margin: '0 0 24px 0' } },
+        // Full-width divider
+        { type: 'divider', style: { borderTop: '1px solid #e5e7eb', margin: '24px 0', width: '100%' } },
+        // Social media row (inline images in text)
+        { type: 'text', content: '<img src="https://cdn-icons-png.flaticon.com/24/733/733547.png" style="margin:0 8px;vertical-align:middle;"/><img src="https://cdn-icons-png.flaticon.com/24/733/733558.png" style="margin:0 8px;vertical-align:middle;"/><img src="https://cdn-icons-png.flaticon.com/24/733/733579.png" style="margin:0 8px;vertical-align:middle;"/>', style: { textAlign: 'center', margin: '0 0 16px 0' } },
         // Footer block
         { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '15px', marginTop: '32px', marginBottom: '0', padding: '12px 0 0 0' } }
       ]
