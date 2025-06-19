@@ -67,40 +67,73 @@ const AdvancedDesignStudio = () => {
       .finally(() => setLoadingTemplates(false));
   }, []);
 
-  // --- Save as Template Handler ---
+  // Update the validateColor function to be more permissive
+  const validateColor = (color) => {
+    if (!color) return undefined;
+    if (color === 'transparent') return 'transparent';
+    if (color.toLowerCase() === 'transparent') return 'transparent';
+    if (color === 'white') return '#ffffff';
+    if (color.startsWith('#')) return color;
+    if (color.startsWith('rgb')) return color;
+    if (color.startsWith('rgba')) return color;
+    return color; // Return as is if none of the above
+  };
+
+  // Add a function to clean the canvas data
+  const cleanCanvasData = (elements) => {
+    return elements.map(element => {
+      // Create a clean copy of the element
+      const cleanElement = { ...element };
+      
+      // Clean up the style object
+      if (cleanElement.style) {
+        cleanElement.style = Object.entries(cleanElement.style).reduce((acc, [key, value]) => {
+          // Handle color properties
+          if (key.toLowerCase().includes('color')) {
+            const cleanColor = validateColor(value);
+            if (cleanColor) acc[key] = cleanColor;
+          } else {
+            // Keep non-color properties as they are
+            acc[key] = value;
+          }
+          return acc;
+        }, {});
+      }
+
+      return cleanElement;
+    });
+  };
+
+  // Update the handleSaveAsTemplate function
   const handleSaveAsTemplate = async () => {
     try {
-      setLoadingTemplates(true);
-
       if (!canvas || canvas.length === 0) {
         toast.error('Cannot save empty template. Add some elements first.');
         return;
       }
 
-      // Validate and clean the canvas data
-      const cleanCanvas = canvas.map(element => ({
-        ...element,
-        style: {
-          ...element.style,
-          backgroundColor: validateColor(element.style?.backgroundColor),
-          color: validateColor(element.style?.color)
-        }
-      }));
-
-      const payload = {
-        ...templateMeta,
-        design_json: JSON.stringify(cleanCanvas),
-        template_type: builderMode,
-        sharing_level: templateMeta.sharing_level || 'private',
-        shared_with_orgs: templateMeta.sharing_level === 'orgs' ? templateMeta.shared_with_orgs : [],
-        html_content: '',
-        thumbnail_url: '',
-      };
-
-      if (!payload.name || !payload.category) {
-        toast.error('Name and category are required');
+      if (!templateMeta.name || !templateMeta.category) {
+        toast.error('Please provide both a name and category for the template.');
         return;
       }
+
+      setLoadingTemplates(true);
+
+      // Clean and prepare the canvas data
+      const cleanCanvas = cleanCanvasData(canvas);
+      
+      const payload = {
+        name: templateMeta.name.trim(),
+        description: templateMeta.description?.trim() || '',
+        category: templateMeta.category.trim(),
+        template_type: builderMode || 'email',
+        sharing_level: templateMeta.sharing_level || 'private',
+        shared_with_orgs: templateMeta.sharing_level === 'orgs' ? templateMeta.shared_with_orgs : [],
+        design_json: JSON.stringify(cleanCanvas)
+      };
+
+      // Log the payload for debugging
+      console.log('Saving template with payload:', payload);
 
       if (editingTemplateId) {
         await communicationsTemplatesAPI.updateTemplate(editingTemplateId, payload);
@@ -117,7 +150,7 @@ const AdvancedDesignStudio = () => {
       setSharedTemplates(data?.sharedTemplates || []);
     } catch (error) {
       console.error('Template save error:', error);
-      toast.error('Failed to save template: ' + error.message);
+      toast.error(`Failed to save template: ${error.message || 'Unknown error'}`);
     } finally {
       setLoadingTemplates(false);
     }
@@ -1025,27 +1058,6 @@ const AdvancedDesignStudio = () => {
     }));
   };
 
-  // Add this helper function at the top level of the component
-  const validateColor = (color) => {
-    if (!color || color === 'transparent') return 'transparent';
-    // Convert 'transparent' to a valid rgba
-    if (color.toLowerCase() === 'transparent') return 'rgba(0,0,0,0)';
-    
-    // Handle hex colors
-    if (color.startsWith('#')) {
-      const hex = color.replace('#', '');
-      if (hex.length === 3 || hex.length === 6) return `#${hex}`;
-    }
-    
-    // Handle rgb/rgba colors
-    if (color.startsWith('rgb')) {
-      return color;
-    }
-    
-    // Default fallback
-    return '#ffffff';
-  };
-
   // Update the style update handler
   const updateElementStyle = (styleUpdates) => {
     if (!selectedElement) return;
@@ -1451,764 +1463,170 @@ const AdvancedDesignStudio = () => {
     );
   };
 
-  return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="h-screen bg-gray-100 flex">
-        {/* Debug info in corner */}
-        <div className="fixed bottom-4 right-4 bg-black text-green-400 p-2 rounded text-xs z-50">
-          Elements: {canvas.length} | Mode: {builderMode}
-        </div>
+  // Template categories for the modal
+  const templateCategories = [
+    'Event',
+    'Fundraising',
+    'Newsletter',
+    'Announcement',
+    'Holiday',
+    'Appreciation',
+    'Other'
+  ];
 
-        {/* Left Panel - Tools & Templates */}
-        <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
-          {/* Tab Navigation */}
-          <div className="flex border-b border-gray-200">
+  // Template Save Modal Component
+  const TemplateSaveModal = ({ isOpen, onClose }) => {
+    if (!isOpen) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <h2 className="text-xl font-semibold mb-4">Save as Template</h2>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Template Name *
+              </label>
+              <input
+                type="text"
+                value={templateMeta.name}
+                onChange={(e) => setTemplateMeta(prev => ({ ...prev, name: e.target.value }))}
+                className="w-full p-2 border border-gray-300 rounded-md"
+                placeholder="Enter template name"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Category *
+              </label>
+              <select
+                value={templateMeta.category}
+                onChange={(e) => setTemplateMeta(prev => ({ ...prev, category: e.target.value }))}
+                className="w-full p-2 border border-gray-300 rounded-md"
+              >
+                <option value="">Select a category</option>
+                {templateCategories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
+              <textarea
+                value={templateMeta.description}
+                onChange={(e) => setTemplateMeta(prev => ({ ...prev, description: e.target.value }))}
+                className="w-full p-2 border border-gray-300 rounded-md"
+                placeholder="Enter template description (optional)"
+                rows="3"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Sharing Level
+              </label>
+              <select
+                value={templateMeta.sharing_level}
+                onChange={(e) => setTemplateMeta(prev => ({ ...prev, sharing_level: e.target.value }))}
+                className="w-full p-2 border border-gray-300 rounded-md"
+              >
+                <option value="private">Private</option>
+                <option value="organization">Organization</option>
+                <option value="public">Public</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-end space-x-3">
             <button
-              onClick={() => setActiveTab('templates')}
-              className={`flex-1 py-3 px-4 text-sm font-medium ${
-                activeTab === 'templates' ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-700' : 'text-gray-500 hover:text-gray-700'
-              }`}
+              onClick={onClose}
+              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
             >
-              Templates
+              Cancel
             </button>
             <button
-              onClick={() => setActiveTab('elements')}
-              className={`flex-1 py-3 px-4 text-sm font-medium ${
-                activeTab === 'elements' ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-700' : 'text-gray-500 hover:text-gray-700'
-              }`}
+              onClick={() => {
+                handleSaveAsTemplate();
+                onClose();
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
             >
-              Elements
+              Save Template
             </button>
           </div>
-          
-          {/* Tab Content */}
-          <div className="flex-1 overflow-y-auto">
-            {activeTab === 'templates' && (
-              <div className="p-4 space-y-4">
-                {/* Templates Button */}
-                <button
-                  onClick={() => setShowTemplateModal(true)}
-                  className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
-                >
-                  <Palette className="w-5 h-5" />
-                  <span>Choose Template</span>
-                </button>
-                
-                {/* Quick Template Preview */}
-                <div className="border border-gray-200 rounded-lg p-3">
-                  <h3 className="font-medium text-gray-900 mb-2">Quick Start</h3>
-                  <p className="text-sm text-gray-600 mb-3">Start with a professional template or build from scratch</p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => {
-                        setTemplateSection('professional');
-                        setShowTemplateModal(true);
-                      }}
-                      className="p-2 border border-gray-300 rounded text-xs hover:bg-gray-50"
-                    >
-                      Professional
-                    </button>
-                    <button
-                      onClick={() => {
-                        setTemplateSection('basic');
-                        setShowTemplateModal(true);
-                      }}
-                      className="p-2 border border-gray-300 rounded text-xs hover:bg-gray-50"
-                    >
-                      Basic
-                    </button>
-                      </div>
-                </div>
-              </div>
-            )}
-            
-            {activeTab === 'elements' && (
-              <div className="p-4 space-y-4">
-                <h3 className="font-semibold text-gray-900">Drag Elements</h3>
-                <div className="text-xs bg-yellow-100 p-2 rounded mb-4">
-                  🐛 Debug: React DnD Elements ({dragElements.length} available)
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  {dragElements.map(element => {
-                    try {
-                      return <DragElement key={element.type} element={element} />;
-                    } catch (error) {
-                      console.error('Error rendering drag element:', element.type, error);
-                      return (
-                        <div key={element.type} className="p-3 border border-red-200 rounded-lg bg-red-50">
-                          <div className="flex flex-col items-center space-y-2">
-                            <span className="text-sm text-red-600">Error: {element.label}</span>
-                          </div>
-                        </div>
-                      );
-                    }
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
         </div>
-        
-        {/* Center - Canvas */}
-        <div className="flex-1 flex flex-col">
-          {/* Toolbar */}
-          <div className="bg-white border-b border-gray-200">
-            <div className="px-6 py-1.5 flex items-center space-x-2 border-b border-gray-200 bg-white">
-              <button onClick={handleUndo} disabled={history.length < 2} className="p-1.5 rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50 text-sm" title="Undo" aria-label="Undo">
-                <svg width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M9 4L4 9l5 5" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 9h7a5 5 0 110 10H6" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </button>
-              <button onClick={handleRedo} disabled={future.length === 0} className="p-1.5 rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50 text-sm" title="Redo" aria-label="Redo">
-                <svg width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M11 4l5 5-5 5" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M16 9H9a5 5 0 100 10h7" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </button>
-              <button onClick={handleClearDraft} className="px-2.5 py-1.5 rounded border border-gray-300 bg-white text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors text-sm" title="Clear Draft" aria-label="Clear Draft">Clear</button>
-              <button onClick={handleSaveDraft} className="px-2.5 py-1.5 rounded bg-gray-800 text-white hover:bg-gray-900 transition-colors text-sm" title="Save Draft" aria-label="Save Draft">Save</button>
-              <button className="flex items-center px-2.5 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm" onClick={() => console.log('Preview', builderMode)} title="Preview" aria-label="Preview"><Eye className="w-4 h-4 mr-1" />Preview</button>
-              <button className="flex items-center px-2.5 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm" onClick={() => setShowStellaPopup(!showStellaPopup)} title="Stella" aria-label="Stella"><Sparkles className="w-4 h-4 mr-1" />Stella</button>
-              <button 
-            onClick={() => { 
-              setTemplateMeta({ 
-                name: '', 
-                description: '', 
-                category: '', 
-                template_type: builderMode, 
-                sharing_level: 'private', 
-                shared_with_orgs: [] 
-              }); 
-              setEditingTemplateId(null); 
-              setTemplateSaveModal(true); 
-            }} 
-            className="px-2.5 py-1.5 rounded bg-green-600 text-white hover:bg-green-700 transition-colors text-sm" 
-            title="Save as Template" 
-            aria-label="Save as Template"
-            disabled={loadingTemplates}
-          >
-            {loadingTemplates ? 'Saving...' : 'Save as Template'}
-          </button>
-            </div>
-          </div>
-          
-          {/* Communication Type Tabs */}
-          <div className="px-6">
-            <div className="flex border-b border-gray-200">
-              {Object.values(BuilderModes).map(mode => {
-                const config = getModeConfig(mode);
-                return (
-                  <button
-                    key={mode}
-                    onClick={() => setBuilderMode(mode)}
-                    className={`flex-1 py-4 px-4 border-b-2 font-medium text-sm transition-colors text-center ${
-                      builderMode === mode 
-                        ? 'border-blue-600 text-blue-600' 
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    {config.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-          
-          {/* Canvas Area */}
-          <div className="flex-1 p-6 overflow-auto">
-            <div className="flex justify-center">
-              <DropZone />
-            </div>
-          </div>
-        </div>
-        
-        {/* Right Panel - Properties */}
-        <div className="w-72 bg-white border-l border-gray-200 flex flex-col">
-          <div className="border-b border-gray-200 px-4 py-3">
-            <h2 className="font-semibold text-gray-900">Properties</h2>
-          </div>
-          <div className="flex-1 overflow-y-auto p-4">
-            {selectedElement ? (
-              <div className="space-y-6">
-                {/* Content Section */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Content</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Text Content</label>
-                      <textarea
-                        value={selectedElement.content || ''}
-                        onChange={(e) => {
-                          const updated = { ...selectedElement, content: e.target.value };
-                          setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
-                          setSelectedElement(updated);
-                        }}
-                        className="w-full p-3 border border-gray-300 rounded-lg text-sm"
-                        rows="4"
-                        placeholder="Enter your text here..."
-                      />
-                    </div>
-                    
-                    {selectedElement.type === 'image' && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                        <input
-                          type="url"
-                          value={selectedElement.src || ''}
-                          onChange={(e) => {
-                            const updated = { ...selectedElement, src: e.target.value };
-                            setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
-                            setSelectedElement(updated);
-                          }}
-                          className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-                          placeholder="https://example.com/image.jpg"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Typography Section */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Typography</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Font Size: {parseInt(selectedElement.style?.fontSize) || 16}px
-                      </label>
-                      <input
-                        type="range"
-                        min="8"
-                        max="72"
-                        value={parseInt(selectedElement.style?.fontSize) || 16}
-                        onChange={(e) => updateElementStyle({ fontSize: `${e.target.value}px` })}
-                        className="w-full"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Font Weight</label>
-                      <select
-                        value={selectedElement.style?.fontWeight || 'normal'}
-                        onChange={(e) => updateElementStyle({ fontWeight: e.target.value })}
-                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-                      >
-                        <option value="300">Light</option>
-                        <option value="normal">Normal</option>
-                        <option value="600">Semi Bold</option>
-                        <option value="bold">Bold</option>
-                        <option value="800">Extra Bold</option>
-                      </select>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Text Alignment</label>
-                      <div className="flex space-x-1">
-                        {['left', 'center', 'right', 'justify'].map(align => (
-                      <button
-                            key={align}
-                            onClick={() => updateElementStyle({ textAlign: align })}
-                            className={`flex-1 p-2 text-xs border rounded ${
-                              selectedElement.style?.textAlign === align 
-                                ? 'bg-blue-100 border-blue-300 text-blue-700' 
-                                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                            }`}
-                          >
-                            {align.charAt(0).toUpperCase() + align.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Line Height: {parseFloat(selectedElement.style?.lineHeight) || 1.4}
-                      </label>
-                      <input
-                        type="range"
-                        min="1"
-                        max="3"
-                        step="0.1"
-                        value={parseFloat(selectedElement.style?.lineHeight) || 1.4}
-                        onChange={(e) => updateElementStyle({ lineHeight: e.target.value })}
-                        className="w-full"
-                      />
-              </div>
-                  </div>
-          </div>
-          
-                {/* Colors Section */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Colors</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Text Color</label>
-                      <div className="flex space-x-2">
-                        <input
-                          type="color"
-                          value={selectedElement.style?.color || '#374151'}
-                          onChange={(e) => updateElementStyle({ color: e.target.value })}
-                          className="w-12 h-10 rounded border border-gray-300"
-                        />
-                        <input
-                          type="text"
-                          value={selectedElement.style?.color || '#374151'}
-                          onChange={(e) => updateElementStyle({ color: e.target.value })}
-                          className="flex-1 p-2 border border-gray-300 rounded-lg text-sm font-mono"
-                          placeholder="#374151"
-                        />
-          </div>
-        </div>
-        
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
-                      <div className="flex space-x-2">
-                        <input
-                          type="color"
-                          value={selectedElement.style?.backgroundColor || 'transparent'}
-                          onChange={(e) => updateElementStyle({ backgroundColor: e.target.value })}
-                          className="w-12 h-10 rounded border border-gray-300"
-                        />
-                        <input
-                          type="text"
-                          value={selectedElement.style?.backgroundColor || 'transparent'}
-                          onChange={(e) => updateElementStyle({ backgroundColor: e.target.value })}
-                          className="flex-1 p-2 border border-gray-300 rounded-lg text-sm font-mono"
-                          placeholder="transparent"
-                        />
-                      </div>
-                      <button
-                        onClick={() => updateElementStyle({ backgroundColor: 'transparent' })}
-                        className="mt-1 text-xs text-gray-500 hover:text-gray-700"
-                      >
-                        Remove background
-                </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Layout Section */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Layout</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Background Width</label>
-                      <select
-                        value={selectedElement.containerWidth || '100%'}
-                        onChange={(e) => {
-                          const updated = { 
-                            ...selectedElement, 
-                            containerWidth: e.target.value,
-                            style: {
-                              ...selectedElement.style,
-                              backgroundColor: selectedElement.style?.backgroundColor || '#ffffff',
-                              padding: selectedElement.style?.padding || '10px',
-                              width: e.target.value
-                            }
-                          };
-                          setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
-                          setSelectedElement(updated);
-                        }}
-                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-                      >
-                        <option value="100%">Full Width</option>
-                        <option value="75%">75% Width</option>
-                        <option value="50%">50% Width</option>
-                        <option value="25%">25% Width</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Content Width</label>
-                      <select
-                        value={selectedElement.style?.textWidth || 'auto'}
-                        onChange={(e) => updateElementStyle({ textWidth: e.target.value })}
-                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-                      >
-                        <option value="auto">Auto</option>
-                        <option value="100%">Full Width</option>
-                        <option value="75%">75% Width</option>
-                        <option value="50%">50% Width</option>
-                        <option value="25%">25% Width</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="color"
-                          value={selectedElement.style?.backgroundColor || '#ffffff'}
-                          onChange={(e) => updateElementStyle({ backgroundColor: e.target.value })}
-                          className="w-8 h-8 rounded border border-gray-300"
-                        />
-                        <button
-                          onClick={() => updateElementStyle({ backgroundColor: 'transparent' })}
-                          className="text-xs text-gray-600 hover:text-gray-900"
-                        >
-                          Remove background
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Padding</label>
-                      <input
-                        type="text"
-                        value={selectedElement.style?.padding || '10px'}
-                        onChange={(e) => updateElementStyle({ padding: e.target.value })}
-                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-                        placeholder="10px 20px"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Margin</label>
-                      <input
-                        type="text"
-                        value={selectedElement.style?.margin || '0px'}
-                        onChange={(e) => updateElementStyle({ margin: e.target.value })}
-                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-                        placeholder="10px 0px"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Border Radius</label>
-                      <input
-                        type="text"
-                        value={selectedElement.style?.borderRadius || '0px'}
-                        onChange={(e) => updateElementStyle({ borderRadius: e.target.value })}
-                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-                        placeholder="8px"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Advanced Section */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Advanced</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Layer Position</label>
-                      <div className="flex space-x-1">
-                        <button
-                          onClick={() => {
-                            const maxZ = Math.max(...canvas.map(el => el.zIndex || 1));
-                            const updated = { ...selectedElement, zIndex: maxZ + 1 };
-                            setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
-                            setSelectedElement(updated);
-                          }}
-                          className="flex-1 p-2 text-xs border rounded border-gray-300 hover:bg-gray-50"
-                          title="Bring to Front"
-                        >
-                          Bring to Front
-                        </button>
-                        <button
-                          onClick={() => {
-                            const updated = { ...selectedElement, zIndex: (selectedElement.zIndex || 1) + 1 };
-                            setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
-                            setSelectedElement(updated);
-                          }}
-                          className="flex-1 p-2 text-xs border rounded border-gray-300 hover:bg-gray-50"
-                          title="Bring Forward"
-                        >
-                          Forward
-                        </button>
-                        <button
-                          onClick={() => {
-                            const updated = { ...selectedElement, zIndex: Math.max(1, (selectedElement.zIndex || 1) - 1) };
-                            setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
-                            setSelectedElement(updated);
-                          }}
-                          className="flex-1 p-2 text-xs border rounded border-gray-300 hover:bg-gray-50"
-                          title="Send Backward"
-                        >
-                          Backward
-                        </button>
-                        <button
-                          onClick={() => {
-                            const updated = { ...selectedElement, zIndex: 1 };
-                            setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
-                            setSelectedElement(updated);
-                          }}
-                          className="flex-1 p-2 text-xs border rounded border-gray-300 hover:bg-gray-50"
-                          title="Send to Back"
-                        >
-                          To Back
-                        </button>
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Wrap (Positioning)</label>
-                      <select
-                        value={selectedElement.style?.position || 'static'}
-                        onChange={e => updateElementStyle({ position: e.target.value })}
-                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-                      >
-                        <option value="static">None (No Overlap)</option>
-                        <option value="absolute">Through (Allow Overlap)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Element Justification</label>
-                      <div className="flex space-x-1">
-                        {['flex-start', 'center', 'flex-end'].map(justify => (
-                          <button
-                            key={justify}
-                            onClick={() => {
-                              const updated = { ...selectedElement, justification: justify };
-                              setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
-                              setSelectedElement(updated);
-                            }}
-                            className={`flex-1 p-2 text-xs border rounded ${selectedElement.justification === justify ? 'bg-blue-100 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
-                          >
-                            {justify === 'flex-start' ? 'Left' : justify === 'center' ? 'Center' : 'Right'}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-            
-                {/* Actions */}
-                <div className="pt-4 border-t border-gray-200">
-                <button
-                    onClick={() => {
-                      setCanvas(prev => prev.filter(el => el.id !== selectedElement.id));
-                      setSelectedElement(null);
-                    }}
-                    className="w-full py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
-                  >
-                    Delete Element
-                </button>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                  <Square className="w-8 h-8 text-gray-400" />
-                </div>
-                <p className="text-gray-500 text-sm mb-2">No element selected</p>
-                <p className="text-gray-400 text-xs">Click on an element to edit its properties</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Template Selection Modal */}
-        {showTemplateModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl h-5/6 flex flex-col">
-              {/* Modal Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                <h2 className="text-2xl font-bold text-gray-900">Choose Your Template</h2>
-                <button
-                  onClick={() => setShowTemplateModal(false)}
-                  className="text-gray-400 hover:text-gray-600 text-2xl"
-                >
-                  ×
-                </button>
-              </div>
-              
-              {/* Section Slider */}
-              <div className="flex items-center justify-center py-4 border-b border-gray-200">
-                <div className="flex space-x-4">
-                  <button
-                    onClick={() => setTemplateSection('professional')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      templateSection === 'professional' 
-                        ? 'bg-blue-100 text-blue-700' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    Professional
-                  </button>
-                  <button
-                    onClick={() => setTemplateSection('basic')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      templateSection === 'basic' 
-                        ? 'bg-blue-100 text-blue-700' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    Basic
-                  </button>
-                  <button
-                    onClick={() => setTemplateSection('my')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      templateSection === 'my' 
-                        ? 'bg-blue-100 text-blue-700' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    My Templates
-                  </button>
-                  <button
-                    onClick={() => setTemplateSection('shared')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      templateSection === 'shared' 
-                        ? 'bg-blue-100 text-blue-700' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    Shared
-                  </button>
-                </div>
-              </div>
-
-              {/* Search and Filter */}
-              <div className="p-4 border-b border-gray-200">
-                <div className="flex space-x-4">
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      placeholder="Search templates..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="flex space-x-2">
-                    {getTemplateCategories().map(category => (
-                      <button
-                        key={category.id}
-                        onClick={() => setSelectedCategory(category.id)}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                          selectedCategory === category.id
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                      >
-                        {category.name} ({category.count})
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Templates Grid */}
-              <div className="flex-1 overflow-y-auto p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {['professional', 'basic'].includes(templateSection) && getFilteredTemplates().map(template => (
-                    <div key={template.id} className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-blue-300 hover:shadow-lg transition-all group relative"
-                      onClick={() => useTemplate(template)}
-                    >
-                      <div className="aspect-video bg-gray-100 relative overflow-hidden">
-                        <img 
-                          src={template.thumbnail} 
-                          alt={template.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.src = 'https://via.placeholder.com/300x200/f3f4f6/6b7280?text=Template';
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
-                          <button
-                            className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100"
-                            onClick={e => {
-                              e.stopPropagation();
-                              useTemplate(template);
-                              setShowTemplateModal(false);
-                            }}
-                          >
-                            Use Template
-                          </button>
-                        </div>
-                      </div>
-                      <div className="p-4">
-                        <h4 className="font-semibold text-gray-900 mb-1">{template.name}</h4>
-                        <p className="text-sm text-gray-600 mb-2">{template.description}</p>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{template.category}</span>
-                          <span className="text-xs text-blue-600 font-medium">{template.isProfessional ? 'Professional' : 'Basic'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  {templateSection === 'my' && myTemplates.map(template => (
-                    <div key={template.id} className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-blue-300 hover:shadow-lg transition-all group relative">
-                      <div className="aspect-video bg-gray-100 relative overflow-hidden">
-                        <img 
-                          src={template.thumbnail_url} 
-                          alt={template.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.src = 'https://via.placeholder.com/300x200/f3f4f6/6b7280?text=Template';
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
-                          <button
-                            className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100"
-                            onClick={e => {
-                              e.stopPropagation();
-                              useTemplate(template);
-                              setShowTemplateModal(false);
-                            }}
-                          >
-                            Use Template
-                          </button>
-                        </div>
-                      </div>
-                      <div className="p-4">
-                        <h4 className="font-semibold text-gray-900 mb-1">{template.name}</h4>
-                        <p className="text-sm text-gray-600 mb-2">{template.description}</p>
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{template.category}</span>
-                          <span className="text-xs text-blue-600 font-medium">My Template</span>
-                        </div>
-                        <div className="flex space-x-2 mt-2">
-                          <button onClick={e => { e.stopPropagation(); handleEditTemplate(template); }} className="text-xs px-2 py-1 bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200">Edit</button>
-                          <button onClick={e => { e.stopPropagation(); handleDeleteTemplate(template.id); }} className="text-xs px-2 py-1 bg-red-100 text-red-800 rounded hover:bg-red-200">Delete</button>
-                          {template.sharing_level !== 'private' && (
-                            <button onClick={e => { e.stopPropagation(); handleUnshareTemplate(template); }} className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded hover:bg-green-200">Unshare</button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  {templateSection === 'shared' && sharedTemplates.map(template => (
-                    <div key={template.id} className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-blue-300 hover:shadow-lg transition-all group relative">
-                      <div className="aspect-video bg-gray-100 relative overflow-hidden">
-                        <img 
-                          src={template.thumbnail_url} 
-                          alt={template.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.src = 'https://via.placeholder.com/300x200/f3f4f6/6b7280?text=Template';
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
-                          <button
-                            className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100"
-                            onClick={e => {
-                              e.stopPropagation();
-                              useTemplate(template);
-                              setShowTemplateModal(false);
-                            }}
-                          >
-                            Use Template
-                          </button>
-                        </div>
-                      </div>
-                      <div className="p-4">
-                        <h4 className="font-semibold text-gray-900 mb-1">{template.name}</h4>
-                        <p className="text-sm text-gray-600 mb-2">{template.description}</p>
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{template.category}</span>
-                          <span className="text-xs text-green-600 font-medium">Shared</span>
-                        </div>
-                        <div className="flex space-x-2 mt-2">
-                          <button onClick={e => { e.stopPropagation(); handleCopySharedTemplate(template); }} className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200">Save to My Templates</button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
-    </DndProvider>
+    );
+  };
+
+  // Update the toolbar section to include the modal
+  return (
+    <div className="flex flex-col h-full">
+      {/* Toolbar */}
+      <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => handleUndo()}
+            disabled={history.length < 2}
+            className="p-2 text-gray-600 hover:text-gray-900 disabled:opacity-50"
+            title="Undo"
+          >
+            ↩
+          </button>
+          <button
+            onClick={() => handleRedo()}
+            disabled={future.length === 0}
+            className="p-2 text-gray-600 hover:text-gray-900 disabled:opacity-50"
+            title="Redo"
+          >
+            ↪
+          </button>
+          <button
+            onClick={() => setCanvas([])}
+            className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
+          >
+            Clear
+          </button>
+          <button
+            onClick={() => handleSaveDraft()}
+            className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
+          >
+            Save
+          </button>
+          <button
+            onClick={() => setPreviewMode(true)}
+            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Preview
+          </button>
+          <button
+            onClick={() => setShowStellaPopup(true)}
+            className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
+          >
+            Stella
+          </button>
+          <button
+            onClick={() => setTemplateSaveModal(true)}
+            className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            Save as Template
+          </button>
+        </div>
+      </div>
+
+      {/* Template Save Modal */}
+      <TemplateSaveModal
+        isOpen={templateSaveModal}
+        onClose={() => setTemplateSaveModal(false)}
+      />
+      
+      {/* ... rest of your existing code ... */}
+    </div>
   );
 };
 
