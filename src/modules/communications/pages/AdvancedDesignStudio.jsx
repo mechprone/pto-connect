@@ -629,47 +629,17 @@ const AdvancedDesignStudio = () => {
     const [{ isOver, canDrop }, drop] = useDrop(() => ({
       accept: 'element',
       drop: (item, monitor) => {
-        try {
-          console.log('🎯 DROP EVENT TRIGGERED!', item);
-          const offset = monitor.getClientOffset();
-          const canvasRect = canvasRef.current?.getBoundingClientRect();
-          
-          console.log('📍 Drop details:', {
-            offset,
-            canvasRect,
-            hasCanvasRef: !!canvasRef.current,
-            itemType: item.elementType
-          });
-          
-          if (!offset || !canvasRect) {
-            console.log('❌ Missing offset or canvas rect');
-            return;
-          }
-          
-          const newElement = {
-            id: `element_${Date.now()}_${Math.random()}`,
-            type: item.elementType,
-            content: item.defaultContent || 'New Content',
-            src: item.defaultSrc || '',
-            x: Math.max(10, offset.x - canvasRect.left - 50),
-            y: Math.max(10, offset.y - canvasRect.top - 20),
-            style: {
-              ...item.defaultStyle,
-              // Ensure proper positioning for elements
-              position: item.defaultStyle?.width === '100%' ? 'static' : 'absolute'
-            }
-          };
-          
-          console.log('✅ Creating element:', newElement);
-          setCanvas(prev => {
-            const updated = [...prev, newElement];
-            console.log('🎨 Canvas updated, total elements:', updated.length);
-            return updated;
-          });
-          setSelectedElement(newElement);
-        } catch (error) {
-          console.error('❌ Drop error:', error);
-        }
+        // Remove x/y logic, just add to end of array
+        const newElement = {
+          id: `element_${Date.now()}_${Math.random()}`,
+          type: item.elementType,
+          content: item.defaultContent || 'New Content',
+          src: item.defaultSrc || '',
+          style: { ...item.defaultStyle },
+          justification: 'center', // default to center
+        };
+        setCanvas(prev => [...prev, newElement]);
+        setSelectedElement(newElement);
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),
@@ -679,46 +649,35 @@ const AdvancedDesignStudio = () => {
 
     return (
       <div
-        ref={(node) => {
-          drop(node);
-          canvasRef.current = node;
-        }}
-        className={`relative bg-white border-2 border-dashed border-gray-300 rounded-lg min-h-[600px] transition-colors ${
-          isOver ? 'border-blue-500 bg-blue-50' : ''
-        } ${canDrop ? 'border-green-400' : ''}`}
-        style={{ 
+        ref={node => { drop(node); canvasRef.current = node; }}
+        className={`relative bg-white border-2 border-dashed border-gray-300 rounded-lg min-h-[600px] transition-colors flex flex-col items-stretch` +
+          (isOver ? ' border-blue-500 bg-blue-50' : '') +
+          (canDrop ? ' border-green-400' : '')}
+        style={{
           transform: `scale(${zoomLevel / 100})`,
           transformOrigin: 'top left',
           width: '100%',
           maxWidth: '800px',
-          margin: '0 auto'
+          margin: '0 auto',
         }}
       >
-        {/* Debug overlays */}
-        {isOver && (
-          <div className="absolute top-2 left-2 bg-blue-600 text-white px-2 py-1 rounded text-xs z-50">
-            🎯 DROP ZONE ACTIVE
-          </div>
-        )}
-        {canDrop && (
-          <div className="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-xs z-50">
-            ✅ CAN DROP
-          </div>
-        )}
-        
-        {canvas.map((element) => (
-          <CanvasElement
+        {canvas.map((element, idx) => (
+          <div
             key={element.id}
-            element={element}
-            isSelected={selectedElement?.id === element.id}
-            onSelect={() => setSelectedElement(element)}
-            onUpdate={(updated) => {
-              setCanvas(prev => prev.map(el => el.id === element.id ? updated : el));
-              setSelectedElement(updated);
-            }}
-          />
+            className="w-full flex"
+            style={{ justifyContent: element.justification || 'center' }}
+          >
+            <CanvasElement
+              element={element}
+              isSelected={selectedElement?.id === element.id}
+              onSelect={() => setSelectedElement(element)}
+              onUpdate={updated => {
+                setCanvas(prev => prev.map(el => el.id === element.id ? updated : el));
+                setSelectedElement(updated);
+              }}
+            />
+          </div>
         ))}
-        
         {canvas.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center text-gray-400">
             <div className="text-center">
@@ -738,28 +697,24 @@ const AdvancedDesignStudio = () => {
   // Canvas Element Component
   const CanvasElement = ({ element, isSelected, onSelect, onUpdate }) => {
     const [isEditing, setIsEditing] = useState(false);
-
     const handleDoubleClick = () => {
-      if (element.type === 'text' || element.type === 'header' || element.type === 'button') {
-        setIsEditing(true);
-      }
+      if (element.type === 'text' || element.type === 'header' || element.type === 'button') setIsEditing(true);
     };
-
     const handleContentChange = (newContent) => {
       onUpdate({ ...element, content: newContent });
       setIsEditing(false);
     };
-
+    const baseStyle = {
+      ...element.style,
+      cursor: 'pointer',
+      outline: isSelected ? '2px solid #3b82f6' : 'none',
+      outlineOffset: '2px',
+      display: 'block',
+      boxSizing: 'border-box',
+      maxWidth: element.style?.width || '100%',
+      margin: element.justification === 'center' ? '0 auto' : element.justification === 'flex-end' ? '0 0 0 auto' : '0',
+    };
     const renderElement = () => {
-      const baseStyle = {
-        ...element.style,
-        cursor: 'pointer',
-        outline: isSelected ? '2px solid #3b82f6' : 'none',
-        outlineOffset: '2px',
-        display: 'block',
-        boxSizing: 'border-box'
-      };
-
       switch (element.type) {
         case 'text':
           return isEditing ? (
@@ -872,20 +827,10 @@ const AdvancedDesignStudio = () => {
       }
     };
 
-    const elementWidth = element.style?.width === '100%' ? 'calc(100% - 40px)' : 'auto';
-    const isFullWidth = element.style?.width === '100%';
-
     return (
       <div
-        className="absolute"
-        style={{
-          left: isFullWidth ? 20 : element.x,
-          top: element.y,
-          width: elementWidth,
-          minWidth: isFullWidth ? 'auto' : '50px',
-          minHeight: '30px',
-          zIndex: isSelected ? 10 : 1
-        }}
+        className={isSelected ? 'ring-2 ring-blue-500' : ''}
+        style={{ width: '100%' }}
         onClick={onSelect}
         onDoubleClick={handleDoubleClick}
       >
@@ -894,9 +839,8 @@ const AdvancedDesignStudio = () => {
           <div className="absolute -top-6 -left-1 text-xs bg-blue-600 text-white px-2 py-1 rounded flex items-center space-x-2 z-20">
             <span>{element.type}</span>
             <button
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
-                // Delete element
                 setCanvas(prev => prev.filter(el => el.id !== element.id));
                 setSelectedElement(null);
               }}
@@ -1476,8 +1420,12 @@ const AdvancedDesignStudio = () => {
                         {['flex-start', 'center', 'flex-end'].map(justify => (
                           <button
                             key={justify}
-                            onClick={() => updateElementStyle({ alignSelf: justify })}
-                            className={`flex-1 p-2 text-xs border rounded ${selectedElement.style?.alignSelf === justify ? 'bg-blue-100 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                            onClick={() => {
+                              const updated = { ...selectedElement, justification: justify };
+                              setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
+                              setSelectedElement(updated);
+                            }}
+                            className={`flex-1 p-2 text-xs border rounded ${selectedElement.justification === justify ? 'bg-blue-100 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
                           >
                             {justify === 'flex-start' ? 'Left' : justify === 'center' ? 'Center' : 'Right'}
                           </button>
