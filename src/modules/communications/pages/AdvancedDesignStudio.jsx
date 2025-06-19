@@ -102,7 +102,6 @@ const AdvancedDesignStudio = () => {
         { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
       ]
     },
-    // ... Add 12+ more upgraded, school/PTO-focused templates here ...
     {
       id: 'teacher-appreciation',
       name: 'Teacher Appreciation',
