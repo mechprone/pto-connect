@@ -723,11 +723,11 @@ const AdvancedDesignStudio = () => {
 
     // Outer container style for full width background
     const outerContainerStyle = {
-      width: element.containerWidth || '100%',
-      backgroundColor: element.style?.backgroundColor,
-      padding: element.style?.padding || '10px',
+      width: element.type === 'button' ? '100%' : (element.containerWidth || '100%'),
+      backgroundColor: element.type === 'button' ? undefined : element.style?.backgroundColor,
+      padding: element.type === 'button' ? undefined : (element.style?.padding || '10px'),
       margin: element.style?.margin || '0px',
-      borderRadius: element.style?.borderRadius || '0px',
+      borderRadius: element.type === 'button' ? undefined : (element.style?.borderRadius || '0px'),
       cursor: isDragging ? 'move' : 'pointer',
       outline: isSelected ? '2px solid #3b82f6' : 'none',
       outlineOffset: '2px',
@@ -870,23 +870,27 @@ const AdvancedDesignStudio = () => {
             );
             
           case 'button':
+            const buttonStyle = {
+              ...contentStyle,
+              backgroundColor: element.style?.backgroundColor || '#3b82f6',
+              color: element.style?.color || 'white',
+              padding: element.style?.padding || '15px 30px',
+              borderRadius: element.style?.borderRadius || '8px',
+              border: 'none',
+              fontSize: element.style?.fontSize || '16px',
+              fontWeight: element.style?.fontWeight || '600',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              width: 'auto', // Override any full-width settings
+              minWidth: '200px' // Give it a reasonable minimum width
+            };
+
             return (
-              <button
-                style={{
-                  ...contentStyle,
-                  backgroundColor: element.style?.backgroundColor || '#3b82f6',
-                  color: element.style?.color || 'white',
-                  padding: element.style?.padding || '15px 30px',
-                  borderRadius: element.style?.borderRadius || '8px',
-                  border: 'none',
-                  fontSize: element.style?.fontSize || '16px',
-                  fontWeight: element.style?.fontWeight || '600',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
-              >
-                {element.content}
-              </button>
+              <div style={{ display: 'flex', justifyContent: element.justification || 'center', width: '100%' }}>
+                <button style={buttonStyle}>
+                  {element.content}
+                </button>
+              </div>
             );
             
           case 'divider':
