@@ -1650,18 +1650,63 @@ const AdvancedDesignStudio = () => {
                   <h3 className="text-sm font-semibold text-gray-900 mb-3">Layout</h3>
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Width</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Background Width</label>
                       <select
-                        value={selectedElement.style?.width || 'auto'}
-                        onChange={(e) => updateElementStyle({ width: e.target.value })}
+                        value={selectedElement.containerWidth || '100%'}
+                        onChange={(e) => {
+                          const updated = { 
+                            ...selectedElement, 
+                            containerWidth: e.target.value,
+                            style: {
+                              ...selectedElement.style,
+                              backgroundColor: selectedElement.style?.backgroundColor || '#ffffff',
+                              padding: selectedElement.style?.padding || '10px',
+                              width: e.target.value
+                            }
+                          };
+                          setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
+                          setSelectedElement(updated);
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                      >
+                        <option value="100%">Full Width</option>
+                        <option value="75%">75% Width</option>
+                        <option value="50%">50% Width</option>
+                        <option value="25%">25% Width</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Content Width</label>
+                      <select
+                        value={selectedElement.style?.textWidth || 'auto'}
+                        onChange={(e) => updateElementStyle({ textWidth: e.target.value })}
                         className="w-full p-2 border border-gray-300 rounded-lg text-sm"
                       >
                         <option value="auto">Auto</option>
                         <option value="100%">Full Width</option>
-                        <option value="75%">75%</option>
-                        <option value="50%">50%</option>
-                        <option value="25%">25%</option>
+                        <option value="75%">75% Width</option>
+                        <option value="50%">50% Width</option>
+                        <option value="25%">25% Width</option>
                       </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="color"
+                          value={selectedElement.style?.backgroundColor || '#ffffff'}
+                          onChange={(e) => updateElementStyle({ backgroundColor: e.target.value })}
+                          className="w-8 h-8 rounded border border-gray-300"
+                        />
+                        <button
+                          onClick={() => updateElementStyle({ backgroundColor: 'transparent' })}
+                          className="text-xs text-gray-600 hover:text-gray-900"
+                        >
+                          Remove background
+                        </button>
+                      </div>
                     </div>
                     
                     <div>
