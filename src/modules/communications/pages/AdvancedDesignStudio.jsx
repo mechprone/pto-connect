@@ -508,11 +508,42 @@ const AdvancedDesignStudio = () => {
     { type: 'divider', icon: Minus, label: 'Divider', defaultContent: '', defaultStyle: { height: '2px', backgroundColor: '#e5e7eb', width: '100%', margin: '20px 0' } },
     // Fun/Modern
     { type: 'emoji', icon: () => <span role="img" aria-label="emoji" className="text-2xl">🎉</span>, label: 'Emoji', defaultContent: '🎉', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
-    { type: 'charm', icon: () => <span role="img" aria-label="star" className="text-2xl">⭐</span>, label: 'Star Charm', defaultContent: '⭐', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
-    { type: 'charm', icon: () => <span role="img" aria-label="apple" className="text-2xl">🍎</span>, label: 'Apple Charm', defaultContent: '🍎', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
-    { type: 'charm', icon: () => <span role="img" aria-label="pencil" className="text-2xl">✏️</span>, label: 'Pencil Charm', defaultContent: '✏️', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
-    { type: 'charm', icon: () => <span role="img" aria-label="book" className="text-2xl">📚</span>, label: 'Books Charm', defaultContent: '📚', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
-    { type: 'charm', icon: () => <span role="img" aria-label="trophy" className="text-2xl">🏆</span>, label: 'Trophy Charm', defaultContent: '🏆', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
+    // Updated Charms with better implementation
+    { 
+      type: 'charm',
+      icon: () => <div className="w-8 h-8 flex items-center justify-center text-2xl">⭐</div>,
+      label: 'Star Charm',
+      defaultContent: '⭐',
+      defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%', padding: '10px', backgroundColor: 'transparent' }
+    },
+    { 
+      type: 'charm',
+      icon: () => <div className="w-8 h-8 flex items-center justify-center text-2xl">🍎</div>,
+      label: 'Apple Charm',
+      defaultContent: '🍎',
+      defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%', padding: '10px', backgroundColor: 'transparent' }
+    },
+    { 
+      type: 'charm',
+      icon: () => <div className="w-8 h-8 flex items-center justify-center text-2xl">✏️</div>,
+      label: 'Pencil Charm',
+      defaultContent: '✏️',
+      defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%', padding: '10px', backgroundColor: 'transparent' }
+    },
+    { 
+      type: 'charm',
+      icon: () => <div className="w-8 h-8 flex items-center justify-center text-2xl">📚</div>,
+      label: 'Books Charm',
+      defaultContent: '📚',
+      defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%', padding: '10px', backgroundColor: 'transparent' }
+    },
+    { 
+      type: 'charm',
+      icon: () => <div className="w-8 h-8 flex items-center justify-center text-2xl">🏆</div>,
+      label: 'Trophy Charm',
+      defaultContent: '🏆',
+      defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%', padding: '10px', backgroundColor: 'transparent' }
+    },
     // Social icons (SVG or emoji fallback)
     { type: 'icon', icon: () => <span role="img" aria-label="facebook" className="text-2xl">📘</span>, label: 'Facebook', defaultContent: '📘', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
     { type: 'icon', icon: () => <span role="img" aria-label="instagram" className="text-2xl">📸</span>, label: 'Instagram', defaultContent: '📸', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
@@ -529,13 +560,21 @@ const AdvancedDesignStudio = () => {
   // Use Template function
   const useTemplate = (template) => {
     try {
-      console.log('Using template:', template.name);
+      console.log('Using template:', template);
+      
+      if (!template || !template.design_json) {
+        console.error('Invalid template data:', template);
+        toast.error('Failed to load template: Missing design data');
+        return;
+      }
+
       let templateData;
       try {
         templateData = typeof template.design_json === 'string' ? JSON.parse(template.design_json) : template.design_json;
+        console.log('Parsed template data:', templateData);
       } catch (error) {
-        console.error('Failed to parse template design_json:', error);
-        toast.error('Failed to load template: Invalid design data');
+        console.error('Failed to parse template design_json:', error, template.design_json);
+        toast.error('Failed to load template: Invalid design data format');
         return;
       }
 
@@ -545,15 +584,29 @@ const AdvancedDesignStudio = () => {
         return;
       }
 
-      const newElements = templateData.map((element, index) => ({
-        ...element,
-        id: `element_${Date.now()}_${index}`,
-        x: 20, // Start closer to left edge
-        y: 20 + (index * 80) // Tighter vertical spacing
-      }));
+      if (templateData.length === 0) {
+        console.warn('Template has no elements');
+        toast.warning('This template is empty');
+        return;
+      }
+
+      const newElements = templateData.map((element, index) => {
+        console.log('Processing element:', element);
+        return {
+          ...element,
+          id: `element_${Date.now()}_${index}`,
+          x: element.x || 20, // Preserve original x if exists
+          y: element.y || (20 + (index * 80)), // Preserve original y if exists
+          style: {
+            ...element.style,
+            width: element.style?.width || '100%'
+          }
+        };
+      });
+
+      console.log('Setting canvas with elements:', newElements);
       setCanvas(newElements);
       setSelectedElement(null);
-      console.log('Template applied successfully', newElements);
       toast.success('Template loaded successfully!');
     } catch (error) {
       console.error('Template error:', error);
@@ -703,6 +756,34 @@ const AdvancedDesignStudio = () => {
             />
           );
           
+        case 'charm':
+        case 'emoji':
+        case 'icon':
+          return (
+            <div 
+              style={{ 
+                ...baseStyle,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: element.style?.padding || '10px',
+                backgroundColor: element.style?.backgroundColor || 'transparent'
+              }}
+              className="charm-container"
+            >
+              <span 
+                role="img" 
+                aria-label={element.label}
+                style={{
+                  fontSize: element.style?.fontSize || '32px',
+                  lineHeight: 1
+                }}
+              >
+                {element.content}
+              </span>
+            </div>
+          );
+          
         case 'button':
           return (
             <button
@@ -718,27 +799,8 @@ const AdvancedDesignStudio = () => {
                 cursor: 'pointer',
                 transition: 'all 0.2s'
               }}
-              onMouseOver={(e) => {
-                e.target.style.opacity = '0.9';
-                e.target.style.transform = 'translateY(-1px)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.opacity = '1';
-                e.target.style.transform = 'translateY(0)';
-              }}
             >
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={element.content}
-                  onChange={(e) => handleContentChange(e.target.value)}
-                  onBlur={() => setIsEditing(false)}
-                  className="bg-transparent border-none outline-none text-white"
-                  autoFocus
-                />
-              ) : (
-                element.content
-              )}
+              {element.content}
             </button>
           );
           
@@ -750,14 +812,69 @@ const AdvancedDesignStudio = () => {
                 border: 'none',
                 height: element.style?.height || '2px',
                 backgroundColor: element.style?.backgroundColor || '#e5e7eb',
-                width: '100%',
                 margin: element.style?.margin || '20px 0'
               }}
             />
           );
           
+        case 'shape':
+          return (
+            <div
+              style={{
+                ...baseStyle,
+                width: element.style?.width || '60px',
+                height: element.style?.height || '60px',
+                backgroundColor: element.style?.backgroundColor || '#fbbf24',
+                borderRadius: element.style?.borderRadius || '0',
+                margin: element.style?.margin || '0 auto'
+              }}
+            />
+          );
+          
+        case 'spacer':
+          return (
+            <div
+              style={{
+                ...baseStyle,
+                height: element.style?.height || '32px',
+                width: '100%'
+              }}
+            />
+          );
+          
+        case 'quote':
+          return (
+            <blockquote
+              style={{
+                ...baseStyle,
+                fontStyle: 'italic',
+                padding: element.style?.padding || '16px',
+                backgroundColor: element.style?.backgroundColor || '#f3f4f6',
+                borderRadius: element.style?.borderRadius || '8px'
+              }}
+            >
+              {element.content}
+            </blockquote>
+          );
+          
+        case 'list':
+          return (
+            <div style={baseStyle}>
+              {element.content.split('\n').map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>•</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          );
+          
         default:
-          return <div style={baseStyle}>Unknown element: {element.type}</div>;
+          return (
+            <div style={baseStyle}>
+              Unknown element type: {element.type}
+            </div>
+          );
       }
     };
 
