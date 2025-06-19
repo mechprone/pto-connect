@@ -1568,7 +1568,14 @@ const AdvancedDesignStudio = () => {
                           }}
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
-                          <button className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100">
+                          <button
+                            className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100"
+                            onClick={e => {
+                              e.stopPropagation();
+                              useTemplate(template);
+                              setShowTemplateModal(false);
+                            }}
+                          >
                             Use Template
                           </button>
                         </div>
@@ -1601,7 +1608,14 @@ const AdvancedDesignStudio = () => {
                           }}
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
-                          <button className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100">
+                          <button
+                            className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100"
+                            onClick={e => {
+                              e.stopPropagation();
+                              useTemplate(template);
+                              setShowTemplateModal(false);
+                            }}
+                          >
                             Use Template
               </button>
             </div>
@@ -1646,7 +1660,14 @@ const AdvancedDesignStudio = () => {
                           }}
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
-                          <button className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100">
+                          <button
+                            className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100"
+                            onClick={e => {
+                              e.stopPropagation();
+                              useTemplate(template);
+                              setShowTemplateModal(false);
+                            }}
+                          >
                             Use Template
                           </button>
         </div>
