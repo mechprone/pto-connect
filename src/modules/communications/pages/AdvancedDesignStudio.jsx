@@ -1331,6 +1331,42 @@ const AdvancedDesignStudio = () => {
     );
   };
 
+  const CharmButton = ({ charm, onClick }) => (
+    <button
+      onClick={() => onClick(charm)}
+      className="flex flex-col items-center justify-center p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all w-full h-full gap-2"
+    >
+      <span className="text-2xl">{charm.content}</span>
+      <span className="text-sm text-center text-gray-600">{charm.label}</span>
+    </button>
+  );
+
+  const renderCharms = () => {
+    return (
+      <div className="grid grid-cols-2 gap-4 p-4">
+        {charms.map((charm) => (
+          <CharmButton
+            key={charm.id}
+            charm={charm}
+            onClick={(charm) => {
+              const newElement = {
+                id: Date.now(),
+                type: 'charm',
+                content: charm.content,
+                label: charm.label,
+                style: {
+                  fontSize: '32px',
+                  textAlign: 'center'
+                }
+              };
+              setCanvas(prev => [...prev, newElement]);
+            }}
+          />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="h-screen bg-gray-100 flex">
