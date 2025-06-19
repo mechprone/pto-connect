@@ -6,7 +6,7 @@ import {
   Save, Eye, Sparkles, 
   ZoomIn, ZoomOut,
   Search, Palette,
-  Mail, MessageSquare, Share2
+  Mail, MessageSquare, Share2, Circle
 } from 'lucide-react';
 import { communicationsTemplatesAPI } from '@/services/api/communicationsTemplates';
 
@@ -460,74 +460,31 @@ const AdvancedDesignStudio = () => {
     }
   };
 
-  // Professional drag elements
+  // --- Updated Drag Elements ---
   const dragElements = [
-    { 
-      type: 'text', 
-      icon: Type, 
-      label: 'Text', 
-      defaultContent: 'Add your text here',
-      defaultStyle: {
-        fontSize: '16px',
-        color: '#374151',
-        lineHeight: '1.6',
-        padding: '10px',
-        width: '100%'
-      }
-    },
-    { 
-      type: 'header', 
-      icon: Type, 
-      label: 'Header', 
-      defaultContent: 'Your Header Here',
-      defaultStyle: {
-        fontSize: '32px',
-        fontWeight: 'bold',
-        color: '#1f2937',
-        textAlign: 'center',
-        padding: '20px',
-        width: '100%'
-      }
-    },
-    { 
-      type: 'image', 
-      icon: Image, 
-      label: 'Image', 
-      defaultSrc: 'https://picsum.photos/400/250?random=99',
-      defaultStyle: {
-        width: '100%',
-        borderRadius: '8px'
-      }
-    },
-    { 
-      type: 'button', 
-      icon: Square, 
-      label: 'Button', 
-      defaultContent: 'Click Here',
-      defaultStyle: {
-        backgroundColor: '#3b82f6',
-        color: 'white',
-        padding: '15px 30px',
-        borderRadius: '8px',
-        fontSize: '16px',
-        fontWeight: '600',
-        textAlign: 'center',
-        border: 'none',
-        cursor: 'pointer'
-      }
-    },
-    { 
-      type: 'divider', 
-      icon: Minus, 
-      label: 'Divider', 
-      defaultContent: '',
-      defaultStyle: {
-        height: '2px',
-        backgroundColor: '#e5e7eb',
-        width: '100%',
-        margin: '20px 0'
-      }
-    }
+    { type: 'text', icon: Type, label: 'Text', defaultContent: 'Add your text here', defaultStyle: { fontSize: '16px', color: '#374151', lineHeight: '1.6', padding: '10px', width: '100%' } },
+    { type: 'header', icon: Type, label: 'Header', defaultContent: 'Your Header Here', defaultStyle: { fontSize: '32px', fontWeight: 'bold', color: '#1f2937', textAlign: 'center', padding: '20px', width: '100%' } },
+    { type: 'image', icon: Image, label: 'Image', defaultSrc: 'https://picsum.photos/400/250?random=99', defaultStyle: { width: '100%', borderRadius: '8px' } },
+    { type: 'button', icon: Square, label: 'Button', defaultContent: 'Click Here', defaultStyle: { backgroundColor: '#3b82f6', color: 'white', padding: '15px 30px', borderRadius: '8px', fontSize: '16px', fontWeight: '600', textAlign: 'center', border: 'none', cursor: 'pointer' } },
+    { type: 'divider', icon: Minus, label: 'Divider', defaultContent: '', defaultStyle: { height: '2px', backgroundColor: '#e5e7eb', width: '100%', margin: '20px 0' } },
+    // Fun/Modern
+    { type: 'emoji', icon: () => <span role="img" aria-label="emoji" className="text-2xl">🎉</span>, label: 'Emoji', defaultContent: '🎉', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
+    { type: 'charm', icon: () => <span role="img" aria-label="star" className="text-2xl">⭐</span>, label: 'Star Charm', defaultContent: '⭐', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
+    { type: 'charm', icon: () => <span role="img" aria-label="apple" className="text-2xl">🍎</span>, label: 'Apple Charm', defaultContent: '🍎', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
+    { type: 'charm', icon: () => <span role="img" aria-label="pencil" className="text-2xl">✏️</span>, label: 'Pencil Charm', defaultContent: '✏️', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
+    { type: 'charm', icon: () => <span role="img" aria-label="book" className="text-2xl">📚</span>, label: 'Books Charm', defaultContent: '📚', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
+    { type: 'charm', icon: () => <span role="img" aria-label="trophy" className="text-2xl">🏆</span>, label: 'Trophy Charm', defaultContent: '🏆', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
+    // Social icons (SVG or emoji fallback)
+    { type: 'icon', icon: () => <span role="img" aria-label="facebook" className="text-2xl">📘</span>, label: 'Facebook', defaultContent: '📘', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
+    { type: 'icon', icon: () => <span role="img" aria-label="instagram" className="text-2xl">📸</span>, label: 'Instagram', defaultContent: '📸', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
+    { type: 'icon', icon: () => <span role="img" aria-label="twitter" className="text-2xl">🐦</span>, label: 'Twitter', defaultContent: '🐦', defaultStyle: { fontSize: '32px', textAlign: 'center', width: '100%' } },
+    // Shapes
+    { type: 'shape', icon: Circle, label: 'Circle', defaultContent: '', defaultStyle: { width: '60px', height: '60px', borderRadius: '50%', backgroundColor: '#fbbf24', margin: '0 auto' } },
+    { type: 'shape', icon: Square, label: 'Square', defaultContent: '', defaultStyle: { width: '60px', height: '60px', borderRadius: '8px', backgroundColor: '#60a5fa', margin: '0 auto' } },
+    // Utility
+    { type: 'spacer', icon: Minus, label: 'Spacer', defaultContent: '', defaultStyle: { height: '32px', width: '100%' } },
+    { type: 'quote', icon: () => <span className="text-2xl">❝</span>, label: 'Quote', defaultContent: 'Inspirational quote here...', defaultStyle: { fontStyle: 'italic', fontSize: '18px', color: '#6b7280', textAlign: 'center', padding: '16px', backgroundColor: '#f3f4f6', borderRadius: '8px', width: '100%' } },
+    { type: 'list', icon: () => <span className="text-2xl">•</span>, label: 'List', defaultContent: 'List item 1\nList item 2\nList item 3', defaultStyle: { fontSize: '16px', color: '#374151', textAlign: 'left', padding: '10px', width: '100%' } },
   ];
 
   // Use Template function
@@ -994,7 +951,7 @@ const AdvancedDesignStudio = () => {
         </div>
 
         {/* Left Panel - Tools & Templates */}
-        <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+        <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
           {/* Tab Navigation */}
           <div className="flex border-b border-gray-200">
             <button
@@ -1012,14 +969,6 @@ const AdvancedDesignStudio = () => {
               }`}
             >
               Elements
-            </button>
-            <button
-              onClick={() => setActiveTab('brand')}
-              className={`flex-1 py-3 px-4 text-sm font-medium ${
-                activeTab === 'brand' ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-700' : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Brand
             </button>
           </div>
           
@@ -1088,29 +1037,9 @@ const AdvancedDesignStudio = () => {
                 </div>
               </div>
             )}
-            
-            {activeTab === 'brand' && (
-              <div className="p-4 space-y-4">
-                <h3 className="font-semibold text-gray-900">Brand Assets</h3>
-                <div>
-                  <h4 className="font-medium text-sm mb-2">Colors</h4>
-                  <div className="grid grid-cols-4 gap-2">
-                    {['#1f2937', '#374151', '#6b7280', '#d97706', '#059669', '#dc2626', '#7c3aed'].map(color => (
-                      <div
-                        key={color}
-                        className="w-8 h-8 rounded cursor-pointer border border-gray-200 hover:scale-110 transition-transform"
-                        style={{ backgroundColor: color }}
-                        onClick={() => selectedElement && updateElementStyle({ color })}
-                        title={color}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-                  </div>
-                </div>
-                
+          </div>
+        </div>
+        
         {/* Center - Canvas */}
         <div className="flex-1 flex flex-col">
           {/* Toolbar */}
