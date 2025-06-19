@@ -65,4 +65,171 @@
 .gjs-block-label {
   font-size: 0.75rem;
   font-weight: 500;
+}
+
+/* Custom toolbar buttons */
+.btn-save, .btn-preview {
+  background: #28a745 !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  margin: 0 5px !important;
+  cursor: pointer !important;
+  font-size: 12px !important;
+}
+
+.btn-preview {
+  background: #17a2b8 !important;
+}
+
+.btn-save:hover, .btn-preview:hover {
+  opacity: 0.8 !important;
+}
+
+/* Better block styling */
+.gjs-blocks-c {
+  padding: 10px;
+}
+
+.gjs-block {
+  margin: 5px;
+  border: 1px solid #e0e0e0;
+  background: white;
+}
+
+.gjs-block:hover {
+  border-color: #ec5896;
+}
+
+/* Improved panel styling */
+.gjs-pn-views-container {
+  background: #f8f9fa;
+}
+
+.gjs-pn-views {
+  background: white;
+  border-radius: 4px;
+  margin: 5px;
+}
+
+/* Better canvas styling */
+.gjs-cv-canvas {
+  background: #f8f9fa;
+}
+
+/* Helpful tooltips */
+.gjs-block[title] {
+  position: relative;
+}
+
+.gjs-block[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-bottom: 5px;
+}
+
+/* Simplified toolbar */
+.gjs-pn-commands {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.gjs-pn-btn {
+  border-radius: 4px;
+  margin: 2px;
+}
+
+/* Better device switcher */
+.gjs-devices-c {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.gjs-devices-c .gjs-device {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  margin: 2px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.gjs-devices-c .gjs-device.gjs-active {
+  background: #ec5896;
+  color: white;
+  border-color: #ec5896;
+}
+
+/* Improved layer panel */
+.gjs-layers {
+  background: white;
+}
+
+.gjs-layer {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+
+.gjs-layer:hover {
+  background: #f8f9fa;
+}
+
+.gjs-layer.gjs-selected {
+  background: #ec5896;
+  color: white;
+}
+
+/* Better style panel */
+.gjs-sm-properties {
+  background: white;
+  padding: 10px;
+}
+
+.gjs-sm-property {
+  margin-bottom: 10px;
+}
+
+.gjs-sm-label {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.gjs-sm-field {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 5px;
+}
+
+/* Welcome modal improvements */
+.welcome-modal {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .panel__right {
+    flex-basis: 200px;
+  }
+  
+  .panel__switcher {
+    width: 40px;
+  }
 } 
