@@ -732,7 +732,10 @@ const AdvancedDesignStudio = () => {
       outline: isSelected ? '2px solid #3b82f6' : 'none',
       outlineOffset: '2px',
       boxSizing: 'border-box',
-      maxWidth: element.style?.width || '100%'
+      maxWidth: '100%',
+      width: element.style?.width || '100%',
+      position: element.style?.position || 'relative',
+      zIndex: element.zIndex || 1
     };
 
     const renderElement = () => {
@@ -1701,6 +1704,56 @@ const AdvancedDesignStudio = () => {
                   <h3 className="text-sm font-semibold text-gray-900 mb-3">Advanced</h3>
                   <div className="space-y-3">
                     <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Layer Position</label>
+                      <div className="flex space-x-1">
+                        <button
+                          onClick={() => {
+                            const maxZ = Math.max(...canvas.map(el => el.zIndex || 1));
+                            const updated = { ...selectedElement, zIndex: maxZ + 1 };
+                            setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
+                            setSelectedElement(updated);
+                          }}
+                          className="flex-1 p-2 text-xs border rounded border-gray-300 hover:bg-gray-50"
+                          title="Bring to Front"
+                        >
+                          Bring to Front
+                        </button>
+                        <button
+                          onClick={() => {
+                            const updated = { ...selectedElement, zIndex: (selectedElement.zIndex || 1) + 1 };
+                            setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
+                            setSelectedElement(updated);
+                          }}
+                          className="flex-1 p-2 text-xs border rounded border-gray-300 hover:bg-gray-50"
+                          title="Bring Forward"
+                        >
+                          Forward
+                        </button>
+                        <button
+                          onClick={() => {
+                            const updated = { ...selectedElement, zIndex: Math.max(1, (selectedElement.zIndex || 1) - 1) };
+                            setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
+                            setSelectedElement(updated);
+                          }}
+                          className="flex-1 p-2 text-xs border rounded border-gray-300 hover:bg-gray-50"
+                          title="Send Backward"
+                        >
+                          Backward
+                        </button>
+                        <button
+                          onClick={() => {
+                            const updated = { ...selectedElement, zIndex: 1 };
+                            setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
+                            setSelectedElement(updated);
+                          }}
+                          className="flex-1 p-2 text-xs border rounded border-gray-300 hover:bg-gray-50"
+                          title="Send to Back"
+                        >
+                          To Back
+                        </button>
+                      </div>
+                    </div>
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Wrap (Positioning)</label>
                       <select
                         value={selectedElement.style?.position || 'static'}
@@ -1725,12 +1778,12 @@ const AdvancedDesignStudio = () => {
                             className={`flex-1 p-2 text-xs border rounded ${selectedElement.justification === justify ? 'bg-blue-100 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
                           >
                             {justify === 'flex-start' ? 'Left' : justify === 'center' ? 'Center' : 'Right'}
-                </button>
+                          </button>
                         ))}
                       </div>
                     </div>
-              </div>
-            </div>
+                  </div>
+                </div>
             
                 {/* Actions */}
                 <div className="pt-4 border-t border-gray-200">
