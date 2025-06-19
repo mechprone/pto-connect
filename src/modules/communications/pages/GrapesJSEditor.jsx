@@ -129,46 +129,34 @@ const GrapesJSEditor = () => {
         plugins: [gjsPresetWebpage, gjsPresetNewsletter],
         pluginsOpts: {
           [gjsPresetWebpage]: {
-            // Options for the webpage preset
+            styleManager: {
+              sectors: [{
+                name: 'Dimension',
+                open: false,
+                properties: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
+              }, {
+                name: 'Typography',
+                open: false,
+                properties: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align'],
+              }, {
+                name: 'Decorations',
+                open: false,
+                properties: ['background-color', 'border-radius', 'border', 'box-shadow'],
+              }],
+            },
+            deviceManager: {
+              devices: [{
+                  name: 'Desktop', width: '',
+                }, {
+                  name: 'Tablet', width: '768px', widthMedia: '992px',
+                }, {
+                  name: 'Mobile', width: '320px', widthMedia: '480px',
+                }]
+            },
           },
           [gjsPresetNewsletter]: {
-            // Options for the newsletter preset
+            // You can add options for the newsletter preset here if needed
           },
-        },
-        styleManager: {
-          sectors: [{
-            name: 'Dimension',
-            open: false,
-            properties: [
-              'width', 'height', 'max-width', 'min-height', 'margin', 'padding'
-            ],
-          }, {
-            name: 'Typography',
-            open: false,
-            properties: [
-              'font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align'
-            ],
-          }, {
-            name: 'Decorations',
-            open: false,
-            properties: [
-              'background-color', 'border-radius', 'border', 'box-shadow'
-            ],
-          }],
-        },
-        deviceManager: {
-          devices: [{
-              name: 'Desktop',
-              width: '',
-            }, {
-              name: 'Tablet',
-              width: '768px',
-              widthMedia: '992px',
-            }, {
-              name: 'Mobile',
-              width: '320px',
-              widthMedia: '480px',
-            }]
         },
       });
 
@@ -182,7 +170,7 @@ const GrapesJSEditor = () => {
         }
       });
 
-      // Add custom buttons to the options panel
+      // Add custom buttons to the options panel, which is created by the preset
       const panels = editor.Panels;
       panels.addButton('options', {
         id: 'save-btn',
@@ -199,6 +187,14 @@ const GrapesJSEditor = () => {
 
       editorRef.current = editor;
     }
+
+    // Cleanup function to destroy the editor instance when the component unmounts
+    return () => {
+      if (editorRef.current) {
+        editorRef.current.destroy();
+        editorRef.current = null;
+      }
+    };
   }, []);
 
   return (
