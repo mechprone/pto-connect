@@ -1570,52 +1570,190 @@ const AdvancedDesignStudio = () => {
       {/* Toolbar */}
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center space-x-2">
-          <button
-            onClick={() => handleUndo()}
-            disabled={history.length < 2}
-            className="p-2 text-gray-600 hover:text-gray-900 disabled:opacity-50"
-            title="Undo"
-          >
-            ↩
-          </button>
-          <button
-            onClick={() => handleRedo()}
-            disabled={future.length === 0}
-            className="p-2 text-gray-600 hover:text-gray-900 disabled:opacity-50"
-            title="Redo"
-          >
-            ↪
-          </button>
-          <button
-            onClick={() => setCanvas([])}
-            className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
-          >
-            Clear
-          </button>
-          <button
-            onClick={() => handleSaveDraft()}
-            className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
-          >
-            Save
-          </button>
-          <button
-            onClick={() => setPreviewMode(true)}
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Preview
-          </button>
-          <button
-            onClick={() => setShowStellaPopup(true)}
-            className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
-          >
-            Stella
-          </button>
-          <button
-            onClick={() => setTemplateSaveModal(true)}
-            className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            Save as Template
-          </button>
+          <button onClick={() => handleUndo()} disabled={history.length < 2} className="p-2 text-gray-600 hover:text-gray-900 disabled:opacity-50" title="Undo">↩</button>
+          <button onClick={() => handleRedo()} disabled={future.length === 0} className="p-2 text-gray-600 hover:text-gray-900 disabled:opacity-50" title="Redo">↪</button>
+          <button onClick={() => setCanvas([])} className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100">Clear</button>
+          <button onClick={() => handleSaveDraft()} className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100">Save</button>
+          <button onClick={() => setPreviewMode(true)} className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Preview</button>
+          <button onClick={() => setShowStellaPopup(true)} className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700">Stella</button>
+          <button onClick={() => setTemplateSaveModal(true)} className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700">Save as Template</button>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left Sidebar - Elements & Templates */}
+        <div className="w-64 border-r bg-white overflow-y-auto flex flex-col">
+          <div className="p-4 border-b">
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setActiveTab('elements')}
+                className={`flex-1 px-3 py-1 text-sm rounded ${activeTab === 'elements' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
+              >
+                Elements
+              </button>
+              <button
+                onClick={() => setActiveTab('templates')}
+                className={`flex-1 px-3 py-1 text-sm rounded ${activeTab === 'templates' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
+              >
+                Templates
+              </button>
+            </div>
+          </div>
+
+          {activeTab === 'elements' && (
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-4 space-y-4">
+                <DragElement element={{ type: 'header', defaultContent: 'New Header', defaultStyle: { fontSize: '24px', fontWeight: 'bold', color: '#172845' } }} />
+                <DragElement element={{ type: 'text', defaultContent: 'New Text Block', defaultStyle: { fontSize: '16px', color: '#374151' } }} />
+                <DragElement element={{ type: 'image', defaultSrc: 'https://via.placeholder.com/400x200', defaultStyle: { width: '100%', borderRadius: '8px' } }} />
+                <DragElement element={{ type: 'button', defaultContent: 'New Button', defaultStyle: { backgroundColor: '#2563eb', color: '#fff', padding: '12px 32px', borderRadius: '6px', display: 'inline-block' } }} />
+                <DragElement element={{ type: 'divider', defaultStyle: { borderTop: '2px solid #e5e7eb', margin: '16px 0' } }} />
+              </div>
+              {renderCharms()}
+            </div>
+          )}
+
+          {activeTab === 'templates' && (
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-4">
+                <input
+                  type="text"
+                  placeholder="Search templates..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
+                />
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
+                >
+                  <option value="all">All Categories</option>
+                  {getTemplateCategories().map(category => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+              </div>
+              <TemplateGrid templates={getFilteredTemplates()} />
+            </div>
+          )}
+        </div>
+
+        {/* Center - Canvas */}
+        <div className="flex-1 overflow-y-auto bg-gray-50 p-8">
+          <DndProvider backend={HTML5Backend}>
+            <DropZone />
+          </DndProvider>
+        </div>
+
+        {/* Right Sidebar - Properties */}
+        <div className="w-64 border-l bg-white overflow-y-auto">
+          {selectedElement ? (
+            <div className="p-4">
+              <h3 className="font-medium text-gray-900 mb-4">Element Properties</h3>
+              <div className="space-y-4">
+                {selectedElement.type !== 'divider' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Content
+                    </label>
+                    <textarea
+                      value={selectedElement.content}
+                      onChange={(e) => {
+                        const updated = { ...selectedElement, content: e.target.value };
+                        setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
+                        setSelectedElement(updated);
+                      }}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      rows="3"
+                    />
+                  </div>
+                )}
+                {selectedElement.type === 'image' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Image URL
+                    </label>
+                    <input
+                      type="text"
+                      value={selectedElement.src}
+                      onChange={(e) => {
+                        const updated = { ...selectedElement, src: e.target.value };
+                        setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
+                        setSelectedElement(updated);
+                      }}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
+                )}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Font Size
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedElement.style?.fontSize || '16px'}
+                    onChange={(e) => updateElementStyle({ fontSize: e.target.value })}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Color
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedElement.style?.color || '#000000'}
+                    onChange={(e) => updateElementStyle({ color: e.target.value })}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Background Color
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedElement.style?.backgroundColor || 'transparent'}
+                    onChange={(e) => updateElementStyle({ backgroundColor: e.target.value })}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Alignment
+                  </label>
+                  <select
+                    value={selectedElement.justification || 'center'}
+                    onChange={(e) => {
+                      const updated = { ...selectedElement, justification: e.target.value };
+                      setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
+                      setSelectedElement(updated);
+                    }}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="flex-start">Left</option>
+                    <option value="center">Center</option>
+                    <option value="flex-end">Right</option>
+                  </select>
+                </div>
+                <button
+                  onClick={() => {
+                    setCanvas(prev => prev.filter(el => el.id !== selectedElement.id));
+                    setSelectedElement(null);
+                  }}
+                  className="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                >
+                  Delete Element
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="p-4 text-gray-500 text-center">
+              Select an element to edit its properties
+            </div>
+          )}
         </div>
       </div>
 
@@ -1624,8 +1762,6 @@ const AdvancedDesignStudio = () => {
         isOpen={templateSaveModal}
         onClose={() => setTemplateSaveModal(false)}
       />
-      
-      {/* ... rest of your existing code ... */}
     </div>
   );
 };
