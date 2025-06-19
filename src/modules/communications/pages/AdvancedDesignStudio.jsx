@@ -685,6 +685,30 @@ const AdvancedDesignStudio = () => {
 
   const CanvasElement = ({ element, isSelected, onSelect, onUpdate, index, moveElement }) => {
     const [isEditing, setIsEditing] = useState(false);
+    const ref = useRef(null);
+
+    // Restore drag and drop functionality
+    const [{ isDragging }, drag, preview] = useDrag(() => ({
+      type: 'canvas-element',
+      item: { id: element.id, index },
+      collect: monitor => ({
+        isDragging: monitor.isDragging(),
+      }),
+    }), [element, index]);
+
+    const [, drop] = useDrop({
+      accept: 'canvas-element',
+      hover: (item, monitor) => {
+        if (!ref.current) return;
+        const dragIndex = item.index;
+        const hoverIndex = index;
+        if (dragIndex === hoverIndex) return;
+        moveElement(dragIndex, hoverIndex);
+        item.index = hoverIndex;
+      },
+    });
+
+    drag(drop(ref));
     
     const handleDoubleClick = () => {
       if (element.type === 'text' || element.type === 'header') {
@@ -694,6 +718,7 @@ const AdvancedDesignStudio = () => {
 
     const handleContentChange = (newContent) => {
       onUpdate({ ...element, content: newContent });
+      setIsEditing(false);
     };
 
     // Outer container style for full width background
@@ -703,12 +728,13 @@ const AdvancedDesignStudio = () => {
       padding: element.style?.padding || '10px',
       margin: element.style?.margin || '0px',
       borderRadius: element.style?.borderRadius || '0px',
-      cursor: 'pointer',
+      cursor: isDragging ? 'move' : 'pointer',
       outline: isSelected ? '2px solid #3b82f6' : 'none',
       outlineOffset: '2px',
       boxSizing: 'border-box',
       position: 'relative',
-      zIndex: element.zIndex || 1
+      zIndex: element.zIndex || 1,
+      opacity: isDragging ? 0.5 : 1
     };
 
     // Inner container style for content alignment
@@ -723,14 +749,15 @@ const AdvancedDesignStudio = () => {
     const contentStyle = {
       ...element.style,
       width: element.style?.textWidth || 'auto',
-      backgroundColor: undefined, // Remove background from content
-      padding: undefined, // Remove padding from content
-      margin: undefined, // Remove margin from content
-      borderRadius: undefined, // Remove border radius from content
+      backgroundColor: undefined,
+      padding: undefined,
+      margin: undefined,
+      borderRadius: undefined,
     };
 
     return (
       <div
+        ref={ref}
         style={outerContainerStyle}
         onClick={() => onSelect(element)}
         onDoubleClick={handleDoubleClick}
@@ -739,6 +766,22 @@ const AdvancedDesignStudio = () => {
         <div style={innerContainerStyle}>
           {renderElement()}
         </div>
+        {isSelected && (
+          <div className="absolute -top-6 -left-1 text-xs bg-blue-600 text-white px-2 py-1 rounded flex items-center space-x-2 z-20">
+            <span>{element.type}</span>
+            <button
+              onClick={e => {
+                e.stopPropagation();
+                setCanvas(prev => prev.filter(el => el.id !== element.id));
+                setSelectedElement(null);
+              }}
+              className="text-white hover:text-red-200 text-xs"
+              title="Delete element"
+            >
+              ×
+            </button>
+          </div>
+        )}
       </div>
     );
 
