@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import grapesjs from 'grapesjs';
 import 'grapesjs/dist/css/grapes.min.css';
-import gjsPresetWebpage from 'grapesjs-preset-webpage';
-import gjsPresetNewsletter from 'grapesjs-preset-newsletter';
 import './GrapesJSEditor.css';
+// Import plugins by name for side-effects (registration)
+import 'grapesjs-preset-webpage';
+import 'grapesjs-preset-newsletter';
 
 const GrapesJSEditor = () => {
   const editorRef = useRef(null);
@@ -93,7 +94,7 @@ const GrapesJSEditor = () => {
   };
 
   const loadTemplate = (templateType) => {
-    if (editorRef.current) {
+    if (editorRef.current && defaultTemplates[templateType]) {
       const template = defaultTemplates[templateType];
       editorRef.current.setComponents(template);
       setTemplateName(templateType.charAt(0).toUpperCase() + templateType.slice(1));
@@ -101,7 +102,7 @@ const GrapesJSEditor = () => {
     }
   };
 
-  const startFromScratch = () => {
+  const startBlank = () => {
     if (editorRef.current) {
       editorRef.current.setComponents('<div style="padding: 20px; text-align: center; color: #666;">Start building your email template here...</div>');
       setTemplateName('New Template');
@@ -126,9 +127,11 @@ const GrapesJSEditor = () => {
         height: '100%',
         width: 'auto',
         storageManager: false,
-        plugins: [gjsPresetWebpage, gjsPresetNewsletter],
+        // Use STRINGS to identify plugins
+        plugins: ['gjs-preset-webpage', 'gjs-preset-newsletter'],
+        // Use STRINGS for plugin options keys
         pluginsOpts: {
-          [gjsPresetWebpage]: {
+          'gjs-preset-webpage': {
             styleManager: {
               sectors: [{
                 name: 'Dimension',
@@ -144,23 +147,13 @@ const GrapesJSEditor = () => {
                 properties: ['background-color', 'border-radius', 'border', 'box-shadow'],
               }],
             },
-            deviceManager: {
-              devices: [{
-                  name: 'Desktop', width: '',
-                }, {
-                  name: 'Tablet', width: '768px', widthMedia: '992px',
-                }, {
-                  name: 'Mobile', width: '320px', widthMedia: '480px',
-                }]
-            },
           },
-          [gjsPresetNewsletter]: {
-            // You can add options for the newsletter preset here if needed
+          'gjs-preset-newsletter': {
+            // Options for the newsletter preset can go here
           },
         },
       });
 
-      // Add custom save command
       editor.Commands.add('save-template', {
         run: (editor) => {
           const html = editor.getHtml();
@@ -169,8 +162,7 @@ const GrapesJSEditor = () => {
           alert('Template Saved! (Check console for output)');
         }
       });
-
-      // Add custom buttons to the options panel, which is created by the preset
+      
       const panels = editor.Panels;
       panels.addButton('options', {
         id: 'save-btn',
@@ -188,7 +180,6 @@ const GrapesJSEditor = () => {
       editorRef.current = editor;
     }
 
-    // Cleanup function to destroy the editor instance when the component unmounts
     return () => {
       if (editorRef.current) {
         editorRef.current.destroy();
@@ -276,7 +267,7 @@ const GrapesJSEditor = () => {
             </div>
             
             <button
-              onClick={startFromScratch}
+              onClick={startBlank}
               style={{
                 padding: '15px 30px',
                 background: '#667eea',
