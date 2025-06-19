@@ -56,25 +56,61 @@ const AdvancedDesignStudio = () => {
 
   // --- Save as Template Handler ---
   const handleSaveAsTemplate = async () => {
-    const payload = {
-      ...templateMeta,
-      design_json: JSON.stringify(canvas),
-      template_type: builderMode,
-      sharing_level: templateMeta.sharing_level,
-      shared_with_orgs: templateMeta.sharing_level === 'orgs' ? templateMeta.shared_with_orgs : [],
-    };
-    if (editingTemplateId) {
-      await communicationsTemplatesAPI.updateTemplate(editingTemplateId, payload);
-    } else {
-      await communicationsTemplatesAPI.createTemplate(payload);
+    try {
+      setLoadingTemplates(true);
+
+      if (!canvas || canvas.length === 0) {
+        toast.error('Cannot save empty template. Add some elements first.');
+        return;
+      }
+
+      const payload = {
+        ...templateMeta,
+        design_json: JSON.stringify(canvas),
+        template_type: builderMode,
+        sharing_level: templateMeta.sharing_level || 'private',
+        shared_with_orgs: templateMeta.sharing_level === 'orgs' ? templateMeta.shared_with_orgs : [],
+        html_content: '', // Will be generated on the backend
+        thumbnail_url: '', // Will be generated on the backend
+      };
+
+      if (!payload.name || !payload.category) {
+        toast.error('Name and category are required');
+        return;
+      }
+
+      try {
+        // Validate design_json can be parsed back
+        const testParse = JSON.parse(payload.design_json);
+        if (!Array.isArray(testParse)) {
+          throw new Error('Invalid design data format');
+        }
+      } catch (error) {
+        console.error('Design data validation failed:', error);
+        toast.error('Failed to save template: Invalid design data');
+        return;
+      }
+
+      if (editingTemplateId) {
+        await communicationsTemplatesAPI.updateTemplate(editingTemplateId, payload);
+        toast.success('Template updated successfully!');
+      } else {
+        await communicationsTemplatesAPI.createTemplate(payload);
+        toast.success('Template created successfully!');
+      }
+
+      // Close modal and refresh templates
+      setTemplateSaveModal(false);
+      setLoadingTemplates(true);
+      const { data } = await communicationsTemplatesAPI.getTemplates();
+      setMyTemplates(data?.myTemplates || []);
+      setSharedTemplates(data?.sharedTemplates || []);
+    } catch (error) {
+      console.error('Template save error:', error);
+      toast.error('Failed to save template: ' + error.message);
+    } finally {
+      setLoadingTemplates(false);
     }
-    setTemplateSaveModal(false);
-    // Reload templates
-    setLoadingTemplates(true);
-    const { data } = await communicationsTemplatesAPI.getTemplates();
-    setMyTemplates(data?.myTemplates || []);
-    setSharedTemplates(data?.sharedTemplates || []);
-    setLoadingTemplates(false);
   };
 
   // Console logging for debugging
@@ -494,7 +530,22 @@ const AdvancedDesignStudio = () => {
   const useTemplate = (template) => {
     try {
       console.log('Using template:', template.name);
-      const newElements = template.elements.map((element, index) => ({
+      let templateData;
+      try {
+        templateData = typeof template.design_json === 'string' ? JSON.parse(template.design_json) : template.design_json;
+      } catch (error) {
+        console.error('Failed to parse template design_json:', error);
+        toast.error('Failed to load template: Invalid design data');
+        return;
+      }
+
+      if (!Array.isArray(templateData)) {
+        console.error('Template design_json is not an array:', templateData);
+        toast.error('Failed to load template: Invalid design data format');
+        return;
+      }
+
+      const newElements = templateData.map((element, index) => ({
         ...element,
         id: `element_${Date.now()}_${index}`,
         x: 20, // Start closer to left edge
@@ -503,8 +554,10 @@ const AdvancedDesignStudio = () => {
       setCanvas(newElements);
       setSelectedElement(null);
       console.log('Template applied successfully', newElements);
+      toast.success('Template loaded successfully!');
     } catch (error) {
       console.error('Template error:', error);
+      toast.error('Failed to load template: ' + error.message);
     }
   };
 
@@ -1131,7 +1184,26 @@ const AdvancedDesignStudio = () => {
               <button onClick={handleSaveDraft} className="px-2.5 py-1.5 rounded bg-gray-800 text-white hover:bg-gray-900 transition-colors text-sm" title="Save Draft" aria-label="Save Draft">Save</button>
               <button className="flex items-center px-2.5 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm" onClick={() => console.log('Preview', builderMode)} title="Preview" aria-label="Preview"><Eye className="w-4 h-4 mr-1" />Preview</button>
               <button className="flex items-center px-2.5 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm" onClick={() => setShowStellaPopup(!showStellaPopup)} title="Stella" aria-label="Stella"><Sparkles className="w-4 h-4 mr-1" />Stella</button>
-              <button onClick={() => { setTemplateMeta({ name: '', description: '', category: '', template_type: builderMode, sharing_level: 'private', shared_with_orgs: [] }); setEditingTemplateId(null); setTemplateSaveModal(true); }} className="px-2.5 py-1.5 rounded bg-green-600 text-white hover:bg-green-700 transition-colors text-sm" title="Save as Template" aria-label="Save as Template">Save as Template</button>
+              <button 
+            onClick={() => { 
+              setTemplateMeta({ 
+                name: '', 
+                description: '', 
+                category: '', 
+                template_type: builderMode, 
+                sharing_level: 'private', 
+                shared_with_orgs: [] 
+              }); 
+              setEditingTemplateId(null); 
+              setTemplateSaveModal(true); 
+            }} 
+            className="px-2.5 py-1.5 rounded bg-green-600 text-white hover:bg-green-700 transition-colors text-sm" 
+            title="Save as Template" 
+            aria-label="Save as Template"
+            disabled={loadingTemplates}
+          >
+            {loadingTemplates ? 'Saving...' : 'Save as Template'}
+          </button>
             </div>
           </div>
           
@@ -1592,8 +1664,7 @@ const AdvancedDesignStudio = () => {
                             className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100"
                             onClick={e => {
                               e.stopPropagation();
-                              const templateData = JSON.parse(template.design_json);
-                              setCanvas(templateData);
+                              useTemplate(template);
                               setShowTemplateModal(false);
                             }}
                           >
@@ -1635,8 +1706,7 @@ const AdvancedDesignStudio = () => {
                             className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100"
                             onClick={e => {
                               e.stopPropagation();
-                              const templateData = JSON.parse(template.design_json);
-                              setCanvas(templateData);
+                              useTemplate(template);
                               setShowTemplateModal(false);
                             }}
                           >
