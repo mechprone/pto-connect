@@ -922,6 +922,77 @@ const AdvancedDesignStudio = () => {
     alert('Template copied to your library! You can now edit and save it.');
   };
 
+  // Restore DropZone component
+  const DropZone = () => {
+    const [{ isOver, canDrop }, drop] = useDrop(() => ({
+      accept: 'element',
+      drop: (item, monitor) => {
+        const newElement = {
+          id: `element_${Date.now()}_${Math.random()}`,
+          type: item.elementType,
+          content: item.defaultContent || 'New Content',
+          src: item.defaultSrc || '',
+          style: { ...item.defaultStyle },
+          justification: 'center',
+        };
+        setCanvas(prev => [...prev, newElement]);
+        setSelectedElement(newElement);
+      },
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+      }),
+    }), []);
+
+    return (
+      <div
+        ref={node => { drop(node); canvasRef.current = node; }}
+        className={`relative bg-white border-2 border-dashed border-gray-300 rounded-lg min-h-[600px] transition-colors flex flex-col items-stretch` +
+          (isOver ? ' border-blue-500 bg-blue-50' : '') +
+          (canDrop ? ' border-green-400' : '')}
+        style={{
+          transform: `scale(${zoomLevel / 100})`,
+          transformOrigin: 'top left',
+          width: '100%',
+          maxWidth: '800px',
+          margin: '0 auto',
+        }}
+      >
+        {canvas.map((element, idx) => (
+          <div
+            key={element.id}
+            className="w-full flex"
+            style={{ justifyContent: element.justification || 'center' }}
+          >
+            <CanvasElement
+              element={element}
+              isSelected={selectedElement?.id === element.id}
+              onSelect={() => setSelectedElement(element)}
+              onUpdate={updated => {
+                setCanvas(prev => prev.map(el => el.id === element.id ? updated : el));
+                setSelectedElement(updated);
+              }}
+              index={idx}
+              moveElement={moveElement}
+            />
+          </div>
+        ))}
+        {canvas.length === 0 && (
+          <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+            <div className="text-center">
+              <Image className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p className="text-lg">Drag elements here to start designing</p>
+              <p className="text-sm">Choose from templates or build from scratch</p>
+              <div className="mt-4 text-xs bg-gray-100 p-2 rounded">
+                Canvas: {canvas.length} elements | Can Drop: {canDrop ? 'Yes' : 'No'}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   if (hasError) {
     return (
       <div className="h-screen bg-gray-100 flex items-center justify-center">
