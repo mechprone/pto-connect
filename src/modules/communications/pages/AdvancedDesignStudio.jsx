@@ -77,30 +77,28 @@ const AdvancedDesignStudio = () => {
         return;
       }
 
+      // Validate and clean the canvas data
+      const cleanCanvas = canvas.map(element => ({
+        ...element,
+        style: {
+          ...element.style,
+          backgroundColor: validateColor(element.style?.backgroundColor),
+          color: validateColor(element.style?.color)
+        }
+      }));
+
       const payload = {
         ...templateMeta,
-        design_json: JSON.stringify(canvas),
+        design_json: JSON.stringify(cleanCanvas),
         template_type: builderMode,
         sharing_level: templateMeta.sharing_level || 'private',
         shared_with_orgs: templateMeta.sharing_level === 'orgs' ? templateMeta.shared_with_orgs : [],
-        html_content: '', // Will be generated on the backend
-        thumbnail_url: '', // Will be generated on the backend
+        html_content: '',
+        thumbnail_url: '',
       };
 
       if (!payload.name || !payload.category) {
         toast.error('Name and category are required');
-        return;
-      }
-
-      try {
-        // Validate design_json can be parsed back
-        const testParse = JSON.parse(payload.design_json);
-        if (!Array.isArray(testParse)) {
-          throw new Error('Invalid design data format');
-        }
-      } catch (error) {
-        console.error('Design data validation failed:', error);
-        toast.error('Failed to save template: Invalid design data');
         return;
       }
 
@@ -114,7 +112,6 @@ const AdvancedDesignStudio = () => {
 
       // Close modal and refresh templates
       setTemplateSaveModal(false);
-      setLoadingTemplates(true);
       const { data } = await communicationsTemplatesAPI.getTemplates();
       setMyTemplates(data?.myTemplates || []);
       setSharedTemplates(data?.sharedTemplates || []);
@@ -1028,17 +1025,100 @@ const AdvancedDesignStudio = () => {
     }));
   };
 
-    const updateElementStyle = (styleUpdates) => {
+  // Add this helper function at the top level of the component
+  const validateColor = (color) => {
+    if (!color || color === 'transparent') return 'transparent';
+    // Convert 'transparent' to a valid rgba
+    if (color.toLowerCase() === 'transparent') return 'rgba(0,0,0,0)';
+    
+    // Handle hex colors
+    if (color.startsWith('#')) {
+      const hex = color.replace('#', '');
+      if (hex.length === 3 || hex.length === 6) return `#${hex}`;
+    }
+    
+    // Handle rgb/rgba colors
+    if (color.startsWith('rgb')) {
+      return color;
+    }
+    
+    // Default fallback
+    return '#ffffff';
+  };
+
+  // Update the style update handler
+  const updateElementStyle = (styleUpdates) => {
     if (!selectedElement) return;
     
+    // Validate color values before updating
+    const validatedUpdates = { ...styleUpdates };
+    if ('backgroundColor' in validatedUpdates) {
+      validatedUpdates.backgroundColor = validateColor(validatedUpdates.backgroundColor);
+    }
+    if ('color' in validatedUpdates) {
+      validatedUpdates.color = validateColor(validatedUpdates.color);
+    }
+    
     const updated = {
-        ...selectedElement,
-        style: { ...selectedElement.style, ...styleUpdates }
-      };
+      ...selectedElement,
+      style: { ...selectedElement.style, ...validatedUpdates }
+    };
     
     setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
     setSelectedElement(updated);
   };
+
+  // Improve autosave functionality
+  useEffect(() => {
+    let autosaveTimeout;
+    
+    const saveToLocalStorage = () => {
+      try {
+        const canvasData = JSON.stringify(canvas);
+        localStorage.setItem('pto-advanced-design-canvas', canvasData);
+        localStorage.setItem('pto-advanced-design-timestamp', Date.now().toString());
+        console.log('Design autosaved');
+      } catch (error) {
+        console.error('Error autosaving design:', error);
+      }
+    };
+
+    // Clear previous timeout
+    if (autosaveTimeout) {
+      clearTimeout(autosaveTimeout);
+    }
+
+    // Set new timeout for autosave
+    autosaveTimeout = setTimeout(saveToLocalStorage, 1000);
+
+    // Cleanup
+    return () => {
+      if (autosaveTimeout) {
+        clearTimeout(autosaveTimeout);
+      }
+    };
+  }, [canvas]);
+
+  // Add restore from autosave on mount
+  useEffect(() => {
+    try {
+      const savedCanvas = localStorage.getItem('pto-advanced-design-canvas');
+      const savedTimestamp = localStorage.getItem('pto-advanced-design-timestamp');
+      
+      if (savedCanvas && savedTimestamp) {
+        const parsedCanvas = JSON.parse(savedCanvas);
+        const timestamp = parseInt(savedTimestamp);
+        
+        // Only restore if the save is less than 24 hours old
+        if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
+          setCanvas(parsedCanvas);
+          console.log('Restored autosaved design');
+        }
+      }
+    } catch (error) {
+      console.error('Error restoring autosaved design:', error);
+    }
+  }, []);
 
   // Error handling for the component
   const [hasError, setHasError] = useState(false);
