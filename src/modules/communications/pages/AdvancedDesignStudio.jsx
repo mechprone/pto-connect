@@ -73,8 +73,8 @@ const AdvancedDesignStudio = () => {
       name: 'Fall Festival',
       category: 'Event',
       thumbnail: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=300&q=80',
-      description: 'Celebrate autumn with a festive school event!'
-      ,isProfessional: true,
+      description: 'Celebrate autumn with a festive school event!',
+      isProfessional: true,
       elements: [
         { type: 'image', src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
         { type: 'header', content: 'Fall Festival', style: { fontSize: '24px', fontWeight: 'bold', color: '#b45309', textAlign: 'center', padding: '20px', backgroundColor: '#fde68a', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
@@ -103,6 +103,193 @@ const AdvancedDesignStudio = () => {
       ]
     },
     // ... Add 12+ more upgraded, school/PTO-focused templates here ...
+    {
+      id: 'teacher-appreciation',
+      name: 'Teacher Appreciation',
+      category: 'Event',
+      thumbnail: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=300&q=80',
+      description: 'Show gratitude to our amazing teachers with this heartfelt invitation.',
+      isProfessional: true,
+      elements: [
+        { type: 'image', src: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'header', content: 'Teacher Appreciation Week', style: { fontSize: '24px', fontWeight: 'bold', color: '#be185d', textAlign: 'center', padding: '20px', backgroundColor: '#fbcfe8', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        { type: 'divider', style: { borderTop: '2px solid #be185d', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Join us in celebrating our dedicated teachers! Let's show them how much we care.', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'button', content: 'Send Thanks', url: 'https://example.com/thanks', style: { backgroundColor: '#be185d', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(190,24,93,0.08)' } },
+        { type: 'divider', style: { borderTop: '1px solid #be185d', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
+      ]
+    },
+    {
+      id: 'halloween-party',
+      name: 'Halloween Party',
+      category: 'Holiday',
+      thumbnail: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=300&q=80',
+      description: 'Spooky fun for all ages! Invite families to your school Halloween party.',
+      isProfessional: true,
+      elements: [
+        { type: 'image', src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'header', content: 'Halloween Party', style: { fontSize: '24px', fontWeight: 'bold', color: '#f59e42', textAlign: 'center', padding: '20px', backgroundColor: '#fef3c7', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        { type: 'divider', style: { borderTop: '2px solid #f59e42', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Costume contest, games, and treats! All families welcome.', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'button', content: 'RSVP', url: 'https://example.com/halloween', style: { backgroundColor: '#f59e42', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(245,158,66,0.08)' } },
+        { type: 'divider', style: { borderTop: '1px solid #f59e42', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
+      ]
+    },
+    {
+      id: 'thanksgiving-feast',
+      name: 'Thanksgiving Feast',
+      category: 'Holiday',
+      thumbnail: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=300&q=80',
+      description: 'Invite families to a school Thanksgiving celebration.',
+      isProfessional: true,
+      elements: [
+        { type: 'image', src: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'header', content: 'Thanksgiving Feast', style: { fontSize: '24px', fontWeight: 'bold', color: '#92400e', textAlign: 'center', padding: '20px', backgroundColor: '#fde68a', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        { type: 'divider', style: { borderTop: '2px solid #92400e', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Join us for a delicious meal and community gathering to give thanks together.', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'button', content: 'Sign Up', url: 'https://example.com/thanksgiving', style: { backgroundColor: '#92400e', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(146,64,14,0.08)' } },
+        { type: 'divider', style: { borderTop: '1px solid #92400e', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
+      ]
+    },
+    {
+      id: 'winter-holiday',
+      name: 'Winter Holiday',
+      category: 'Holiday',
+      thumbnail: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=300&q=80',
+      description: 'Celebrate the season with a festive winter holiday event.',
+      isProfessional: true,
+      elements: [
+        { type: 'image', src: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'header', content: 'Winter Holiday Party', style: { fontSize: '24px', fontWeight: 'bold', color: '#2563eb', textAlign: 'center', padding: '20px', backgroundColor: '#dbeafe', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        { type: 'divider', style: { borderTop: '2px solid #2563eb', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Join us for crafts, music, and holiday cheer! All are welcome.', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'button', content: 'RSVP', url: 'https://example.com/winter', style: { backgroundColor: '#2563eb', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.08)' } },
+        { type: 'divider', style: { borderTop: '1px solid #2563eb', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
+      ]
+    },
+    {
+      id: 'spring-break',
+      name: 'Spring Break',
+      category: 'Announcement',
+      thumbnail: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=300&q=80',
+      description: 'Announce spring break dates and activities.',
+      isProfessional: true,
+      elements: [
+        { type: 'image', src: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'header', content: 'Spring Break', style: { fontSize: '24px', fontWeight: 'bold', color: '#059669', textAlign: 'center', padding: '20px', backgroundColor: '#bbf7d0', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        { type: 'divider', style: { borderTop: '2px solid #059669', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'School will be closed for spring break. Enjoy your time off!', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'button', content: 'See Calendar', url: 'https://example.com/calendar', style: { backgroundColor: '#059669', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(5,150,105,0.08)' } },
+        { type: 'divider', style: { borderTop: '1px solid #059669', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
+      ]
+    },
+    {
+      id: 'popcorn-day',
+      name: 'Popcorn Day',
+      category: 'Event',
+      thumbnail: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=300&q=80',
+      description: 'Celebrate Popcorn Day with a fun treat for students!',
+      isProfessional: true,
+      elements: [
+        { type: 'image', src: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'header', content: 'Popcorn Day', style: { fontSize: '24px', fontWeight: 'bold', color: '#f59e42', textAlign: 'center', padding: '20px', backgroundColor: '#fef3c7', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        { type: 'divider', style: { borderTop: '2px solid #f59e42', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Students will receive a free popcorn treat during lunch!', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'button', content: 'Volunteer', url: 'https://example.com/popcorn', style: { backgroundColor: '#f59e42', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(245,158,66,0.08)' } },
+        { type: 'divider', style: { borderTop: '1px solid #f59e42', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
+      ]
+    },
+    {
+      id: 'picture-day',
+      name: 'Picture Day',
+      category: 'Announcement',
+      thumbnail: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=300&q=80',
+      description: 'Remind families about upcoming school picture day.',
+      isProfessional: true,
+      elements: [
+        { type: 'image', src: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'header', content: 'Picture Day', style: { fontSize: '24px', fontWeight: 'bold', color: '#2563eb', textAlign: 'center', padding: '20px', backgroundColor: '#dbeafe', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        { type: 'divider', style: { borderTop: '2px solid #2563eb', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Don't forget to dress your best for school pictures!', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'button', content: 'Order Photos', url: 'https://example.com/pictures', style: { backgroundColor: '#2563eb', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.08)' } },
+        { type: 'divider', style: { borderTop: '1px solid #2563eb', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
+      ]
+    },
+    {
+      id: 'family-movie-night',
+      name: 'Family Movie Night',
+      category: 'Event',
+      thumbnail: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=300&q=80',
+      description: 'Invite families to a fun movie night at school.',
+      isProfessional: true,
+      elements: [
+        { type: 'image', src: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'header', content: 'Family Movie Night', style: { fontSize: '24px', fontWeight: 'bold', color: '#be185d', textAlign: 'center', padding: '20px', backgroundColor: '#fbcfe8', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        { type: 'divider', style: { borderTop: '2px solid #be185d', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Bring your blankets and enjoy a family-friendly movie in the gym!', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'button', content: 'RSVP', url: 'https://example.com/movie', style: { backgroundColor: '#be185d', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(190,24,93,0.08)' } },
+        { type: 'divider', style: { borderTop: '1px solid #be185d', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
+      ]
+    },
+    {
+      id: 'science-fair',
+      name: 'Science Fair',
+      category: 'Event',
+      thumbnail: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=300&q=80',
+      description: 'Encourage curiosity and discovery at your school science fair.',
+      isProfessional: true,
+      elements: [
+        { type: 'image', src: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'header', content: 'Science Fair', style: { fontSize: '24px', fontWeight: 'bold', color: '#059669', textAlign: 'center', padding: '20px', backgroundColor: '#bbf7d0', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        { type: 'divider', style: { borderTop: '2px solid #059669', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Students will showcase their science projects and experiments.', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'button', content: 'Sign Up', url: 'https://example.com/science', style: { backgroundColor: '#059669', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(5,150,105,0.08)' } },
+        { type: 'divider', style: { borderTop: '1px solid #059669', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
+      ]
+    },
+    {
+      id: 'spirit-week',
+      name: 'Spirit Week',
+      category: 'Event',
+      thumbnail: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=300&q=80',
+      description: 'Boost school spirit with themed dress-up days and activities.',
+      isProfessional: true,
+      elements: [
+        { type: 'image', src: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'header', content: 'Spirit Week', style: { fontSize: '24px', fontWeight: 'bold', color: '#be185d', textAlign: 'center', padding: '20px', backgroundColor: '#fbcfe8', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        { type: 'divider', style: { borderTop: '2px solid #be185d', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Each day has a different theme! Show your school pride.', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'button', content: 'See Themes', url: 'https://example.com/spirit', style: { backgroundColor: '#be185d', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(190,24,93,0.08)' } },
+        { type: 'divider', style: { borderTop: '1px solid #be185d', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
+      ]
+    },
+    {
+      id: 'field-day',
+      name: 'Field Day',
+      category: 'Event',
+      thumbnail: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=300&q=80',
+      description: 'A day of outdoor games and fun for all students!',
+      isProfessional: true,
+      elements: [
+        { type: 'image', src: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'header', content: 'Field Day', style: { fontSize: '24px', fontWeight: 'bold', color: '#059669', textAlign: 'center', padding: '20px', backgroundColor: '#bbf7d0', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        { type: 'divider', style: { borderTop: '2px solid #059669', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Students will participate in a variety of outdoor games and activities.', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'button', content: 'Volunteer', url: 'https://example.com/fieldday', style: { backgroundColor: '#059669', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(5,150,105,0.08)' } },
+        { type: 'divider', style: { borderTop: '1px solid #059669', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
+      ]
+    },
   ];
 
   // Basic templates (current simple ones)
