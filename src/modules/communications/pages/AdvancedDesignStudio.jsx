@@ -9,6 +9,7 @@ import {
   Mail, MessageSquare, Share2, Circle
 } from 'lucide-react';
 import { communicationsTemplatesAPI } from '@/services/api/communicationsTemplates';
+import { toast } from 'react-toastify';
 
 // Builder Modes
 const BuilderModes = {
@@ -453,6 +454,8 @@ const AdvancedDesignStudio = () => {
         return professionalTemplates;
       case 'basic':
         return basicTemplates;
+      case 'my':
+        return myTemplates;
       case 'shared':
         return sharedTemplates;
       default:
@@ -1459,58 +1462,77 @@ const AdvancedDesignStudio = () => {
               
               {/* Section Slider */}
               <div className="flex items-center justify-center py-4 border-b border-gray-200">
-                <div className="flex bg-gray-100 rounded-lg p-1">
-                  {[
-                    { id: 'professional', label: 'Professional', desc: 'Unlayer-style templates' },
-                    { id: 'basic', label: 'Basic', desc: 'Simple templates' },
-                    { id: 'my', label: 'My Templates', desc: 'Saved by your PTO' },
-                    { id: 'shared', label: 'Shared', desc: 'Community templates' }
-                  ].map(section => (
-                    <button
-                      key={section.id}
-                      onClick={() => setTemplateSection(section.id)}
-                      className={`px-6 py-3 rounded-md text-sm font-medium transition-all ${
-                        templateSection === section.id
-                          ? 'bg-white text-blue-600 shadow-sm'
-                          : 'text-gray-600 hover:text-gray-900'
-                      }`}
-                    >
-                      <div className="text-center">
-                        <div className="font-semibold">{section.label}</div>
-                        <div className="text-xs opacity-75">{section.desc}</div>
-                      </div>
-              </button>
-                  ))}
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => setTemplateSection('professional')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      templateSection === 'professional' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    Professional
+                  </button>
+                  <button
+                    onClick={() => setTemplateSection('basic')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      templateSection === 'basic' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    Basic
+                  </button>
+                  <button
+                    onClick={() => setTemplateSection('my')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      templateSection === 'my' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    My Templates
+                  </button>
+                  <button
+                    onClick={() => setTemplateSection('shared')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      templateSection === 'shared' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    Shared
+                  </button>
                 </div>
               </div>
 
-              {/* Search and Filters */}
-              <div className="flex items-center space-x-4 p-4 border-b border-gray-200">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <input
-                    type="text"
-                    placeholder="Search templates..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                
-                <div className="flex space-x-2">
-                  {getTemplateCategories().map(category => (
-                    <button
-                      key={category.id}
-                      onClick={() => setSelectedCategory(category.id)}
-                      className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
-                        selectedCategory === category.id
-                          ? 'bg-blue-100 border-blue-300 text-blue-800'
-                          : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      {category.name} ({category.count})
-              </button>
-                  ))}
+              {/* Search and Filter */}
+              <div className="p-4 border-b border-gray-200">
+                <div className="flex space-x-4">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder="Search templates..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="flex space-x-2">
+                    {getTemplateCategories().map(category => (
+                      <button
+                        key={category.id}
+                        onClick={() => setSelectedCategory(category.id)}
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                          selectedCategory === category.id
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        {category.name} ({category.count})
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -1542,28 +1564,23 @@ const AdvancedDesignStudio = () => {
                             Use Template
                           </button>
                         </div>
-                        {/* Template badges */}
-                        <div className="absolute top-2 left-2 flex space-x-1">
-                          {template.isProfessional && (
-                            <span className="bg-purple-600 text-white text-xs px-2 py-1 rounded-full">PRO</span>
-                          )}
-                        </div>
                       </div>
                       <div className="p-4">
                         <h4 className="font-semibold text-gray-900 mb-1">{template.name}</h4>
                         <p className="text-sm text-gray-600 mb-2">{template.description}</p>
-                        <div className="flex justify-between items-center mb-2">
+                        <div className="flex justify-between items-center">
                           <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{template.category}</span>
-                          <span className="text-xs text-blue-600 font-medium">{templateSection === 'professional' ? 'Professional' : 'Basic'}</span>
+                          <span className="text-xs text-blue-600 font-medium">{template.isProfessional ? 'Professional' : 'Basic'}</span>
                         </div>
                       </div>
                     </div>
                   ))}
+
                   {templateSection === 'my' && myTemplates.map(template => (
                     <div key={template.id} className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-blue-300 hover:shadow-lg transition-all group relative">
                       <div className="aspect-video bg-gray-100 relative overflow-hidden">
                         <img 
-                          src={template.thumbnail} 
+                          src={template.thumbnail_url} 
                           alt={template.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -1575,25 +1592,15 @@ const AdvancedDesignStudio = () => {
                             className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100"
                             onClick={e => {
                               e.stopPropagation();
-                              useTemplate(template);
+                              const templateData = JSON.parse(template.design_json);
+                              setCanvas(templateData);
                               setShowTemplateModal(false);
                             }}
                           >
                             Use Template
-              </button>
-            </div>
-                        
-                        {/* Template badges */}
-                        <div className="absolute top-2 left-2 flex space-x-1">
-                          {template.isProfessional && (
-                            <span className="bg-purple-600 text-white text-xs px-2 py-1 rounded-full">PRO</span>
-                          )}
-                          {template.isShared && (
-                            <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">SHARED</span>
-                          )}
+                          </button>
                         </div>
-          </div>
-          
+                      </div>
                       <div className="p-4">
                         <h4 className="font-semibold text-gray-900 mb-1">{template.name}</h4>
                         <p className="text-sm text-gray-600 mb-2">{template.description}</p>
@@ -1611,11 +1618,12 @@ const AdvancedDesignStudio = () => {
                       </div>
                     </div>
                   ))}
+
                   {templateSection === 'shared' && sharedTemplates.map(template => (
                     <div key={template.id} className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-blue-300 hover:shadow-lg transition-all group relative">
                       <div className="aspect-video bg-gray-100 relative overflow-hidden">
                         <img 
-                          src={template.thumbnail} 
+                          src={template.thumbnail_url} 
                           alt={template.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -1627,25 +1635,15 @@ const AdvancedDesignStudio = () => {
                             className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100"
                             onClick={e => {
                               e.stopPropagation();
-                              useTemplate(template);
+                              const templateData = JSON.parse(template.design_json);
+                              setCanvas(templateData);
                               setShowTemplateModal(false);
                             }}
                           >
                             Use Template
                           </button>
-        </div>
-        
-                        {/* Template badges */}
-                        <div className="absolute top-2 left-2 flex space-x-1">
-                          {template.isProfessional && (
-                            <span className="bg-purple-600 text-white text-xs px-2 py-1 rounded-full">PRO</span>
-                          )}
-                          {template.isShared && (
-                            <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">SHARED</span>
-                          )}
-          </div>
-        </div>
-                      
+                        </div>
+                      </div>
                       <div className="p-4">
                         <h4 className="font-semibold text-gray-900 mb-1">{template.name}</h4>
                         <p className="text-sm text-gray-600 mb-2">{template.description}</p>
@@ -1660,16 +1658,6 @@ const AdvancedDesignStudio = () => {
                     </div>
                   ))}
                 </div>
-                
-                {getFilteredTemplates().length === 0 && (
-                  <div className="text-center py-12">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                      <Search className="w-8 h-8 text-gray-400" />
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No templates found</h3>
-                    <p className="text-gray-600">Try adjusting your search or category filters</p>
-                  </div>
-                )}
               </div>
             </div>
           </div>
