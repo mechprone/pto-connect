@@ -551,6 +551,7 @@ const AdvancedDesignStudio = () => {
   };
 
   const CanvasElement = ({ element, isSelected, onSelect, onUpdate, index, moveElement }) => {
+    const ref = useRef(null);
     const [{ isDragging }, drag, preview] = useDrag(() => ({
       type: 'canvas-element',
       item: { id: element.id, index },
