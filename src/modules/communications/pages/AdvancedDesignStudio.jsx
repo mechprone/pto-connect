@@ -69,139 +69,40 @@ const AdvancedDesignStudio = () => {
       ]
     },
     {
-      id: 'newsletter-modern',
-      name: 'Modern Newsletter',
-      category: 'Newsletter',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnMSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzY2NmFkMSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzM3NDE1MSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI2cxKSIvPjx0ZXh0IHg9IjE1MCIgeT0iNDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5OZXdzbGV0dGVyPC90ZXh0PjxyZWN0IHg9IjIwIiB5PSI2MCIgd2lkdGg9IjI2MCIgaGVpZ2h0PSIxMjAiIGZpbGw9IndoaXRlIiBvcGFjaXR5PSIwLjkiIHJ4PSI4Ii8+PC9zdmc+',
-      description: 'Professional gradient newsletter template',
-      isProfessional: true,
+      id: 'fall-festival',
+      name: 'Fall Festival',
+      category: 'Event',
+      thumbnail: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=300&q=80',
+      description: 'Celebrate autumn with a festive school event!'
+      ,isProfessional: true,
       elements: [
-        {
-          type: 'header',
-          content: 'Monthly Newsletter',
-          style: { 
-            fontSize: '48px', 
-            fontWeight: 'bold', 
-            color: '#ffffff', 
-            textAlign: 'center',
-            padding: '40px',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            borderRadius: '12px',
-            width: '100%',
-            marginBottom: '30px'
-          }
-        },
-        {
-          type: 'text',
-          content: 'Stay connected with the latest updates, events, and announcements from our community.',
-          style: { 
-            fontSize: '20px', 
-            color: '#374151', 
-            textAlign: 'center',
-            padding: '25px',
-            lineHeight: '1.7',
-            width: '100%',
-            backgroundColor: '#f9fafb',
-            borderRadius: '8px'
-          }
-        }
+        { type: 'image', src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'header', content: 'Fall Festival', style: { fontSize: '24px', fontWeight: 'bold', color: '#b45309', textAlign: 'center', padding: '20px', backgroundColor: '#fde68a', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        { type: 'divider', style: { borderTop: '2px solid #b45309', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Games, food, and fun for the whole family! Don\'t miss our annual Fall Festival.', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'button', content: 'Volunteer', url: 'https://example.com/volunteer', style: { backgroundColor: '#b45309', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(180,83,9,0.08)' } },
+        { type: 'divider', style: { borderTop: '1px solid #b45309', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
       ]
     },
     {
-      id: 'ecommerce-promo',
-      name: 'E-commerce Promotion',
-      category: 'Marketing',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnMiIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6I2VmNDQ0NCIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2RjMjYyNiIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI2cyKSIvPjx0ZXh0IHg9IjE1MCIgeT0iNDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyOCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TQUxFPC90ZXh0Pjx0ZXh0IHg9IjE1MCIgeT0iNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj41MCUgT0ZGPC90ZXh0PjxyZWN0IHg9IjEwMCIgeT0iMTIwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjQwIiBmaWxsPSJ3aGl0ZSIgcng9IjIwIi8+PHRleHQgeD0iMTUwIiB5PSIxNDUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiNkYzI2MjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlNIT1AgTk9XPC90ZXh0Pjwvc3ZnPg==',
-      description: 'Eye-catching promotional template',
+      id: 'book-fair',
+      name: 'Book Fair',
+      category: 'Fundraising',
+      thumbnail: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=300&q=80',
+      description: 'Support our library and foster a love of reading. Shop the Book Fair this week!',
       isProfessional: true,
       elements: [
-        {
-          type: 'header',
-          content: 'FLASH SALE - 50% OFF',
-          style: { 
-            fontSize: '44px', 
-            fontWeight: 'bold', 
-            color: '#ffffff', 
-            textAlign: 'center',
-            padding: '35px',
-            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-            borderRadius: '12px',
-            width: '100%',
-            marginBottom: '25px'
-          }
-        },
-        {
-          type: 'text',
-          content: "Limited time offer! Don't miss out on incredible savings across our entire collection.",
-          style: { 
-            fontSize: '18px', 
-            color: '#374151', 
-            textAlign: 'center',
-            padding: '20px',
-            lineHeight: '1.6',
-            width: '100%'
-          }
-        },
-        {
-          type: 'button',
-          content: 'SHOP NOW',
-          style: {
-            backgroundColor: '#dc2626',
-            color: 'white',
-            padding: '18px 40px',
-            borderRadius: '25px',
-            fontSize: '18px',
-            fontWeight: 'bold',
-            textAlign: 'center',
-            border: 'none',
-            cursor: 'pointer',
-            width: '200px',
-            margin: '0 auto',
-            display: 'block'
-          }
-        }
+        { type: 'image', src: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'header', content: 'Book Fair', style: { fontSize: '24px', fontWeight: 'bold', color: '#1d4ed8', textAlign: 'center', padding: '20px', backgroundColor: '#dbeafe', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
+        { type: 'divider', style: { borderTop: '2px solid #1d4ed8', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Support our library and foster a love of reading. Shop the Book Fair this week!', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'button', content: 'Shop Now', url: 'https://example.com/bookfair', style: { backgroundColor: '#1d4ed8', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(29,78,216,0.08)' } },
+        { type: 'divider', style: { borderTop: '1px solid #1d4ed8', margin: '16px 0', width: '100%' } },
+        { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
       ]
     },
-    {
-      id: 'business-announcement',
-      name: 'Business Announcement',
-      category: 'Business',
-      thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnMyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzEwYjk4MSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzA1OWY3ZiIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI2czKSIvPjx0ZXh0IHg9IjE1MCIgeT0iNDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JTVBPUlRBTlQ8L3RleHQ+PHRleHQgeD0iMTUwIiB5PSI3MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMyIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFubm91bmNlbWVudDwvdGV4dD48cmVjdCB4PSIyMCIgeT0iMTAwIiB3aWR0aD0iMjYwIiBoZWlnaHQ9IjgwIiBmaWxsPSJ3aGl0ZSIgb3BhY2l0eT0iMC45NSIgcng9IjgiLz48L3N2Zz4=',
-      description: 'Professional business communication',
-      isProfessional: true,
-      elements: [
-        {
-          type: 'header',
-          content: 'Important Business Update',
-          style: { 
-            fontSize: '40px', 
-            fontWeight: 'bold', 
-            color: '#ffffff', 
-            textAlign: 'center',
-            padding: '35px',
-            background: 'linear-gradient(135deg, #10b981 0%, #059f7f 100%)',
-            borderRadius: '12px',
-            width: '100%',
-            marginBottom: '25px'
-          }
-        },
-        {
-          type: 'text',
-          content: 'We are excited to share important updates about our organization and upcoming changes that will benefit our community.',
-          style: { 
-            fontSize: '18px', 
-            color: '#374151', 
-            textAlign: 'left',
-            padding: '25px',
-            lineHeight: '1.7',
-            width: '100%',
-            backgroundColor: '#f0fdf4',
-            borderRadius: '8px',
-            border: '1px solid #bbf7d0'
-          }
-        }
-      ]
-    }
+    // ... Add 12+ more upgraded, school/PTO-focused templates here ...
   ];
 
   // Basic templates (current simple ones)
