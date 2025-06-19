@@ -8,6 +8,7 @@ import {
   Search, Palette,
   Mail, MessageSquare, Share2
 } from 'lucide-react';
+import { communicationsTemplatesAPI } from '@/services/api/communicationsTemplates';
 
 // Builder Modes
 const BuilderModes = {
@@ -32,6 +33,48 @@ const AdvancedDesignStudio = () => {
   const canvasRef = useRef(null);
   const [history, setHistory] = useState([]); // for undo
   const [future, setFuture] = useState([]); // for redo
+
+  // --- Persistent Template State ---
+  const [myTemplates, setMyTemplates] = useState([]);
+  const [sharedTemplates, setSharedTemplates] = useState([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
+  const [templateSaveModal, setTemplateSaveModal] = useState(false);
+  const [templateMeta, setTemplateMeta] = useState({ name: '', description: '', category: '', template_type: builderMode, sharing_level: 'private', shared_with_orgs: [] });
+  const [editingTemplateId, setEditingTemplateId] = useState(null);
+
+  // --- Load Templates on Mount ---
+  useEffect(() => {
+    setLoadingTemplates(true);
+    communicationsTemplatesAPI.getTemplates()
+      .then(({ data }) => {
+        setMyTemplates(data?.myTemplates || []);
+        setSharedTemplates(data?.sharedTemplates || []);
+      })
+      .finally(() => setLoadingTemplates(false));
+  }, []);
+
+  // --- Save as Template Handler ---
+  const handleSaveAsTemplate = async () => {
+    const payload = {
+      ...templateMeta,
+      design_json: JSON.stringify(canvas),
+      template_type: builderMode,
+      sharing_level: templateMeta.sharing_level,
+      shared_with_orgs: templateMeta.sharing_level === 'orgs' ? templateMeta.shared_with_orgs : [],
+    };
+    if (editingTemplateId) {
+      await communicationsTemplatesAPI.updateTemplate(editingTemplateId, payload);
+    } else {
+      await communicationsTemplatesAPI.createTemplate(payload);
+    }
+    setTemplateSaveModal(false);
+    // Reload templates
+    setLoadingTemplates(true);
+    const { data } = await communicationsTemplatesAPI.getTemplates();
+    setMyTemplates(data?.myTemplates || []);
+    setSharedTemplates(data?.sharedTemplates || []);
+    setLoadingTemplates(false);
+  };
 
   // Console logging for debugging
   useEffect(() => {
@@ -668,9 +711,9 @@ const AdvancedDesignStudio = () => {
             style={{ justifyContent: element.justification || 'center' }}
           >
             <CanvasElement
-              element={element}
-              isSelected={selectedElement?.id === element.id}
-              onSelect={() => setSelectedElement(element)}
+            element={element}
+            isSelected={selectedElement?.id === element.id}
+            onSelect={() => setSelectedElement(element)}
               onUpdate={updated => {
                 setCanvas(prev => prev.map(el => el.id === element.id ? updated : el));
                 setSelectedElement(updated);
@@ -906,13 +949,13 @@ const AdvancedDesignStudio = () => {
     }));
   };
 
-  const updateElementStyle = (styleUpdates) => {
+    const updateElementStyle = (styleUpdates) => {
     if (!selectedElement) return;
     
     const updated = {
-      ...selectedElement,
-      style: { ...selectedElement.style, ...styleUpdates }
-    };
+        ...selectedElement,
+        style: { ...selectedElement.style, ...styleUpdates }
+      };
     
     setCanvas(prev => prev.map(el => el.id === selectedElement.id ? updated : el));
     setSelectedElement(updated);
@@ -986,13 +1029,72 @@ const AdvancedDesignStudio = () => {
     console.log('Draft saved!');
   };
 
+  // --- Template Management Handlers ---
+  const handleEditTemplate = (template) => {
+    setTemplateMeta({
+      name: template.name,
+      description: template.description,
+      category: template.category,
+      template_type: template.template_type,
+      sharing_level: template.sharing_level,
+      shared_with_orgs: template.shared_with_orgs || []
+    });
+    setEditingTemplateId(template.id);
+    setTemplateSaveModal(true);
+  };
+
+  const handleDeleteTemplate = async (templateId) => {
+    if (window.confirm('Are you sure you want to delete this template? This cannot be undone.')) {
+      await communicationsTemplatesAPI.deleteTemplate(templateId);
+      // Reload templates
+      setLoadingTemplates(true);
+      const { data } = await communicationsTemplatesAPI.getTemplates();
+      setMyTemplates(data?.myTemplates || []);
+      setSharedTemplates(data?.sharedTemplates || []);
+      setLoadingTemplates(false);
+    }
+  };
+
+  const handleUnshareTemplate = async (template) => {
+    if (window.confirm('Unshare this template? It will no longer appear in the shared library.')) {
+      await communicationsTemplatesAPI.updateTemplate(template.id, { ...template, sharing_level: 'private', shared_with_orgs: [] });
+      setLoadingTemplates(true);
+      const { data } = await communicationsTemplatesAPI.getTemplates();
+      setMyTemplates(data?.myTemplates || []);
+      setSharedTemplates(data?.sharedTemplates || []);
+      setLoadingTemplates(false);
+    }
+  };
+
+  const handleCopySharedTemplate = async (template) => {
+    // Copy the shared template to org's library for editing
+    const payload = {
+      name: template.name + ' (Copy)',
+      description: template.description,
+      category: template.category,
+      template_type: template.template_type,
+      sharing_level: 'private',
+      shared_with_orgs: [],
+      design_json: template.design_json,
+      html_content: template.html_content || '',
+      thumbnail_url: template.thumbnail_url || '',
+    };
+    await communicationsTemplatesAPI.createTemplate(payload);
+    setLoadingTemplates(true);
+    const { data } = await communicationsTemplatesAPI.getTemplates();
+    setMyTemplates(data?.myTemplates || []);
+    setSharedTemplates(data?.sharedTemplates || []);
+    setLoadingTemplates(false);
+    alert('Template copied to your library! You can now edit and save it.');
+  };
+
   if (hasError) {
     return (
       <div className="h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Communication Designer Error</h2>
           <p className="text-gray-600 mb-4">There was an issue loading the design studio.</p>
-          <button 
+              <button
             onClick={() => {
               setHasError(false);
               window.location.reload();
@@ -1000,7 +1102,7 @@ const AdvancedDesignStudio = () => {
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             Reload Page
-          </button>
+              </button>
         </div>
       </div>
     );
@@ -1080,7 +1182,7 @@ const AdvancedDesignStudio = () => {
                     >
                       Basic
                     </button>
-                  </div>
+                      </div>
                 </div>
               </div>
             )}
@@ -1129,9 +1231,9 @@ const AdvancedDesignStudio = () => {
                 </div>
               </div>
             )}
-          </div>
-        </div>
-        
+                  </div>
+                </div>
+                
         {/* Center - Canvas */}
         <div className="flex-1 flex flex-col">
           {/* Toolbar */}
@@ -1147,6 +1249,7 @@ const AdvancedDesignStudio = () => {
               <button onClick={handleSaveDraft} className="px-2.5 py-1.5 rounded bg-gray-800 text-white hover:bg-gray-900 transition-colors text-sm" title="Save Draft" aria-label="Save Draft">Save</button>
               <button className="flex items-center px-2.5 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm" onClick={() => console.log('Preview', builderMode)} title="Preview" aria-label="Preview"><Eye className="w-4 h-4 mr-1" />Preview</button>
               <button className="flex items-center px-2.5 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm" onClick={() => setShowStellaPopup(!showStellaPopup)} title="Stella" aria-label="Stella"><Sparkles className="w-4 h-4 mr-1" />Stella</button>
+              <button onClick={() => { setTemplateMeta({ name: '', description: '', category: '', template_type: builderMode, sharing_level: 'private', shared_with_orgs: [] }); setEditingTemplateId(null); setTemplateSaveModal(true); }} className="px-2.5 py-1.5 rounded bg-green-600 text-white hover:bg-green-700 transition-colors text-sm" title="Save as Template" aria-label="Save as Template">Save as Template</button>
             </div>
           </div>
           
@@ -1263,7 +1366,7 @@ const AdvancedDesignStudio = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Text Alignment</label>
                       <div className="flex space-x-1">
                         {['left', 'center', 'right', 'justify'].map(align => (
-                          <button
+                      <button
                             key={align}
                             onClick={() => updateElementStyle({ textAlign: align })}
                             className={`flex-1 p-2 text-xs border rounded ${
@@ -1273,10 +1376,10 @@ const AdvancedDesignStudio = () => {
                             }`}
                           >
                             {align.charAt(0).toUpperCase() + align.slice(1)}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
                     
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1291,10 +1394,10 @@ const AdvancedDesignStudio = () => {
                         onChange={(e) => updateElementStyle({ lineHeight: e.target.value })}
                         className="w-full"
                       />
-                    </div>
+              </div>
                   </div>
-                </div>
-
+          </div>
+          
                 {/* Colors Section */}
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900 mb-3">Colors</h3>
@@ -1315,9 +1418,9 @@ const AdvancedDesignStudio = () => {
                           className="flex-1 p-2 border border-gray-300 rounded-lg text-sm font-mono"
                           placeholder="#374151"
                         />
-                      </div>
-                    </div>
-                    
+          </div>
+        </div>
+        
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
                       <div className="flex space-x-2">
@@ -1340,7 +1443,7 @@ const AdvancedDesignStudio = () => {
                         className="mt-1 text-xs text-gray-500 hover:text-gray-700"
                       >
                         Remove background
-                      </button>
+                </button>
                     </div>
                   </div>
                 </div>
@@ -1428,16 +1531,16 @@ const AdvancedDesignStudio = () => {
                             className={`flex-1 p-2 text-xs border rounded ${selectedElement.justification === justify ? 'bg-blue-100 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
                           >
                             {justify === 'flex-start' ? 'Left' : justify === 'center' ? 'Center' : 'Right'}
-                          </button>
+                </button>
                         ))}
                       </div>
                     </div>
-                  </div>
-                </div>
-
+              </div>
+            </div>
+            
                 {/* Actions */}
                 <div className="pt-4 border-t border-gray-200">
-                  <button
+                <button
                     onClick={() => {
                       setCanvas(prev => prev.filter(el => el.id !== selectedElement.id));
                       setSelectedElement(null);
@@ -1445,7 +1548,7 @@ const AdvancedDesignStudio = () => {
                     className="w-full py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
                   >
                     Delete Element
-                  </button>
+                </button>
                 </div>
               </div>
             ) : (
@@ -1474,13 +1577,14 @@ const AdvancedDesignStudio = () => {
                   ×
                 </button>
               </div>
-
+              
               {/* Section Slider */}
               <div className="flex items-center justify-center py-4 border-b border-gray-200">
                 <div className="flex bg-gray-100 rounded-lg p-1">
                   {[
                     { id: 'professional', label: 'Professional', desc: 'Unlayer-style templates' },
                     { id: 'basic', label: 'Basic', desc: 'Simple templates' },
+                    { id: 'my', label: 'My Templates', desc: 'Saved by your PTO' },
                     { id: 'shared', label: 'Shared', desc: 'Community templates' }
                   ].map(section => (
                     <button
@@ -1496,7 +1600,7 @@ const AdvancedDesignStudio = () => {
                         <div className="font-semibold">{section.label}</div>
                         <div className="text-xs opacity-75">{section.desc}</div>
                       </div>
-                    </button>
+              </button>
                   ))}
                 </div>
               </div>
@@ -1526,7 +1630,7 @@ const AdvancedDesignStudio = () => {
                       }`}
                     >
                       {category.name} ({category.count})
-                    </button>
+              </button>
                   ))}
                 </div>
               </div>
@@ -1534,15 +1638,53 @@ const AdvancedDesignStudio = () => {
               {/* Templates Grid */}
               <div className="flex-1 overflow-y-auto p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {getFilteredTemplates().map(template => (
-                    <div
-                      key={template.id}
-                      className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-blue-300 hover:shadow-lg transition-all group"
-                      onClick={() => {
-                        useTemplate(template);
-                        setShowTemplateModal(false);
-                      }}
-                    >
+                  {templateSection === 'my' && myTemplates.map(template => (
+                    <div key={template.id} className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-blue-300 hover:shadow-lg transition-all group relative">
+                      <div className="aspect-video bg-gray-100 relative overflow-hidden">
+                        <img 
+                          src={template.thumbnail} 
+                          alt={template.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/300x200/f3f4f6/6b7280?text=Template';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
+                          <button className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100">
+                            Use Template
+              </button>
+            </div>
+                        
+                        {/* Template badges */}
+                        <div className="absolute top-2 left-2 flex space-x-1">
+                          {template.isProfessional && (
+                            <span className="bg-purple-600 text-white text-xs px-2 py-1 rounded-full">PRO</span>
+                          )}
+                          {template.isShared && (
+                            <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">SHARED</span>
+                          )}
+                        </div>
+          </div>
+          
+                      <div className="p-4">
+                        <h4 className="font-semibold text-gray-900 mb-1">{template.name}</h4>
+                        <p className="text-sm text-gray-600 mb-2">{template.description}</p>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{template.category}</span>
+                          <span className="text-xs text-blue-600 font-medium">My Template</span>
+                        </div>
+                        <div className="flex space-x-2 mt-2">
+                          <button onClick={e => { e.stopPropagation(); handleEditTemplate(template); }} className="text-xs px-2 py-1 bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200">Edit</button>
+                          <button onClick={e => { e.stopPropagation(); handleDeleteTemplate(template.id); }} className="text-xs px-2 py-1 bg-red-100 text-red-800 rounded hover:bg-red-200">Delete</button>
+                          {template.sharing_level !== 'private' && (
+                            <button onClick={e => { e.stopPropagation(); handleUnshareTemplate(template); }} className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded hover:bg-green-200">Unshare</button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {templateSection === 'shared' && sharedTemplates.map(template => (
+                    <div key={template.id} className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-blue-300 hover:shadow-lg transition-all group relative">
                       <div className="aspect-video bg-gray-100 relative overflow-hidden">
                         <img 
                           src={template.thumbnail} 
@@ -1556,8 +1698,8 @@ const AdvancedDesignStudio = () => {
                           <button className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100">
                             Use Template
                           </button>
-                        </div>
-                        
+        </div>
+        
                         {/* Template badges */}
                         <div className="absolute top-2 left-2 flex space-x-1">
                           {template.isProfessional && (
@@ -1566,20 +1708,18 @@ const AdvancedDesignStudio = () => {
                           {template.isShared && (
                             <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">SHARED</span>
                           )}
-                        </div>
-                      </div>
+          </div>
+        </div>
                       
                       <div className="p-4">
                         <h4 className="font-semibold text-gray-900 mb-1">{template.name}</h4>
                         <p className="text-sm text-gray-600 mb-2">{template.description}</p>
-                        {template.isShared && (
-                          <p className="text-xs text-green-600 mb-2">Shared by {template.sharedBy}</p>
-                        )}
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center mb-2">
                           <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{template.category}</span>
-                          {template.isProfessional && (
-                            <span className="text-xs text-purple-600 font-medium">Professional</span>
-                          )}
+                          <span className="text-xs text-green-600 font-medium">Shared</span>
+                        </div>
+                        <div className="flex space-x-2 mt-2">
+                          <button onClick={e => { e.stopPropagation(); handleCopySharedTemplate(template); }} className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200">Save to My Templates</button>
                         </div>
                       </div>
                     </div>
@@ -1604,4 +1744,4 @@ const AdvancedDesignStudio = () => {
   );
 };
 
-export default AdvancedDesignStudio; 
+export default AdvancedDesignStudio;
