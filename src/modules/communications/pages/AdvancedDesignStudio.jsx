@@ -1161,7 +1161,7 @@ const AdvancedDesignStudio = () => {
         </div>
         
         {/* Right Panel - Properties */}
-        <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
+        <div className="w-72 bg-white border-l border-gray-200 flex flex-col">
           <div className="border-b border-gray-200 px-4 py-3">
             <h2 className="font-semibold text-gray-900">Properties</h2>
           </div>
