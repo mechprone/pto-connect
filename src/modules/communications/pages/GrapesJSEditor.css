@@ -28,32 +28,6 @@
   position: relative !important;
 }
 
-/* Fix toolbar positioning */
-.gjs-pn-commands {
-  position: relative !important;
-  width: 100% !important;
-  left: 0 !important;
-  top: 0 !important;
-}
-
-.gjs-pn-views {
-  position: relative !important;
-  right: 0 !important;
-  top: 0 !important;
-}
-
-.gjs-pn-options {
-  position: relative !important;
-  right: 0 !important;
-  top: 0 !important;
-}
-
-.gjs-pn-devices-c {
-  position: relative !important;
-  left: 0 !important;
-  top: 0 !important;
-}
-
 /* Panel Styles */
 .gjs-pn-panel {
   padding: 0;
@@ -73,62 +47,102 @@
   box-shadow: -2px 0 5px rgba(0,0,0,0.1);
 }
 
-/* Block Styles */
+/* Top Panel */
+.panel__top {
+  padding: 0 15px !important;
+  min-height: 50px !important;
+  display: flex !important;
+  align-items: center !important;
+  border-bottom: 1px solid #e9ecef !important;
+}
+
+.panel__commands {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.panel__devices {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+/* Block Manager */
 .gjs-blocks-c {
-  padding: 10px !important;
-  height: auto !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  padding: 15px !important;
 }
 
 .gjs-block {
-  width: auto !important;
-  height: auto !important;
-  min-height: auto !important;
-  border-radius: 4px !important;
-  transition: all 0.2s ease !important;
-  margin: 5px !important;
+  width: calc(50% - 5px) !important;
+  min-height: 80px !important;
+  margin: 0 !important;
   border: 1px solid #e0e0e0 !important;
+  border-radius: 4px !important;
+  padding: 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
   background: white !important;
 }
 
 .gjs-block:hover {
   border-color: #ec5896 !important;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16) !important;
-  transform: translateY(-1px) !important;
-}
-
-.gjs-block__media {
-  border-radius: 4px 4px 0 0;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
 }
 
 .gjs-block-label {
-  font-size: 0.75rem !important;
-  font-weight: 500 !important;
+  font-size: 12px !important;
+  margin-top: 8px !important;
+  text-align: center !important;
 }
 
-/* Style Manager Panel */
+/* Style Manager */
 .gjs-sm-sector {
-  padding: 10px !important;
+  padding: 15px !important;
+  border-bottom: 1px solid #e9ecef !important;
+}
+
+.gjs-sm-title {
+  font-size: 14px !important;
+  font-weight: 500 !important;
   margin-bottom: 10px !important;
 }
 
 .gjs-sm-properties {
-  padding: 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
 }
 
 .gjs-sm-label {
   font-size: 12px !important;
-  font-weight: 500 !important;
-  margin-bottom: 5px !important;
+  margin-bottom: 4px !important;
 }
 
 .gjs-fields {
-  margin-bottom: 10px !important;
+  display: flex !important;
+  gap: 5px !important;
 }
 
-/* Layer Manager Panel */
+/* Layer Manager */
 .gjs-layer {
   padding: 8px 12px !important;
-  font-size: 12px !important;
+  border-bottom: 1px solid #e9ecef !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.gjs-layer:hover {
+  background-color: #f8f9fa !important;
 }
 
 .gjs-layer.gjs-selected {
@@ -136,11 +150,24 @@
   color: white !important;
 }
 
-/* Toolbar Buttons */
+/* Trait Manager */
+.gjs-trt-trait {
+  padding: 8px 12px !important;
+  border-bottom: 1px solid #e9ecef !important;
+}
+
+.gjs-trt-trait .gjs-label {
+  font-size: 12px !important;
+  margin-bottom: 4px !important;
+}
+
+/* Panel Buttons */
 .gjs-pn-btn {
-  border-radius: 4px !important;
   margin: 2px !important;
   padding: 6px 8px !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
 }
 
 .gjs-pn-active {
@@ -150,18 +177,22 @@
 
 /* Device Manager */
 .gjs-devices-c {
-  padding: 5px !important;
-  border-bottom: 1px solid #e9ecef !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 0 15px !important;
 }
 
 .gjs-device-label {
   font-size: 12px !important;
-  padding: 5px 10px !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
 }
 
 /* Canvas Frame */
 .gjs-frame-wrapper {
-  padding: 25px !important;
+  padding: 15px !important;
   background-color: #f8f9fa !important;
 }
 
@@ -181,6 +212,21 @@
     width: 40px !important;
   }
 }
+
+/* Font Awesome Icons */
+.fa {
+  font-family: FontAwesome !important;
+  font-size: 14px !important;
+}
+
+/* Add necessary Font Awesome classes */
+.fa-undo:before { content: "↺" !important; }
+.fa-repeat:before { content: "↻" !important; }
+.fa-download:before { content: "↓" !important; }
+.fa-trash:before { content: "🗑" !important; }
+.fa-desktop:before { content: "🖥" !important; }
+.fa-tablet:before { content: "📱" !important; }
+.fa-mobile:before { content: "📱" !important; }
 
 /* Custom Scrollbars */
 .gjs-editor-cont ::-webkit-scrollbar {

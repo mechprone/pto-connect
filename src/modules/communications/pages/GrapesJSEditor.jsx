@@ -157,6 +157,39 @@ const GrapesJSEditor = () => {
         },
         panels: {
           defaults: [
+            // Top-left basic actions
+            {
+              id: 'commands',
+              el: '.panel__commands',
+              buttons: [
+                { id: 'undo', className: 'fa fa-undo', command: 'core:undo' },
+                { id: 'redo', className: 'fa fa-repeat', command: 'core:redo' },
+                { id: 'import', className: 'fa fa-download', command: 'gjs-open-import-template' },
+                { id: 'clean-all', className: 'fa fa-trash', command: 'core:canvas-clear' },
+              ],
+            },
+            // Device Manager
+            {
+              id: 'devices-c',
+              el: '.panel__devices',
+              buttons: [
+                { id: 'device-desktop', command: 'set-device-desktop', className: 'fa fa-desktop', active: true },
+                { id: 'device-tablet', command: 'set-device-tablet', className: 'fa fa-tablet' },
+                { id: 'device-mobile', command: 'set-device-mobile', className: 'fa fa-mobile' },
+              ],
+            },
+            // Right-side blocks
+            {
+              id: 'blocks',
+              el: '.panel__right',
+              resizable: {
+                tc: false,
+                cr: true,
+                cl: false,
+                bc: false,
+              },
+            },
+            // Right-side layers
             {
               id: 'layers',
               el: '.panel__right',
@@ -167,45 +200,112 @@ const GrapesJSEditor = () => {
                 bc: false,
               },
             },
+            // Right-side styles
+            {
+              id: 'styles',
+              el: '.panel__right',
+              resizable: {
+                tc: false,
+                cr: true,
+                cl: false,
+                bc: false,
+              },
+            },
+            // Right-side traits
+            {
+              id: 'traits',
+              el: '.panel__right',
+              resizable: {
+                tc: false,
+                cr: true,
+                cl: false,
+                bc: false,
+              },
+            },
+            // Panel switcher
             {
               id: 'panel-switcher',
               el: '.panel__switcher',
               buttons: [
-                {
-                  id: 'show-layers',
-                  active: true,
-                  label: 'Layers',
-                  command: 'show-layers',
-                },
-                {
-                  id: 'show-style',
-                  active: true,
-                  label: 'Styles',
-                  command: 'show-styles',
-                },
-                {
-                  id: 'show-traits',
-                  active: true,
-                  label: 'Traits',
-                  command: 'show-traits',
-                },
+                { id: 'show-blocks', active: true, label: 'Blocks', command: 'show-blocks' },
+                { id: 'show-layers', active: true, label: 'Layers', command: 'show-layers' },
+                { id: 'show-style', active: true, label: 'Styles', command: 'show-styles' },
+                { id: 'show-traits', active: true, label: 'Traits', command: 'show-traits' },
               ],
             },
           ],
         },
-        commands: {
-          defaults: [
+        blockManager: {
+          appendTo: '.panel__right',
+          blocks: [
             {
-              id: 'save-template',
-              run: (editor) => {
-                const html = editor.getHtml();
-                const css = editor.getCss();
-                console.log('Template HTML:', html);
-                console.log('Template CSS:', css);
-                alert('Template saved! Check console for HTML/CSS output.');
-              },
+              id: 'section',
+              label: 'Section',
+              category: 'Basic',
+              content: '<section class="section"><div class="container"></div></section>',
+            },
+            {
+              id: 'text',
+              label: 'Text',
+              category: 'Basic',
+              content: '<div data-gjs-type="text">Insert your text here</div>',
+            },
+            {
+              id: 'image',
+              label: 'Image',
+              category: 'Basic',
+              content: { type: 'image' },
+              activate: true,
+            },
+            {
+              id: 'button',
+              label: 'Button',
+              category: 'Basic',
+              content: '<button class="button">Click me</button>',
             },
           ],
+        },
+        styleManager: {
+          appendTo: '.panel__right',
+          sectors: [
+            {
+              name: 'Dimension',
+              open: false,
+              properties: ['width', 'height', 'min-width', 'min-height', 'margin', 'padding'],
+            },
+            {
+              name: 'Typography',
+              open: false,
+              properties: [
+                'font-family',
+                'font-size',
+                'font-weight',
+                'letter-spacing',
+                'color',
+                'line-height',
+                'text-align',
+                'text-decoration',
+                'text-shadow',
+              ],
+            },
+            {
+              name: 'Decorations',
+              open: false,
+              properties: [
+                'background-color',
+                'border-radius',
+                'border',
+                'box-shadow',
+                'background',
+              ],
+            },
+          ],
+        },
+        layerManager: {
+          appendTo: '.panel__right',
+        },
+        traitManager: {
+          appendTo: '.panel__right',
         },
       });
 
@@ -411,6 +511,17 @@ const GrapesJSEditor = () => {
           overflow: 'hidden',
           position: 'relative'
         }}>
+          <div className="panel__top" style={{
+            padding: '0 15px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            backgroundColor: '#f8f9fa',
+            borderBottom: '1px solid #e9ecef'
+          }}>
+            <div className="panel__commands" style={{ display: 'flex', alignItems: 'center' }}></div>
+            <div className="panel__devices" style={{ display: 'flex', alignItems: 'center' }}></div>
+          </div>
+
           <div id="gjs" style={{ flex: 1 }} />
         </div>
 
