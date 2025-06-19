@@ -668,6 +668,44 @@ const AdvancedDesignStudio = () => {
     }
   };
 
+  // Define draggable elements with their icons
+  const draggableElements = [
+    { 
+      type: 'header', 
+      label: 'Heading',
+      icon: Type,
+      defaultContent: 'New Header', 
+      defaultStyle: { fontSize: '24px', fontWeight: 'bold', color: '#172845' } 
+    },
+    { 
+      type: 'text', 
+      label: 'Text Block',
+      icon: MessageSquare,
+      defaultContent: 'New Text Block', 
+      defaultStyle: { fontSize: '16px', color: '#374151' } 
+    },
+    { 
+      type: 'image', 
+      label: 'Image',
+      icon: Image,
+      defaultSrc: 'https://via.placeholder.com/400x200', 
+      defaultStyle: { width: '100%', borderRadius: '8px' } 
+    },
+    { 
+      type: 'button', 
+      label: 'Button',
+      icon: Square,
+      defaultContent: 'New Button', 
+      defaultStyle: { backgroundColor: '#2563eb', color: '#fff', padding: '12px 32px', borderRadius: '6px', display: 'inline-block' } 
+    },
+    { 
+      type: 'divider', 
+      label: 'Divider',
+      icon: Minus,
+      defaultStyle: { borderTop: '2px solid #e5e7eb', margin: '16px 0' } 
+    }
+  ];
+
   // Drag Element Component
   const DragElement = ({ element }) => {
     const [{ isDragging }, drag] = useDrag(() => ({
@@ -683,7 +721,7 @@ const AdvancedDesignStudio = () => {
       }),
     }), [element]);
 
-    const Icon = element.icon;
+    const ElementIcon = element.icon;
 
     return (
       <div
@@ -693,7 +731,7 @@ const AdvancedDesignStudio = () => {
         }`}
       >
         <div className="flex flex-col items-center space-y-2">
-          <Icon className="w-6 h-6 text-gray-600" />
+          <ElementIcon className="w-6 h-6 text-gray-600" />
           <span className="text-sm text-gray-700">{element.label}</span>
           {isDragging && (
             <span className="text-xs text-blue-600 font-medium">Dragging...</span>
@@ -1604,11 +1642,9 @@ const AdvancedDesignStudio = () => {
           {activeTab === 'elements' && (
             <div className="flex-1 overflow-y-auto">
               <div className="p-4 space-y-4">
-                <DragElement element={{ type: 'header', defaultContent: 'New Header', defaultStyle: { fontSize: '24px', fontWeight: 'bold', color: '#172845' } }} />
-                <DragElement element={{ type: 'text', defaultContent: 'New Text Block', defaultStyle: { fontSize: '16px', color: '#374151' } }} />
-                <DragElement element={{ type: 'image', defaultSrc: 'https://via.placeholder.com/400x200', defaultStyle: { width: '100%', borderRadius: '8px' } }} />
-                <DragElement element={{ type: 'button', defaultContent: 'New Button', defaultStyle: { backgroundColor: '#2563eb', color: '#fff', padding: '12px 32px', borderRadius: '6px', display: 'inline-block' } }} />
-                <DragElement element={{ type: 'divider', defaultStyle: { borderTop: '2px solid #e5e7eb', margin: '16px 0' } }} />
+                {draggableElements.map((element) => (
+                  <DragElement key={element.type} element={element} />
+                ))}
               </div>
               {renderCharms()}
             </div>
