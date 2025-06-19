@@ -1554,6 +1554,41 @@ const AdvancedDesignStudio = () => {
               {/* Templates Grid */}
               <div className="flex-1 overflow-y-auto p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {['professional', 'basic'].includes(templateSection) && getFilteredTemplates().map(template => (
+                    <div key={template.id} className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-blue-300 hover:shadow-lg transition-all group relative"
+                      onClick={() => useTemplate(template)}
+                    >
+                      <div className="aspect-video bg-gray-100 relative overflow-hidden">
+                        <img 
+                          src={template.thumbnail} 
+                          alt={template.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/300x200/f3f4f6/6b7280?text=Template';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
+                          <button className="bg-white text-gray-800 px-4 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transition-all transform scale-95 group-hover:scale-100">
+                            Use Template
+                          </button>
+                        </div>
+                        {/* Template badges */}
+                        <div className="absolute top-2 left-2 flex space-x-1">
+                          {template.isProfessional && (
+                            <span className="bg-purple-600 text-white text-xs px-2 py-1 rounded-full">PRO</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <h4 className="font-semibold text-gray-900 mb-1">{template.name}</h4>
+                        <p className="text-sm text-gray-600 mb-2">{template.description}</p>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{template.category}</span>
+                          <span className="text-xs text-blue-600 font-medium">{templateSection === 'professional' ? 'Professional' : 'Basic'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                   {templateSection === 'my' && myTemplates.map(template => (
                     <div key={template.id} className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-blue-300 hover:shadow-lg transition-all group relative">
                       <div className="aspect-video bg-gray-100 relative overflow-hidden">
