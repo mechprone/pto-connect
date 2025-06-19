@@ -684,61 +684,65 @@ const AdvancedDesignStudio = () => {
   };
 
   const CanvasElement = ({ element, isSelected, onSelect, onUpdate, index, moveElement }) => {
-    const ref = useRef(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [{ isDragging }, drag, preview] = useDrag(() => ({
-      type: 'canvas-element',
-      item: { id: element.id, index },
-      collect: monitor => ({
-        isDragging: monitor.isDragging(),
-      }),
-    }), [element, index]);
-
-    const [, drop] = useDrop({
-      accept: 'canvas-element',
-      hover: (item, monitor) => {
-        if (!ref.current) return;
-        const dragIndex = item.index;
-        const hoverIndex = index;
-        if (dragIndex === hoverIndex) return;
-        moveElement(dragIndex, hoverIndex);
-        item.index = hoverIndex;
-      },
-    });
-
-    drag(drop(ref));
-
+    
     const handleDoubleClick = () => {
-      if (element.type === 'text' || element.type === 'header' || element.type === 'button') setIsEditing(true);
+      if (element.type === 'text' || element.type === 'header') {
+        setIsEditing(true);
+      }
     };
 
     const handleContentChange = (newContent) => {
       onUpdate({ ...element, content: newContent });
-      setIsEditing(false);
     };
 
-    // Container style that handles justification
-    const containerStyle = {
+    // Outer container style for full width background
+    const outerContainerStyle = {
+      width: element.containerWidth || '100%',
+      backgroundColor: element.style?.backgroundColor,
+      padding: element.style?.padding || '10px',
+      margin: element.style?.margin || '0px',
+      borderRadius: element.style?.borderRadius || '0px',
+      cursor: 'pointer',
+      outline: isSelected ? '2px solid #3b82f6' : 'none',
+      outlineOffset: '2px',
+      boxSizing: 'border-box',
+      position: 'relative',
+      zIndex: element.zIndex || 1
+    };
+
+    // Inner container style for content alignment
+    const innerContainerStyle = {
       width: '100%',
       display: 'flex',
       justifyContent: element.justification || 'center',
       alignItems: 'center'
     };
 
-    // Base style for the element itself
-    const baseStyle = {
+    // Content style for the actual element
+    const contentStyle = {
       ...element.style,
-      cursor: 'pointer',
-      outline: isSelected ? '2px solid #3b82f6' : 'none',
-      outlineOffset: '2px',
-      boxSizing: 'border-box',
-      maxWidth: '100%',
-      width: element.style?.width || '100%',
-      position: element.style?.position || 'relative',
-      zIndex: element.zIndex || 1
+      width: element.style?.textWidth || 'auto',
+      backgroundColor: undefined, // Remove background from content
+      padding: undefined, // Remove padding from content
+      margin: undefined, // Remove margin from content
+      borderRadius: undefined, // Remove border radius from content
     };
 
-    const renderElement = () => {
+    return (
+      <div
+        style={outerContainerStyle}
+        onClick={() => onSelect(element)}
+        onDoubleClick={handleDoubleClick}
+        className="canvas-element"
+      >
+        <div style={innerContainerStyle}>
+          {renderElement()}
+        </div>
+      </div>
+    );
+
+    function renderElement() {
       try {
         switch (element.type) {
           case 'text':
@@ -748,11 +752,11 @@ const AdvancedDesignStudio = () => {
                 onChange={(e) => handleContentChange(e.target.value)}
                 onBlur={() => setIsEditing(false)}
                 className="w-full bg-transparent border-none outline-none resize-none"
-                style={{ ...baseStyle, minHeight: '100px' }}
+                style={{ ...contentStyle, minHeight: '100px' }}
                 autoFocus
               />
             ) : (
-              <div style={baseStyle}>
+              <div style={contentStyle}>
                 {element.content.split('\n').map((line, i) => (
                   <div key={i}>{line}</div>
                 ))}
@@ -768,11 +772,11 @@ const AdvancedDesignStudio = () => {
                 onBlur={() => setIsEditing(false)}
                 onKeyPress={(e) => e.key === 'Enter' && setIsEditing(false)}
                 className="w-full bg-transparent border-none outline-none"
-                style={{ ...baseStyle, fontSize: 'inherit', fontWeight: 'inherit' }}
+                style={{ ...contentStyle, fontSize: 'inherit', fontWeight: 'inherit' }}
                 autoFocus
               />
             ) : (
-              <h1 style={baseStyle}>
+              <h1 style={contentStyle}>
                 {element.content}
               </h1>
             );
@@ -783,7 +787,7 @@ const AdvancedDesignStudio = () => {
                 src={element.src}
                 alt="Design element"
                 style={{ 
-                  ...baseStyle, 
+                  ...contentStyle, 
                   maxWidth: element.style?.width || '100%', 
                   height: 'auto',
                   objectFit: 'cover'
@@ -800,7 +804,7 @@ const AdvancedDesignStudio = () => {
             return (
               <div 
                 style={{ 
-                  ...baseStyle,
+                  ...contentStyle,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -826,7 +830,7 @@ const AdvancedDesignStudio = () => {
             return (
               <button
                 style={{
-                  ...baseStyle,
+                  ...contentStyle,
                   backgroundColor: element.style?.backgroundColor || '#3b82f6',
                   color: element.style?.color || 'white',
                   padding: element.style?.padding || '15px 30px',
@@ -846,7 +850,7 @@ const AdvancedDesignStudio = () => {
             return (
               <hr
                 style={{
-                  ...baseStyle,
+                  ...contentStyle,
                   border: 'none',
                   height: element.style?.height || '2px',
                   backgroundColor: element.style?.backgroundColor || '#e5e7eb',
@@ -859,7 +863,7 @@ const AdvancedDesignStudio = () => {
             return (
               <div
                 style={{
-                  ...baseStyle,
+                  ...contentStyle,
                   width: element.style?.width || '60px',
                   height: element.style?.height || '60px',
                   backgroundColor: element.style?.backgroundColor || '#fbbf24',
@@ -873,7 +877,7 @@ const AdvancedDesignStudio = () => {
             return (
               <div
                 style={{
-                  ...baseStyle,
+                  ...contentStyle,
                   height: element.style?.height || '32px',
                   width: '100%'
                 }}
@@ -884,7 +888,7 @@ const AdvancedDesignStudio = () => {
             return (
               <blockquote
                 style={{
-                  ...baseStyle,
+                  ...contentStyle,
                   fontStyle: 'italic',
                   padding: element.style?.padding || '16px',
                   backgroundColor: element.style?.backgroundColor || '#f3f4f6',
@@ -897,7 +901,7 @@ const AdvancedDesignStudio = () => {
             
           case 'list':
             return (
-              <div style={baseStyle}>
+              <div style={contentStyle}>
                 {element.content.split('\n').map((item, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>•</span>
@@ -910,7 +914,7 @@ const AdvancedDesignStudio = () => {
           default:
             console.warn(`Unknown element type: ${element.type}`);
             return (
-              <div style={baseStyle}>
+              <div style={contentStyle}>
                 Unknown element type: {element.type}
               </div>
             );
@@ -918,42 +922,12 @@ const AdvancedDesignStudio = () => {
       } catch (error) {
         console.error('Error rendering element:', error, element);
         return (
-          <div style={{ ...baseStyle, color: 'red', padding: '10px', border: '1px solid red' }}>
+          <div style={{ ...contentStyle, color: 'red', padding: '10px', border: '1px solid red' }}>
             Error rendering element
           </div>
         );
       }
-    };
-
-    return (
-      <div
-        ref={ref}
-        className={isSelected ? 'ring-2 ring-blue-500' : ''}
-        style={containerStyle}
-        onClick={onSelect}
-        onDoubleClick={handleDoubleClick}
-      >
-        <div style={{ opacity: isDragging ? 0.5 : 1, cursor: 'move' }}>
-          {renderElement()}
-        </div>
-        {isSelected && (
-          <div className="absolute -top-6 -left-1 text-xs bg-blue-600 text-white px-2 py-1 rounded flex items-center space-x-2 z-20">
-            <span>{element.type}</span>
-            <button
-              onClick={e => {
-                e.stopPropagation();
-                setCanvas(prev => prev.filter(el => el.id !== element.id));
-                setSelectedElement(null);
-              }}
-              className="text-white hover:text-red-200 text-xs"
-              title="Delete element"
-            >
-              ×
-            </button>
-          </div>
-        )}
-      </div>
-    );
+    }
   };
 
   // Mode configuration
