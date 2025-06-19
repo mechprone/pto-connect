@@ -104,16 +104,16 @@ const AdvancedDesignStudio = () => {
     },
     {
       id: 'teacher-appreciation',
-      name: 'Teacher Appreciation',
-      category: 'Event',
-      thumbnail: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=300&q=80',
-      description: 'Show gratitude to our amazing teachers with this heartfelt invitation.',
+      name: 'Teacher Appreciation Week',
+      category: 'Appreciation',
+      thumbnail: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=300&q=80',
+      description: 'Celebrate and thank your teachers for all they do.',
       isProfessional: true,
       elements: [
-        { type: 'image', src: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
+        { type: 'image', src: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
         { type: 'header', content: 'Teacher Appreciation Week', style: { fontSize: '24px', fontWeight: 'bold', color: '#be185d', textAlign: 'center', padding: '20px', backgroundColor: '#fbcfe8', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
         { type: 'divider', style: { borderTop: '2px solid #be185d', margin: '16px 0', width: '100%' } },
-        { type: 'text', content: 'Join us in celebrating our dedicated teachers! Let's show them how much we care.', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'text', content: 'Join us in celebrating our dedicated teachers! Let\'s show them how much we care.', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
         { type: 'button', content: 'Send Thanks', url: 'https://example.com/thanks', style: { backgroundColor: '#be185d', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(190,24,93,0.08)' } },
         { type: 'divider', style: { borderTop: '1px solid #be185d', margin: '16px 0', width: '100%' } },
         { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
@@ -215,7 +215,7 @@ const AdvancedDesignStudio = () => {
         { type: 'image', src: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80', style: { width: '100%', borderRadius: '12px', marginBottom: '24px', maxHeight: '220px', objectFit: 'cover' } },
         { type: 'header', content: 'Picture Day', style: { fontSize: '24px', fontWeight: 'bold', color: '#2563eb', textAlign: 'center', padding: '20px', backgroundColor: '#dbeafe', borderRadius: '8px', width: '100%', marginBottom: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } },
         { type: 'divider', style: { borderTop: '2px solid #2563eb', margin: '16px 0', width: '100%' } },
-        { type: 'text', content: 'Don't forget to dress your best for school pictures!', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
+        { type: 'text', content: 'Don\'t forget to dress your best for school pictures!', style: { fontSize: '16px', color: '#374151', textAlign: 'center', padding: '24px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', margin: '0 auto 12px auto', width: '90%' } },
         { type: 'button', content: 'Order Photos', url: 'https://example.com/pictures', style: { backgroundColor: '#2563eb', color: '#fff', padding: '12px 32px', borderRadius: '6px', fontWeight: 'bold', fontSize: '16px', margin: '0 auto 16px auto', display: 'block', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.08)' } },
         { type: 'divider', style: { borderTop: '1px solid #2563eb', margin: '16px 0', width: '100%' } },
         { type: 'text', content: 'Sunset PTO • info@sunsetpto.com', style: { textAlign: 'center', color: '#6b7280', fontSize: '13px', marginTop: '16px', marginBottom: '0', padding: '8px 0 0 0' } }
