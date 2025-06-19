@@ -8,7 +8,7 @@ import './GrapesJSEditor.css';
 const GrapesJSEditor = () => {
   const editorRef = useRef(null);
   const [showWelcome, setShowWelcome] = useState(true);
-  const [currentTemplate, setCurrentTemplate] = useState('');
+  const [templateName, setTemplateName] = useState('New Template');
 
   const defaultTemplates = {
     newsletter: `
@@ -96,7 +96,7 @@ const GrapesJSEditor = () => {
     if (editorRef.current) {
       const template = defaultTemplates[templateType];
       editorRef.current.setComponents(template);
-      setCurrentTemplate(templateType);
+      setTemplateName(templateType.charAt(0).toUpperCase() + templateType.slice(1));
       setShowWelcome(false);
     }
   };
@@ -104,8 +104,18 @@ const GrapesJSEditor = () => {
   const startFromScratch = () => {
     if (editorRef.current) {
       editorRef.current.setComponents('<div style="padding: 20px; text-align: center; color: #666;">Start building your email template here...</div>');
-      setCurrentTemplate('blank');
+      setTemplateName('New Template');
       setShowWelcome(false);
+    }
+  };
+
+  const exportTemplate = () => {
+    if (editorRef.current) {
+      const html = editorRef.current.getHtml();
+      const css = editorRef.current.getCss();
+      console.log('Template HTML:', html);
+      console.log('Template CSS:', css);
+      alert('Template exported! Check console for HTML/CSS output.');
     }
   };
 
@@ -113,243 +123,91 @@ const GrapesJSEditor = () => {
     if (!editorRef.current) {
       const editor = grapesjs.init({
         container: '#gjs',
-        height: 'calc(100vh - 60px)',
-        width: '100%',
+        height: '100%',
+        width: 'auto',
         storageManager: false,
         plugins: [gjsPresetWebpage, gjsPresetNewsletter],
         pluginsOpts: {
-          [gjsPresetNewsletter]: {
-            modalTitleImport: 'Import template',
-            modalBtnImport: 'Import',
-            modalLabelImport: 'Paste your HTML template here',
-            importPlaceholder: '<table><tr><td>Hello</td></tr></table>',
-            cellStyle: {
-              padding: '0',
-              margin: '0',
-              'vertical-align': 'top',
-            },
+          [gjsPresetWebpage]: {
+            // Options for the webpage preset
           },
-          [gjsPresetWebpage]: {},
+          [gjsPresetNewsletter]: {
+            // Options for the newsletter preset
+          },
         },
-        canvas: {
-          styles: [
-            'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap',
-          ],
-          frameOffset: 25,
+        styleManager: {
+          sectors: [{
+            name: 'Dimension',
+            open: false,
+            properties: [
+              'width', 'height', 'max-width', 'min-height', 'margin', 'padding'
+            ],
+          }, {
+            name: 'Typography',
+            open: false,
+            properties: [
+              'font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align'
+            ],
+          }, {
+            name: 'Decorations',
+            open: false,
+            properties: [
+              'background-color', 'border-radius', 'border', 'box-shadow'
+            ],
+          }],
         },
         deviceManager: {
-          devices: [
-            {
+          devices: [{
               name: 'Desktop',
               width: '',
-            },
-            {
+            }, {
               name: 'Tablet',
               width: '768px',
               widthMedia: '992px',
-            },
-            {
+            }, {
               name: 'Mobile',
               width: '320px',
               widthMedia: '480px',
-            },
-          ],
-        },
-        panels: {
-          defaults: [
-            // Top-left basic actions
-            {
-              id: 'commands',
-              el: '.panel__commands',
-              buttons: [
-                { id: 'undo', className: 'fa fa-undo', command: 'core:undo' },
-                { id: 'redo', className: 'fa fa-repeat', command: 'core:redo' },
-                { id: 'import', className: 'fa fa-download', command: 'gjs-open-import-template' },
-                { id: 'clean-all', className: 'fa fa-trash', command: 'core:canvas-clear' },
-              ],
-            },
-            // Device Manager
-            {
-              id: 'devices-c',
-              el: '.panel__devices',
-              buttons: [
-                { id: 'device-desktop', command: 'set-device-desktop', className: 'fa fa-desktop', active: true },
-                { id: 'device-tablet', command: 'set-device-tablet', className: 'fa fa-tablet' },
-                { id: 'device-mobile', command: 'set-device-mobile', className: 'fa fa-mobile' },
-              ],
-            },
-            // Right-side blocks
-            {
-              id: 'blocks',
-              el: '.panel__right',
-              resizable: {
-                tc: false,
-                cr: true,
-                cl: false,
-                bc: false,
-              },
-            },
-            // Right-side layers
-            {
-              id: 'layers',
-              el: '.panel__right',
-              resizable: {
-                tc: false,
-                cr: true,
-                cl: false,
-                bc: false,
-              },
-            },
-            // Right-side styles
-            {
-              id: 'styles',
-              el: '.panel__right',
-              resizable: {
-                tc: false,
-                cr: true,
-                cl: false,
-                bc: false,
-              },
-            },
-            // Right-side traits
-            {
-              id: 'traits',
-              el: '.panel__right',
-              resizable: {
-                tc: false,
-                cr: true,
-                cl: false,
-                bc: false,
-              },
-            },
-            // Panel switcher
-            {
-              id: 'panel-switcher',
-              el: '.panel__switcher',
-              buttons: [
-                { id: 'show-blocks', active: true, label: 'Blocks', command: 'show-blocks' },
-                { id: 'show-layers', active: true, label: 'Layers', command: 'show-layers' },
-                { id: 'show-style', active: true, label: 'Styles', command: 'show-styles' },
-                { id: 'show-traits', active: true, label: 'Traits', command: 'show-traits' },
-              ],
-            },
-          ],
-        },
-        blockManager: {
-          appendTo: '.panel__right',
-          blocks: [
-            {
-              id: 'section',
-              label: 'Section',
-              category: 'Basic',
-              content: '<section class="section"><div class="container"></div></section>',
-            },
-            {
-              id: 'text',
-              label: 'Text',
-              category: 'Basic',
-              content: '<div data-gjs-type="text">Insert your text here</div>',
-            },
-            {
-              id: 'image',
-              label: 'Image',
-              category: 'Basic',
-              content: { type: 'image' },
-              activate: true,
-            },
-            {
-              id: 'button',
-              label: 'Button',
-              category: 'Basic',
-              content: '<button class="button">Click me</button>',
-            },
-          ],
-        },
-        styleManager: {
-          appendTo: '.panel__right',
-          sectors: [
-            {
-              name: 'Dimension',
-              open: false,
-              properties: ['width', 'height', 'min-width', 'min-height', 'margin', 'padding'],
-            },
-            {
-              name: 'Typography',
-              open: false,
-              properties: [
-                'font-family',
-                'font-size',
-                'font-weight',
-                'letter-spacing',
-                'color',
-                'line-height',
-                'text-align',
-                'text-decoration',
-                'text-shadow',
-              ],
-            },
-            {
-              name: 'Decorations',
-              open: false,
-              properties: [
-                'background-color',
-                'border-radius',
-                'border',
-                'box-shadow',
-                'background',
-              ],
-            },
-          ],
-        },
-        layerManager: {
-          appendTo: '.panel__right',
-        },
-        traitManager: {
-          appendTo: '.panel__right',
+            }]
         },
       });
 
-      editor.Panels.addButton('options', {
+      // Add custom save command
+      editor.Commands.add('save-template', {
+        run: (editor) => {
+          const html = editor.getHtml();
+          const css = editor.getCss();
+          console.log("Saving template:", { html, css });
+          alert('Template Saved! (Check console for output)');
+        }
+      });
+
+      // Add custom buttons to the options panel
+      const panels = editor.Panels;
+      panels.addButton('options', {
         id: 'save-btn',
-        className: 'btn-save',
+        className: 'fa fa-save',
         command: 'save-template',
         attributes: { title: 'Save Template' },
-        label: '💾 Save',
       });
-
-      editor.Panels.addButton('options', {
+      panels.addButton('options', {
         id: 'preview-btn',
-        className: 'btn-preview',
-        command: 'preview',
+        className: 'fa fa-eye',
+        command: 'core:preview',
         attributes: { title: 'Preview' },
-        label: '👁️ Preview',
       });
 
       editorRef.current = editor;
     }
-
-    return () => {
-      if (editorRef.current) {
-        editorRef.current.destroy();
-        editorRef.current = null;
-      }
-    };
   }, []);
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: 'calc(100vh - 64px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       {showWelcome && (
         <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.8)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 10000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center'
         }}>
           <div style={{
             background: 'white',
@@ -440,107 +298,44 @@ const GrapesJSEditor = () => {
         </div>
       )}
 
-      <div style={{ 
-        padding: '15px 20px', 
-        backgroundColor: '#f8f9fa', 
-        borderBottom: '1px solid #e9ecef',
+      <div style={{
+        padding: '10px 20px',
+        backgroundColor: '#fff',
+        borderBottom: '1px solid #ddd',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        height: '60px',
-        flexShrink: 0,
+        flexShrink: 0
       }}>
         <div>
-          <h2 style={{ margin: 0, color: '#333' }}>Email Template Builder</h2>
-          {currentTemplate && (
-            <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
-              Template: {currentTemplate.charAt(0).toUpperCase() + currentTemplate.slice(1)}
-            </p>
-          )}
+          <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>Email Template Builder</h2>
+          <p style={{ margin: '4px 0 0', fontSize: '0.9rem', color: '#666' }}>Template: {templateName}</p>
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button
-            onClick={() => setShowWelcome(true)}
-            style={{
-              padding: '8px 16px',
-              background: '#6c757d',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '14px',
-            }}
-          >
-            New Template
-          </button>
-          <button
-            onClick={() => {
-              if (editorRef.current) {
-                const html = editorRef.current.getHtml();
-                const css = editorRef.current.getCss();
-                console.log('Template HTML:', html);
-                console.log('Template CSS:', css);
-                alert('Template exported! Check console for HTML/CSS output.');
-              }
-            }}
-            style={{
-              padding: '8px 16px',
-              background: '#28a745',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '14px',
-            }}
-          >
-            Export Template
-          </button>
+        <div>
+          <button onClick={() => setShowWelcome(true)} style={{
+            padding: '8px 16px',
+            background: '#6c757d',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '14px',
+          }}>New Template</button>
+          <button onClick={exportTemplate} style={{
+            padding: '8px 16px',
+            background: '#28a745',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            marginLeft: '10px'
+          }}>Export Template</button>
         </div>
       </div>
 
-      <div style={{ 
-        flex: 1, 
-        display: 'flex',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <div style={{ 
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          position: 'relative'
-        }}>
-          <div className="panel__top" style={{
-            padding: '0 15px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            backgroundColor: '#f8f9fa',
-            borderBottom: '1px solid #e9ecef'
-          }}>
-            <div className="panel__commands" style={{ display: 'flex', alignItems: 'center' }}></div>
-            <div className="panel__devices" style={{ display: 'flex', alignItems: 'center' }}></div>
-          </div>
-
-          <div id="gjs" style={{ flex: 1 }} />
-        </div>
-
-        <div className="panel__right" style={{ 
-          width: '300px',
-          backgroundColor: '#f5f5f5',
-          borderLeft: '1px solid #e9ecef',
-          flexShrink: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden'
-        }} />
-        
-        <div className="panel__switcher" style={{ 
-          width: '48px',
-          backgroundColor: '#eee',
-          borderLeft: '1px solid #e9ecef',
-          flexShrink: 0
-        }} />
+      <div style={{ flex: 1, position: 'relative' }}>
+        <div id="gjs" />
       </div>
     </div>
   );
