@@ -1,0 +1,68 @@
+.gjs-one-bg {
+  background-color: #f5f5f5;
+}
+
+.gjs-two-color {
+  color: #383838;
+}
+
+.gjs-three-bg {
+  background-color: #ec5896;
+  color: white;
+}
+
+.gjs-four-color,
+.gjs-four-color-h:hover {
+  color: #ec5896;
+}
+
+.gjs-pn-btn.gjs-pn-active {
+  background-color: #ec5896;
+  color: white;
+}
+
+.gjs-pn-panel {
+  padding: 0;
+  border-radius: 4px;
+}
+
+.gjs-cv-canvas {
+  width: 100%;
+  height: 100%;
+  top: 0;
+}
+
+.panel__right {
+  flex-basis: 230px;
+  position: relative;
+  overflow-y: auto;
+  box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+}
+
+.panel__switcher {
+  position: relative;
+  overflow-y: auto;
+  box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+}
+
+.gjs-block {
+  width: auto;
+  height: auto;
+  min-height: auto;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.gjs-block:hover {
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+  transform: translateY(-1px);
+}
+
+.gjs-block__media {
+  border-radius: 4px 4px 0 0;
+}
+
+.gjs-block-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+} 

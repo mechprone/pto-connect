@@ -51,6 +51,7 @@ import EmailComposer from './modules/communications/pages/EmailComposer'
 import SmsComposer from './modules/communications/pages/SmsComposer'
 import SocialPostComposer from './modules/communications/pages/SocialPostComposer'
 import AiContentAssistant from '@/modules/communications/pages/AiContentAssistantNew'
+import GrapesJSEditor from './modules/communications/pages/GrapesJSEditor'
 
 // Documents
 import DocumentsDashboard from './modules/documents/pages/DocumentsDashboard'
@@ -140,6 +141,7 @@ export default function App() {
           <Route path="/communications/social" element={<SocialPostComposer />} />
           <Route path="/communications/ai" element={<AiContentAssistant />} />
           <Route path="/communications/design-studio" element={<AdvancedDesignStudio />} />
+          <Route path="/communications/template-builder" element={<GrapesJSEditor />} />
 
           <Route path="/documents" element={<DocumentsDashboard />} />
           <Route path="/documents/upload" element={<UploadDocument />} />
