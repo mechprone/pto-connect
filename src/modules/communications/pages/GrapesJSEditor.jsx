@@ -199,87 +199,35 @@ const GrapesJSEditor = () => {
           <div style={{
             background: 'white',
             padding: '40px',
-            borderRadius: '12px',
-            maxWidth: '600px',
-            width: '90%',
+            borderRadius: '8px',
             textAlign: 'center',
-          }}>
-            <h1 style={{ color: '#333', marginBottom: '20px' }}>Welcome to the Email Template Builder!</h1>
-            <p style={{ color: '#666', marginBottom: '30px', lineHeight: '1.6' }}>
-              Choose a template to get started, or start from scratch. You can drag and drop elements, 
-              edit text, and customize styles to create your perfect email template.
+            boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
+            maxWidth: '600px',
+          }} className="welcome-modal">
+            <h2 style={{ marginTop: 0, fontSize: '1.8rem' }}>Welcome to the Template Builder</h2>
+            <p style={{ marginBottom: '30px', fontSize: '1.1rem', color: '#555' }}>
+              Choose a starting point or begin with a blank slate.
             </p>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-              <button
-                onClick={() => loadTemplate('newsletter')}
-                style={{
-                  padding: '20px',
-                  border: '2px solid #e0e0e0',
-                  borderRadius: '8px',
-                  background: 'white',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
-                onMouseOver={(e) => e.target.style.borderColor = '#667eea'}
-                onMouseOut={(e) => e.target.style.borderColor = '#e0e0e0'}
-              >
-                <div style={{ fontSize: '24px', marginBottom: '10px' }}>📰</div>
-                <h3 style={{ margin: '0 0 10px 0', color: '#333' }}>Newsletter</h3>
-                <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>Perfect for monthly updates</p>
-              </button>
-              
-              <button
-                onClick={() => loadTemplate('announcement')}
-                style={{
-                  padding: '20px',
-                  border: '2px solid #e0e0e0',
-                  borderRadius: '8px',
-                  background: 'white',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
-                onMouseOver={(e) => e.target.style.borderColor = '#e74c3c'}
-                onMouseOut={(e) => e.target.style.borderColor = '#e0e0e0'}
-              >
-                <div style={{ fontSize: '24px', marginBottom: '10px' }}>📢</div>
-                <h3 style={{ margin: '0 0 10px 0', color: '#333' }}>Announcement</h3>
-                <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>For important updates</p>
-              </button>
-              
-              <button
-                onClick={() => loadTemplate('event')}
-                style={{
-                  padding: '20px',
-                  border: '2px solid #e0e0e0',
-                  borderRadius: '8px',
-                  background: 'white',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
-                onMouseOver={(e) => e.target.style.borderColor = '#f093fb'}
-                onMouseOut={(e) => e.target.style.borderColor = '#e0e0e0'}
-              >
-                <div style={{ fontSize: '24px', marginBottom: '10px' }}>🎉</div>
-                <h3 style={{ margin: '0 0 10px 0', color: '#333' }}>Event Invitation</h3>
-                <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>For special occasions</p>
-              </button>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+              <button onClick={() => loadTemplate('newsletter')} style={{ padding: '15px 25px' }}>Newsletter</button>
+              <button onClick={() => loadTemplate('announcement')} style={{ padding: '15px 25px' }}>Announcement</button>
+              <button onClick={() => loadTemplate('event')} style={{ padding: '15px 25px' }}>Event</button>
             </div>
-            
             <button
               onClick={startBlank}
               style={{
                 padding: '15px 30px',
-                background: '#667eea',
-                color: 'white',
+                background: 'transparent',
+                color: '#007bff',
                 border: 'none',
-                borderRadius: '6px',
+                borderRadius: '5px',
                 cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: 'bold',
+                fontSize: '1rem',
+                marginTop: '30px',
+                textDecoration: 'underline'
               }}
             >
-              Start from Scratch
+              Or start from scratch
             </button>
           </div>
         </div>
@@ -299,31 +247,12 @@ const GrapesJSEditor = () => {
           <p style={{ margin: '4px 0 0', fontSize: '0.9rem', color: '#666' }}>Template: {templateName}</p>
         </div>
         <div>
-          <button onClick={() => setShowWelcome(true)} style={{
-            padding: '8px 16px',
-            background: '#6c757d',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '14px',
-          }}>New Template</button>
-          <button onClick={exportTemplate} style={{
-            padding: '8px 16px',
-            background: '#28a745',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '14px',
-            marginLeft: '10px'
-          }}>Export Template</button>
+          <button onClick={() => setShowWelcome(true)} style={{}}>New Template</button>
+          <button onClick={exportTemplate} style={{ marginLeft: '10px' }}>Export Template</button>
         </div>
       </div>
 
-      <div style={{ flex: 1, position: 'relative' }}>
-        <div id="gjs" />
-      </div>
+      <div id="gjs" style={{ flex: 1, overflow: 'hidden' }} />
     </div>
   );
 };
