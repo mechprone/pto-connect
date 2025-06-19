@@ -579,21 +579,26 @@ const AdvancedDesignStudio = () => {
         throw new Error('No template provided');
       }
 
-      if (!template.design_json) {
+      let templateData;
+      
+      // Handle built-in templates (professional and basic)
+      if (template.elements) {
+        templateData = template.elements;
+      } 
+      // Handle saved templates with design_json
+      else if (template.design_json) {
+        try {
+          templateData = typeof template.design_json === 'string' ? JSON.parse(template.design_json) : template.design_json;
+        } catch (error) {
+          console.error('Failed to parse template design_json:', error, template.design_json);
+          throw new Error('Invalid template data format');
+        }
+      } else {
         throw new Error('Template is missing design data');
       }
 
-      let templateData;
-      try {
-        templateData = typeof template.design_json === 'string' ? JSON.parse(template.design_json) : template.design_json;
-        console.log('Parsed template data:', templateData);
-      } catch (error) {
-        console.error('Failed to parse template design_json:', error, template.design_json);
-        throw new Error('Invalid template data format');
-      }
-
       if (!Array.isArray(templateData)) {
-        console.error('Template design_json is not an array:', templateData);
+        console.error('Template data is not an array:', templateData);
         throw new Error('Invalid template data structure');
       }
 
@@ -623,12 +628,10 @@ const AdvancedDesignStudio = () => {
       });
 
       console.log('Setting canvas with elements:', newElements);
-      
-      // Use a callback to ensure we're working with the latest state
       setCanvas(newElements);
       setSelectedElement(null);
-
       toast.success('Template loaded successfully!');
+      
     } catch (error) {
       console.error('Template error:', error);
       toast.error('Failed to load template: ' + error.message);
