@@ -45,11 +45,21 @@ const AdvancedDesignStudio = () => {
 
   // --- Load Templates on Mount ---
   useEffect(() => {
+    console.log('Loading templates...');
     setLoadingTemplates(true);
     communicationsTemplatesAPI.getTemplates()
       .then(({ data }) => {
+        console.log('Templates loaded:', data);
+        if (!data) {
+          console.error('No data returned from getTemplates');
+          return;
+        }
         setMyTemplates(data?.myTemplates || []);
         setSharedTemplates(data?.sharedTemplates || []);
+      })
+      .catch(error => {
+        console.error('Error loading templates:', error);
+        toast.error('Failed to load templates');
       })
       .finally(() => setLoadingTemplates(false));
   }, []);
@@ -592,21 +602,29 @@ const AdvancedDesignStudio = () => {
 
       const newElements = templateData.map((element, index) => {
         console.log('Processing element:', element);
-        return {
+        const newElement = {
           ...element,
           id: `element_${Date.now()}_${index}`,
-          x: element.x || 20, // Preserve original x if exists
-          y: element.y || (20 + (index * 80)), // Preserve original y if exists
+          x: element.x || 20,
+          y: element.y || (20 + (index * 80)),
           style: {
             ...element.style,
             width: element.style?.width || '100%'
           }
         };
+        console.log('Created new element:', newElement);
+        return newElement;
       });
 
       console.log('Setting canvas with elements:', newElements);
       setCanvas(newElements);
       setSelectedElement(null);
+      
+      // Verify canvas was updated
+      setTimeout(() => {
+        console.log('Current canvas state:', canvas);
+      }, 100);
+
       toast.success('Template loaded successfully!');
     } catch (error) {
       console.error('Template error:', error);
@@ -661,7 +679,7 @@ const AdvancedDesignStudio = () => {
 
   const CanvasElement = ({ element, isSelected, onSelect, onUpdate, index, moveElement }) => {
     const ref = useRef(null);
-    const [isEditing, setIsEditing] = useState(false); // <-- Add this line
+    const [isEditing, setIsEditing] = useState(false);
     const [{ isDragging }, drag, preview] = useDrag(() => ({
       type: 'canvas-element',
       item: { id: element.id, index },
@@ -687,206 +705,41 @@ const AdvancedDesignStudio = () => {
     const handleDoubleClick = () => {
       if (element.type === 'text' || element.type === 'header' || element.type === 'button') setIsEditing(true);
     };
+
     const handleContentChange = (newContent) => {
       onUpdate({ ...element, content: newContent });
       setIsEditing(false);
     };
+
+    // Container style that handles justification
+    const containerStyle = {
+      width: '100%',
+      display: 'flex',
+      justifyContent: element.justification || 'center',
+      alignItems: 'center'
+    };
+
+    // Base style for the element itself
     const baseStyle = {
       ...element.style,
       cursor: 'pointer',
       outline: isSelected ? '2px solid #3b82f6' : 'none',
       outlineOffset: '2px',
-      display: 'block',
       boxSizing: 'border-box',
-      maxWidth: element.style?.width || '100%',
-      margin: element.justification === 'center' ? '0 auto' : element.justification === 'flex-end' ? '0 0 0 auto' : '0',
-    };
-    const renderElement = () => {
-      switch (element.type) {
-        case 'text':
-          return isEditing ? (
-            <textarea
-              value={element.content}
-              onChange={(e) => handleContentChange(e.target.value)}
-              onBlur={() => setIsEditing(false)}
-              className="w-full bg-transparent border-none outline-none resize-none"
-              style={{ ...baseStyle, minHeight: '100px' }}
-              autoFocus
-            />
-          ) : (
-            <div style={baseStyle}>
-              {element.content.split('\n').map((line, i) => (
-                <div key={i}>{line}</div>
-              ))}
-            </div>
-          );
-          
-        case 'header':
-          return isEditing ? (
-            <input
-              type="text"
-              value={element.content}
-              onChange={(e) => handleContentChange(e.target.value)}
-              onBlur={() => setIsEditing(false)}
-              onKeyPress={(e) => e.key === 'Enter' && setIsEditing(false)}
-              className="w-full bg-transparent border-none outline-none"
-              style={{ ...baseStyle, fontSize: 'inherit', fontWeight: 'inherit' }}
-              autoFocus
-            />
-          ) : (
-            <h1 style={baseStyle}>
-              {element.content}
-            </h1>
-          );
-          
-        case 'image':
-          return (
-            <img
-              src={element.src}
-              alt="Design element"
-              style={{ 
-                ...baseStyle, 
-                maxWidth: element.style?.width || '100%', 
-                height: 'auto',
-                objectFit: 'cover'
-              }}
-              onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/400x200/f3f4f6/6b7280?text=Image+Placeholder';
-              }}
-            />
-          );
-          
-        case 'charm':
-        case 'emoji':
-        case 'icon':
-          return (
-            <div 
-              style={{ 
-                ...baseStyle,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: element.style?.padding || '10px',
-                backgroundColor: element.style?.backgroundColor || 'transparent'
-              }}
-              className="charm-container"
-            >
-              <span 
-                role="img" 
-                aria-label={element.label}
-                style={{
-                  fontSize: element.style?.fontSize || '32px',
-                  lineHeight: 1
-                }}
-              >
-                {element.content}
-              </span>
-            </div>
-          );
-          
-        case 'button':
-          return (
-            <button
-              style={{
-                ...baseStyle,
-                backgroundColor: element.style?.backgroundColor || '#3b82f6',
-                color: element.style?.color || 'white',
-                padding: element.style?.padding || '15px 30px',
-                borderRadius: element.style?.borderRadius || '8px',
-                border: 'none',
-                fontSize: element.style?.fontSize || '16px',
-                fontWeight: element.style?.fontWeight || '600',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-            >
-              {element.content}
-            </button>
-          );
-          
-        case 'divider':
-          return (
-            <hr
-              style={{
-                ...baseStyle,
-                border: 'none',
-                height: element.style?.height || '2px',
-                backgroundColor: element.style?.backgroundColor || '#e5e7eb',
-                margin: element.style?.margin || '20px 0'
-              }}
-            />
-          );
-          
-        case 'shape':
-          return (
-            <div
-              style={{
-                ...baseStyle,
-                width: element.style?.width || '60px',
-                height: element.style?.height || '60px',
-                backgroundColor: element.style?.backgroundColor || '#fbbf24',
-                borderRadius: element.style?.borderRadius || '0',
-                margin: element.style?.margin || '0 auto'
-              }}
-            />
-          );
-          
-        case 'spacer':
-          return (
-            <div
-              style={{
-                ...baseStyle,
-                height: element.style?.height || '32px',
-                width: '100%'
-              }}
-            />
-          );
-          
-        case 'quote':
-          return (
-            <blockquote
-              style={{
-                ...baseStyle,
-                fontStyle: 'italic',
-                padding: element.style?.padding || '16px',
-                backgroundColor: element.style?.backgroundColor || '#f3f4f6',
-                borderRadius: element.style?.borderRadius || '8px'
-              }}
-            >
-              {element.content}
-            </blockquote>
-          );
-          
-        case 'list':
-          return (
-            <div style={baseStyle}>
-              {element.content.split('\n').map((item, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span>•</span>
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
-          );
-          
-        default:
-          return (
-            <div style={baseStyle}>
-              Unknown element type: {element.type}
-            </div>
-          );
-      }
+      maxWidth: element.style?.width || '100%'
     };
 
     return (
       <div
         ref={ref}
         className={isSelected ? 'ring-2 ring-blue-500' : ''}
-        style={{ width: '100%', opacity: isDragging ? 0.5 : 1, cursor: 'move' }}
+        style={containerStyle}
         onClick={onSelect}
         onDoubleClick={handleDoubleClick}
       >
-        {renderElement()}
+        <div style={{ opacity: isDragging ? 0.5 : 1, cursor: 'move' }}>
+          {renderElement()}
+        </div>
         {isSelected && (
           <div className="absolute -top-6 -left-1 text-xs bg-blue-600 text-white px-2 py-1 rounded flex items-center space-x-2 z-20">
             <span>{element.type}</span>
@@ -1187,6 +1040,78 @@ const AdvancedDesignStudio = () => {
       </div>
     );
   }
+
+  // --- Template Selection Modal ---
+  const handleTemplateSelect = (template) => {
+    console.log('Template selected:', template);
+    if (!template) {
+      console.error('No template selected');
+      return;
+    }
+
+    // Close template modal first
+    setShowTemplateModal(false);
+
+    // Then load the template
+    setTimeout(() => {
+      useTemplate(template);
+    }, 100);
+  };
+
+  // Template Grid Component
+  const TemplateGrid = ({ templates }) => {
+    if (loadingTemplates) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      );
+    }
+
+    if (!templates || templates.length === 0) {
+      return (
+        <div className="text-center py-8">
+          <p className="text-gray-500">No templates found</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
+        {templates.map((template) => (
+          <div
+            key={template.id}
+            className="relative group cursor-pointer border border-gray-200 rounded-lg overflow-hidden hover:border-blue-500 transition-colors"
+            onClick={() => handleTemplateSelect(template)}
+          >
+            {template.thumbnail_url ? (
+              <img
+                src={template.thumbnail_url}
+                alt={template.name}
+                className="w-full h-32 object-cover"
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/300x200?text=Template+Preview';
+                }}
+              />
+            ) : (
+              <div className="w-full h-32 bg-gray-100 flex items-center justify-center">
+                <span className="text-gray-400">No Preview</span>
+              </div>
+            )}
+            <div className="p-3 bg-white">
+              <h3 className="font-medium text-gray-900 truncate">{template.name}</h3>
+              <p className="text-sm text-gray-500 truncate">{template.description || 'No description'}</p>
+            </div>
+            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <button className="bg-white text-gray-900 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
+                Use Template
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <DndProvider backend={HTML5Backend}>
