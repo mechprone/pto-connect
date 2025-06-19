@@ -1368,6 +1368,38 @@ const AdvancedDesignStudio = () => {
                   </div>
                 </div>
 
+                {/* Advanced Section */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Advanced</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Wrap (Positioning)</label>
+                      <select
+                        value={selectedElement.style?.position || 'static'}
+                        onChange={e => updateElementStyle({ position: e.target.value })}
+                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                      >
+                        <option value="static">None (No Overlap)</option>
+                        <option value="absolute">Through (Allow Overlap)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Element Justification</label>
+                      <div className="flex space-x-1">
+                        {['flex-start', 'center', 'flex-end'].map(justify => (
+                          <button
+                            key={justify}
+                            onClick={() => updateElementStyle({ alignSelf: justify })}
+                            className={`flex-1 p-2 text-xs border rounded ${selectedElement.style?.alignSelf === justify ? 'bg-blue-100 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                          >
+                            {justify === 'flex-start' ? 'Left' : justify === 'center' ? 'Center' : 'Right'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Actions */}
                 <div className="pt-4 border-t border-gray-200">
                   <button
