@@ -1105,17 +1105,17 @@ const AdvancedDesignStudio = () => {
         <div className="flex-1 flex flex-col">
           {/* Toolbar */}
           <div className="bg-white border-b border-gray-200">
-            <div className="px-6 py-1 flex items-center space-x-1 border-b border-gray-200 bg-white">
-              <button onClick={handleUndo} disabled={history.length < 2} className="p-1.5 rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50 text-xs" title="Undo" aria-label="Undo">
-                <svg width="16" height="16" fill="none" viewBox="0 0 20 20"><path d="M9 4L4 9l5 5" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 9h7a5 5 0 110 10H6" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <div className="px-6 py-2 flex items-center space-x-2 border-b border-gray-200 bg-white">
+              <button onClick={handleUndo} disabled={history.length < 2} className="p-2 rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50 text-sm" title="Undo" aria-label="Undo">
+                <svg width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M9 4L4 9l5 5" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 9h7a5 5 0 110 10H6" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
-              <button onClick={handleRedo} disabled={future.length === 0} className="p-1.5 rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50 text-xs" title="Redo" aria-label="Redo">
-                <svg width="16" height="16" fill="none" viewBox="0 0 20 20"><path d="M11 4l5 5-5 5" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M16 9H9a5 5 0 100 10h7" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <button onClick={handleRedo} disabled={future.length === 0} className="p-2 rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-50 text-sm" title="Redo" aria-label="Redo">
+                <svg width="18" height="18" fill="none" viewBox="0 0 20 20"><path d="M11 4l5 5-5 5" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M16 9H9a5 5 0 100 10h7" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
-              <button onClick={handleClearDraft} className="px-2 py-1.5 rounded border border-gray-300 bg-white text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors text-xs" title="Clear Draft" aria-label="Clear Draft">Clear</button>
-              <button onClick={handleSaveDraft} className="px-2 py-1.5 rounded bg-gray-800 text-white hover:bg-gray-900 transition-colors text-xs" title="Save Draft" aria-label="Save Draft">Save</button>
-              <button className="flex items-center px-2 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs" onClick={() => console.log('Preview', builderMode)} title="Preview" aria-label="Preview"><Eye className="w-3 h-3 mr-1" />Preview</button>
-              <button className="flex items-center px-2 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs" onClick={() => setShowStellaPopup(!showStellaPopup)} title="Stella" aria-label="Stella"><Sparkles className="w-3 h-3 mr-1" />Stella</button>
+              <button onClick={handleClearDraft} className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors text-sm" title="Clear Draft" aria-label="Clear Draft">Clear</button>
+              <button onClick={handleSaveDraft} className="px-3 py-2 rounded bg-gray-800 text-white hover:bg-gray-900 transition-colors text-sm" title="Save Draft" aria-label="Save Draft">Save</button>
+              <button className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm" onClick={() => console.log('Preview', builderMode)} title="Preview" aria-label="Preview"><Eye className="w-4 h-4 mr-2" />Preview</button>
+              <button className="flex items-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm" onClick={() => setShowStellaPopup(!showStellaPopup)} title="Stella" aria-label="Stella"><Sparkles className="w-4 h-4 mr-2" />Stella</button>
             </div>
           </div>
           
