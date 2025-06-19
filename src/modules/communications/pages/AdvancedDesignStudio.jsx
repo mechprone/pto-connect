@@ -48,18 +48,21 @@ const AdvancedDesignStudio = () => {
     console.log('Loading templates...');
     setLoadingTemplates(true);
     communicationsTemplatesAPI.getTemplates()
-      .then(({ data }) => {
-        console.log('Templates loaded:', data);
-        if (!data) {
-          console.error('No data returned from getTemplates');
+      .then((response) => {
+        console.log('Templates API response:', response);
+        if (!response || !response.data) {
+          console.error('Invalid response from getTemplates:', response);
+          toast.error('Failed to load templates: Invalid response');
           return;
         }
+        const { data } = response;
+        console.log('Setting templates:', data);
         setMyTemplates(data?.myTemplates || []);
         setSharedTemplates(data?.sharedTemplates || []);
       })
       .catch(error => {
         console.error('Error loading templates:', error);
-        toast.error('Failed to load templates');
+        toast.error('Failed to load templates: ' + (error.message || 'Unknown error'));
       })
       .finally(() => setLoadingTemplates(false));
   }, []);
@@ -572,10 +575,12 @@ const AdvancedDesignStudio = () => {
     try {
       console.log('Using template:', template);
       
-      if (!template || !template.design_json) {
-        console.error('Invalid template data:', template);
-        toast.error('Failed to load template: Missing design data');
-        return;
+      if (!template) {
+        throw new Error('No template provided');
+      }
+
+      if (!template.design_json) {
+        throw new Error('Template is missing design data');
       }
 
       let templateData;
@@ -584,14 +589,12 @@ const AdvancedDesignStudio = () => {
         console.log('Parsed template data:', templateData);
       } catch (error) {
         console.error('Failed to parse template design_json:', error, template.design_json);
-        toast.error('Failed to load template: Invalid design data format');
-        return;
+        throw new Error('Invalid template data format');
       }
 
       if (!Array.isArray(templateData)) {
         console.error('Template design_json is not an array:', templateData);
-        toast.error('Failed to load template: Invalid design data format');
-        return;
+        throw new Error('Invalid template data structure');
       }
 
       if (templateData.length === 0) {
@@ -601,8 +604,13 @@ const AdvancedDesignStudio = () => {
       }
 
       const newElements = templateData.map((element, index) => {
+        if (!element || typeof element !== 'object') {
+          console.error('Invalid element in template:', element);
+          throw new Error('Invalid element in template');
+        }
+
         console.log('Processing element:', element);
-        const newElement = {
+        return {
           ...element,
           id: `element_${Date.now()}_${index}`,
           x: element.x || 20,
@@ -612,18 +620,13 @@ const AdvancedDesignStudio = () => {
             width: element.style?.width || '100%'
           }
         };
-        console.log('Created new element:', newElement);
-        return newElement;
       });
 
       console.log('Setting canvas with elements:', newElements);
+      
+      // Use a callback to ensure we're working with the latest state
       setCanvas(newElements);
       setSelectedElement(null);
-      
-      // Verify canvas was updated
-      setTimeout(() => {
-        console.log('Current canvas state:', canvas);
-      }, 100);
 
       toast.success('Template loaded successfully!');
     } catch (error) {
@@ -727,6 +730,193 @@ const AdvancedDesignStudio = () => {
       outlineOffset: '2px',
       boxSizing: 'border-box',
       maxWidth: element.style?.width || '100%'
+    };
+
+    const renderElement = () => {
+      try {
+        switch (element.type) {
+          case 'text':
+            return isEditing ? (
+              <textarea
+                value={element.content}
+                onChange={(e) => handleContentChange(e.target.value)}
+                onBlur={() => setIsEditing(false)}
+                className="w-full bg-transparent border-none outline-none resize-none"
+                style={{ ...baseStyle, minHeight: '100px' }}
+                autoFocus
+              />
+            ) : (
+              <div style={baseStyle}>
+                {element.content.split('\n').map((line, i) => (
+                  <div key={i}>{line}</div>
+                ))}
+              </div>
+            );
+            
+          case 'header':
+            return isEditing ? (
+              <input
+                type="text"
+                value={element.content}
+                onChange={(e) => handleContentChange(e.target.value)}
+                onBlur={() => setIsEditing(false)}
+                onKeyPress={(e) => e.key === 'Enter' && setIsEditing(false)}
+                className="w-full bg-transparent border-none outline-none"
+                style={{ ...baseStyle, fontSize: 'inherit', fontWeight: 'inherit' }}
+                autoFocus
+              />
+            ) : (
+              <h1 style={baseStyle}>
+                {element.content}
+              </h1>
+            );
+            
+          case 'image':
+            return (
+              <img
+                src={element.src}
+                alt="Design element"
+                style={{ 
+                  ...baseStyle, 
+                  maxWidth: element.style?.width || '100%', 
+                  height: 'auto',
+                  objectFit: 'cover'
+                }}
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/400x200/f3f4f6/6b7280?text=Image+Placeholder';
+                }}
+              />
+            );
+            
+          case 'charm':
+          case 'emoji':
+          case 'icon':
+            return (
+              <div 
+                style={{ 
+                  ...baseStyle,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: element.style?.padding || '10px',
+                  backgroundColor: element.style?.backgroundColor || 'transparent'
+                }}
+                className="charm-container"
+              >
+                <span 
+                  role="img" 
+                  aria-label={element.label}
+                  style={{
+                    fontSize: element.style?.fontSize || '32px',
+                    lineHeight: 1
+                  }}
+                >
+                  {element.content}
+                </span>
+              </div>
+            );
+            
+          case 'button':
+            return (
+              <button
+                style={{
+                  ...baseStyle,
+                  backgroundColor: element.style?.backgroundColor || '#3b82f6',
+                  color: element.style?.color || 'white',
+                  padding: element.style?.padding || '15px 30px',
+                  borderRadius: element.style?.borderRadius || '8px',
+                  border: 'none',
+                  fontSize: element.style?.fontSize || '16px',
+                  fontWeight: element.style?.fontWeight || '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {element.content}
+              </button>
+            );
+            
+          case 'divider':
+            return (
+              <hr
+                style={{
+                  ...baseStyle,
+                  border: 'none',
+                  height: element.style?.height || '2px',
+                  backgroundColor: element.style?.backgroundColor || '#e5e7eb',
+                  margin: element.style?.margin || '20px 0'
+                }}
+              />
+            );
+            
+          case 'shape':
+            return (
+              <div
+                style={{
+                  ...baseStyle,
+                  width: element.style?.width || '60px',
+                  height: element.style?.height || '60px',
+                  backgroundColor: element.style?.backgroundColor || '#fbbf24',
+                  borderRadius: element.style?.borderRadius || '0',
+                  margin: element.style?.margin || '0 auto'
+                }}
+              />
+            );
+            
+          case 'spacer':
+            return (
+              <div
+                style={{
+                  ...baseStyle,
+                  height: element.style?.height || '32px',
+                  width: '100%'
+                }}
+              />
+            );
+            
+          case 'quote':
+            return (
+              <blockquote
+                style={{
+                  ...baseStyle,
+                  fontStyle: 'italic',
+                  padding: element.style?.padding || '16px',
+                  backgroundColor: element.style?.backgroundColor || '#f3f4f6',
+                  borderRadius: element.style?.borderRadius || '8px'
+                }}
+              >
+                {element.content}
+              </blockquote>
+            );
+            
+          case 'list':
+            return (
+              <div style={baseStyle}>
+                {element.content.split('\n').map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span>•</span>
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            );
+            
+          default:
+            console.warn(`Unknown element type: ${element.type}`);
+            return (
+              <div style={baseStyle}>
+                Unknown element type: {element.type}
+              </div>
+            );
+        }
+      } catch (error) {
+        console.error('Error rendering element:', error, element);
+        return (
+          <div style={{ ...baseStyle, color: 'red', padding: '10px', border: '1px solid red' }}>
+            Error rendering element
+          </div>
+        );
+      }
     };
 
     return (
@@ -1049,13 +1239,18 @@ const AdvancedDesignStudio = () => {
       return;
     }
 
-    // Close template modal first
-    setShowTemplateModal(false);
+    try {
+      // Close template modal first
+      setShowTemplateModal(false);
 
-    // Then load the template
-    setTimeout(() => {
-      useTemplate(template);
-    }, 100);
+      // Then load the template with a slight delay to allow modal to close
+      setTimeout(() => {
+        useTemplate(template);
+      }, 100);
+    } catch (error) {
+      console.error('Error in template selection:', error);
+      toast.error('Failed to select template: ' + error.message);
+    }
   };
 
   // Template Grid Component
