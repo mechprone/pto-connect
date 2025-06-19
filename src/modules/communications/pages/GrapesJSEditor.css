@@ -16,46 +16,84 @@
   color: #ec5896;
 }
 
-.gjs-pn-btn.gjs-pn-active {
-  background-color: #ec5896;
-  color: white;
+/* Editor Layout */
+.gjs-editor {
+  position: relative !important;
 }
 
+.gjs-cv-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  top: 0 !important;
+  position: relative !important;
+}
+
+/* Fix toolbar positioning */
+.gjs-pn-commands {
+  position: relative !important;
+  width: 100% !important;
+  left: 0 !important;
+  top: 0 !important;
+}
+
+.gjs-pn-views {
+  position: relative !important;
+  right: 0 !important;
+  top: 0 !important;
+}
+
+.gjs-pn-options {
+  position: relative !important;
+  right: 0 !important;
+  top: 0 !important;
+}
+
+.gjs-pn-devices-c {
+  position: relative !important;
+  left: 0 !important;
+  top: 0 !important;
+}
+
+/* Panel Styles */
 .gjs-pn-panel {
   padding: 0;
   border-radius: 4px;
 }
 
-.gjs-cv-canvas {
-  width: 100%;
-  height: 100%;
-  top: 0;
-}
-
 .panel__right {
-  flex-basis: 230px;
-  position: relative;
-  overflow-y: auto;
+  position: relative !important;
+  flex-basis: 300px !important;
+  overflow-y: auto !important;
   box-shadow: -2px 0 5px rgba(0,0,0,0.1);
 }
 
 .panel__switcher {
-  position: relative;
-  overflow-y: auto;
+  position: relative !important;
+  overflow-y: auto !important;
   box-shadow: -2px 0 5px rgba(0,0,0,0.1);
 }
 
+/* Block Styles */
+.gjs-blocks-c {
+  padding: 10px !important;
+  height: auto !important;
+}
+
 .gjs-block {
-  width: auto;
-  height: auto;
-  min-height: auto;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  width: auto !important;
+  height: auto !important;
+  min-height: auto !important;
+  border-radius: 4px !important;
+  transition: all 0.2s ease !important;
+  margin: 5px !important;
+  border: 1px solid #e0e0e0 !important;
+  background: white !important;
 }
 
 .gjs-block:hover {
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
-  transform: translateY(-1px);
+  border-color: #ec5896 !important;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16) !important;
+  transform: translateY(-1px) !important;
 }
 
 .gjs-block__media {
@@ -63,8 +101,121 @@
 }
 
 .gjs-block-label {
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+}
+
+/* Style Manager Panel */
+.gjs-sm-sector {
+  padding: 10px !important;
+  margin-bottom: 10px !important;
+}
+
+.gjs-sm-properties {
+  padding: 10px !important;
+}
+
+.gjs-sm-label {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  margin-bottom: 5px !important;
+}
+
+.gjs-fields {
+  margin-bottom: 10px !important;
+}
+
+/* Layer Manager Panel */
+.gjs-layer {
+  padding: 8px 12px !important;
+  font-size: 12px !important;
+}
+
+.gjs-layer.gjs-selected {
+  background-color: #ec5896 !important;
+  color: white !important;
+}
+
+/* Toolbar Buttons */
+.gjs-pn-btn {
+  border-radius: 4px !important;
+  margin: 2px !important;
+  padding: 6px 8px !important;
+}
+
+.gjs-pn-active {
+  background-color: #ec5896 !important;
+  color: white !important;
+}
+
+/* Device Manager */
+.gjs-devices-c {
+  padding: 5px !important;
+  border-bottom: 1px solid #e9ecef !important;
+}
+
+.gjs-device-label {
+  font-size: 12px !important;
+  padding: 5px 10px !important;
+}
+
+/* Canvas Frame */
+.gjs-frame-wrapper {
+  padding: 25px !important;
+  background-color: #f8f9fa !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+  .panel__right {
+    flex-basis: 280px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .panel__right {
+    flex-basis: 250px !important;
+  }
+  
+  .panel__switcher {
+    width: 40px !important;
+  }
+}
+
+/* Custom Scrollbars */
+.gjs-editor-cont ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.gjs-editor-cont ::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.gjs-editor-cont ::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.gjs-editor-cont ::-webkit-scrollbar-thumb:hover {
+  background: #ec5896;
+}
+
+/* Improved Tooltips */
+.gjs-editor-cont [title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10000;
+  margin-bottom: 5px;
 }
 
 /* Custom toolbar buttons */
@@ -87,132 +238,6 @@
   opacity: 0.8 !important;
 }
 
-/* Better block styling */
-.gjs-blocks-c {
-  padding: 10px;
-}
-
-.gjs-block {
-  margin: 5px;
-  border: 1px solid #e0e0e0;
-  background: white;
-}
-
-.gjs-block:hover {
-  border-color: #ec5896;
-}
-
-/* Improved panel styling */
-.gjs-pn-views-container {
-  background: #f8f9fa;
-}
-
-.gjs-pn-views {
-  background: white;
-  border-radius: 4px;
-  margin: 5px;
-}
-
-/* Better canvas styling */
-.gjs-cv-canvas {
-  background: #f8f9fa;
-}
-
-/* Helpful tooltips */
-.gjs-block[title] {
-  position: relative;
-}
-
-.gjs-block[title]:hover::after {
-  content: attr(title);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #333;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 1000;
-  margin-bottom: 5px;
-}
-
-/* Simplified toolbar */
-.gjs-pn-commands {
-  background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.gjs-pn-btn {
-  border-radius: 4px;
-  margin: 2px;
-}
-
-/* Better device switcher */
-.gjs-devices-c {
-  background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.gjs-devices-c .gjs-device {
-  background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  margin: 2px;
-  padding: 5px 10px;
-  font-size: 12px;
-}
-
-.gjs-devices-c .gjs-device.gjs-active {
-  background: #ec5896;
-  color: white;
-  border-color: #ec5896;
-}
-
-/* Improved layer panel */
-.gjs-layers {
-  background: white;
-}
-
-.gjs-layer {
-  padding: 8px 12px;
-  border-bottom: 1px solid #f0f0f0;
-  cursor: pointer;
-}
-
-.gjs-layer:hover {
-  background: #f8f9fa;
-}
-
-.gjs-layer.gjs-selected {
-  background: #ec5896;
-  color: white;
-}
-
-/* Better style panel */
-.gjs-sm-properties {
-  background: white;
-  padding: 10px;
-}
-
-.gjs-sm-property {
-  margin-bottom: 10px;
-}
-
-.gjs-sm-label {
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-.gjs-sm-field {
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  padding: 5px;
-}
-
 /* Welcome modal improvements */
 .welcome-modal {
   animation: fadeIn 0.3s ease-in;
@@ -221,15 +246,4 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
-}
-
-/* Responsive improvements */
-@media (max-width: 768px) {
-  .panel__right {
-    flex-basis: 200px;
-  }
-  
-  .panel__switcher {
-    width: 40px;
-  }
 } 

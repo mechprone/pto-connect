@@ -113,8 +113,8 @@ const GrapesJSEditor = () => {
     if (!editorRef.current) {
       const editor = grapesjs.init({
         container: '#gjs',
-        height: '100vh',
-        width: 'auto',
+        height: 'calc(100vh - 60px)',
+        width: '100%',
         storageManager: false,
         plugins: [gjsPresetWebpage, gjsPresetNewsletter],
         pluginsOpts: {
@@ -135,6 +135,7 @@ const GrapesJSEditor = () => {
           styles: [
             'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap',
           ],
+          frameOffset: 25,
         },
         deviceManager: {
           devices: [
@@ -192,7 +193,6 @@ const GrapesJSEditor = () => {
             },
           ],
         },
-        // Customize the toolbar
         commands: {
           defaults: [
             {
@@ -209,7 +209,6 @@ const GrapesJSEditor = () => {
         },
       });
 
-      // Add custom toolbar buttons
       editor.Panels.addButton('options', {
         id: 'save-btn',
         className: 'btn-save',
@@ -239,7 +238,6 @@ const GrapesJSEditor = () => {
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Welcome Modal */}
       {showWelcome && (
         <div style={{
           position: 'fixed',
@@ -342,14 +340,15 @@ const GrapesJSEditor = () => {
         </div>
       )}
 
-      {/* Header */}
       <div style={{ 
         padding: '15px 20px', 
         backgroundColor: '#f8f9fa', 
         borderBottom: '1px solid #e9ecef',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        height: '60px',
+        flexShrink: 0,
       }}>
         <div>
           <h2 style={{ margin: 0, color: '#333' }}>Email Template Builder</h2>
@@ -399,11 +398,38 @@ const GrapesJSEditor = () => {
         </div>
       </div>
 
-      {/* Editor */}
-      <div style={{ flex: 1, display: 'flex' }}>
-        <div id="gjs" style={{ flex: 1 }} />
-        <div className="panel__right" style={{ width: '250px', backgroundColor: '#f5f5f5' }} />
-        <div className="panel__switcher" style={{ width: '48px', backgroundColor: '#eee' }} />
+      <div style={{ 
+        flex: 1, 
+        display: 'flex',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        <div style={{ 
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          position: 'relative'
+        }}>
+          <div id="gjs" style={{ flex: 1 }} />
+        </div>
+
+        <div className="panel__right" style={{ 
+          width: '300px',
+          backgroundColor: '#f5f5f5',
+          borderLeft: '1px solid #e9ecef',
+          flexShrink: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
+        }} />
+        
+        <div className="panel__switcher" style={{ 
+          width: '48px',
+          backgroundColor: '#eee',
+          borderLeft: '1px solid #e9ecef',
+          flexShrink: 0
+        }} />
       </div>
     </div>
   );
