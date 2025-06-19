@@ -583,79 +583,39 @@ const AdvancedDesignStudio = () => {
     );
   };
 
-  // Canvas Drop Zone
-  const DropZone = () => {
-    const [{ isOver, canDrop }, drop] = useDrop(() => ({
-      accept: 'element',
-      drop: (item, monitor) => {
-        // Remove x/y logic, just add to end of array
-        const newElement = {
-          id: `element_${Date.now()}_${Math.random()}`,
-          type: item.elementType,
-          content: item.defaultContent || 'New Content',
-          src: item.defaultSrc || '',
-          style: { ...item.defaultStyle },
-          justification: 'center', // default to center
-        };
-        setCanvas(prev => [...prev, newElement]);
-        setSelectedElement(newElement);
-      },
-      collect: (monitor) => ({
-        isOver: monitor.isOver(),
-        canDrop: monitor.canDrop(),
-      }),
-    }), []);
-
-    return (
-      <div
-        ref={node => { drop(node); canvasRef.current = node; }}
-        className={`relative bg-white border-2 border-dashed border-gray-300 rounded-lg min-h-[600px] transition-colors flex flex-col items-stretch` +
-          (isOver ? ' border-blue-500 bg-blue-50' : '') +
-          (canDrop ? ' border-green-400' : '')}
-        style={{
-          transform: `scale(${zoomLevel / 100})`,
-          transformOrigin: 'top left',
-          width: '100%',
-          maxWidth: '800px',
-          margin: '0 auto',
-        }}
-      >
-        {canvas.map((element, idx) => (
-          <div
-            key={element.id}
-            className="w-full flex"
-            style={{ justifyContent: element.justification || 'center' }}
-          >
-            <CanvasElement
-            element={element}
-            isSelected={selectedElement?.id === element.id}
-            onSelect={() => setSelectedElement(element)}
-              onUpdate={updated => {
-                setCanvas(prev => prev.map(el => el.id === element.id ? updated : el));
-                setSelectedElement(updated);
-              }}
-            />
-          </div>
-        ))}
-        {canvas.length === 0 && (
-          <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-            <div className="text-center">
-              <Image className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg">Drag elements here to start designing</p>
-              <p className="text-sm">Choose from templates or build from scratch</p>
-              <div className="mt-4 text-xs bg-gray-100 p-2 rounded">
-                Canvas: {canvas.length} elements | Can Drop: {canDrop ? 'Yes' : 'No'}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
+  // --- Sortable CanvasElement for Drag-and-Drop Reordering ---
+  const moveElement = (fromIndex, toIndex) => {
+    setCanvas(prev => {
+      const updated = [...prev];
+      const [moved] = updated.splice(fromIndex, 1);
+      updated.splice(toIndex, 0, moved);
+      return updated;
+    });
   };
 
-  // Canvas Element Component
-  const CanvasElement = ({ element, isSelected, onSelect, onUpdate }) => {
-    const [isEditing, setIsEditing] = useState(false);
+  const CanvasElement = ({ element, isSelected, onSelect, onUpdate, index, moveElement }) => {
+    const [{ isDragging }, drag, preview] = useDrag(() => ({
+      type: 'canvas-element',
+      item: { id: element.id, index },
+      collect: monitor => ({
+        isDragging: monitor.isDragging(),
+      }),
+    }), [element, index]);
+
+    const [, drop] = useDrop({
+      accept: 'canvas-element',
+      hover: (item, monitor) => {
+        if (!ref.current) return;
+        const dragIndex = item.index;
+        const hoverIndex = index;
+        if (dragIndex === hoverIndex) return;
+        moveElement(dragIndex, hoverIndex);
+        item.index = hoverIndex;
+      },
+    });
+
+    drag(drop(ref));
+
     const handleDoubleClick = () => {
       if (element.type === 'text' || element.type === 'header' || element.type === 'button') setIsEditing(true);
     };
@@ -788,8 +748,9 @@ const AdvancedDesignStudio = () => {
 
     return (
       <div
+        ref={ref}
         className={isSelected ? 'ring-2 ring-blue-500' : ''}
-        style={{ width: '100%' }}
+        style={{ width: '100%', opacity: isDragging ? 0.5 : 1, cursor: 'move' }}
         onClick={onSelect}
         onDoubleClick={handleDoubleClick}
       >
