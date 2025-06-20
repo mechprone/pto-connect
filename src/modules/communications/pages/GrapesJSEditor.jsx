@@ -127,65 +127,103 @@ const GrapesJSEditor = () => {
         blockManager: {
           appendTo: '#blocks',
           blocks: [
+            // Layout Blocks
             {
-              id: 'section',
-              label: 'Section',
-              category: 'Basic',
+              id: '2-columns',
+              label: '2 Columns',
+              category: 'Layout',
               content: `
-                <section style="padding: 20px; background-color: #f8f9fa;">
-                  <div style="max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #333; margin-bottom: 15px;">Section Title</h2>
-                    <p style="color: #666; line-height: 1.6;">Add your content here...</p>
-                  </div>
-                </section>
+                <div style="display: flex; padding: 10px;">
+                  <div style="flex: 1; padding: 10px;">Column 1</div>
+                  <div style="flex: 1; padding: 10px;">Column 2</div>
+                </div>
               `,
-              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5z"/></svg>`
+              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,2V14H11V2M3,22H11V16H3M13,2V8H21V2M13,22H21V10H13V22Z" /></svg>`
             },
+            {
+              id: '3-columns',
+              label: '3 Columns',
+              category: 'Layout',
+              content: `
+                <div style="display: flex; padding: 10px;">
+                  <div style="flex: 1; padding: 10px;">Column 1</div>
+                  <div style="flex: 1; padding: 10px;">Column 2</div>
+                  <div style="flex: 1; padding: 10px;">Column 3</div>
+                </div>
+              `,
+              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 2V22H9V2H3M11 2V12H21V2H11M11 14V22H21V14H11Z" /></svg>`
+            },
+            {
+              id: 'divider',
+              label: 'Divider',
+              category: 'Layout',
+              content: '<hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">',
+              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>`
+            },
+            // Basic Content Blocks
             {
               id: 'text',
               label: 'Text',
               category: 'Basic',
               content: '<div data-gjs-type="text" style="padding: 10px; color: #333;">Insert your text here</div>',
-              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 4v3h5v12h3V7h5V4H2.5zM21.5 9h-9v3h3v7h3v-7h3V9z"/></svg>`
+              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M2.5 4v3h5v12h3V7h5V4H2.5zM21.5 9h-9v3h3v7h3v-7h3V9z"/></svg>`
             },
             {
               id: 'image',
               label: 'Image',
               category: 'Basic',
               content: { type: 'image' },
-              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`
+              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`
             },
             {
               id: 'button',
               label: 'Button',
               category: 'Basic',
-              content: '<button data-gjs-type="button" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">Click Here</button>',
-              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`
+              content: {
+                type: 'link',
+                content: 'Click me',
+                style: {
+                  display: 'inline-block',
+                  padding: '12px 25px',
+                  'background-color': '#007bff',
+                  color: 'white',
+                  'text-align': 'center',
+                  'text-decoration': 'none',
+                  'border-radius': '5px'
+                }
+              },
+              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,19H5V5H19V19M13,13H11V11H13M13,9H11V7H13M9,13H7V11H9M9,9H7V7H9Z" /></svg>`
+            },
+             // Advanced Content Blocks
+            {
+              id: 'hero-section',
+              label: 'Hero Section',
+              category: 'Content',
+              content: `
+                <section style="text-align: center; padding: 50px 20px; background-color: #f0f4f7;">
+                  <h1 style="font-size: 2.5em; margin-bottom: 15px; color: #333;">Hero Title</h1>
+                  <p style="font-size: 1.2em; color: #666; margin-bottom: 25px; max-width: 600px; margin-left: auto; margin-right: auto;">This is a paragraph describing your hero section. Use it to capture attention and provide key information.</p>
+                  <a href="#" style="display: inline-block; padding: 12px 25px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Call to Action</a>
+                </section>
+              `,
+              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h16v6h-2V6H6v4H4V4zm0 8h16v6h-2v-4H6v4H4v-6z"/></svg>`
             },
             {
-              id: 'divider',
-              label: 'Divider',
-              category: 'Basic',
-              content: '<hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">',
-              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>`
+              id: 'quote',
+              label: 'Quote',
+              category: 'Content',
+              content: `
+                <blockquote style="margin: 20px; padding: 15px; border-left: 5px solid #ccc; background-color: #f9f9f9;">
+                  <p style="font-style: italic; color: #555;">"Your inspiring quote goes here."</p>
+                  <cite style="display: block; text-align: right; margin-top: 10px; color: #777;">- Author Name</cite>
+                </blockquote>
+              `,
+              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M6 17h3l2-4V7H5v6h3l-2 4zm8 0h3l2-4V7h-6v6h3l-2 4z"/></svg>`
             },
+            // PTO Specific Blocks
             {
-              id: 'header',
-              label: 'Header',
-              category: 'Basic',
-              content: '<header style="background-color: #333; color: white; padding: 20px; text-align: center;"><h1 style="margin: 0;">Header Title</h1></header>',
-              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`
-            },
-            {
-              id: 'footer',
-              label: 'Footer',
-              category: 'Basic',
-              content: '<footer style="background-color: #333; color: white; padding: 20px; text-align: center;"><p style="margin: 0;">© 2024 Your Organization</p></footer>',
-              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`
-            },
-            {
-              id: 'newsletter-section',
-              label: 'Newsletter Section',
+              id: 'newsletter-header',
+              label: 'Newsletter Header',
               category: 'PTO Specific',
               content: `
                 <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center;">
@@ -193,7 +231,7 @@ const GrapesJSEditor = () => {
                   <p style="margin: 10px 0 0 0; opacity: 0.9;">Monthly Update</p>
                 </div>
               `,
-              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`
+              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`
             },
             {
               id: 'event-card',
@@ -206,7 +244,7 @@ const GrapesJSEditor = () => {
                   <button style="background: #007bff; color: white; padding: 8px 16px; border: none; border-radius: 4px;">Learn More</button>
                 </div>
               `,
-              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>`
+              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>`
             },
             {
               id: 'fundraiser-progress',
@@ -221,7 +259,7 @@ const GrapesJSEditor = () => {
                   <p style="color: #2d5a2d; margin-top: 10px;">$3,750 of $5,000 raised</p>
                 </div>
               `,
-              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`
+              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`
             }
           ]
         },
