@@ -19,12 +19,12 @@ const EnhancedEventsDashboard = () => {
     navigate('/events/create');
   };
 
-  const handleCreateWithAI = () => {
-    navigate('/events/create?mode=ai-assisted');
+  const handleCreateWithStella = () => {
+    navigate('/events/create-enhanced');
   };
 
   const handleGenerateFullWorkflow = () => {
-    navigate('/events/create?mode=ai-automated');
+    navigate('/events/create-enhanced');
   };
 
   const handleViewEvent = (eventId) => {
@@ -57,7 +57,7 @@ const EnhancedEventsDashboard = () => {
       budget: 3000,
       profit: 1800,
       progress: 65,
-      type: 'ai-generated',
+      type: 'stella-generated',
       description: 'Community celebration with games, food, and family fun'
     },
     {
@@ -109,8 +109,8 @@ const EnhancedEventsDashboard = () => {
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-2">
               <h3 className="text-lg font-semibold text-gray-900">{event.name}</h3>
-              {event.type === 'ai-generated' && (
-                <Sparkles className="w-4 h-4 text-purple-500" title="AI Generated" />
+              {event.type === 'stella-generated' && (
+                <Sparkles className="w-4 h-4 text-purple-500" title="Stella Generated" />
               )}
             </div>
             <p className="text-sm text-gray-600 mb-3">{event.description}</p>
@@ -184,7 +184,7 @@ const EnhancedEventsDashboard = () => {
           <div className="flex-1">
             <div className="flex items-center space-x-2">
               <h3 className="font-medium text-gray-900">{event.name}</h3>
-              {event.type === 'ai-generated' && (
+              {event.type === 'stella-generated' && (
                 <Sparkles className="w-4 h-4 text-purple-500" />
               )}
               <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>
@@ -267,39 +267,39 @@ const EnhancedEventsDashboard = () => {
           </button>
         </div>
 
-        {/* AI Assisted */}
-        <div className="border-2 border-blue-200 rounded-lg p-6 hover:border-blue-400 transition-colors bg-blue-50">
+        {/* Stella Assisted */}
+        <div className="border-2 border-purple-200 rounded-lg p-6 hover:border-purple-400 transition-colors bg-purple-50">
           <div className="flex items-center space-x-3 mb-4">
-            <Sparkles className="w-8 h-8 text-blue-600" />
+            <Sparkles className="w-8 h-8 text-purple-600" />
             <div>
-              <h3 className="font-semibold text-blue-900">AI Assisted</h3>
-              <p className="text-sm text-blue-700">AI suggestions with manual control</p>
+              <h3 className="font-semibold text-purple-900">Stella Assisted</h3>
+              <p className="text-sm text-purple-700">Stella's suggestions with your control</p>
             </div>
           </div>
-          <ul className="text-sm text-blue-700 space-y-2 mb-4">
-            <li>• AI-generated suggestions</li>
+          <ul className="text-sm text-purple-700 space-y-2 mb-4">
+            <li>• Stella-generated suggestions</li>
             <li>• Smart template recommendations</li>
             <li>• Automated task suggestions</li>
             <li>• Budget estimation help</li>
           </ul>
           <button 
-            onClick={handleCreateWithAI}
-            className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            onClick={handleCreateWithStella}
+            className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
           >
-            Create with AI Help
+            Create with Stella's Help
           </button>
         </div>
 
-        {/* Full AI Automation */}
-        <div className="border-2 border-purple-200 rounded-lg p-6 hover:border-purple-400 transition-colors bg-purple-50">
+        {/* Stella Automated */}
+        <div className="border-2 border-pink-200 rounded-lg p-6 hover:border-pink-400 transition-colors bg-pink-50">
           <div className="flex items-center space-x-3 mb-4">
-            <Sparkles className="w-8 h-8 text-purple-600" />
+            <Sparkles className="w-8 h-8 text-pink-600" />
             <div>
-              <h3 className="font-semibold text-purple-900">AI Automated</h3>
-              <p className="text-sm text-purple-700">Complete workflow generation</p>
+              <h3 className="font-semibold text-pink-900">Stella Automated</h3>
+              <p className="text-sm text-pink-700">Complete workflow generation</p>
             </div>
           </div>
-          <ul className="text-sm text-purple-700 space-y-2 mb-4">
+          <ul className="text-sm text-pink-700 space-y-2 mb-4">
             <li>• Complete workflow creation</li>
             <li>• Automated timeline & tasks</li>
             <li>• Budget & profit projections</li>
@@ -307,7 +307,7 @@ const EnhancedEventsDashboard = () => {
           </ul>
           <button 
             onClick={handleGenerateFullWorkflow}
-            className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="w-full py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors"
           >
             Generate Full Workflow
           </button>
@@ -323,7 +323,7 @@ const EnhancedEventsDashboard = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Events Dashboard</h1>
-            <p className="text-gray-600">Manage your PTO events with manual control or AI assistance</p>
+            <p className="text-gray-600">Manage your PTO events with manual control or Stella's assistance</p>
           </div>
           
           <div className="flex items-center space-x-3">

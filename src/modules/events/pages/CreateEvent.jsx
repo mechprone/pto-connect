@@ -98,10 +98,34 @@ export default function CreateEvent() {
   const handleAIGenerate = async () => {
     setAiResult('Generating...')
     try {
-      const { data } = await axios.post(`${API_BASE_URL}/api/ai/generate-event`, aiForm)
+      const {
+        data: { session },
+        error: sessionError
+      } = await supabase.auth.getSession()
+
+      if (sessionError || !session?.access_token) {
+        setAiResult('Authentication error. Please log in again.')
+        return
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/ai/generate-event`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify(aiForm)
+      })
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`)
+      }
+
+      const data = await response.json()
       setAiResult(data.result)
     } catch (err) {
-      setAiResult('AI generation failed.')
+      console.error('AI generation error:', err)
+      setAiResult('AI generation failed. Please try again.')
     }
   }
 

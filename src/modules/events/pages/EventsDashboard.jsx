@@ -76,7 +76,7 @@ export default function EventsDashboard() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Events Dashboard</h1>
-          <p className="text-gray-600 mt-1">Manage your PTO events with Stella AI assistance</p>
+          <p className="text-gray-600 mt-1">Manage your PTO events with Stella's assistance</p>
         </div>
         <div className="flex gap-3">
           <Link
@@ -107,7 +107,7 @@ export default function EventsDashboard() {
               <Zap className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 group-hover:text-blue-600">AI-Powered Event Creation</h3>
+              <h3 className="font-semibold text-gray-900 group-hover:text-blue-600">Stella-Powered Event Creation</h3>
               <p className="text-sm text-gray-600 mt-1">Let Stella create complete event workflows automatically</p>
               <div className="flex items-center space-x-1 mt-2 text-xs text-purple-600">
                 <Sparkles className="w-3 h-3" />
@@ -143,7 +143,7 @@ export default function EventsDashboard() {
             </div>
             <div>
               <h3 className="font-semibold text-gray-900">Event Insights</h3>
-              <p className="text-sm text-gray-600 mt-1">AI-powered analytics and recommendations</p>
+              <p className="text-sm text-gray-600 mt-1">Stella-powered analytics and recommendations</p>
               <div className="text-xs text-green-600 mt-2">
                 Coming soon in Phase 2.1
               </div>

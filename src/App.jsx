@@ -24,7 +24,7 @@ import TeacherDashboard from './modules/dashboard/pages/TeacherDashboard'
 import EventsDashboard from './modules/events/pages/EventsDashboard'
 import EnhancedEventsDashboard from './modules/events/pages/EnhancedEventsDashboard'
 import CreateEvent from './modules/events/pages/CreateEvent'
-import EnhancedEventCreationWizard from './components/events/EnhancedEventCreationWizard'
+import StellaEventWizard from './components/events/StellaEventWizard'
 import EventWorkflowDashboard from './components/events/EventWorkflowDashboard'
 import EditEventPage from './modules/events/pages/EditEventPage'
 import EventsCalendarPage from './modules/events/pages/EventsCalendarPage'
@@ -121,7 +121,7 @@ export default function App() {
           <Route path="/events" element={<EnhancedEventsDashboard />} />
           <Route path="/events/legacy" element={<EventsDashboard />} />
           <Route path="/events/create" element={<CreateEvent />} />
-          <Route path="/events/create-enhanced" element={<EnhancedEventCreationWizard />} />
+          <Route path="/events/create-enhanced" element={<StellaEventWizard />} />
           <Route path="/events/:eventId/workflow" element={<EventWorkflowDashboard />} />
           <Route path="/events/edit/:id" element={<EditEventPage />} />
           <Route path="/events/calendar" element={<EventsCalendarPage />} />
