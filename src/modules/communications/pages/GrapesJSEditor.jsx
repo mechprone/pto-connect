@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import grapesjs from 'grapesjs';
 import 'grapesjs/dist/css/grapes.min.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
 import './GrapesJSEditor.css';
 import UnsplashGallery from './UnsplashGallery';
 
