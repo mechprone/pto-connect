@@ -2,9 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import grapesjs from 'grapesjs';
 import 'grapesjs/dist/css/grapes.min.css';
 import './GrapesJSEditor.css';
-// Import plugins by name for side-effects (registration)
-import 'grapesjs-preset-webpage';
-import 'grapesjs-preset-newsletter';
 
 const GrapesJSEditor = () => {
   const editorRef = useRef(null);
@@ -127,7 +124,194 @@ const GrapesJSEditor = () => {
         height: '100%',
         width: 'auto',
         storageManager: false,
-        plugins: ['gjs-preset-webpage'],
+        blockManager: {
+          appendTo: '#blocks',
+          blocks: [
+            {
+              id: 'section',
+              label: 'Section',
+              category: 'Basic',
+              content: `
+                <section style="padding: 20px; background-color: #f8f9fa;">
+                  <div style="max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #333; margin-bottom: 15px;">Section Title</h2>
+                    <p style="color: #666; line-height: 1.6;">Add your content here...</p>
+                  </div>
+                </section>
+              `,
+              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5z"/></svg>`
+            },
+            {
+              id: 'text',
+              label: 'Text',
+              category: 'Basic',
+              content: '<div data-gjs-type="text" style="padding: 10px; color: #333;">Insert your text here</div>',
+              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 4v3h5v12h3V7h5V4H2.5zM21.5 9h-9v3h3v7h3v-7h3V9z"/></svg>`
+            },
+            {
+              id: 'image',
+              label: 'Image',
+              category: 'Basic',
+              content: { type: 'image' },
+              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`
+            },
+            {
+              id: 'button',
+              label: 'Button',
+              category: 'Basic',
+              content: '<button data-gjs-type="button" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">Click Here</button>',
+              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`
+            },
+            {
+              id: 'divider',
+              label: 'Divider',
+              category: 'Basic',
+              content: '<hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">',
+              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>`
+            },
+            {
+              id: 'header',
+              label: 'Header',
+              category: 'Basic',
+              content: '<header style="background-color: #333; color: white; padding: 20px; text-align: center;"><h1 style="margin: 0;">Header Title</h1></header>',
+              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`
+            },
+            {
+              id: 'footer',
+              label: 'Footer',
+              category: 'Basic',
+              content: '<footer style="background-color: #333; color: white; padding: 20px; text-align: center;"><p style="margin: 0;">© 2024 Your Organization</p></footer>',
+              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`
+            },
+            {
+              id: 'newsletter-section',
+              label: 'Newsletter Section',
+              category: 'PTO Specific',
+              content: `
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center;">
+                  <h1 style="margin: 0; font-size: 28px;">School Newsletter</h1>
+                  <p style="margin: 10px 0 0 0; opacity: 0.9;">Monthly Update</p>
+                </div>
+              `,
+              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`
+            },
+            {
+              id: 'event-card',
+              label: 'Event Card',
+              category: 'PTO Specific',
+              content: `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                  <h3 style="color: #333; margin-top: 0;">Event Title</h3>
+                  <p style="color: #666; margin-bottom: 10px;">Event description goes here...</p>
+                  <button style="background: #007bff; color: white; padding: 8px 16px; border: none; border-radius: 4px;">Learn More</button>
+                </div>
+              `,
+              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>`
+            },
+            {
+              id: 'fundraiser-progress',
+              label: 'Fundraiser Progress',
+              category: 'PTO Specific',
+              content: `
+                <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                  <h3 style="color: #2d5a2d; margin-top: 0;">Fundraiser Progress</h3>
+                  <div style="background: #ddd; height: 20px; border-radius: 10px; overflow: hidden;">
+                    <div style="background: #28a745; height: 100%; width: 75%;"></div>
+                  </div>
+                  <p style="color: #2d5a2d; margin-top: 10px;">$3,750 of $5,000 raised</p>
+                </div>
+              `,
+              media: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`
+            }
+          ]
+        },
+        layerManager: {
+          appendTo: '#layers'
+        },
+        panels: {
+          defaults: [
+            {
+              id: 'panel-top',
+              el: '.panel__top',
+            },
+            {
+              id: 'panel-basic-actions',
+              el: '.panel__basic-actions',
+              buttons: [
+                {
+                  id: 'visibility',
+                  active: true,
+                  className: 'btn-toggle-borders',
+                  label: '<u>B</u>',
+                  command: 'sw-visibility',
+                },
+                {
+                  id: 'export',
+                  className: 'btn-open-export',
+                  label: 'Exp',
+                  command: 'export-template',
+                  context: 'export-template',
+                },
+                {
+                  id: 'show-json',
+                  className: 'btn-show-json',
+                  label: 'JSON',
+                  context: 'show-json',
+                  command(editor) {
+                    editor.Modal.setTitle('Components JSON')
+                      .setContent(`<textarea style="width:100%; height: 250px;">
+                        ${JSON.stringify(editor.getComponents(), null, 2)}
+                      </textarea>`)
+                      .open();
+                  },
+                }
+              ],
+            },
+            {
+              id: 'panel-devices',
+              el: '.panel__devices',
+              buttons: [
+                {
+                  id: 'device-desktop',
+                  label: '<u>D</u>',
+                  command: 'set-device-desktop',
+                  active: true,
+                  togglable: false,
+                },
+                {
+                  id: 'device-tablet',
+                  label: '<u>T</u>',
+                  command: 'set-device-tablet',
+                  togglable: false,
+                },
+                {
+                  id: 'device-mobile',
+                  label: '<u>M</u>',
+                  command: 'set-device-mobile',
+                  togglable: false,
+                }
+              ],
+            }
+          ]
+        },
+        deviceManager: {
+          devices: [
+            {
+              name: 'Desktop',
+              width: '',
+            },
+            {
+              name: 'Tablet',
+              width: '768px',
+              widthMedia: '992px',
+            },
+            {
+              name: 'Mobile',
+              width: '320px',
+              widthMedia: '480px',
+            },
+          ],
+        },
         styleManager: {
           sectors: [{
             name: 'Dimension',
@@ -145,6 +329,16 @@ const GrapesJSEditor = () => {
         },
       });
 
+      // Add custom commands
+      editor.Commands.add('export-template', {
+        run: (editor) => {
+          const html = editor.getHtml();
+          const css = editor.getCss();
+          console.log("Exporting template:", { html, css });
+          alert('Template exported! Check console for output');
+        }
+      });
+
       editor.Commands.add('save-template', {
         run: (editor) => {
           const html = editor.getHtml();
@@ -153,7 +347,8 @@ const GrapesJSEditor = () => {
           alert('Template Saved! (Check console for output)');
         }
       });
-      
+
+      // Add custom panels
       const panels = editor.Panels;
       panels.addButton('options', {
         id: 'save-btn',
@@ -239,7 +434,28 @@ const GrapesJSEditor = () => {
         </div>
       </div>
 
-      <div id="gjs" style={{ flex: 1, overflow: 'hidden' }} />
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        {/* Left Sidebar - Blocks */}
+        <div id="blocks" style={{ width: '250px', backgroundColor: '#f5f5f5', borderRight: '1px solid #ddd', overflowY: 'auto' }} />
+        
+        {/* Main Canvas */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          {/* Top Panel */}
+          <div className="panel__top" style={{ backgroundColor: '#444', color: 'white', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="panel__basic-actions" style={{ display: 'flex', gap: '10px' }} />
+            <div className="panel__devices" style={{ display: 'flex', gap: '10px' }} />
+          </div>
+          
+          {/* Canvas */}
+          <div id="gjs" style={{ flex: 1, overflow: 'hidden' }} />
+        </div>
+        
+        {/* Right Sidebar - Layers and Style Manager */}
+        <div style={{ width: '300px', backgroundColor: '#f5f5f5', borderLeft: '1px solid #ddd', display: 'flex', flexDirection: 'column' }}>
+          <div id="layers" style={{ flex: 1, borderBottom: '1px solid #ddd' }} />
+          <div id="style-manager" style={{ flex: 1 }} />
+        </div>
+      </div>
     </div>
   );
 };
