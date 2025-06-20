@@ -64,6 +64,7 @@ import SharedLibraryDashboard from './modules/sharedLibrary/pages/SharedLibraryD
 import AiEventIdeas from './modules/ai/pages/AiEventIdeas'
 import EventWorkflowOrchestratorPage from './modules/ai/pages/EventWorkflowOrchestratorPage'
 // Legacy AdvancedDesignStudio removed - using UnifiedCommunicationComposer instead
+import UnifiedCommunicationComposer from './modules/communications/pages/UnifiedCommunicationComposer'
 
 // Teacher
 import TeacherRequestsDashboard from './modules/teacherRequests/pages/TeacherRequestsDashboard'
@@ -140,7 +141,7 @@ export default function App() {
           <Route path="/communications" element={<EnhancedCommunicationsDashboard />} />
           <Route path="/communications/legacy" element={<CommunicationsDashboard />} />
           <Route path="/communications/create" element={<CreateCommunication />} />
-          <Route path="/communications/email" element={<AdvancedDesignStudio />} />
+          <Route path="/communications/email" element={<UnifiedCommunicationComposer />} />
           <Route path="/communications/sms" element={<SmsComposer />} />
           <Route path="/communications/social" element={<SocialPostComposer />} />
                       <Route path="/communications/ai" element={<UnifiedCommunicationComposer />} />
