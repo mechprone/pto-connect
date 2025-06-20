@@ -314,6 +314,7 @@
 .gjs-editor-main-flex {
   display: flex;
   height: 100%;
+  min-height: 0; /* Important for flexbox in some browsers */
 }
 
 .gjs-editor-left-panel {
@@ -322,17 +323,12 @@
   border-right: 1px solid #ddd;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .gjs-editor-left-panel-tabs {
-    display: flex;
-    flex-shrink: 0;
-}
-
-.gjs-editor-left-panel-content {
-    flex: 1;
-    overflow-y: auto;
-    height: 100%;
+  display: flex;
+  flex-shrink: 0;
 }
 
 .gjs-editor-left-panel-tab {
@@ -343,11 +339,19 @@
   cursor: pointer;
   color: #333;
   border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+.gjs-editor-left-panel-tab:last-child {
+  border-right: none;
+}
+.gjs-editor-left-panel-tab.active {
+  background: #e9e9e9;
+  font-weight: bold;
 }
 
-.gjs-editor-left-panel-tab.active {
-    background: #e9e9e9;
-    font-weight: bold;
+.gjs-editor-left-panel-content {
+  flex: 1;
+  overflow-y: auto;
 }
 
 .gjs-editor-center-panel {
@@ -370,121 +374,84 @@
   flex: 1;
   overflow: hidden;
   position: relative;
-  display: flex;
-  flex-direction: column;
 }
 
-#layers-container, #style-manager-container, #trait-manager-container {
-    flex: 1;
-    overflow-y: auto;
-    width: 100%;
-    display: none; /* Hidden by default */
+#layers-container,
+#style-manager-container,
+#trait-manager-container {
+  display: none;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
 }
 
-#layers-container.active, #style-manager-container.active, #trait-manager-container.active {
-    display: block; /* Shown when active */
-}
-
-
-#blocks {
-  padding: 10px;
-}
-
-/* Style GrapesJS panels and buttons to integrate with our UI */
+/* GrapesJS Overrides */
 .panel__top {
-  background-color: #f8f9fa;
   padding: 8px;
   display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid #ddd;
-}
-
-.panel__basic-actions {
-  display: flex;
   gap: 5px;
-}
-.panel__devices {
-    display: flex;
-    gap: 5px;
+  justify-content: space-between;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #ddd;
 }
 
 .panel__switcher {
   display: flex;
-  border-bottom: 1px solid #ddd;
   background-color: #f8f9fa;
+  border-bottom: 1px solid #ddd;
 }
 
 .gjs-pn-buttons {
-  flex: 1;
   display: flex;
+  width: 100%;
 }
 
 .gjs-pn-button {
-  flex-grow: 1;
-  text-align: center;
-  border: none;
+  flex: 1;
   background: none;
-  cursor: pointer;
-  padding: 12px 0;
-  font-size: 0.9rem;
-  color: #555;
+  border: none;
   border-right: 1px solid #ddd;
+  padding: 10px;
+  cursor: pointer;
 }
 .gjs-pn-button:last-child {
-    border-right: none;
+  border-right: none;
 }
 
 .gjs-pn-button.gjs-pn-active {
   background-color: #e9e9e9;
-  font-weight: bold;
   box-shadow: none;
 }
 
-.gjs-pn-button:focus {
-  outline: none;
-}
-
-/* Customize Block Manager */
-.gjs-block-category {
-  padding: 10px;
+/* Block Manager */
+#blocks-container .gjs-block-category .gjs-title {
+  font-weight: bold;
+  padding: 8px;
+  background: #f0f0f0;
   border-bottom: 1px solid #ddd;
 }
-.gjs-block-category .gjs-title {
-  font-weight: bold;
-  color: #333;
-}
-.gjs-blocks-c {
+#blocks-container .gjs-blocks-c {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  padding: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 8px;
 }
-.gjs-block {
-  background: white;
-  border: 1px solid #ddd;
+#blocks-container .gjs-block {
+  border: 1px solid #ccc;
   border-radius: 4px;
-  padding: 10px;
+  box-shadow: none;
   text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  padding: 10px 5px;
+  background: white;
 }
-.gjs-block:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+#blocks-container .gjs-block-media svg {
+  width: 40px;
+  height: 40px;
+  margin: auto;
 }
-.gjs-block .gjs-block-label {
-    font-size: 12px;
-    margin-top: 5px;
-}
-.gjs-block-media {
-    width: 40px;
-    height: 40px;
-    margin: 0 auto 5px;
-}
-.gjs-block-media svg {
-    width: 100%;
-    height: 100%;
+#blocks-container .gjs-block-label {
+  font-size: 12px;
+  margin-top: 8px;
 }
 
 /* Style Manager Customization */
