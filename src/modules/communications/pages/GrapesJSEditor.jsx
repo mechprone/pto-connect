@@ -133,313 +133,90 @@ const GrapesJSEditor = () => {
           appendTo: '#blocks',
           blocks: [
             // Layout Blocks
-            {
-              id: '2-columns',
-              label: '2 Columns',
-              category: 'Layout',
-              content: `
-                <div style="display: flex; padding: 10px;">
-                  <div style="flex: 1; padding: 10px;">Column 1</div>
-                  <div style="flex: 1; padding: 10px;">Column 2</div>
-                </div>
-              `,
-              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,2V14H11V2M3,22H11V16H3M13,2V8H21V2M13,22H21V10H13V22Z" /></svg>`
-            },
-            {
-              id: '3-columns',
-              label: '3 Columns',
-              category: 'Layout',
-              content: `
-                <div style="display: flex; padding: 10px;">
-                  <div style="flex: 1; padding: 10px;">Column 1</div>
-                  <div style="flex: 1; padding: 10px;">Column 2</div>
-                  <div style="flex: 1; padding: 10px;">Column 3</div>
-                </div>
-              `,
-              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 2V22H9V2H3M11 2V12H21V2H11M11 14V22H21V14H11Z" /></svg>`
-            },
-            {
-              id: 'divider',
-              label: 'Divider',
-              category: 'Layout',
-              content: '<hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">',
-              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>`
-            },
+            { id: '2-columns', label: '2 Columns', category: 'Layout', content: `<div style="display: flex; padding: 10px;"><div style="flex: 1; padding: 10px;">Column 1</div><div style="flex: 1; padding: 10px;">Column 2</div></div>`, media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,2V14H11V2M3,22H11V16H3M13,2V8H21V2M13,22H21V10H13V22Z" /></svg>` },
+            { id: '3-columns', label: '3 Columns', category: 'Layout', content: `<div style="display: flex; padding: 10px;"><div style="flex: 1; padding: 10px;">Column 1</div><div style="flex: 1; padding: 10px;">Column 2</div><div style="flex: 1; padding: 10px;">Column 3</div></div>`, media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 2V22H9V2H3M11 2V12H21V2H11M11 14V22H21V14H11Z" /></svg>` },
+            { id: 'divider', label: 'Divider', category: 'Layout', content: '<hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">', media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>` },
             // Basic Content Blocks
-            {
-              id: 'text',
-              label: 'Text',
-              category: 'Basic',
-              content: '<div data-gjs-type="text" style="padding: 10px; color: #333;">Insert your text here</div>',
-              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M2.5 4v3h5v12h3V7h5V4H2.5zM21.5 9h-9v3h3v7h3v-7h3V9z"/></svg>`
-            },
-            {
-              id: 'image',
-              label: 'Image',
-              category: 'Basic',
-              content: { type: 'image' },
-              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`
-            },
-            {
-              id: 'button',
-              label: 'Button',
-              category: 'Basic',
-              content: {
-                type: 'link',
-                content: 'Click me',
-                style: {
-                  display: 'inline-block',
-                  padding: '12px 25px',
-                  'background-color': '#007bff',
-                  color: 'white',
-                  'text-align': 'center',
-                  'text-decoration': 'none',
-                  'border-radius': '5px'
-                }
-              },
-              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,19H5V5H19V19M13,13H11V11H13M13,9H11V7H13M9,13H7V11H9M9,9H7V7H9Z" /></svg>`
-            },
+            { id: 'text', label: 'Text', category: 'Basic', content: '<div data-gjs-type="text" style="padding: 10px; color: #333;">Insert your text here</div>', media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M2.5 4v3h5v12h3V7h5V4H2.5zM21.5 9h-9v3h3v7h3v-7h3V9z"/></svg>` },
+            { id: 'image', label: 'Image', category: 'Basic', content: { type: 'image' }, media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>` },
+            { id: 'button', label: 'Button', category: 'Basic', content: { type: 'link', content: 'Click me', style: { display: 'inline-block', padding: '12px 25px', 'background-color': '#007bff', color: 'white', 'text-align': 'center', 'text-decoration': 'none', 'border-radius': '5px' }}, media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,19H5V5H19V19M13,13H11V11H13M13,9H11V7H13M9,13H7V11H9M9,9H7V7H9Z" /></svg>`},
              // Advanced Content Blocks
-            {
-              id: 'hero-section',
-              label: 'Hero Section',
-              category: 'Content',
-              content: `
-                <section style="text-align: center; padding: 50px 20px; background-color: #f0f4f7;">
-                  <h1 style="font-size: 2.5em; margin-bottom: 15px; color: #333;">Hero Title</h1>
-                  <p style="font-size: 1.2em; color: #666; margin-bottom: 25px; max-width: 600px; margin-left: auto; margin-right: auto;">This is a paragraph describing your hero section. Use it to capture attention and provide key information.</p>
-                  <a href="#" style="display: inline-block; padding: 12px 25px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Call to Action</a>
-                </section>
-              `,
-              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h16v6h-2V6H6v4H4V4zm0 8h16v6h-2v-4H6v4H4v-6z"/></svg>`
-            },
-            {
-              id: 'quote',
-              label: 'Quote',
-              category: 'Content',
-              content: `
-                <blockquote style="margin: 20px; padding: 15px; border-left: 5px solid #ccc; background-color: #f9f9f9;">
-                  <p style="font-style: italic; color: #555;">"Your inspiring quote goes here."</p>
-                  <cite style="display: block; text-align: right; margin-top: 10px; color: #777;">- Author Name</cite>
-                </blockquote>
-              `,
-              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M6 17h3l2-4V7H5v6h3l-2 4zm8 0h3l2-4V7h-6v6h3l-2 4z"/></svg>`
-            },
+            { id: 'hero-section', label: 'Hero Section', category: 'Content', content: `<section style="text-align: center; padding: 50px 20px; background-color: #f0f4f7;"><h1 style="font-size: 2.5em; margin-bottom: 15px; color: #333;">Hero Title</h1><p style="font-size: 1.2em; color: #666; margin-bottom: 25px; max-width: 600px; margin-left: auto; margin-right: auto;">This is a paragraph describing your hero section.</p><a href="#" style="display: inline-block; padding: 12px 25px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Call to Action</a></section>`, media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h16v6h-2V6H6v4H4V4zm0 8h16v6h-2v-4H6v4H4v-6z"/></svg>`},
+            { id: 'quote', label: 'Quote', category: 'Content', content: `<blockquote style="margin: 20px; padding: 15px; border-left: 5px solid #ccc; background-color: #f9f9f9;"><p style="font-style: italic; color: #555;">"Your inspiring quote goes here."</p><cite style="display: block; text-align: right; margin-top: 10px; color: #777;">- Author Name</cite></blockquote>`, media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M6 17h3l2-4V7H5v6h3l-2 4zm8 0h3l2-4V7h-6v6h3l-2 4z"/></svg>`},
             // PTO Specific Blocks
-            {
-              id: 'newsletter-header',
-              label: 'Newsletter Header',
-              category: 'PTO Specific',
-              content: `
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center;">
-                  <h1 style="margin: 0; font-size: 28px;">School Newsletter</h1>
-                  <p style="margin: 10px 0 0 0; opacity: 0.9;">Monthly Update</p>
-                </div>
-              `,
-              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`
-            },
-            {
-              id: 'event-card',
-              label: 'Event Card',
-              category: 'PTO Specific',
-              content: `
-                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                  <h3 style="color: #333; margin-top: 0;">Event Title</h3>
-                  <p style="color: #666; margin-bottom: 10px;">Event description goes here...</p>
-                  <button style="background: #007bff; color: white; padding: 8px 16px; border: none; border-radius: 4px;">Learn More</button>
-                </div>
-              `,
-              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>`
-            },
-            {
-              id: 'fundraiser-progress',
-              label: 'Fundraiser Progress',
-              category: 'PTO Specific',
-              content: `
-                <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                  <h3 style="color: #2d5a2d; margin-top: 0;">Fundraiser Progress</h3>
-                  <div style="background: #ddd; height: 20px; border-radius: 10px; overflow: hidden;">
-                    <div style="background: #28a745; height: 100%; width: 75%;"></div>
-                  </div>
-                  <p style="color: #2d5a2d; margin-top: 10px;">$3,750 of $5,000 raised</p>
-                </div>
-              `,
-              media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`
-            }
+            { id: 'newsletter-header', label: 'Newsletter Header', category: 'PTO Specific', content: `<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center;"><h1 style="margin: 0; font-size: 28px;">School Newsletter</h1><p style="margin: 10px 0 0 0; opacity: 0.9;">Monthly Update</p></div>`, media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`},
+            { id: 'event-card', label: 'Event Card', category: 'PTO Specific', content: `<div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;"><h3 style="color: #333; margin-top: 0;">Event Title</h3><p style="color: #666; margin-bottom: 10px;">Event description goes here...</p><button style="background: #007bff; color: white; padding: 8px 16px; border: none; border-radius: 4px;">Learn More</button></div>`, media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>`},
+            { id: 'fundraiser-progress', label: 'Fundraiser Progress', category: 'PTO Specific', content: `<div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0;"><h3 style="color: #2d5a2d; margin-top: 0;">Fundraiser Progress</h3><div style="background: #ddd; height: 20px; border-radius: 10px; overflow: hidden;"><div style="background: #28a745; height: 100%; width: 75%;"></div></div><p style="color: #2d5a2d; margin-top: 10px;">$3,750 of $5,000 raised</p></div>`, media: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`}
           ]
         },
-        layerManager: {
-          appendTo: '#layers-container'
-        },
-        traitManager: {
-          appendTo: '#trait-manager-container',
-        },
+        layerManager: { appendTo: '#layers-container' },
+        traitManager: { appendTo: '#trait-manager-container' },
         panels: {
           defaults: [
-            {
-              id: 'panel-top',
-              el: '.panel__top',
-            },
-            {
-              id: 'panel-basic-actions',
-              el: '.panel__basic-actions',
-              buttons: [
-                {
-                  id: 'visibility',
-                  active: true,
-                  className: 'btn-toggle-borders',
-                  label: '<u>B</u>',
-                  command: 'sw-visibility',
-                },
-                {
-                  id: 'export',
-                  className: 'btn-open-export',
-                  label: 'Exp',
-                  command: 'export-template',
-                  context: 'export-template',
-                },
-                {
-                  id: 'show-json',
-                  className: 'btn-show-json',
-                  label: 'JSON',
-                  context: 'show-json',
-                  command(editor) {
-                    editor.Modal.setTitle('Components JSON')
-                      .setContent(`<textarea style="width:100%; height: 250px;">
-                        ${JSON.stringify(editor.getComponents(), null, 2)}
-                      </textarea>`)
-                      .open();
-                  },
-                }
-              ],
-            },
-            {
-              id: 'panel-switcher',
-              el: '.panel__switcher',
-              buttons: [{
-                  id: 'show-layers',
-                  active: true,
-                  label: 'Layers',
-                  command: 'show-layers',
-                  togglable: false,
-                }, {
-                  id: 'show-style',
-                  label: 'Styles',
-                  command: 'show-styles',
-                  togglable: false,
-                }, {
-                  id: 'show-traits',
-                  label: 'Traits',
-                  command: 'show-traits',
-                  togglable: false,
-                }],
-            },
-            {
-              id: 'panel-devices',
-              el: '.panel__devices',
-              buttons: [
-                {
-                  id: 'device-desktop',
-                  label: '<u>D</u>',
-                  command: 'set-device-desktop',
-                  active: true,
-                  togglable: false,
-                },
-                {
-                  id: 'device-tablet',
-                  label: '<u>T</u>',
-                  command: 'set-device-tablet',
-                  togglable: false,
-                },
-                {
-                  id: 'device-mobile',
-                  label: '<u>M</u>',
-                  command: 'set-device-mobile',
-                  togglable: false,
-                }
-              ],
-            }
+            { id: 'panel-top', el: '.panel__top' },
+            { id: 'panel-basic-actions', el: '.panel__basic-actions', buttons: [
+                { id: 'visibility', active: true, className: 'btn-toggle-borders', label: '<u>B</u>', command: 'sw-visibility' },
+                { id: 'export', className: 'btn-open-export', label: 'Exp', command: 'export-template' },
+            ]},
+            { id: 'panel-switcher', el: '.panel__switcher', buttons: [
+                { id: 'show-layers', active: true, label: 'Layers', command: 'show-layers', togglable: true },
+                { id: 'show-style', label: 'Styles', command: 'show-styles', togglable: true },
+                { id: 'show-traits', label: 'Traits', command: 'show-traits', togglable: true },
+            ]},
+            { id: 'panel-devices', el: '.panel__devices', buttons: [
+                { id: 'device-desktop', label: '<u>D</u>', command: 'set-device-desktop', active: true, togglable: false },
+                { id: 'device-tablet', label: '<u>T</u>', command: 'set-device-tablet', togglable: false },
+                { id: 'device-mobile', label: '<u>M</u>', command: 'set-device-mobile', togglable: false },
+            ]}
           ]
         },
         deviceManager: {
           devices: [
-            {
-              name: 'Desktop',
-              width: '',
-            },
-            {
-              name: 'Tablet',
-              width: '768px',
-              widthMedia: '992px',
-            },
-            {
-              name: 'Mobile',
-              width: '320px',
-              widthMedia: '480px',
-            },
+            { name: 'Desktop', width: '' },
+            { name: 'Tablet', width: '768px', widthMedia: '992px' },
+            { name: 'Mobile', width: '320px', widthMedia: '480px' },
           ],
         },
         styleManager: {
           appendTo: '#style-manager-container',
-          sectors: [{
-            name: 'Dimension',
-            open: false,
-            properties: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
-          }, {
-            name: 'Typography',
-            open: false,
-            properties: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align'],
-          }, {
-            name: 'Decorations',
-            open: false,
-            properties: ['background-color', 'border-radius', 'border', 'box-shadow'],
-          }],
+          sectors: [
+            { name: 'Dimension', open: false, properties: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'] },
+            { name: 'Typography', open: false, properties: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align'] },
+            { name: 'Decorations', open: false, properties: ['background-color', 'border-radius', 'border', 'box-shadow'] },
+          ],
         },
       });
 
-      // Commands
       const commands = editor.Commands;
+      const showPanel = (id) => {
+        const containers = {
+          layers: document.querySelector('#layers-container'),
+          style: document.querySelector('#style-manager-container'),
+          traits: document.querySelector('#trait-manager-container')
+        };
+        Object.keys(containers).forEach(key => {
+          const container = containers[key];
+          if(container) container.style.display = key === id ? 'block' : 'none';
+        });
+      };
+
       commands.add('show-layers', {
-        run(editor, sender) {
-          sender.set('active', true);
-          document.querySelector('#layers-container').style.display = 'block';
-          document.querySelector('#style-manager-container').style.display = 'none';
-          document.querySelector('#trait-manager-container').style.display = 'none';
-        },
-        stop(editor, sender) {
-          sender.set('active', false);
-        }
+        run(editor, sender) { sender.set('active', true); showPanel('layers'); },
+        stop(editor, sender) { sender.set('active', false); }
       });
       commands.add('show-styles', {
-        run(editor, sender) {
-          sender.set('active', true);
-          document.querySelector('#layers-container').style.display = 'none';
-          document.querySelector('#style-manager-container').style.display = 'block';
-          document.querySelector('#trait-manager-container').style.display = 'none';
-        },
-        stop(editor, sender) {
-          sender.set('active', false);
-        }
+        run(editor, sender) { sender.set('active', true); showPanel('style'); },
+        stop(editor, sender) { sender.set('active', false); }
       });
       commands.add('show-traits', {
-        run(editor, sender) {
-          sender.set('active', true);
-          document.querySelector('#layers-container').style.display = 'none';
-          document.querySelector('#style-manager-container').style.display = 'none';
-          document.querySelector('#trait-manager-container').style.display = 'block';
-        },
-        stop(editor, sender) {
-          sender.set('active', false);
-        }
+        run(editor, sender) { sender.set('active', true); showPanel('traits'); },
+        stop(editor, sender) { sender.set('active', false); }
       });
       
       editor.on('load', () => {
-        // By default, activate the layers panel
-        const layersButton = editor.Panels.getButton('panel-switcher', 'show-layers');
-        layersButton.set('active', true);
+        editor.Panels.getButton('panel-switcher', 'show-layers').set('active', true);
       });
 
-      // When a component is selected, switch to the style manager
       editor.on('component:select', () => {
         const styleButton = editor.Panels.getButton('panel-switcher', 'show-style');
         if (styleButton && !styleButton.get('active')) {
@@ -447,7 +224,6 @@ const GrapesJSEditor = () => {
         }
       });
 
-      // Add custom commands
       editor.Commands.add('export-template', {
         run: (editor) => {
           const html = editor.getHtml();
@@ -529,15 +305,11 @@ const GrapesJSEditor = () => {
       </div>
 
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }} className="gjs-editor-main-flex">
-        {/* Left Sidebar - Blocks & Images */}
         <div style={{ width: '250px', backgroundColor: '#f8f9fa', borderRight: '1px solid #ddd', display: 'flex', flexDirection: 'column' }}>
-          {/* Tabs */}
           <div style={{ display: 'flex', flexShrink: 0 }}>
               <button onClick={() => setLeftPanelTab('blocks')} style={{...tabButtonStyle(leftPanelTab === 'blocks'), borderRight: '1px solid #ddd'}}>Blocks</button>
               <button onClick={() => setLeftPanelTab('images')} style={tabButtonStyle(leftPanelTab === 'images')}>Images</button>
           </div>
-
-          {/* Content */}
           <div style={{ flex: 1, overflowY: 'auto' }}>
             <div style={{ display: leftPanelTab === 'blocks' ? 'block' : 'none', height: '100%' }}>
                 <div id="blocks" />
@@ -548,19 +320,14 @@ const GrapesJSEditor = () => {
           </div>
         </div>
         
-        {/* Main Canvas */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          {/* Top Panel */}
           <div className="panel__top" style={{ backgroundColor: '#444', color: 'white', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div className="panel__basic-actions" style={{ display: 'flex', gap: '10px' }} />
-            <div className="panel__devices" style={{ display: 'flex', gap: '10px' }} />
+            <div className="panel__basic-actions" />
+            <div className="panel__devices" />
           </div>
-          
-          {/* Canvas */}
           <div id="gjs" style={{ flex: 1, overflow: 'hidden' }} />
         </div>
         
-        {/* Right Sidebar - Layers and Style Manager */}
         <div className="gjs-editor-right-panel">
           <div className="panel__switcher" />
           <div className="gjs-editor-right-panel-content">
@@ -595,4 +362,4 @@ const tabButtonStyle = (isActive) => ({
   borderBottom: '1px solid #ddd'
 });
 
-export default GrapesJSEditor; 
+export default GrapesJSEditor;
