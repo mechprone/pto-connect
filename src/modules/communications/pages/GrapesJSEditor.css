@@ -311,5 +311,13 @@
 }
 
 #layers-container, #style-manager-container, #trait-manager-container {
+  /* The GrapesJS inner elements will now handle their own height and scrolling. */
+}
+
+/* Make GrapesJS panels fill their containers */
+.gjs-sm-sectors,
+.gjs-layers,
+.gjs-trt-traits {
+  height: 100%;
   overflow-y: auto;
 } 
