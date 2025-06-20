@@ -401,33 +401,50 @@ const GrapesJSEditor = () => {
       const commands = editor.Commands;
       commands.add('show-layers', {
         run(editor, sender) {
+          sender.set('active', true);
           document.querySelector('#layers-container').style.display = 'block';
           document.querySelector('#style-manager-container').style.display = 'none';
           document.querySelector('#trait-manager-container').style.display = 'none';
         },
+        stop(editor, sender) {
+          sender.set('active', false);
+        }
       });
       commands.add('show-styles', {
         run(editor, sender) {
+          sender.set('active', true);
           document.querySelector('#layers-container').style.display = 'none';
           document.querySelector('#style-manager-container').style.display = 'block';
           document.querySelector('#trait-manager-container').style.display = 'none';
         },
+        stop(editor, sender) {
+          sender.set('active', false);
+        }
       });
       commands.add('show-traits', {
         run(editor, sender) {
+          sender.set('active', true);
           document.querySelector('#layers-container').style.display = 'none';
           document.querySelector('#style-manager-container').style.display = 'none';
           document.querySelector('#trait-manager-container').style.display = 'block';
         },
+        stop(editor, sender) {
+          sender.set('active', false);
+        }
       });
       
       editor.on('load', () => {
-        editor.runCommand('show-layers');
+        // By default, activate the layers panel
+        const layersButton = editor.Panels.getButton('panel-switcher', 'show-layers');
+        layersButton.set('active', true);
       });
 
-      // When a component is selected, switch to the style manager by activating its button
+      // When a component is selected, switch to the style manager
       editor.on('component:select', () => {
-        editor.Panels.getButton('panel-switcher', 'show-style')?.set('active', true);
+        const styleButton = editor.Panels.getButton('panel-switcher', 'show-style');
+        if (styleButton && !styleButton.get('active')) {
+          styleButton.set('active', true);
+        }
       });
 
       // Add custom commands
@@ -546,9 +563,11 @@ const GrapesJSEditor = () => {
         {/* Right Sidebar - Layers and Style Manager */}
         <div className="gjs-editor-right-panel">
           <div className="panel__switcher" />
-          <div id="layers-container" />
-          <div id="style-manager-container" />
-          <div id="trait-manager-container" />
+          <div className="gjs-editor-right-panel-content">
+            <div id="layers-container" />
+            <div id="style-manager-container" />
+            <div id="trait-manager-container" />
+          </div>
         </div>
       </div>
     </div>
