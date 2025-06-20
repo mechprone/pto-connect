@@ -226,11 +226,7 @@ export const communicationsAPI = {
   deleteMessage: (id) => apiRequest('DELETE', `/messages/${id}`),
   sendMessage: (id) => apiRequest('POST', `/messages/${id}/send`),
   
-  // Email drafts
-  getEmailDrafts: () => apiRequest('GET', '/communications/email-drafts'),
-  createEmailDraft: (data) => apiRequest('POST', '/communications/email-drafts', data),
-  updateEmailDraft: (id, data) => apiRequest('PUT', `/communications/email-drafts/${id}`, data),
-  deleteEmailDraft: (id) => apiRequest('DELETE', `/communications/email-drafts/${id}`),
+
 };
 
 // Teacher Requests API calls
