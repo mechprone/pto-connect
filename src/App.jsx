@@ -24,6 +24,8 @@ import TeacherDashboard from './modules/dashboard/pages/TeacherDashboard'
 import EventsDashboard from './modules/events/pages/EventsDashboard'
 import EnhancedEventsDashboard from './modules/events/pages/EnhancedEventsDashboard'
 import CreateEvent from './modules/events/pages/CreateEvent'
+import EnhancedEventCreationWizard from './components/events/EnhancedEventCreationWizard'
+import EventWorkflowDashboard from './components/events/EventWorkflowDashboard'
 import EditEventPage from './modules/events/pages/EditEventPage'
 import EventsCalendarPage from './modules/events/pages/EventsCalendarPage'
 
@@ -47,7 +49,7 @@ import ReconciliationReport from '@/components/budget/reconciliation/Reconciliat
 import CommunicationsDashboard from './modules/communications/pages/CommunicationsDashboard'
 import EnhancedCommunicationsDashboard from './modules/communications/pages/EnhancedCommunicationsDashboard'
 import CreateCommunication from './modules/communications/pages/CreateCommunication'
-import EmailComposer from './modules/communications/pages/EmailComposer'
+// Legacy EmailComposer removed - using UnifiedCommunicationComposer instead
 import SmsComposer from './modules/communications/pages/SmsComposer'
 import SocialPostComposer from './modules/communications/pages/SocialPostComposer'
 import AiContentAssistant from '@/modules/communications/pages/AiContentAssistantNew'
@@ -118,6 +120,8 @@ export default function App() {
           <Route path="/events" element={<EnhancedEventsDashboard />} />
           <Route path="/events/legacy" element={<EventsDashboard />} />
           <Route path="/events/create" element={<CreateEvent />} />
+          <Route path="/events/create-enhanced" element={<EnhancedEventCreationWizard />} />
+          <Route path="/events/:eventId/workflow" element={<EventWorkflowDashboard />} />
           <Route path="/events/edit/:id" element={<EditEventPage />} />
           <Route path="/events/calendar" element={<EventsCalendarPage />} />
 

@@ -226,7 +226,11 @@ export const communicationsAPI = {
   deleteMessage: (id) => apiRequest('DELETE', `/messages/${id}`),
   sendMessage: (id) => apiRequest('POST', `/messages/${id}/send`),
   
-
+  // Email drafts
+  getEmailDrafts: () => apiRequest('GET', '/communications/email-drafts'),
+  createEmailDraft: (data) => apiRequest('POST', '/communications/email-drafts', data),
+  updateEmailDraft: (id, data) => apiRequest('PUT', `/communications/email-drafts/${id}`, data),
+  deleteEmailDraft: (id) => apiRequest('DELETE', `/communications/email-drafts/${id}`),
 };
 
 // Teacher Requests API calls
@@ -266,10 +270,15 @@ export const sharedLibraryAPI = {
   useTemplate: (id) => apiRequest('POST', `/shared-library/${id}/use`),
 };
 
-// AI API calls
+// Enhanced AI API calls
 export const aiAPI = {
   generateEventIdeas: (prompt) => apiRequest('POST', '/event-ideas', { prompt }),
-  generateContent: (type, prompt, context) => apiRequest('POST', '/ai/generate', { type, prompt, context }),
+  generateContent: (type, prompt, context, includeRecommendations = false) => 
+    apiRequest('POST', '/ai/generate', { type, prompt, context, includeRecommendations }),
+  analyzeContext: (orgId, analysisType = 'general') => 
+    apiRequest('POST', '/ai/analyze-context', { orgId, analysisType }),
+  analyzeEventWorkflow: (eventData, orgId) => 
+    apiRequest('POST', '/ai/analyze-event-workflow', { eventData, orgId }),
   analyzeDocument: (documentId) => apiRequest('POST', `/ai/analyze-document/${documentId}`),
   chatWithDocuments: (query) => apiRequest('POST', '/ai/chat', { query }),
 };
