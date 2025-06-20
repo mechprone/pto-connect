@@ -358,26 +358,32 @@ const GrapesJSEditor = () => {
       const commands = editor.Commands;
       commands.add('show-layers', {
         run(editor, sender) {
-          sender.set('active', 1);
-          editor.getContainer().querySelector('#layers-container').style.display = 'block';
-          editor.getContainer().querySelector('#style-manager-container').style.display = 'none';
-          editor.getContainer().querySelector('#trait-manager-container').style.display = 'none';
+          sender.set('active', true);
+          editor.Panels.getButton('panel-switcher', 'show-style').set('active', false);
+          editor.Panels.getButton('panel-switcher', 'show-traits').set('active', false);
+          document.querySelector('#layers-container').style.display = 'block';
+          document.querySelector('#style-manager-container').style.display = 'none';
+          document.querySelector('#trait-manager-container').style.display = 'none';
         },
       });
       commands.add('show-styles', {
         run(editor, sender) {
-          sender.set('active', 1);
-          editor.getContainer().querySelector('#layers-container').style.display = 'none';
-          editor.getContainer().querySelector('#style-manager-container').style.display = 'block';
-          editor.getContainer().querySelector('#trait-manager-container').style.display = 'none';
+          sender.set('active', true);
+          editor.Panels.getButton('panel-switcher', 'show-layers').set('active', false);
+          editor.Panels.getButton('panel-switcher', 'show-traits').set('active', false);
+          document.querySelector('#layers-container').style.display = 'none';
+          document.querySelector('#style-manager-container').style.display = 'block';
+          document.querySelector('#trait-manager-container').style.display = 'none';
         },
       });
       commands.add('show-traits', {
         run(editor, sender) {
-          sender.set('active', 1);
-          editor.getContainer().querySelector('#layers-container').style.display = 'none';
-          editor.getContainer().querySelector('#style-manager-container').style.display = 'none';
-          editor.getContainer().querySelector('#trait-manager-container').style.display = 'block';
+          sender.set('active', true);
+          editor.Panels.getButton('panel-switcher', 'show-layers').set('active', false);
+          editor.Panels.getButton('panel-switcher', 'show-style').set('active', false);
+          document.querySelector('#layers-container').style.display = 'none';
+          document.querySelector('#style-manager-container').style.display = 'none';
+          document.querySelector('#trait-manager-container').style.display = 'block';
         },
       });
       
@@ -387,10 +393,7 @@ const GrapesJSEditor = () => {
 
       // When a component is selected, switch to the style manager
       editor.on('component:select', () => {
-        const switcher = editor.Panels.getButton('panel-switcher', 'show-styles');
-        if (switcher) {
-          switcher.set('active', true);
-        }
+        editor.runCommand('show-styles');
       });
 
       // Add custom commands
