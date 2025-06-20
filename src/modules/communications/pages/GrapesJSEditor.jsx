@@ -474,7 +474,7 @@ const GrapesJSEditor = () => {
         </div>
       </div>
 
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }} className="gjs-editor-main-flex">
         {/* Left Sidebar - Blocks */}
         <div id="blocks" style={{ width: '250px', backgroundColor: '#f5f5f5', borderRight: '1px solid #ddd', overflowY: 'auto' }} />
         
@@ -491,11 +491,11 @@ const GrapesJSEditor = () => {
         </div>
         
         {/* Right Sidebar - Layers and Style Manager */}
-        <div style={{ width: '300px', backgroundColor: '#f5f5f5', borderLeft: '1px solid #ddd', display: 'flex', flexDirection: 'column' }}>
+        <div className="gjs-editor-right-panel">
           <div className="panel__switcher" />
-          <div id="layers-container" style={{ flex: 1, overflowY: 'auto' }} />
-          <div id="style-manager-container" style={{ flex: 1, overflowY: 'auto' }} />
-          <div id="trait-manager-container" style={{ flex: 1, overflowY: 'auto' }} />
+          <div id="layers-container" />
+          <div id="style-manager-container" />
+          <div id="trait-manager-container" />
         </div>
       </div>
     </div>

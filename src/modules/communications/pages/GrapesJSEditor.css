@@ -310,14 +310,39 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-#layers-container, #style-manager-container, #trait-manager-container {
-  /* The GrapesJS inner elements will now handle their own height and scrolling. */
+/* Make the main editor area and right sidebar fill the available height */
+.gjs-editor-main-flex {
+  display: flex;
+  flex: 1 1 0%;
+  height: 100%;
+  min-height: 0;
 }
 
-/* Make GrapesJS panels fill their containers */
+.gjs-editor-right-panel {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  background-color: #f5f5f5;
+  border-left: 1px solid #ddd;
+  height: 100%;
+  min-height: 0;
+}
+
+.panel__switcher {
+  flex-shrink: 0;
+}
+
+#layers-container, #style-manager-container, #trait-manager-container {
+  flex: 1 1 0%;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .gjs-sm-sectors,
 .gjs-layers,
 .gjs-trt-traits {
   height: 100%;
+  min-height: 0;
   overflow-y: auto;
 } 
