@@ -3,4 +3,12 @@
   This is to prevent conflicts with the default GrapesJS UI presets,
   which was causing the side panels to be hidden.
   We will rely on the library's own 'grapes.min.css' for the base layout.
-*/ 
+*/
+
+/* 
+  This rule widens the right-hand panel containing the Style, Trait,
+  and Layer managers for better usability without disrupting the layout.
+*/
+.gjs-pn-views-container {
+  width: 320px !important;
+} 

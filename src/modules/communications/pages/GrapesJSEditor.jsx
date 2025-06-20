@@ -127,30 +127,21 @@ const GrapesJSEditor = () => {
         height: '100%',
         width: 'auto',
         storageManager: false,
-        // Use STRINGS to identify plugins
-        plugins: ['gjs-preset-webpage', 'gjs-preset-newsletter'],
-        // Use STRINGS for plugin options keys
-        pluginsOpts: {
-          'gjs-preset-webpage': {
-            styleManager: {
-              sectors: [{
-                name: 'Dimension',
-                open: false,
-                properties: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
-              }, {
-                name: 'Typography',
-                open: false,
-                properties: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align'],
-              }, {
-                name: 'Decorations',
-                open: false,
-                properties: ['background-color', 'border-radius', 'border', 'box-shadow'],
-              }],
-            },
-          },
-          'gjs-preset-newsletter': {
-            // Options for the newsletter preset can go here
-          },
+        plugins: ['gjs-preset-webpage'],
+        styleManager: {
+          sectors: [{
+            name: 'Dimension',
+            open: false,
+            properties: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
+          }, {
+            name: 'Typography',
+            open: false,
+            properties: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align'],
+          }, {
+            name: 'Decorations',
+            open: false,
+            properties: ['background-color', 'border-radius', 'border', 'box-shadow'],
+          }],
         },
       });
 
@@ -197,36 +188,32 @@ const GrapesJSEditor = () => {
           display: 'flex', alignItems: 'center', justifyContent: 'center'
         }}>
           <div style={{
-            background: 'white',
-            padding: '40px',
-            borderRadius: '8px',
-            textAlign: 'center',
-            boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
-            maxWidth: '600px',
-          }} className="welcome-modal">
+            background: 'white', padding: '40px', borderRadius: '12px',
+            textAlign: 'center', boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
+            maxWidth: '600px', width: '90%'
+          }}>
             <h2 style={{ marginTop: 0, fontSize: '1.8rem' }}>Welcome to the Template Builder</h2>
             <p style={{ marginBottom: '30px', fontSize: '1.1rem', color: '#555' }}>
               Choose a starting point or begin with a blank slate.
             </p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-              <button onClick={() => loadTemplate('newsletter')} style={{ padding: '15px 25px' }}>Newsletter</button>
-              <button onClick={() => loadTemplate('announcement')} style={{ padding: '15px 25px' }}>Announcement</button>
-              <button onClick={() => loadTemplate('event')} style={{ padding: '15px 25px' }}>Event</button>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '20px' }}>
+              <button onClick={() => loadTemplate('newsletter')} style={templateButtonStyle}>
+                <div style={{ fontSize: '2rem' }}>📰</div>
+                <h3 style={{ margin: '10px 0 0' }}>Newsletter</h3>
+              </button>
+              <button onClick={() => loadTemplate('announcement')} style={templateButtonStyle}>
+                <div style={{ fontSize: '2rem' }}>📢</div>
+                <h3 style={{ margin: '10px 0 0' }}>Announcement</h3>
+              </button>
+              <button onClick={() => loadTemplate('event')} style={templateButtonStyle}>
+                <div style={{ fontSize: '2rem' }}>🎉</div>
+                <h3 style={{ margin: '10px 0 0' }}>Event</h3>
+              </button>
             </div>
-            <button
-              onClick={startBlank}
-              style={{
-                padding: '15px 30px',
-                background: 'transparent',
-                color: '#007bff',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                fontSize: '1rem',
-                marginTop: '30px',
-                textDecoration: 'underline'
-              }}
-            >
+            <button onClick={startBlank} style={{
+                background: 'transparent', border: 'none', color: '#007bff',
+                marginTop: '30px', cursor: 'pointer', textDecoration: 'underline', fontSize: '1rem'
+            }}>
               Or start from scratch
             </button>
           </div>
@@ -255,6 +242,16 @@ const GrapesJSEditor = () => {
       <div id="gjs" style={{ flex: 1, overflow: 'hidden' }} />
     </div>
   );
+};
+
+const templateButtonStyle = {
+  padding: '20px',
+  border: '1px solid #ddd',
+  borderRadius: '8px',
+  background: '#f8f9fa',
+  cursor: 'pointer',
+  transition: 'all 0.2s ease',
+  textAlign: 'center'
 };
 
 export default GrapesJSEditor; 
