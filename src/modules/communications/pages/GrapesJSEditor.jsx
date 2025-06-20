@@ -2,11 +2,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import grapesjs from 'grapesjs';
 import 'grapesjs/dist/css/grapes.min.css';
 import './GrapesJSEditor.css';
+import UnsplashGallery from './UnsplashGallery';
 
 const GrapesJSEditor = () => {
   const editorRef = useRef(null);
   const [showWelcome, setShowWelcome] = useState(true);
   const [templateName, setTemplateName] = useState('New Template');
+  const [leftPanelTab, setLeftPanelTab] = useState('blocks');
+
+  // TODO: Move this to a .env file for security
+  const UNSPLASH_API_KEY = '68sA-etqfTs_6cZuBsD7WoWvobDhnh_6jFygGICSpfw';
 
   const defaultTemplates = {
     newsletter: `
@@ -507,8 +512,24 @@ const GrapesJSEditor = () => {
       </div>
 
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }} className="gjs-editor-main-flex">
-        {/* Left Sidebar - Blocks */}
-        <div id="blocks" style={{ width: '250px', backgroundColor: '#f5f5f5', borderRight: '1px solid #ddd', overflowY: 'auto' }} />
+        {/* Left Sidebar - Blocks & Images */}
+        <div style={{ width: '250px', backgroundColor: '#f8f9fa', borderRight: '1px solid #ddd', display: 'flex', flexDirection: 'column' }}>
+          {/* Tabs */}
+          <div style={{ display: 'flex', flexShrink: 0 }}>
+              <button onClick={() => setLeftPanelTab('blocks')} style={{...tabButtonStyle(leftPanelTab === 'blocks'), borderRight: '1px solid #ddd'}}>Blocks</button>
+              <button onClick={() => setLeftPanelTab('images')} style={tabButtonStyle(leftPanelTab === 'images')}>Images</button>
+          </div>
+
+          {/* Content */}
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            <div style={{ display: leftPanelTab === 'blocks' ? 'block' : 'none', height: '100%' }}>
+                <div id="blocks" />
+            </div>
+            <div style={{ display: leftPanelTab === 'images' ? 'block' : 'none', height: '100%' }}>
+                {editorRef.current && <UnsplashGallery editor={editorRef.current} apiKey={UNSPLASH_API_KEY} />}
+            </div>
+          </div>
+        </div>
         
         {/* Main Canvas */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -543,5 +564,16 @@ const templateButtonStyle = {
   transition: 'all 0.2s ease',
   textAlign: 'center'
 };
+
+const tabButtonStyle = (isActive) => ({
+  flex: 1,
+  padding: '12px',
+  border: 'none',
+  background: isActive ? '#e9e9e9' : 'transparent',
+  cursor: 'pointer',
+  fontWeight: isActive ? 'bold' : 'normal',
+  color: '#333',
+  borderBottom: '1px solid #ddd'
+});
 
 export default GrapesJSEditor; 
