@@ -52,8 +52,8 @@ import CreateCommunication from './modules/communications/pages/CreateCommunicat
 // Legacy EmailComposer removed - using UnifiedCommunicationComposer instead
 import SmsComposer from './modules/communications/pages/SmsComposer'
 import SocialPostComposer from './modules/communications/pages/SocialPostComposer'
-import AiContentAssistant from '@/modules/communications/pages/AiContentAssistantNew'
-import GrapesJSEditor from './modules/communications/pages/GrapesJSEditor'
+// Legacy AiContentAssistantNew removed - AI functionality integrated into UnifiedCommunicationComposer
+// Legacy GrapesJSEditor removed - using UnifiedCommunicationComposer instead
 
 // Documents
 import DocumentsDashboard from './modules/documents/pages/DocumentsDashboard'
@@ -63,7 +63,7 @@ import UploadDocument from './modules/documents/pages/UploadDocument'
 import SharedLibraryDashboard from './modules/sharedLibrary/pages/SharedLibraryDashboard'
 import AiEventIdeas from './modules/ai/pages/AiEventIdeas'
 import EventWorkflowOrchestratorPage from './modules/ai/pages/EventWorkflowOrchestratorPage'
-import AdvancedDesignStudio from './modules/communications/pages/AdvancedDesignStudio'
+// Legacy AdvancedDesignStudio removed - using UnifiedCommunicationComposer instead
 
 // Teacher
 import TeacherRequestsDashboard from './modules/teacherRequests/pages/TeacherRequestsDashboard'
@@ -143,9 +143,9 @@ export default function App() {
           <Route path="/communications/email" element={<AdvancedDesignStudio />} />
           <Route path="/communications/sms" element={<SmsComposer />} />
           <Route path="/communications/social" element={<SocialPostComposer />} />
-          <Route path="/communications/ai" element={<AiContentAssistant />} />
-          <Route path="/communications/design-studio" element={<AdvancedDesignStudio />} />
-          <Route path="/communications/template-builder" element={<GrapesJSEditor />} />
+                      <Route path="/communications/ai" element={<UnifiedCommunicationComposer />} />
+                      <Route path="/communications/design-studio" element={<UnifiedCommunicationComposer />} />
+          <Route path="/communications/template-builder" element={<UnifiedCommunicationComposer />} />
 
           <Route path="/documents" element={<DocumentsDashboard />} />
           <Route path="/documents/upload" element={<UploadDocument />} />
