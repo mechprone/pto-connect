@@ -358,9 +358,6 @@ const GrapesJSEditor = () => {
       const commands = editor.Commands;
       commands.add('show-layers', {
         run(editor, sender) {
-          sender.set('active', true);
-          editor.Panels.getButton('panel-switcher', 'show-style').set('active', false);
-          editor.Panels.getButton('panel-switcher', 'show-traits').set('active', false);
           document.querySelector('#layers-container').style.display = 'block';
           document.querySelector('#style-manager-container').style.display = 'none';
           document.querySelector('#trait-manager-container').style.display = 'none';
@@ -368,9 +365,6 @@ const GrapesJSEditor = () => {
       });
       commands.add('show-styles', {
         run(editor, sender) {
-          sender.set('active', true);
-          editor.Panels.getButton('panel-switcher', 'show-layers').set('active', false);
-          editor.Panels.getButton('panel-switcher', 'show-traits').set('active', false);
           document.querySelector('#layers-container').style.display = 'none';
           document.querySelector('#style-manager-container').style.display = 'block';
           document.querySelector('#trait-manager-container').style.display = 'none';
@@ -378,9 +372,6 @@ const GrapesJSEditor = () => {
       });
       commands.add('show-traits', {
         run(editor, sender) {
-          sender.set('active', true);
-          editor.Panels.getButton('panel-switcher', 'show-layers').set('active', false);
-          editor.Panels.getButton('panel-switcher', 'show-style').set('active', false);
           document.querySelector('#layers-container').style.display = 'none';
           document.querySelector('#style-manager-container').style.display = 'none';
           document.querySelector('#trait-manager-container').style.display = 'block';
@@ -391,9 +382,9 @@ const GrapesJSEditor = () => {
         editor.runCommand('show-layers');
       });
 
-      // When a component is selected, switch to the style manager
+      // When a component is selected, switch to the style manager by activating its button
       editor.on('component:select', () => {
-        editor.runCommand('show-styles');
+        editor.Panels.getButton('panel-switcher', 'show-style')?.set('active', true);
       });
 
       // Add custom commands
