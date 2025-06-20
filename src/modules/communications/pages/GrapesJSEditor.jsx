@@ -226,7 +226,10 @@ const GrapesJSEditor = () => {
           ]
         },
         layerManager: {
-          appendTo: '#layers'
+          appendTo: '#layers-container'
+        },
+        traitManager: {
+          appendTo: '#trait-manager-container',
         },
         panels: {
           defaults: [
@@ -266,6 +269,27 @@ const GrapesJSEditor = () => {
                   },
                 }
               ],
+            },
+            {
+              id: 'panel-switcher',
+              el: '.panel__switcher',
+              buttons: [{
+                  id: 'show-layers',
+                  active: true,
+                  label: 'Layers',
+                  command: 'show-layers',
+                  togglable: false,
+                }, {
+                  id: 'show-style',
+                  label: 'Styles',
+                  command: 'show-styles',
+                  togglable: false,
+                }, {
+                  id: 'show-traits',
+                  label: 'Traits',
+                  command: 'show-traits',
+                  togglable: false,
+                }],
             },
             {
               id: 'panel-devices',
@@ -313,6 +337,7 @@ const GrapesJSEditor = () => {
           ],
         },
         styleManager: {
+          appendTo: '#style-manager-container',
           sectors: [{
             name: 'Dimension',
             open: false,
@@ -329,6 +354,45 @@ const GrapesJSEditor = () => {
         },
       });
 
+      // Commands
+      const commands = editor.Commands;
+      commands.add('show-layers', {
+        run(editor, sender) {
+          sender.set('active', 1);
+          editor.getContainer().querySelector('#layers-container').style.display = 'block';
+          editor.getContainer().querySelector('#style-manager-container').style.display = 'none';
+          editor.getContainer().querySelector('#trait-manager-container').style.display = 'none';
+        },
+      });
+      commands.add('show-styles', {
+        run(editor, sender) {
+          sender.set('active', 1);
+          editor.getContainer().querySelector('#layers-container').style.display = 'none';
+          editor.getContainer().querySelector('#style-manager-container').style.display = 'block';
+          editor.getContainer().querySelector('#trait-manager-container').style.display = 'none';
+        },
+      });
+      commands.add('show-traits', {
+        run(editor, sender) {
+          sender.set('active', 1);
+          editor.getContainer().querySelector('#layers-container').style.display = 'none';
+          editor.getContainer().querySelector('#style-manager-container').style.display = 'none';
+          editor.getContainer().querySelector('#trait-manager-container').style.display = 'block';
+        },
+      });
+      
+      editor.on('load', () => {
+        editor.runCommand('show-layers');
+      });
+
+      // When a component is selected, switch to the style manager
+      editor.on('component:select', () => {
+        const switcher = editor.Panels.getButton('panel-switcher', 'show-styles');
+        if (switcher) {
+          switcher.set('active', true);
+        }
+      });
+
       // Add custom commands
       editor.Commands.add('export-template', {
         run: (editor) => {
@@ -337,30 +401,6 @@ const GrapesJSEditor = () => {
           console.log("Exporting template:", { html, css });
           alert('Template exported! Check console for output');
         }
-      });
-
-      editor.Commands.add('save-template', {
-        run: (editor) => {
-          const html = editor.getHtml();
-          const css = editor.getCss();
-          console.log("Saving template:", { html, css });
-          alert('Template Saved! (Check console for output)');
-        }
-      });
-
-      // Add custom panels
-      const panels = editor.Panels;
-      panels.addButton('options', {
-        id: 'save-btn',
-        className: 'fa fa-save',
-        command: 'save-template',
-        attributes: { title: 'Save Template' },
-      });
-      panels.addButton('options', {
-        id: 'preview-btn',
-        className: 'fa fa-eye',
-        command: 'core:preview',
-        attributes: { title: 'Preview' },
       });
 
       editorRef.current = editor;
@@ -452,8 +492,10 @@ const GrapesJSEditor = () => {
         
         {/* Right Sidebar - Layers and Style Manager */}
         <div style={{ width: '300px', backgroundColor: '#f5f5f5', borderLeft: '1px solid #ddd', display: 'flex', flexDirection: 'column' }}>
-          <div id="layers" style={{ flex: 1, borderBottom: '1px solid #ddd' }} />
-          <div id="style-manager" style={{ flex: 1 }} />
+          <div className="panel__switcher" />
+          <div id="layers-container" style={{ flex: 1, overflowY: 'auto' }} />
+          <div id="style-manager-container" style={{ flex: 1, overflowY: 'auto' }} />
+          <div id="trait-manager-container" style={{ flex: 1, overflowY: 'auto' }} />
         </div>
       </div>
     </div>

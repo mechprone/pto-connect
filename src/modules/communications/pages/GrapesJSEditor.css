@@ -276,4 +276,40 @@
 
 .gjs-pn-panel::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
+}
+
+/* Panel Switcher styling */
+.panel__switcher {
+  display: flex;
+  justify-content: space-around;
+  background-color: #f8f9fa;
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+}
+
+.panel__switcher .gjs-pn-btn {
+  flex: 1;
+  text-align: center;
+  border-radius: 4px;
+  background-color: transparent;
+  color: #555;
+  font-weight: 500;
+  border: none;
+  padding: 8px 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.panel__switcher .gjs-pn-btn:hover {
+  background-color: #e9ecef;
+}
+
+.panel__switcher .gjs-pn-btn.gjs-pn-active {
+  background-color: #fff;
+  color: #0d6efd;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+#layers-container, #style-manager-container, #trait-manager-container {
+  overflow-y: auto;
 } 
