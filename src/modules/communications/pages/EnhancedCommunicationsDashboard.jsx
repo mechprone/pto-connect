@@ -69,19 +69,19 @@ const EnhancedCommunicationsDashboard = () => {
 
   // Button handlers
   const handleCreateEmail = (mode) => {
-    navigate(`/communications/email?mode=${mode}`);
+    navigate(`/communications/compose?mode=email&ai=${mode}`);
   };
 
   const handleCreateSocial = (mode) => {
-    navigate(`/communications/social?mode=${mode}`);
+    navigate(`/communications/compose?mode=social&ai=${mode}`);
   };
 
   const handleCreateSMS = (mode) => {
-    navigate(`/communications/sms?mode=${mode}`);
+    navigate(`/communications/compose?mode=sms&ai=${mode}`);
   };
 
   const handleCreateNewsletter = (mode) => {
-    navigate(`/communications/create?type=newsletter&mode=${mode}`);
+    navigate(`/communications/compose?mode=email&type=newsletter&ai=${mode}`);
   };
 
   const handleViewCommunication = (id) => {
