@@ -643,49 +643,33 @@ const StellaEventWizard = () => {
 
         {/* Progress Steps */}
         <div className="flex justify-center mb-8">
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center">
             {[1, 2, 3, 4].map((step) => (
               <div key={step} className="flex items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  currentStep >= step 
-                    ? 'bg-purple-600 text-white' 
-                    : 'bg-gray-200 text-gray-600'
-                }`}>
-                  {step}
+                <div className="flex flex-col items-center">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    currentStep >= step 
+                      ? 'bg-purple-600 text-white' 
+                      : 'bg-gray-200 text-gray-600'
+                  }`}>
+                    {step}
+                  </div>
+                  <div className={`text-sm mt-4 whitespace-nowrap ${
+                    currentStep >= step ? 'text-purple-600 font-medium' : 'text-gray-500'
+                  }`}>
+                    {step === 1 && 'Event Details'}
+                    {step === 2 && 'Context & Goals'}
+                    {step === 3 && 'Module Selection'}
+                    {step === 4 && 'Workflow Results'}
+                  </div>
                 </div>
                 {step < 4 && (
-                  <div className={`w-16 h-1 mx-4 ${
+                  <div className={`w-24 h-1 mx-6 ${
                     currentStep > step ? 'bg-purple-600' : 'bg-gray-200'
                   }`} />
                 )}
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Step Labels */}
-        <div className="flex justify-center mb-8">
-          <div className="grid grid-cols-4 text-center" style={{ width: '600px', gap: '0px' }}>
-            <div className={`text-sm ${
-              currentStep >= 1 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginLeft: '-15px' }}>
-              Event Details
-            </div>
-            <div className={`text-sm ${
-              currentStep >= 2 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginLeft: '-25px' }}>
-              Context & Goals
-            </div>
-            <div className={`text-sm ${
-              currentStep >= 3 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginRight: '-25px' }}>
-              Module Selection
-            </div>
-            <div className={`text-sm ${
-              currentStep >= 4 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginRight: '-15px' }}>
-              Workflow Results
-            </div>
           </div>
         </div>
 
