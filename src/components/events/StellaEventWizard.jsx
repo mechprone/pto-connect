@@ -537,36 +537,42 @@ const StellaEventWizard = () => {
       
       toast.error(errorMessage, { autoClose: 5000 });
       
-      // For development: Show mock results if we're in development mode
-      if (process.env.NODE_ENV === 'development') {
-        console.log('🔧 Development mode: Using mock workflow data');
-        const mockWorkflow = {
-          workflow: {
-            event_title: eventData.title,
-            message: `Stella has created a comprehensive workflow for "${eventData.title}" with integrated project management, budget planning, and communication strategies.`,
-            components_created: Object.keys(moduleIntegrations).filter(key => moduleIntegrations[key]),
-            next_steps: [
-              'Review the generated budget and adjust line items as needed',
-              'Confirm volunteer roles and begin recruitment',
-              'Schedule communication campaigns for optimal timing',
-              'Set up project milestones and task assignments',
-              'Begin vendor outreach and facility reservations'
-            ],
-            timeline: {
-              total_weeks: 8,
-              phases: ['Planning', 'Preparation', 'Execution', 'Follow-up']
-            },
-            budget_summary: {
-              estimated_total: eventData.estimated_budget,
-              categories: ['Materials', 'Marketing', 'Volunteer Appreciation', 'Contingency']
-            }
+      // Show mock results when API fails (for testing the UI)
+      console.log('🔧 API failed, using mock workflow data for UI testing');
+      const mockWorkflow = {
+        workflow: {
+          event_title: eventData.title,
+          message: `Stella has created a comprehensive workflow for "${eventData.title}" with integrated project management, budget planning, and communication strategies.`,
+          components_created: Object.keys(moduleIntegrations).filter(key => moduleIntegrations[key]),
+          next_steps: [
+            'Review the generated budget and adjust line items as needed',
+            'Confirm volunteer roles and begin recruitment',
+            'Schedule communication campaigns for optimal timing',
+            'Set up project milestones and task assignments',
+            'Begin vendor outreach and facility reservations',
+            'Set up volunteer coordination and role assignments',
+            'Plan materials procurement and vendor relationships',
+            'Schedule progress check-ins and milestone reviews'
+          ],
+          timeline: {
+            total_weeks: 8,
+            phases: ['Planning & Setup', 'Preparation & Outreach', 'Final Preparations', 'Event Execution', 'Follow-up & Analysis']
+          },
+          budget_summary: {
+            estimated_total: eventData.estimated_budget,
+            categories: ['Materials & Supplies', 'Marketing & Communications', 'Volunteer Appreciation', 'Equipment Rental', 'Contingency Fund']
+          },
+          recommendations: {
+            timeline_start: '8 weeks before event date',
+            key_milestones: ['Venue booking', 'Volunteer recruitment', 'Marketing launch', 'Final preparations'],
+            success_factors: ['Early planning', 'Clear communication', 'Volunteer engagement', 'Budget monitoring']
           }
-        };
-        
-        setGeneratedWorkflow(mockWorkflow);
-        setCurrentStep(4);
-        toast.info('🔧 Using mock data for development testing');
-      }
+        }
+      };
+      
+      setGeneratedWorkflow(mockWorkflow);
+      setCurrentStep(4);
+      toast.info('🔧 Backend temporarily unavailable - showing demo results', { autoClose: 3000 });
     } finally {
       setIsGenerating(false);
       setGenerationProgress(0);
