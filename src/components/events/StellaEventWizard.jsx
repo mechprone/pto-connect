@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Sparkles, Calendar, DollarSign, Users, MessageSquare, 
@@ -53,6 +53,49 @@ const StellaEventWizard = () => {
     trackProgress: true,
     generateReports: true
   });
+
+  // Memoized event handlers to prevent re-renders
+  const handleEventDataChange = useCallback((field, value) => {
+    setEventData(prev => ({ ...prev, [field]: value }));
+  }, []);
+
+  const handleStellaContextChange = useCallback((field, value) => {
+    setStellaContext(prev => ({ ...prev, [field]: value }));
+  }, []);
+
+  const handleModuleToggle = useCallback((moduleKey) => {
+    setModuleIntegrations(prev => ({
+      ...prev,
+      [moduleKey]: !prev[moduleKey]
+    }));
+  }, []);
+
+  const handleAdditionalGoalsChange = useCallback((goal, checked) => {
+    setStellaContext(prev => ({
+      ...prev,
+      additionalGoals: checked 
+        ? [...prev.additionalGoals, goal]
+        : prev.additionalGoals.filter(g => g !== goal)
+    }));
+  }, []);
+
+  const handleResourcesChange = useCallback((resource, checked) => {
+    setStellaContext(prev => ({
+      ...prev,
+      availableResources: checked 
+        ? [...prev.availableResources, resource]
+        : prev.availableResources.filter(r => r !== resource)
+    }));
+  }, []);
+
+  const handleConstraintsChange = useCallback((constraint, checked) => {
+    setStellaContext(prev => ({
+      ...prev,
+      constraints: checked 
+        ? [...prev.constraints, constraint]
+        : prev.constraints.filter(c => c !== constraint)
+    }));
+  }, []);
 
   // Initialize user context
   useEffect(() => {
@@ -188,7 +231,7 @@ const StellaEventWizard = () => {
           <input
             type="text"
             value={eventData.title}
-            onChange={(e) => setEventData({...eventData, title: e.target.value})}
+            onChange={(e) => handleEventDataChange('title', e.target.value)}
             placeholder="e.g., Fall Festival 2025"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
@@ -199,7 +242,7 @@ const StellaEventWizard = () => {
           <input
             type="date"
             value={eventData.event_date}
-            onChange={(e) => setEventData({...eventData, event_date: e.target.value})}
+            onChange={(e) => handleEventDataChange('event_date', e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
         </div>
@@ -209,7 +252,7 @@ const StellaEventWizard = () => {
           <input
             type="number"
             value={eventData.expected_attendance}
-            onChange={(e) => setEventData({...eventData, expected_attendance: parseInt(e.target.value)})}
+            onChange={(e) => handleEventDataChange('expected_attendance', parseInt(e.target.value) || 0)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
         </div>
@@ -219,7 +262,7 @@ const StellaEventWizard = () => {
           <input
             type="number"
             value={eventData.estimated_budget}
-            onChange={(e) => setEventData({...eventData, estimated_budget: parseInt(e.target.value)})}
+            onChange={(e) => handleEventDataChange('estimated_budget', parseInt(e.target.value) || 0)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
         </div>
@@ -229,7 +272,7 @@ const StellaEventWizard = () => {
         <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
         <textarea
           value={eventData.description}
-          onChange={(e) => setEventData({...eventData, description: e.target.value})}
+          onChange={(e) => handleEventDataChange('description', e.target.value)}
           rows="3"
           placeholder="Brief description of your event..."
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -251,7 +294,7 @@ const StellaEventWizard = () => {
           <label className="block text-sm font-medium text-gray-700 mb-2">Event Type</label>
           <select
             value={stellaContext.eventType}
-            onChange={(e) => setStellaContext({...stellaContext, eventType: e.target.value})}
+            onChange={(e) => handleStellaContextChange('eventType', e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           >
             {eventTypes.map(type => (
@@ -264,7 +307,7 @@ const StellaEventWizard = () => {
           <label className="block text-sm font-medium text-gray-700 mb-2">Primary Goal</label>
           <select
             value={stellaContext.primaryGoal}
-            onChange={(e) => setStellaContext({...stellaContext, primaryGoal: e.target.value})}
+            onChange={(e) => handleStellaContextChange('primaryGoal', e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           >
             {primaryGoals.map(goal => (
@@ -277,7 +320,7 @@ const StellaEventWizard = () => {
           <label className="block text-sm font-medium text-gray-700 mb-2">Target Audience</label>
           <select
             value={stellaContext.targetAudience}
-            onChange={(e) => setStellaContext({...stellaContext, targetAudience: e.target.value})}
+            onChange={(e) => handleStellaContextChange('targetAudience', e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           >
             {targetAudiences.map(audience => (
@@ -294,19 +337,7 @@ const StellaEventWizard = () => {
                 <input
                   type="checkbox"
                   checked={stellaContext.additionalGoals.includes(goal)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setStellaContext({
-                        ...stellaContext,
-                        additionalGoals: [...stellaContext.additionalGoals, goal]
-                      });
-                    } else {
-                      setStellaContext({
-                        ...stellaContext,
-                        additionalGoals: stellaContext.additionalGoals.filter(g => g !== goal)
-                      });
-                    }
-                  }}
+                  onChange={(e) => handleAdditionalGoalsChange(goal, e.target.checked)}
                   className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                 />
                 <span className="text-sm text-gray-700">{goal}</span>
@@ -325,19 +356,7 @@ const StellaEventWizard = () => {
                 <input
                   type="checkbox"
                   checked={stellaContext.availableResources.includes(resource)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setStellaContext({
-                        ...stellaContext,
-                        availableResources: [...stellaContext.availableResources, resource]
-                      });
-                    } else {
-                      setStellaContext({
-                        ...stellaContext,
-                        availableResources: stellaContext.availableResources.filter(r => r !== resource)
-                      });
-                    }
-                  }}
+                  onChange={(e) => handleResourcesChange(resource, e.target.checked)}
                   className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                 />
                 <span className="text-sm text-gray-700">{resource}</span>
@@ -354,19 +373,7 @@ const StellaEventWizard = () => {
                 <input
                   type="checkbox"
                   checked={stellaContext.constraints.includes(constraint)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setStellaContext({
-                        ...stellaContext,
-                        constraints: [...stellaContext.constraints, constraint]
-                      });
-                    } else {
-                      setStellaContext({
-                        ...stellaContext,
-                        constraints: stellaContext.constraints.filter(c => c !== constraint)
-                      });
-                    }
-                  }}
+                  onChange={(e) => handleConstraintsChange(constraint, e.target.checked)}
                   className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                 />
                 <span className="text-sm text-gray-700">{constraint}</span>
@@ -380,7 +387,7 @@ const StellaEventWizard = () => {
         <label className="block text-sm font-medium text-gray-700 mb-2">Past Event Experience</label>
         <textarea
           value={stellaContext.pastEventExperiences}
-          onChange={(e) => setStellaContext({...stellaContext, pastEventExperiences: e.target.value})}
+          onChange={(e) => handleStellaContextChange('pastEventExperiences', e.target.value)}
           rows="3"
           placeholder="Tell Stella about similar events you've organized before..."
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -415,10 +422,7 @@ const StellaEventWizard = () => {
                 ? 'border-purple-500 bg-purple-50' 
                 : 'border-gray-200 hover:border-gray-300'
             }`}
-            onClick={() => setModuleIntegrations({
-              ...moduleIntegrations,
-              [module.key]: !moduleIntegrations[module.key]
-            })}>
+            onClick={() => handleModuleToggle(module.key)}>
               <div className="flex items-center space-x-3">
                 <Icon className={`w-6 h-6 ${
                   moduleIntegrations[module.key] ? 'text-purple-600' : 'text-gray-400'
@@ -631,7 +635,7 @@ const StellaEventWizard = () => {
 
         {/* Progress Steps */}
         <div className="flex justify-center mb-8">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-8">
             {[1, 2, 3, 4].map((step) => (
               <div key={step} className="flex items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
@@ -642,7 +646,7 @@ const StellaEventWizard = () => {
                   {step}
                 </div>
                 {step < 4 && (
-                  <div className={`w-12 h-1 mx-2 ${
+                  <div className={`w-16 h-1 mx-4 ${
                     currentStep > step ? 'bg-purple-600' : 'bg-gray-200'
                   }`} />
                 )}
@@ -653,7 +657,7 @@ const StellaEventWizard = () => {
 
         {/* Step Labels */}
         <div className="flex justify-center mb-8">
-          <div className="grid grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-4 gap-16 text-center">
             {[
               'Event Details',
               'Context & Goals', 
