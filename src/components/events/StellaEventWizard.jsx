@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Sparkles, Calendar, DollarSign, Users, MessageSquare, 
   CheckCircle, Clock, TrendingUp, Target, Zap, ArrowRight,
   Settings, Eye, Download, Plus, AlertCircle, Activity,
-  PlayCircle, BarChart3, Edit
+  PlayCircle, BarChart3, Edit, RotateCcw
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { aiAPI } from '@/utils/api';
@@ -74,116 +74,26 @@ const EventDetailsStep = ({ eventData, setEventData }) => (
   </div>
 );
 
-const StellaEventWizard = () => {
-  const navigate = useNavigate();
-  
-  // State management
-  const [currentUser, setCurrentUser] = useState(null);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [workflowMode, setWorkflowMode] = useState('assisted');
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generationProgress, setGenerationProgress] = useState(0);
-  const [generationStep, setGenerationStep] = useState('');
-  const [generatedWorkflow, setGeneratedWorkflow] = useState(null);
+// Context Step Component - moved outside to prevent re-creation and add scroll preservation
+const ContextStep = ({ stellaContext, setStellaContext, handleStellaContextChange, handleAdditionalGoalsChange, handleResourcesChange, handleConstraintsChange }) => {
+  const additionalGoalsRef = useRef(null);
+  const resourcesRef = useRef(null);
+  const constraintsRef = useRef(null);
 
-  // Form data
-  const [eventData, setEventData] = useState({
-    title: '',
-    description: '',
-    event_date: '',
-    expected_attendance: '100',
-    estimated_budget: '2000',
-    category: 'Celebration'
-  });
-
-  const [stellaContext, setStellaContext] = useState({
-    eventType: 'School Event',
-    primaryGoal: 'Community Building',
-    targetAudience: 'Families',
-    additionalGoals: [],
-    availableResources: [],
-    constraints: [],
-    specialConsiderations: '',
-    pastEventExperiences: 'This is our first event'
-  });
-
-  const [moduleIntegrations, setModuleIntegrations] = useState({
-    createBudget: true,
-    generateTimeline: true,
-    setupCommunications: true,
-    createVolunteerRoles: true,
-    planMaterials: true,
-    scheduleReminders: true,
-    trackProgress: true,
-    generateReports: true
-  });
-
-  // Memoized event handlers to prevent re-renders
-  const handleEventDataChange = useCallback((field, value) => {
-    setEventData(prev => ({ ...prev, [field]: value }));
-  }, []);
-
-  const handleStellaContextChange = useCallback((field, value) => {
-    setStellaContext(prev => ({ ...prev, [field]: value }));
-  }, []);
-
-  const handleModuleToggle = useCallback((moduleKey) => {
-    setModuleIntegrations(prev => ({
-      ...prev,
-      [moduleKey]: !prev[moduleKey]
-    }));
-  }, []);
-
-  const handleAdditionalGoalsChange = useCallback((goal, checked) => {
-    setStellaContext(prev => ({
-      ...prev,
-      additionalGoals: checked 
-        ? [...prev.additionalGoals, goal]
-        : prev.additionalGoals.filter(g => g !== goal)
-    }));
-  }, []);
-
-  const handleResourcesChange = useCallback((resource, checked) => {
-    setStellaContext(prev => ({
-      ...prev,
-      availableResources: checked 
-        ? [...prev.availableResources, resource]
-        : prev.availableResources.filter(r => r !== resource)
-    }));
-  }, []);
-
-  const handleConstraintsChange = useCallback((constraint, checked) => {
-    setStellaContext(prev => ({
-      ...prev,
-      constraints: checked 
-        ? [...prev.constraints, constraint]
-        : prev.constraints.filter(c => c !== constraint)
-    }));
-  }, []);
-
-  // Initialize user context
-  useEffect(() => {
-    const fetchUserContext = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-          
-          setCurrentUser(profile);
+  // Preserve scroll positions
+  const preserveScroll = (ref, callback) => {
+    return (...args) => {
+      const scrollTop = ref.current?.scrollTop || 0;
+      callback(...args);
+      // Restore scroll position after state update
+      setTimeout(() => {
+        if (ref.current) {
+          ref.current.scrollTop = scrollTop;
         }
-      } catch (error) {
-        console.error('Error fetching user context:', error);
-      }
+      }, 0);
     };
+  };
 
-    fetchUserContext();
-  }, []);
-
-  // Event type options
   const eventTypes = [
     'Fall Festival', 'Spring Carnival', 'Book Fair', 'Science Night',
     'Art Show', 'Talent Show', 'Movie Night', 'Game Night',
@@ -221,6 +131,322 @@ const StellaEventWizard = () => {
     'Weather dependent', 'Need school approval', 'Limited volunteers',
     'Scheduling conflicts', 'Safety requirements'
   ];
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Help Stella Understand Your Goals</h2>
+        <p className="text-gray-600">This information helps Stella create the perfect workflow for your event</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Event Type</label>
+          <select
+            value={stellaContext.eventType}
+            onChange={(e) => handleStellaContextChange('eventType', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          >
+            {eventTypes.map(type => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Primary Goal</label>
+          <select
+            value={stellaContext.primaryGoal}
+            onChange={(e) => handleStellaContextChange('primaryGoal', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          >
+            {primaryGoals.map(goal => (
+              <option key={goal} value={goal}>{goal}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Target Audience</label>
+          <select
+            value={stellaContext.targetAudience}
+            onChange={(e) => handleStellaContextChange('targetAudience', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          >
+            {targetAudiences.map(audience => (
+              <option key={audience} value={audience}>{audience}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Additional Goals</label>
+          <div ref={additionalGoalsRef} className="space-y-2 max-h-32 overflow-y-auto">
+            {additionalGoalOptions.map(goal => (
+              <label key={goal} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={stellaContext.additionalGoals.includes(goal)}
+                  onChange={preserveScroll(additionalGoalsRef, (e) => handleAdditionalGoalsChange(goal, e.target.checked))}
+                  className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                />
+                <span className="text-sm text-gray-700">{goal}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Available Resources</label>
+          <div ref={resourcesRef} className="space-y-2 max-h-32 overflow-y-auto">
+            {availableResourceOptions.map(resource => (
+              <label key={resource} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={stellaContext.availableResources.includes(resource)}
+                  onChange={preserveScroll(resourcesRef, (e) => handleResourcesChange(resource, e.target.checked))}
+                  className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                />
+                <span className="text-sm text-gray-700">{resource}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Constraints</label>
+          <div ref={constraintsRef} className="space-y-2 max-h-32 overflow-y-auto">
+            {constraintOptions.map(constraint => (
+              <label key={constraint} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={stellaContext.constraints.includes(constraint)}
+                  onChange={preserveScroll(constraintsRef, (e) => handleConstraintsChange(constraint, e.target.checked))}
+                  className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                />
+                <span className="text-sm text-gray-700">{constraint}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Past Event Experience</label>
+        <textarea
+          value={stellaContext.pastEventExperiences}
+          onChange={(e) => handleStellaContextChange('pastEventExperiences', e.target.value)}
+          rows="3"
+          placeholder="Tell Stella about similar events you've organized before..."
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+        />
+      </div>
+    </div>
+  );
+};
+
+const StellaEventWizard = () => {
+  const navigate = useNavigate();
+  
+  // Storage keys for persistence
+  const STORAGE_KEY = 'stella-event-wizard-state';
+  
+  // Load persisted state or use defaults
+  const loadPersistedState = () => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (error) {
+      console.warn('Failed to load persisted state:', error);
+    }
+    return null;
+  };
+
+  const persistedState = loadPersistedState();
+  
+  // State management
+  const [currentUser, setCurrentUser] = useState(null);
+  const [currentStep, setCurrentStep] = useState(persistedState?.currentStep || 1);
+  const [workflowMode, setWorkflowMode] = useState(persistedState?.workflowMode || 'assisted');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [generationStep, setGenerationStep] = useState('');
+  const [generatedWorkflow, setGeneratedWorkflow] = useState(persistedState?.generatedWorkflow || null);
+
+  // Form data
+  const [eventData, setEventData] = useState(persistedState?.eventData || {
+    title: '',
+    description: '',
+    event_date: '',
+    expected_attendance: '100',
+    estimated_budget: '2000',
+    category: 'Celebration'
+  });
+
+  const [stellaContext, setStellaContext] = useState(persistedState?.stellaContext || {
+    eventType: 'Fall Festival',
+    primaryGoal: 'Community Building',
+    targetAudience: 'All Families',
+    additionalGoals: [],
+    availableResources: [],
+    constraints: [],
+    specialConsiderations: '',
+    pastEventExperiences: ''
+  });
+
+  const [moduleIntegrations, setModuleIntegrations] = useState(persistedState?.moduleIntegrations || {
+    createBudget: true,
+    generateTimeline: true,
+    setupCommunications: true,
+    createVolunteerRoles: true,
+    planMaterials: true,
+    scheduleReminders: true,
+    trackProgress: true,
+    generateReports: true
+  });
+
+  // Memoized event handlers to prevent re-renders
+  const handleEventDataChange = useCallback((field, value) => {
+    setEventData(prev => ({ ...prev, [field]: value }));
+  }, []);
+
+  const handleStellaContextChange = useCallback((field, value) => {
+    setStellaContext(prev => ({ ...prev, [field]: value }));
+  }, []);
+
+  const handleModuleToggle = useCallback((moduleKey) => {
+    setModuleIntegrations(prev => ({
+      ...prev,
+      [moduleKey]: !prev[moduleKey]
+    }));
+  }, []);
+
+  // Clear persisted state (for starting over)
+  const clearPersistedState = useCallback(() => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      console.warn('Failed to clear persisted state:', error);
+    }
+  }, [STORAGE_KEY]);
+
+  // Reset form to initial state
+  const resetForm = useCallback(() => {
+    setCurrentStep(1);
+    setWorkflowMode('assisted');
+    setEventData({
+      title: '',
+      description: '',
+      event_date: '',
+      expected_attendance: '100',
+      estimated_budget: '2000',
+      category: 'Celebration'
+    });
+    setStellaContext({
+      eventType: 'Fall Festival',
+      primaryGoal: 'Community Building',
+      targetAudience: 'All Families',
+      additionalGoals: [],
+      availableResources: [],
+      constraints: [],
+      specialConsiderations: '',
+      pastEventExperiences: ''
+    });
+    setModuleIntegrations({
+      createBudget: true,
+      generateTimeline: true,
+      setupCommunications: true,
+      createVolunteerRoles: true,
+      planMaterials: true,
+      scheduleReminders: true,
+      trackProgress: true,
+      generateReports: true
+    });
+    setGeneratedWorkflow(null);
+    clearPersistedState();
+    toast.success('✨ Form cleared! Starting fresh.');
+  }, [clearPersistedState]);
+
+  const handleAdditionalGoalsChange = useCallback((goal, checked) => {
+    setStellaContext(prev => ({
+      ...prev,
+      additionalGoals: checked 
+        ? [...prev.additionalGoals, goal]
+        : prev.additionalGoals.filter(g => g !== goal)
+    }));
+  }, []);
+
+  const handleResourcesChange = useCallback((resource, checked) => {
+    setStellaContext(prev => ({
+      ...prev,
+      availableResources: checked 
+        ? [...prev.availableResources, resource]
+        : prev.availableResources.filter(r => r !== resource)
+    }));
+  }, []);
+
+  const handleConstraintsChange = useCallback((constraint, checked) => {
+    setStellaContext(prev => ({
+      ...prev,
+      constraints: checked 
+        ? [...prev.constraints, constraint]
+        : prev.constraints.filter(c => c !== constraint)
+    }));
+  }, []);
+
+  // Persist state to localStorage whenever it changes
+  useEffect(() => {
+    const stateToSave = {
+      currentStep,
+      workflowMode,
+      eventData,
+      stellaContext,
+      moduleIntegrations,
+      generatedWorkflow
+    };
+    
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+    } catch (error) {
+      console.warn('Failed to persist state:', error);
+    }
+  }, [currentStep, workflowMode, eventData, stellaContext, moduleIntegrations, generatedWorkflow]);
+
+  // Initialize user context and show restoration message
+  useEffect(() => {
+    const fetchUserContext = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          setCurrentUser(profile);
+        }
+      } catch (error) {
+        console.error('Error fetching user context:', error);
+      }
+    };
+
+    fetchUserContext();
+
+    // Show restoration message if data was loaded from localStorage
+    if (persistedState && (persistedState.currentStep > 1 || persistedState.eventData.title)) {
+      toast.info('🔄 Your previous work has been restored!', {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+  }, []);
+
+
 
   // Generate comprehensive workflow
   const generateWorkflow = async () => {
@@ -289,120 +515,7 @@ const StellaEventWizard = () => {
 
 
 
-  // Step 2: Context & Goals
-  const ContextStep = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Help Stella Understand Your Goals</h2>
-        <p className="text-gray-600">This information helps Stella create the perfect workflow for your event</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Event Type</label>
-          <select
-            value={stellaContext.eventType}
-            onChange={(e) => handleStellaContextChange('eventType', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          >
-            {eventTypes.map(type => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Primary Goal</label>
-          <select
-            value={stellaContext.primaryGoal}
-            onChange={(e) => handleStellaContextChange('primaryGoal', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          >
-            {primaryGoals.map(goal => (
-              <option key={goal} value={goal}>{goal}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Target Audience</label>
-          <select
-            value={stellaContext.targetAudience}
-            onChange={(e) => handleStellaContextChange('targetAudience', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          >
-            {targetAudiences.map(audience => (
-              <option key={audience} value={audience}>{audience}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Additional Goals</label>
-          <div className="space-y-2 max-h-32 overflow-y-auto">
-            {additionalGoalOptions.map(goal => (
-              <label key={goal} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={stellaContext.additionalGoals.includes(goal)}
-                  onChange={(e) => handleAdditionalGoalsChange(goal, e.target.checked)}
-                  className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                />
-                <span className="text-sm text-gray-700">{goal}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Available Resources</label>
-          <div className="space-y-2 max-h-32 overflow-y-auto">
-            {availableResourceOptions.map(resource => (
-              <label key={resource} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={stellaContext.availableResources.includes(resource)}
-                  onChange={(e) => handleResourcesChange(resource, e.target.checked)}
-                  className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                />
-                <span className="text-sm text-gray-700">{resource}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Constraints</label>
-          <div className="space-y-2 max-h-32 overflow-y-auto">
-            {constraintOptions.map(constraint => (
-              <label key={constraint} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={stellaContext.constraints.includes(constraint)}
-                  onChange={(e) => handleConstraintsChange(constraint, e.target.checked)}
-                  className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                />
-                <span className="text-sm text-gray-700">{constraint}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Past Event Experience</label>
-        <textarea
-          value={stellaContext.pastEventExperiences}
-          onChange={(e) => handleStellaContextChange('pastEventExperiences', e.target.value)}
-          rows="3"
-          placeholder="Tell Stella about similar events you've organized before..."
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-        />
-      </div>
-    </div>
-  );
+  // Step 2: Context & Goals - now using external component with scroll preservation
 
   // Step 3: Module Selection
   const ModuleSelectionStep = () => (
@@ -522,27 +635,43 @@ const StellaEventWizard = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <button
-            onClick={() => navigate('/events')}
+            onClick={() => {
+              clearPersistedState();
+              navigate('/events');
+            }}
             className="flex items-center justify-center space-x-2 p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Eye className="w-5 h-5" />
             <span>View Event Details</span>
           </button>
           <button
-            onClick={() => navigate('/budget')}
+            onClick={() => {
+              clearPersistedState();
+              navigate('/budget');
+            }}
             className="flex items-center justify-center space-x-2 p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
           >
             <DollarSign className="w-5 h-5" />
             <span>Review Budget</span>
           </button>
           <button
-            onClick={() => navigate('/communications')}
+            onClick={() => {
+              clearPersistedState();
+              navigate('/communications');
+            }}
             className="flex items-center justify-center space-x-2 p-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
           >
             <MessageSquare className="w-5 h-5" />
             <span>Start Communications</span>
+          </button>
+          <button
+            onClick={resetForm}
+            className="flex items-center justify-center space-x-2 p-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            <RotateCcw className="w-5 h-5" />
+            <span>Create Another Event</span>
           </button>
         </div>
       </div>
@@ -630,7 +759,7 @@ const StellaEventWizard = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-6">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 relative">
           <div className="flex items-center justify-center space-x-3 mb-4">
             <Sparkles className="w-10 h-10 text-purple-600" />
             <h1 className="text-3xl font-bold text-gray-900">Stella Event Workflow Wizard</h1>
@@ -639,6 +768,18 @@ const StellaEventWizard = () => {
             Let Stella create a comprehensive workflow for your event with integrated project management, 
             budgeting, communications, and volunteer coordination.
           </p>
+          
+          {/* Start Over Button - only show if not on step 1 or if there's form data */}
+          {(currentStep > 1 || eventData.title || stellaContext.additionalGoals.length > 0) && (
+            <button
+              onClick={resetForm}
+              className="absolute top-0 right-0 flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+              title="Clear all data and start over"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span>Start Over</span>
+            </button>
+          )}
         </div>
 
         {/* Progress Steps */}
@@ -680,7 +821,16 @@ const StellaEventWizard = () => {
           ) : (
             <>
               {currentStep === 1 && <EventDetailsStep eventData={eventData} setEventData={setEventData} />}
-              {currentStep === 2 && <ContextStep />}
+              {currentStep === 2 && (
+          <ContextStep 
+            stellaContext={stellaContext}
+            setStellaContext={setStellaContext}
+            handleStellaContextChange={handleStellaContextChange}
+            handleAdditionalGoalsChange={handleAdditionalGoalsChange}
+            handleResourcesChange={handleResourcesChange}
+            handleConstraintsChange={handleConstraintsChange}
+          />
+        )}
               {currentStep === 3 && <ModuleSelectionStep />}
               {currentStep === 4 && <WorkflowResultsStep />}
             </>
