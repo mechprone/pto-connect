@@ -235,10 +235,9 @@ const StellaEventWizard = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Event Title</label>
           <input
-            key="event-title"
             type="text"
             value={eventData.title}
-            onChange={(e) => handleEventDataChange('title', e.target.value)}
+            onChange={(e) => setEventData(prev => ({ ...prev, title: e.target.value }))}
             placeholder="e.g., Fall Festival 2025"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
@@ -247,10 +246,9 @@ const StellaEventWizard = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Event Date</label>
           <input
-            key="event-date"
             type="date"
             value={eventData.event_date}
-            onChange={(e) => handleEventDataChange('event_date', e.target.value)}
+            onChange={(e) => setEventData(prev => ({ ...prev, event_date: e.target.value }))}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
         </div>
@@ -258,10 +256,9 @@ const StellaEventWizard = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Expected Attendance</label>
           <input
-            key="expected-attendance"
             type="number"
             value={eventData.expected_attendance}
-            onChange={(e) => handleEventDataChange('expected_attendance', e.target.value)}
+            onChange={(e) => setEventData(prev => ({ ...prev, expected_attendance: e.target.value }))}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
         </div>
@@ -269,10 +266,9 @@ const StellaEventWizard = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Estimated Budget</label>
           <input
-            key="estimated-budget"
             type="number"
             value={eventData.estimated_budget}
-            onChange={(e) => handleEventDataChange('estimated_budget', e.target.value)}
+            onChange={(e) => setEventData(prev => ({ ...prev, estimated_budget: e.target.value }))}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
         </div>
@@ -281,9 +277,8 @@ const StellaEventWizard = () => {
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
         <textarea
-          key="event-description"
           value={eventData.description}
-          onChange={(e) => handleEventDataChange('description', e.target.value)}
+          onChange={(e) => setEventData(prev => ({ ...prev, description: e.target.value }))}
           rows="3"
           placeholder="Brief description of your event..."
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -668,25 +663,25 @@ const StellaEventWizard = () => {
 
         {/* Step Labels */}
         <div className="flex justify-center mb-8">
-          <div className="flex items-center justify-center space-x-14">
-            <div className={`text-sm text-center ${
+          <div className="grid grid-cols-4 text-center" style={{ width: '600px', gap: '0px' }}>
+            <div className={`text-sm ${
               currentStep >= 1 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginLeft: '6px' }}>
+            }`} style={{ marginLeft: '-10px' }}>
               Event Details
             </div>
-            <div className={`text-sm text-center ${
+            <div className={`text-sm ${
               currentStep >= 2 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginLeft: '2px' }}>
+            }`} style={{ marginLeft: '-20px' }}>
               Context & Goals
             </div>
-            <div className={`text-sm text-center ${
+            <div className={`text-sm ${
               currentStep >= 3 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginRight: '2px' }}>
+            }`} style={{ marginRight: '-20px' }}>
               Module Selection
             </div>
-            <div className={`text-sm text-center ${
+            <div className={`text-sm ${
               currentStep >= 4 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginRight: '6px' }}>
+            }`} style={{ marginRight: '-10px' }}>
               Workflow Results
             </div>
           </div>
