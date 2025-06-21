@@ -283,12 +283,26 @@ export const aiAPI = {
   chatWithDocuments: (query) => apiRequest('POST', '/ai/chat', { query }),
   
   // Stella Comprehensive Workflow API calls
-  generateComprehensiveWorkflow: (eventData, stellaContext, moduleIntegrations) => 
-    apiRequest('POST', '/stella/generate-comprehensive-workflow', { 
-      eventData, 
-      stellaContext, 
-      moduleIntegrations 
-    }),
+  generateComprehensiveWorkflow: async (eventData, stellaContext, moduleIntegrations) => {
+    try {
+      console.log('🌟 [API] Generating comprehensive workflow...');
+      console.log('📊 [API] Event data:', eventData);
+      console.log('🎯 [API] Stella context:', stellaContext);
+      console.log('🔧 [API] Module integrations:', moduleIntegrations);
+      
+      const response = await apiRequest('POST', '/api/stella/generate-comprehensive-workflow-simple', {
+        eventData,
+        stellaContext,
+        moduleIntegrations
+      });
+      
+      console.log('✅ [API] Workflow generation response:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ [API] Workflow generation failed:', error);
+      throw error;
+    }
+  },
   getWorkflowDetails: (workflowId) => 
     apiRequest('GET', `/stella/workflow/${workflowId}`),
   listWorkflows: () => 
