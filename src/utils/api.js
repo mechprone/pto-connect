@@ -281,6 +281,18 @@ export const aiAPI = {
     apiRequest('POST', '/ai/analyze-event-workflow', { eventData, orgId }),
   analyzeDocument: (documentId) => apiRequest('POST', `/ai/analyze-document/${documentId}`),
   chatWithDocuments: (query) => apiRequest('POST', '/ai/chat', { query }),
+  
+  // Stella Comprehensive Workflow API calls
+  generateComprehensiveWorkflow: (eventData, stellaContext, moduleIntegrations) => 
+    apiRequest('POST', '/stella/generate-comprehensive-workflow', { 
+      eventData, 
+      stellaContext, 
+      moduleIntegrations 
+    }),
+  getWorkflowDetails: (workflowId) => 
+    apiRequest('GET', `/stella/workflow/${workflowId}`),
+  listWorkflows: () => 
+    apiRequest('GET', '/stella/workflows'),
 };
 
 // Stripe API calls
