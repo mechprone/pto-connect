@@ -235,6 +235,7 @@ const StellaEventWizard = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Event Title</label>
           <input
+            key="event-title"
             type="text"
             value={eventData.title}
             onChange={(e) => handleEventDataChange('title', e.target.value)}
@@ -246,6 +247,7 @@ const StellaEventWizard = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Event Date</label>
           <input
+            key="event-date"
             type="date"
             value={eventData.event_date}
             onChange={(e) => handleEventDataChange('event_date', e.target.value)}
@@ -256,6 +258,7 @@ const StellaEventWizard = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Expected Attendance</label>
           <input
+            key="expected-attendance"
             type="number"
             value={eventData.expected_attendance}
             onChange={(e) => handleEventDataChange('expected_attendance', e.target.value)}
@@ -266,6 +269,7 @@ const StellaEventWizard = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Estimated Budget</label>
           <input
+            key="estimated-budget"
             type="number"
             value={eventData.estimated_budget}
             onChange={(e) => handleEventDataChange('estimated_budget', e.target.value)}
@@ -277,6 +281,7 @@ const StellaEventWizard = () => {
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
         <textarea
+          key="event-description"
           value={eventData.description}
           onChange={(e) => handleEventDataChange('description', e.target.value)}
           rows="3"
@@ -663,25 +668,25 @@ const StellaEventWizard = () => {
 
         {/* Step Labels */}
         <div className="flex justify-center mb-8">
-          <div className="flex items-center justify-center space-x-12">
+          <div className="flex items-center justify-center space-x-14">
             <div className={`text-sm text-center ${
               currentStep >= 1 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginLeft: '12px' }}>
+            }`} style={{ marginLeft: '6px' }}>
               Event Details
             </div>
             <div className={`text-sm text-center ${
               currentStep >= 2 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginLeft: '8px' }}>
+            }`} style={{ marginLeft: '2px' }}>
               Context & Goals
             </div>
             <div className={`text-sm text-center ${
               currentStep >= 3 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginRight: '8px' }}>
+            }`} style={{ marginRight: '2px' }}>
               Module Selection
             </div>
             <div className={`text-sm text-center ${
               currentStep >= 4 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginRight: '12px' }}>
+            }`} style={{ marginRight: '6px' }}>
               Workflow Results
             </div>
           </div>
