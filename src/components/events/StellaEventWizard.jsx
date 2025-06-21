@@ -489,14 +489,28 @@ const StellaEventWizard = () => {
         estimated_budget: parseInt(eventData.estimated_budget) || 0
       };
       
+      console.log('🚀 Sending workflow generation request:', {
+        eventData: processedEventData,
+        stellaContext,
+        moduleIntegrations
+      });
+
       const result = await aiAPI.generateComprehensiveWorkflow(
         processedEventData,
         stellaContext,
         moduleIntegrations
       );
 
+      console.log('📨 API Response:', result);
+
       if (result.error) {
+        console.error('❌ API returned error:', result.error);
         throw new Error(result.error);
+      }
+
+      if (!result.data) {
+        console.error('❌ No data in API response:', result);
+        throw new Error('No workflow data received from Stella');
       }
 
       setGeneratedWorkflow(result.data);
@@ -504,8 +518,55 @@ const StellaEventWizard = () => {
       setCurrentStep(4);
 
     } catch (error) {
-      console.error('Workflow generation error:', error);
-      toast.error('Stella encountered an issue. Please try again.');
+      console.error('❌ Workflow generation error:', error);
+      
+      // More detailed error messaging
+      let errorMessage = 'Stella encountered an issue. Please try again.';
+      
+      if (error.message?.includes('ERR_SOCKET_NOT_CONNECTED')) {
+        errorMessage = '🔌 Connection issue detected. Please check your internet connection and try again.';
+      } else if (error.message?.includes('Network Error')) {
+        errorMessage = '🌐 Network error. The backend service might be temporarily unavailable.';
+      } else if (error.message?.includes('401')) {
+        errorMessage = '🔐 Authentication error. Please refresh the page and try again.';
+      } else if (error.message?.includes('500')) {
+        errorMessage = '⚠️ Server error. Stella is having technical difficulties.';
+      } else if (error.message) {
+        errorMessage = `❌ ${error.message}`;
+      }
+      
+      toast.error(errorMessage, { autoClose: 5000 });
+      
+      // For development: Show mock results if we're in development mode
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔧 Development mode: Using mock workflow data');
+        const mockWorkflow = {
+          workflow: {
+            event_title: eventData.title,
+            message: `Stella has created a comprehensive workflow for "${eventData.title}" with integrated project management, budget planning, and communication strategies.`,
+            components_created: Object.keys(moduleIntegrations).filter(key => moduleIntegrations[key]),
+            next_steps: [
+              'Review the generated budget and adjust line items as needed',
+              'Confirm volunteer roles and begin recruitment',
+              'Schedule communication campaigns for optimal timing',
+              'Set up project milestones and task assignments',
+              'Begin vendor outreach and facility reservations'
+            ],
+            timeline: {
+              total_weeks: 8,
+              phases: ['Planning', 'Preparation', 'Execution', 'Follow-up']
+            },
+            budget_summary: {
+              estimated_total: eventData.estimated_budget,
+              categories: ['Materials', 'Marketing', 'Volunteer Appreciation', 'Contingency']
+            }
+          }
+        };
+        
+        setGeneratedWorkflow(mockWorkflow);
+        setCurrentStep(4);
+        toast.info('🔧 Using mock data for development testing');
+      }
     } finally {
       setIsGenerating(false);
       setGenerationProgress(0);
