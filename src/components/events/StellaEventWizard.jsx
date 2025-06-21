@@ -27,8 +27,8 @@ const StellaEventWizard = () => {
     title: '',
     description: '',
     event_date: '',
-    expected_attendance: 100,
-    estimated_budget: 2000,
+    expected_attendance: '100',
+    estimated_budget: '2000',
     category: 'Celebration'
   });
 
@@ -193,8 +193,14 @@ const StellaEventWizard = () => {
       }
 
       // Call the actual API
+      const processedEventData = {
+        ...eventData,
+        expected_attendance: parseInt(eventData.expected_attendance) || 0,
+        estimated_budget: parseInt(eventData.estimated_budget) || 0
+      };
+      
       const result = await aiAPI.generateComprehensiveWorkflow(
-        eventData,
+        processedEventData,
         stellaContext,
         moduleIntegrations
       );
@@ -252,7 +258,7 @@ const StellaEventWizard = () => {
           <input
             type="number"
             value={eventData.expected_attendance}
-            onChange={(e) => handleEventDataChange('expected_attendance', parseInt(e.target.value) || 0)}
+            onChange={(e) => handleEventDataChange('expected_attendance', e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
         </div>
@@ -262,7 +268,7 @@ const StellaEventWizard = () => {
           <input
             type="number"
             value={eventData.estimated_budget}
-            onChange={(e) => handleEventDataChange('estimated_budget', parseInt(e.target.value) || 0)}
+            onChange={(e) => handleEventDataChange('estimated_budget', e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
         </div>
@@ -657,19 +663,27 @@ const StellaEventWizard = () => {
 
         {/* Step Labels */}
         <div className="flex justify-center mb-8">
-          <div className="grid grid-cols-4 gap-16 text-center">
-            {[
-              'Event Details',
-              'Context & Goals', 
-              'Module Selection',
-              'Workflow Results'
-            ].map((label, index) => (
-              <div key={index} className={`text-sm ${
-                currentStep >= index + 1 ? 'text-purple-600 font-medium' : 'text-gray-500'
-              }`}>
-                {label}
-              </div>
-            ))}
+          <div className="flex items-center justify-center space-x-12">
+            <div className={`text-sm text-center ${
+              currentStep >= 1 ? 'text-purple-600 font-medium' : 'text-gray-500'
+            }`} style={{ marginLeft: '12px' }}>
+              Event Details
+            </div>
+            <div className={`text-sm text-center ${
+              currentStep >= 2 ? 'text-purple-600 font-medium' : 'text-gray-500'
+            }`} style={{ marginLeft: '8px' }}>
+              Context & Goals
+            </div>
+            <div className={`text-sm text-center ${
+              currentStep >= 3 ? 'text-purple-600 font-medium' : 'text-gray-500'
+            }`} style={{ marginRight: '8px' }}>
+              Module Selection
+            </div>
+            <div className={`text-sm text-center ${
+              currentStep >= 4 ? 'text-purple-600 font-medium' : 'text-gray-500'
+            }`} style={{ marginRight: '12px' }}>
+              Workflow Results
+            </div>
           </div>
         </div>
 
