@@ -10,6 +10,70 @@ import { toast } from 'react-toastify';
 import { aiAPI } from '@/utils/api';
 import { supabase } from '@/utils/supabaseClient';
 
+// Event Details Step Component - moved outside to prevent re-creation
+const EventDetailsStep = ({ eventData, setEventData }) => (
+  <div className="space-y-6">
+    <div className="text-center mb-8">
+      <h2 className="text-2xl font-bold text-gray-900 mb-2">Tell Stella About Your Event</h2>
+      <p className="text-gray-600">Provide basic information about the event you want to create</p>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Event Title</label>
+        <input
+          type="text"
+          value={eventData.title}
+          onChange={(e) => setEventData(prev => ({ ...prev, title: e.target.value }))}
+          placeholder="e.g., Fall Festival 2025"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Event Date</label>
+        <input
+          type="date"
+          value={eventData.event_date}
+          onChange={(e) => setEventData(prev => ({ ...prev, event_date: e.target.value }))}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Expected Attendance</label>
+        <input
+          type="number"
+          value={eventData.expected_attendance}
+          onChange={(e) => setEventData(prev => ({ ...prev, expected_attendance: e.target.value }))}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Estimated Budget</label>
+        <input
+          type="number"
+          value={eventData.estimated_budget}
+          onChange={(e) => setEventData(prev => ({ ...prev, estimated_budget: e.target.value }))}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+        />
+      </div>
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+      <textarea
+        value={eventData.description}
+        onChange={(e) => setEventData(prev => ({ ...prev, description: e.target.value }))}
+        rows="3"
+        placeholder="Brief description of your event..."
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+      />
+    </div>
+  </div>
+);
+
 const StellaEventWizard = () => {
   const navigate = useNavigate();
   
@@ -223,69 +287,7 @@ const StellaEventWizard = () => {
     }
   };
 
-  // Step 1: Event Details
-  const EventDetailsStep = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Tell Stella About Your Event</h2>
-        <p className="text-gray-600">Provide basic information about the event you want to create</p>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Event Title</label>
-          <input
-            type="text"
-            value={eventData.title}
-            onChange={(e) => setEventData(prev => ({ ...prev, title: e.target.value }))}
-            placeholder="e.g., Fall Festival 2025"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Event Date</label>
-          <input
-            type="date"
-            value={eventData.event_date}
-            onChange={(e) => setEventData(prev => ({ ...prev, event_date: e.target.value }))}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Expected Attendance</label>
-          <input
-            type="number"
-            value={eventData.expected_attendance}
-            onChange={(e) => setEventData(prev => ({ ...prev, expected_attendance: e.target.value }))}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Estimated Budget</label>
-          <input
-            type="number"
-            value={eventData.estimated_budget}
-            onChange={(e) => setEventData(prev => ({ ...prev, estimated_budget: e.target.value }))}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-        <textarea
-          value={eventData.description}
-          onChange={(e) => setEventData(prev => ({ ...prev, description: e.target.value }))}
-          rows="3"
-          placeholder="Brief description of your event..."
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-        />
-      </div>
-    </div>
-  );
 
   // Step 2: Context & Goals
   const ContextStep = () => (
@@ -666,22 +668,22 @@ const StellaEventWizard = () => {
           <div className="grid grid-cols-4 text-center" style={{ width: '600px', gap: '0px' }}>
             <div className={`text-sm ${
               currentStep >= 1 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginLeft: '-10px' }}>
+            }`} style={{ marginLeft: '-15px' }}>
               Event Details
             </div>
             <div className={`text-sm ${
               currentStep >= 2 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginLeft: '-20px' }}>
+            }`} style={{ marginLeft: '-25px' }}>
               Context & Goals
             </div>
             <div className={`text-sm ${
               currentStep >= 3 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginRight: '-20px' }}>
+            }`} style={{ marginRight: '-25px' }}>
               Module Selection
             </div>
             <div className={`text-sm ${
               currentStep >= 4 ? 'text-purple-600 font-medium' : 'text-gray-500'
-            }`} style={{ marginRight: '-10px' }}>
+            }`} style={{ marginRight: '-15px' }}>
               Workflow Results
             </div>
           </div>
@@ -693,7 +695,7 @@ const StellaEventWizard = () => {
             <GenerationProgress />
           ) : (
             <>
-              {currentStep === 1 && <EventDetailsStep />}
+              {currentStep === 1 && <EventDetailsStep eventData={eventData} setEventData={setEventData} />}
               {currentStep === 2 && <ContextStep />}
               {currentStep === 3 && <ModuleSelectionStep />}
               {currentStep === 4 && <WorkflowResultsStep />}
