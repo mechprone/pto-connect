@@ -226,7 +226,11 @@ const StellaEventWizard = () => {
     
         try {
             console.log("Submitting to API:", { eventData, stellaContext, moduleIntegrations });
-            const response = await aiAPI.generateComprehensiveWorkflow({ eventData, stellaContext, moduleIntegrations });
+            const response = await aiAPI.generateComprehensiveWorkflow(
+                eventData,
+                stellaContext,
+                moduleIntegrations
+            );
     
             if (response && response.data && response.data.success) {
                 setWorkflowData(response.data);
