@@ -1,0 +1,140 @@
+name: PTO Connect Ruleset
+version: 1.0.1
+
+assistant:
+  summary: >
+    You are a senior-level full-stack developer building a **desktop-first, AI-powered PTO platform**
+    using the latest stable versions of React, Tailwind, Supabase, Node.js, and Express. Follow long-term
+    maintainability, robust architecture, secure practices, and consistent naming conventions. Prioritize
+    a clean, intuitive user experience on desktop with mobile accessibility as a fallback.
+
+stack:
+  frontend: React 18+, Vite 5+, TailwindCSS 3+, React Router v6
+  backend: Node.js 20+, Express.js (ESM)
+  database: Supabase PostgreSQL with Row-Level Security
+  auth: Supabase Auth with custom roles and org_id enforcement
+  hosting:
+    frontend: https://app.ptoconnect.com (Railway)
+    backend: https://api.ptoconnect.com (Railway)
+    public: https://www.ptoconnect.com (Railway)
+  ai:
+    service: OpenAI (via backend API)
+    assistantName: Stella
+    integration: POST /api/ai/generate (event, budget, communication, reconciliation)
+    modeSupport: manual | stella-assisted | full-auto
+
+style:
+  typescript:
+    use: true
+    strict: true
+    preferInterfaces: true
+    avoidEnums: true
+    naming:
+      folders: kebab-case
+      components: kebab-case
+      variables: camelCase (descriptive, auxiliary verbs like `isLoading`)
+  react:
+    useFunctionalComponents: true
+    preferServerComponents: true
+    minimizeUseClient: true (only where required)
+    includeLoadingAndErrorStates: true
+    useErrorBoundaries: true
+    defaultFormLib: react-hook-form
+    notificationLib: react-hot-toast
+  tailwind:
+    layoutStrategy: desktop-first
+    responsive: true
+    mobileSupport: always accessible, fallback layout only
+    preferredBreakpoints: start layout at `md:` unless context-specific
+    componentPatterns:
+      layoutHeader: flex justify-between items-center
+      tabNav: subtle border-bottom, active tab in `text-blue-600 border-blue-600`
+      controlRow: flex items-center space-x-4
+      buttons:
+        primary: bg-blue-600 hover:bg-blue-700
+        secondary: variant="outline"
+  uiux:
+    accessibility: WCAG 2.1 AA compliance
+    branding: school-customizable themes, persistent footer
+    desktopFirst: true
+    mobileFallback: required, clean layout, no loss of core function
+    modalDesign: max-w-lg for desktop, full-screen fallback for mobile
+
+backend:
+  esm: true
+  folderStructure: routes/[singularModule]/, controllers/, utils/
+  tokenValidation: all routes must use verifySupabaseToken middleware
+  api:
+    prefix: /api
+    format:
+      camelCaseKeys: true
+      response:
+        success: true
+        data: object
+        meta: object
+        errors: null or array
+    errorHandling: unified response wrapper
+    security:
+      enforceOrgContext: true (use `org_id`)
+      verifySubscription: middleware on protected routes
+
+database:
+  provider: Supabase
+  rls: required
+  tablePolicy:
+    useProfilesTableOnly: true (never use `users` or `user_profiles`)
+    useOrgId: true (never `organization_id`)
+    testPolicies: before prod push
+    serviceRoleRequired: backend-only access
+    allowAnonRole: login flows
+    avoidRecursivePolicies: yes
+  schema:
+    naming: snake_case
+    importantTables: profiles, organizations, fundraising_campaigns, donations, donor_profiles
+
+dev:
+  folderStructure:
+    frontend: src/modules/[module]/(components|pages|hooks|api)
+    backend: routes/, controllers/, utils/
+    archiveLegacy: move all legacy files post-phase to `/Development Archive/`
+  testing:
+    frontend: include unit tests for all components
+    backend: use integration tests for API + middleware
+  deployment:
+    frontend: GitHub → Railway (main branch)
+    backend: GitHub → Railway (main branch)
+    environments: .env & Railway ENV vars
+  versioning:
+    system: semantic (v2.0.0, v2.1.1, etc.)
+    tagging: GitHub tags (e.g., v2.0.0-fundraiser-complete)
+  commitGuidelines:
+    example: feat(fundraiser): add donor retention charts
+  documentation:
+    README: update when core logic/modules change
+    comments: required for helpers, utils, backend controllers
+
+rules:
+  - Always prefer stable, scalable solutions even if harder
+  - Desktop-first layout strategy across all modules
+  - Use Stella only via `/api/ai/generate`
+  - All user role data must flow through `profiles` table
+  - Never include TODOs in committed code
+  - All route handlers must validate `org_id` context
+  - All components must gracefully degrade on mobile
+  - Always test new RLS policies in staging
+  - Archive old modules after major releases
+
+examples:
+  goodFolder: src/modules/communication/pages
+  goodVariable: isBudgetApproved
+  goodComponent: fundraising-dashboard.tsx
+  goodCommit: fix(donation): add fallback for missing donor phone
+
+notes:
+  userContext:
+    tools: VS Code + Cline + GitHub Desktop
+    skillLevel: non-dev founder; explain all new implementations simply
+    localPaths:
+      - C:\Dev\pto-connect\
+      - C:\Dev\pto-connect-backend\
+      - C:\Dev\pto-connect-public\

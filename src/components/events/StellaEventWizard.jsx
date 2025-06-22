@@ -446,8 +446,6 @@ const StellaEventWizard = () => {
     }
   }, []);
 
-
-
   // Generate comprehensive workflow
   const generateWorkflow = async () => {
     if (!eventData.title.trim()) {
@@ -579,8 +577,6 @@ const StellaEventWizard = () => {
       setGenerationStep('');
     }
   };
-
-
 
   // Step 2: Context & Goals - now using external component with scroll preservation
 
