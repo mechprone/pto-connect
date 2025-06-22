@@ -173,7 +173,7 @@ const AIAssistanceToggle = ({
 
     const insights = getModuleInsights();
 
-    return (
+  return (
       <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 mt-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
@@ -188,14 +188,14 @@ const AIAssistanceToggle = ({
           >
             {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
           </button>
-        </div>
-
+      </div>
+      
         {/* Metrics Overview */}
         {insights?.metrics && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             {insights.metrics.map((metric, index) => {
               const Icon = metric.icon;
-              return (
+          return (
                 <div key={index} className="bg-white rounded-lg p-4 text-center">
                   <Icon className={`w-6 h-6 text-${metric.color}-600 mx-auto mb-2`} />
                   <div className={`text-lg font-bold text-${metric.color}-600`}>
@@ -205,7 +205,7 @@ const AIAssistanceToggle = ({
                 </div>
               );
             })}
-          </div>
+                </div>
         )}
 
         {/* Quick Actions */}
@@ -231,14 +231,14 @@ const AIAssistanceToggle = ({
                       {action.estimatedTime && (
                         <div className="text-xs text-purple-600 mt-1">
                           ⏱️ {action.estimatedTime}
-                        </div>
-                      )}
+              </div>
+              )}
                     </div>
                     <ArrowRight className="w-4 h-4 text-gray-400" />
-                  </button>
-                );
-              })}
-            </div>
+            </button>
+          );
+        })}
+      </div>
           </div>
         )}
 
@@ -249,7 +249,7 @@ const AIAssistanceToggle = ({
             {stellaAnalysis.analysis.organizationHealth && (
               <div className="bg-white rounded-lg p-4">
                 <h4 className="text-sm font-medium text-gray-900 mb-3">📊 Organization Health</h4>
-                <div className="space-y-2">
+          <div className="space-y-2">
                   {Object.entries(stellaAnalysis.analysis.organizationHealth).map(([key, value]) => (
                     <div key={key} className="flex justify-between items-center">
                       <span className="text-sm text-gray-600 capitalize">
@@ -298,10 +298,10 @@ const AIAssistanceToggle = ({
           <div className="flex items-center space-x-3 text-purple-700">
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
             <span className="text-sm">Stella is analyzing your data...</span>
-          </div>
-        )}
-      </div>
-    );
+        </div>
+      )}
+    </div>
+  );
   };
 
   const StellaFullDashboard = () => (
