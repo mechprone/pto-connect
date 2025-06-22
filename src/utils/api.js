@@ -3,7 +3,7 @@ import { supabase } from '@/utils/supabaseClient';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://api.ptoconnect.com/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://api.ptoconnect.com',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
