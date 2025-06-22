@@ -77,8 +77,22 @@ const ContextStep = ({ stellaContext, handleStellaContextChange, handleAdditiona
             </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Additional Goals</label>
-                <div className="space-y-2 max-h-32 overflow-y-auto">
+                <div className="space-y-2 max-h-32 overflow-y-auto p-2 border rounded-md">
                     {additionalGoalOptions.map(goal => (<label key={goal} className="flex items-center space-x-2"><input type="checkbox" checked={stellaContext.additionalGoals.includes(goal)} onChange={(e) => handleAdditionalGoalsChange(goal, e.target.checked)} className="rounded border-gray-300 text-purple-600 focus:ring-purple-500" /><span className="text-sm text-gray-700">{goal}</span></label>))}
+                </div>
+            </div>
+             <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Available Resources</label>
+                    <div className="space-y-2 max-h-32 overflow-y-auto p-2 border rounded-md">
+                        {availableResourceOptions.map(resource => (<label key={resource} className="flex items-center space-x-2"><input type="checkbox" checked={stellaContext.availableResources.includes(resource)} onChange={(e) => handleResourcesChange(resource, e.target.checked)} className="rounded border-gray-300 text-purple-600 focus:ring-purple-500" /><span className="text-sm text-gray-700">{resource}</span></label>))}
+                    </div>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Constraints</label>
+                    <div className="space-y-2 max-h-32 overflow-y-auto p-2 border rounded-md">
+                        {constraintOptions.map(constraint => (<label key={constraint} className="flex items-center space-x-2"><input type="checkbox" checked={stellaContext.constraints.includes(constraint)} onChange={(e) => handleConstraintsChange(constraint, e.target.checked)} className="rounded border-gray-300 text-purple-600 focus:ring-purple-500" /><span className="text-sm text-gray-700">{constraint}</span></label>))}
+                    </div>
                 </div>
             </div>
         </div>
@@ -114,6 +128,7 @@ const WorkflowResultsStep = ({ workflowData }) => {
                 <AlertCircle className="mx-auto w-12 h-12 text-red-500" />
                 <h2 className="mt-4 text-xl font-bold">Failed to Generate Workflow</h2>
                 <p className="mt-2 text-gray-600">There was an issue generating the workflow. Please try again.</p>
+                 <button onClick={() => window.location.reload()} className="mt-4 px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">Back</button>
             </div>
         );
     }
@@ -189,13 +204,15 @@ const StellaEventWizard = () => {
     });
     
     const handleStellaContextChange = (field, value) => setStellaContext(prev => ({ ...prev, [field]: value }));
+    
     const handleCheckboxChange = (stateKey, value, checked) => {
-        setStellaContext(prev => ({
-            ...prev,
-            [stateKey]: checked
-                ? [...prev[stateKey], value]
-                : prev[stateKey].filter(item => item !== value)
-        }));
+        setStellaContext(prev => {
+            const currentValues = prev[stateKey] || [];
+            const newValues = checked
+                ? [...currentValues, value]
+                : currentValues.filter(item => item !== value);
+            return { ...prev, [stateKey]: newValues };
+        });
     };
     
     const handleAdditionalGoalsChange = (goal, checked) => handleCheckboxChange('additionalGoals', goal, checked);
@@ -208,6 +225,7 @@ const StellaEventWizard = () => {
         setProgressUpdates([{ text: 'Initializing workflow generation...', status: 'in-progress', icon: Activity }]);
     
         try {
+            console.log("Submitting to API:", { eventData, stellaContext, moduleIntegrations });
             const response = await aiAPI.generateComprehensiveWorkflow({ eventData, stellaContext, moduleIntegrations });
     
             if (response && response.data && response.data.success) {
@@ -229,13 +247,13 @@ const StellaEventWizard = () => {
             } else {
                 const errorMessage = response?.error || 'Workflow generation failed: An unknown error occurred.';
                 toast.error(errorMessage);
-                setWorkflowData(null); // Ensure no old data is shown
+                setWorkflowData(null);
                 setCurrentStep(3);
             }
         } catch (error) {
             const errorMessage = error.message || 'An unexpected error occurred.';
             toast.error(`Error: ${errorMessage}`);
-            setWorkflowData(null); // Ensure no old data is shown
+            setWorkflowData(null);
             setCurrentStep(3);
         } finally {
             setIsLoading(false);
@@ -252,9 +270,36 @@ const StellaEventWizard = () => {
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
             <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-8 space-y-8">
+                {/* Stepper Navigation */}
+                <nav aria-label="Progress">
+                    <ol role="list" className="space-y-4 md:flex md:space-x-8 md:space-y-0">
+                        {steps.slice(0, 2).map((step, stepIdx) => (
+                        <li key={step.name} className="md:flex-1">
+                            {currentStep > stepIdx ? (
+                            <a href="#" className="group flex w-full flex-col border-l-4 border-purple-600 py-2 pl-4 transition-colors hover:border-purple-800 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
+                                <span className="text-sm font-medium text-purple-600 transition-colors group-hover:text-purple-800">{`Step ${stepIdx + 1}`}</span>
+                                <span className="text-sm font-medium">{step.name}</span>
+                            </a>
+                            ) : currentStep === stepIdx ? (
+                            <a href="#" className="flex w-full flex-col border-l-4 border-purple-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4" aria-current="step">
+                                <span className="text-sm font-medium text-purple-600">{`Step ${stepIdx + 1}`}</span>
+                                <span className="text-sm font-medium">{step.name}</span>
+                            </a>
+                            ) : (
+                            <a href="#" className="group flex w-full flex-col border-l-4 border-gray-200 py-2 pl-4 transition-colors hover:border-gray-300 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
+                                <span className="text-sm font-medium text-gray-500 transition-colors group-hover:text-gray-700">{`Step ${stepIdx + 1}`}</span>
+                                <span className="text-sm font-medium">{step.name}</span>
+                            </a>
+                            )}
+                        </li>
+                        ))}
+                    </ol>
+                </nav>
+
                 <div>{steps[currentStep].component}</div>
+                
                 <div className="flex justify-between pt-4 border-t">
-                    <button onClick={() => setCurrentStep(s => Math.max(0, s - 1))} disabled={currentStep === 0 || isLoading} className="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50">
+                    <button onClick={() => setCurrentStep(s => Math.max(0, s - 1))} disabled={currentStep === 0 || isLoading || currentStep > 1} className="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50">
                         Back
                     </button>
                     {currentStep < 1 && (
