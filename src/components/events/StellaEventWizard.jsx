@@ -252,12 +252,22 @@ const StellaEventWizard = () => {
           >
             Back
           </button>
-          {currentStep < 1 ? (
+          {currentStep < 1 && (
             <button
               onClick={() => setCurrentStep(s => s + 1)}
               className="px-6 py-2 bg-purple-600 text-white rounded-md text-sm font-medium hover:bg-purple-700"
             >
               Next
+            </button>
+          )}
+          {currentStep === 1 && (
+            <button
+              onClick={generateWorkflow}
+              disabled={isLoading}
+              className="px-6 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 disabled:opacity-50 flex items-center"
+            >
+              {isLoading ? 'Generating...' : 'Create Workflow'}
+              {!isLoading && <Sparkles className="w-4 h-4 ml-2" />}
             </button>
           )}
         </div>
