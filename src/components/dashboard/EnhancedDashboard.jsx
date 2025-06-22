@@ -26,6 +26,29 @@ const EnhancedDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchWhoAmI = async () => {
+      try {
+        const token = (await supabase.auth.getSession()).data.session?.access_token;
+        if (token) {
+          const response = await fetch('https://api.ptoconnect.com/api/whoami', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          const data = await response.json();
+          console.log('✅✅✅ [WHOAMI RESPONSE]', data);
+        } else {
+          console.error('❌ [WHOAMI] Could not get auth token from Supabase session.');
+        }
+      } catch (error) {
+        console.error('❌ [WHOAMI] Error fetching whoami endpoint:', error);
+      }
+    };
+
+    fetchWhoAmI();
+  }, []);
+
+  useEffect(() => {
     if (userProfile?.org_id) {
       fetchDashboardData();
     }
