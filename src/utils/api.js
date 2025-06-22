@@ -290,7 +290,7 @@ export const aiAPI = {
       console.log('🎯 [API] Stella context:', stellaContext);
       console.log('🔧 [API] Module integrations:', moduleIntegrations);
       
-      const response = await apiRequest('POST', '/api/stella/generate-comprehensive-workflow', {
+      const response = await apiRequest('POST', '/stella/generate-comprehensive-workflow', {
         eventData,
         stellaContext,
         moduleIntegrations
