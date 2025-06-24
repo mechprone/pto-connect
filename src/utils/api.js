@@ -1,40 +1,55 @@
 import axios from 'axios';
 import { supabase } from '@/utils/supabaseClient';
+import { getApiConfig, getLoggingConfig } from '@/config/environment.js';
 
-console.log('[DEBUG] VITE_API_URL at runtime:', import.meta.env.VITE_API_URL);
+const config = getApiConfig();
+const loggingConfig = getLoggingConfig();
+
+console.log('[DEBUG] Environment config:', {
+  apiUrl: config.baseURL,
+  environment: import.meta.env.MODE,
+  isPreview: import.meta.env.VITE_IS_PREVIEW === 'true'
+});
 
 // Create axios instance with base configuration
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+const api = axios.create(config);
 
 // Request interceptor to add auth token
 api.interceptors.request.use(
   async (config) => {
-    console.log('🔍 [FRONTEND DEBUG] API Request interceptor started');
-    console.log('🔍 [FRONTEND DEBUG] Request URL:', config.url);
-    console.log('🔍 [FRONTEND DEBUG] Request method:', config.method);
+    if (loggingConfig.enableNetworkLogs) {
+      console.log('🔍 [FRONTEND DEBUG] API Request interceptor started');
+      console.log('🔍 [FRONTEND DEBUG] Request URL:', config.url);
+      console.log('🔍 [FRONTEND DEBUG] Request method:', config.method);
+    }
     
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      console.log('🔍 [FRONTEND DEBUG] Session retrieved:', !!session);
-      console.log('🔍 [FRONTEND DEBUG] Access token present:', !!session?.access_token);
+      
+      if (loggingConfig.enableNetworkLogs) {
+        console.log('🔍 [FRONTEND DEBUG] Session retrieved:', !!session);
+        console.log('🔍 [FRONTEND DEBUG] Access token present:', !!session?.access_token);
+      }
       
       if (session?.access_token) {
         config.headers.Authorization = `Bearer ${session.access_token}`;
-        console.log('🔍 [FRONTEND DEBUG] Auth header set, token length:', session.access_token.length);
+        
+        if (loggingConfig.enableNetworkLogs) {
+          console.log('🔍 [FRONTEND DEBUG] Auth header set, token length:', session.access_token.length);
+        }
       } else {
-        console.warn('⚠️ [FRONTEND DEBUG] No access token found in session');
+        if (loggingConfig.enableNetworkLogs) {
+          console.warn('⚠️ [FRONTEND DEBUG] No access token found in session');
+        }
       }
     } catch (error) {
       console.error('❌ [FRONTEND DEBUG] Error getting session:', error);
     }
     
-    console.log('🔍 [FRONTEND DEBUG] Final request headers:', config.headers);
+    if (loggingConfig.enableNetworkLogs) {
+      console.log('🔍 [FRONTEND DEBUG] Final request headers:', config.headers);
+    }
+    
     return config;
   },
   (error) => {
@@ -46,12 +61,14 @@ api.interceptors.request.use(
 // Response interceptor for error handling
 api.interceptors.response.use(
   (response) => {
-    console.log('✅ [FRONTEND DEBUG] API Response received:', {
-      url: response.config.url,
-      status: response.status,
-      statusText: response.statusText,
-      dataKeys: Object.keys(response.data || {})
-    });
+    if (loggingConfig.enableNetworkLogs) {
+      console.log('✅ [FRONTEND DEBUG] API Response received:', {
+        url: response.config.url,
+        status: response.status,
+        statusText: response.statusText,
+        dataKeys: Object.keys(response.data || {})
+      });
+    }
     return response;
   },
   (error) => {
