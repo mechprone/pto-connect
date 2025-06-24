@@ -352,57 +352,51 @@ const EventsDashboard = () => {
   );
 
   return (
-    <div className="flex flex-col md:flex-row gap-8 p-6">
-      {/* Main Content: Event Grid/List */}
-      <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Events Dashboard</h1>
-          <button
-            onClick={handleCreateManually}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow"
-          >
-            + Create Event
-          </button>
-        </div>
-        {/* Upcoming Events Preview */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-2">Upcoming Events</h2>
-          <div className="flex flex-col md:flex-row gap-4">
-            {upcomingEvents.map(event => (
+    <div className="flex flex-col gap-8 p-6 max-w-7xl mx-auto">
+      {/* Header Row */}
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <h1 className="text-2xl font-bold">Events Dashboard</h1>
+        <button
+          onClick={handleCreateManually}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow min-w-[160px]"
+        >
+          + Create Event
+        </button>
+      </div>
+      {/* Upcoming Events Preview */}
+      <div>
+        <h2 className="text-lg font-semibold mb-2">Upcoming Events</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {upcomingEvents.length > 0 ? (
+            upcomingEvents.map(event => (
               <div
                 key={event.id}
-                className="flex-1 bg-white border border-blue-100 rounded-lg shadow p-4 cursor-pointer hover:shadow-md transition"
+                className="bg-white border border-blue-100 rounded-lg shadow p-4 cursor-pointer hover:shadow-md transition min-h-[170px] flex flex-col justify-between"
                 onClick={() => handleViewEvent(event.id)}
+                tabIndex={0}
+                aria-label={`View details for ${event.name}`}
+                onKeyDown={e => { if (e.key === 'Enter') handleViewEvent(event.id); }}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-blue-700">{event.name}</span>
+                  <span className="font-medium text-blue-700 text-lg">{event.name}</span>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>{event.status}</span>
                 </div>
-                <div className="text-sm text-gray-600 mb-1">{new Date(event.date).toLocaleDateString()}</div>
-                <div className="mb-2 text-xs text-gray-500">{event.description}</div>
-                <div className="flex items-center gap-2 text-xs">
+                <div className="text-sm text-gray-600 mb-1 font-medium">{new Date(event.date).toLocaleDateString()}</div>
+                <div className="mb-2 text-xs text-gray-500 flex-1">{event.description}</div>
+                <div className="flex items-center gap-2 text-xs mt-2">
                   <span>Progress:</span>
                   <span className="font-semibold text-gray-800">{event.progress}%</span>
                   {event.progress < 100 && <span className="text-red-500 ml-2">Action Needed</span>}
                 </div>
               </div>
-            ))}
-            {upcomingEvents.length === 0 && (
-              <div className="text-gray-500">No upcoming events.</div>
-            )}
-          </div>
-        </div>
-        {/* Event Grid/List (existing code) */}
-        <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
-          {events.map(event => (
-            viewMode === 'grid' ? 
-              <EventCard key={event.id} event={event} /> : 
-              <EventRow key={event.id} event={event} />
-          ))}
+            ))
+          ) : (
+            <div className="text-gray-500 col-span-full py-8 text-center text-base">No upcoming events. <button onClick={handleCreateManually} className="text-blue-600 underline ml-2">Create one now</button></div>
+          )}
         </div>
       </div>
-      {/* Right Side: Mini Calendar */}
-      <div className="w-full md:w-96 flex flex-col gap-6">
+      {/* Mini Calendar - below cards on laptop/desktop */}
+      <div className="w-full max-w-xl mx-auto mt-8">
         <div className="bg-white border border-gray-200 rounded-lg shadow p-4">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-semibold">Calendar</h2>
@@ -416,7 +410,10 @@ const EventsDashboard = () => {
           <div className="cursor-pointer" onClick={handleMiniCalendarClick}>
             <BigCalendar
               localizer={localizer}
-              events={calendarEvents}
+              events={calendarEvents.map(ev => ({ ...ev, 
+                // Add a color for event dots
+                resource: { dotColor: '#2563eb' } 
+              }))}
               startAccessor="start"
               endAccessor="end"
               views={['month']}
@@ -425,9 +422,38 @@ const EventsDashboard = () => {
               selectable={false}
               popup={false}
               onSelectEvent={handleSelectEvent}
+              eventPropGetter={(event) => ({
+                style: {
+                  backgroundColor: 'transparent',
+                  color: '#2563eb',
+                  border: 'none',
+                  position: 'relative',
+                },
+                className: 'calendar-event-dot',
+              })}
+              components={{
+                event: ({ event }) => (
+                  <span style={{
+                    display: 'inline-block',
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    backgroundColor: event.resource?.dotColor || '#2563eb',
+                    margin: 2,
+                  }} />
+                )
+              }}
             />
           </div>
         </div>
+      </div>
+      {/* Event Grid/List (existing code) */}
+      <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-8' : 'space-y-4 mt-8'}>
+        {events.map(event => (
+          viewMode === 'grid' ? 
+            <EventCard key={event.id} event={event} /> : 
+            <EventRow key={event.id} event={event} />
+        ))}
       </div>
     </div>
   );
