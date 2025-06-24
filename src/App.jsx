@@ -22,7 +22,6 @@ import TeacherDashboard from './modules/dashboard/pages/TeacherDashboard'
 
 // Events
 import EventsDashboard from './modules/events/pages/EventsDashboard'
-import EnhancedEventsDashboard from './modules/events/pages/EnhancedEventsDashboard'
 import CreateEvent from './modules/events/pages/CreateEvent'
 import StellaEventWizard from './components/events/StellaEventWizard'
 import EventWorkflowDashboard from './components/events/EventWorkflowDashboard'
@@ -118,7 +117,7 @@ export default function App() {
           <Route path="/admin/settings" element={<AdminDashboard />} />
           <Route path="/billing" element={<BillingPage />} />
 
-          <Route path="/events" element={<EnhancedEventsDashboard />} />
+          <Route path="/events" element={<EventsDashboard />} />
           <Route path="/events/legacy" element={<EventsDashboard />} />
           <Route path="/events/create" element={<CreateEvent />} />
           <Route path="/events/create-enhanced" element={<StellaEventWizard />} />

@@ -17,7 +17,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 const locales = { 'en-US': enUS };
 const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
 
-const EnhancedEventsDashboard = () => {
+const EventsDashboard = () => {
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('grid');
   const [creationMode, setCreationMode] = useState('manual');
@@ -433,4 +433,4 @@ const EnhancedEventsDashboard = () => {
   );
 };
 
-export default EnhancedEventsDashboard;
+export default EventsDashboard;
