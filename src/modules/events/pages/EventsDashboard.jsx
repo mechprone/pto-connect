@@ -23,11 +23,16 @@ const pastelBg = 'bg-gradient-to-br from-pink-100 via-purple-100 to-teal-100';
 const pastelBox = 'bg-white bg-opacity-80 rounded-2xl shadow-lg border border-purple-100';
 
 const stellaTipsFallback = [
-  'Send event reminders 3-5 days before your event for best attendance.',
-  'Offer small incentives (like a raffle) to boost volunteer signups.',
-  'Use themed dress-up days to increase student engagement.',
-  'Share event photos on social media to build excitement for next year.',
-  'Partner with local businesses for sponsorships and donations.'
+  'Leverage student leadership: Assign older students as event ambassadors to boost peer engagement and reduce adult volunteer burnout.',
+  'Use QR codes at events for instant feedback or sign-ups—capture data while excitement is high.',
+  'Partner with local media or school journalism clubs to document and promote your event, increasing community reach.',
+  'Schedule a "debrief" meeting after each event to document what worked, what didn\'t, and ideas for next year—build institutional memory.',
+  'Offer tiered volunteer roles (short shifts, behind-the-scenes, remote tasks) to include parents with limited availability.',
+  'Create a "Volunteer Wall of Fame" at school or online to recognize and celebrate contributors—public recognition increases future engagement.',
+  'Bundle events with other school activities (e.g., parent-teacher conferences) to maximize turnout and convenience.',
+  'Use a digital sign-up tool with automatic reminders to reduce no-shows and last-minute cancellations.',
+  'Survey families after each event to gather actionable feedback and new ideas—share results at PTO meetings.',
+  'Develop a sponsorship package and approach local businesses for recurring annual support, not just one-off donations.'
 ];
 
 const EventsDashboard = () => {
@@ -130,11 +135,11 @@ const EventsDashboard = () => {
   };
 
   const handleViewEvent = (eventId) => {
-    navigate(`/events/${eventId}`);
+    navigate(`/events/detail/${eventId}`);
   };
 
   const handleEditEvent = (eventId) => {
-    navigate(`/events/${eventId}/edit`);
+    navigate(`/events/edit/${eventId}`);
   };
 
   const handleDeleteEvent = (eventId) => {
@@ -171,7 +176,7 @@ const EventsDashboard = () => {
 
   // Handler for clicking an event in the mini calendar
   const handleSelectEvent = (event) => {
-    navigate(`/events/${event.id}`);
+    navigate(`/events/detail/${event.id}`);
   };
 
   const handleCreationModeChange = (mode, settings) => {
@@ -333,7 +338,7 @@ const EventsDashboard = () => {
       <div className="flex flex-col md:flex-row gap-8">
         {/* Left: Insights + Create Event */}
         <div className="flex flex-col gap-4 md:w-1/2 max-w-md">
-          <div className={`${pastelBox} p-6`}>
+          <div className={`${pastelBox} p-6 min-h-[320px] flex flex-col justify-between`}>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-purple-600 text-xl">✨</span>
               <span className="font-bold text-lg text-purple-700">Stella's Event Insights</span>

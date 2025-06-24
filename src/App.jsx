@@ -27,6 +27,7 @@ import StellaEventWizard from './components/events/StellaEventWizard'
 import EventWorkflowDashboard from './components/events/EventWorkflowDashboard'
 import EditEventPage from './modules/events/pages/EditEventPage'
 import EventsCalendarPage from './modules/events/pages/EventsCalendarPage'
+import EventDetailPage from './modules/events/pages/EventDetailPage'
 
 // Fundraisers
 import FundraiserManager from './modules/fundraisers/pages/FundraiserManager'
@@ -124,6 +125,7 @@ export default function App() {
           <Route path="/events/:eventId/workflow" element={<EventWorkflowDashboard />} />
           <Route path="/events/edit/:id" element={<EditEventPage />} />
           <Route path="/events/calendar" element={<EventsCalendarPage />} />
+          <Route path="/events/detail/:id" element={<EventDetailPage />} />
 
           <Route path="/fundraisers" element={<FundraiserManager />} />
           <Route path="/fundraisers/create" element={<FundraiserForm />} />
