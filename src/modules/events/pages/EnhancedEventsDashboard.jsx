@@ -6,6 +6,16 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AIAssistanceToggle from '../../../components/common/AIAssistanceToggle';
+import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar';
+import format from 'date-fns/format';
+import parse from 'date-fns/parse';
+import startOfWeek from 'date-fns/startOfWeek';
+import getDay from 'date-fns/getDay';
+import enUS from 'date-fns/locale/en-US';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
+const locales = { 'en-US': enUS };
+const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
 
 const EnhancedEventsDashboard = () => {
   const navigate = useNavigate();
@@ -85,6 +95,31 @@ const EnhancedEventsDashboard = () => {
       description: 'Interactive science demonstrations and experiments'
     }
   ];
+
+  // Mini calendar events format
+  const calendarEvents = events.map(event => ({
+    id: event.id,
+    title: event.name,
+    start: new Date(event.date),
+    end: new Date(event.date),
+    allDay: true,
+  }));
+
+  // Get next three upcoming events
+  const upcomingEvents = [...events]
+    .filter(e => new Date(e.date) >= new Date())
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .slice(0, 3);
+
+  // Handler for mini calendar click
+  const handleMiniCalendarClick = () => {
+    navigate('/events/calendar');
+  };
+
+  // Handler for clicking an event in the mini calendar
+  const handleSelectEvent = (event) => {
+    navigate(`/events/${event.id}`);
+  };
 
   const handleCreationModeChange = (mode, settings) => {
     setCreationMode(mode);
@@ -317,57 +352,47 @@ const EnhancedEventsDashboard = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Events Dashboard</h1>
-            <p className="text-gray-600">Manage your PTO events with manual control or Stella's assistance</p>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-              className="p-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              {viewMode === 'grid' ? <List className="w-5 h-5" /> : <Grid className="w-5 h-5" />}
-            </button>
+    <div className="flex flex-col md:flex-row gap-8 p-6">
+      {/* Main Content: Event Grid/List */}
+      <div className="flex-1 min-w-0">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Events Dashboard</h1>
+          <button
+            onClick={handleCreateManually}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow"
+          >
+            + Create Event
+          </button>
+        </div>
+        {/* Upcoming Events Preview */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-2">Upcoming Events</h2>
+          <div className="flex flex-col md:flex-row gap-4">
+            {upcomingEvents.map(event => (
+              <div
+                key={event.id}
+                className="flex-1 bg-white border border-blue-100 rounded-lg shadow p-4 cursor-pointer hover:shadow-md transition"
+                onClick={() => handleViewEvent(event.id)}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-blue-700">{event.name}</span>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>{event.status}</span>
+                </div>
+                <div className="text-sm text-gray-600 mb-1">{new Date(event.date).toLocaleDateString()}</div>
+                <div className="mb-2 text-xs text-gray-500">{event.description}</div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span>Progress:</span>
+                  <span className="font-semibold text-gray-800">{event.progress}%</span>
+                  {event.progress < 100 && <span className="text-red-500 ml-2">Action Needed</span>}
+                </div>
+              </div>
+            ))}
+            {upcomingEvents.length === 0 && (
+              <div className="text-gray-500">No upcoming events.</div>
+            )}
           </div>
         </div>
-
-        {/* Create Event Options */}
-        <CreateEventOptions />
-
-        {/* Filters and Search */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-          <div className="flex items-center space-x-4">
-            <div className="flex-1 relative">
-              <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search events..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Status</option>
-              <option value="draft">Draft</option>
-              <option value="planning">Planning</option>
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Events List */}
+        {/* Event Grid/List (existing code) */}
         <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
           {events.map(event => (
             viewMode === 'grid' ? 
@@ -375,20 +400,34 @@ const EnhancedEventsDashboard = () => {
               <EventRow key={event.id} event={event} />
           ))}
         </div>
-
-        {events.length === 0 && (
-          <div className="text-center py-12">
-            <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
-            <p className="text-gray-600 mb-4">Get started by creating your first event</p>
-            <button 
-              onClick={handleCreateFirstEvent}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+      </div>
+      {/* Right Side: Mini Calendar */}
+      <div className="w-full md:w-96 flex flex-col gap-6">
+        <div className="bg-white border border-gray-200 rounded-lg shadow p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-lg font-semibold">Calendar</h2>
+            <button
+              onClick={handleMiniCalendarClick}
+              className="text-blue-600 hover:underline text-sm"
             >
-              Create Your First Event
+              View Full Calendar
             </button>
           </div>
-        )}
+          <div className="cursor-pointer" onClick={handleMiniCalendarClick}>
+            <BigCalendar
+              localizer={localizer}
+              events={calendarEvents}
+              startAccessor="start"
+              endAccessor="end"
+              views={['month']}
+              style={{ height: 300 }}
+              toolbar={false}
+              selectable={false}
+              popup={false}
+              onSelectEvent={handleSelectEvent}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
