@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Calendar, Plus, Search, Filter, Grid, List, 
   Sparkles, User, Clock, DollarSign, Users,
@@ -13,6 +13,7 @@ import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import enUS from 'date-fns/locale/en-US';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { supabase } from '@/utils/supabaseClient';
 
 const locales = { 'en-US': enUS };
 const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
@@ -23,6 +24,46 @@ const EventsDashboard = () => {
   const [creationMode, setCreationMode] = useState('manual');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchEvents() {
+      setLoading(true);
+      setError(null);
+      try {
+        // Get current user/org context
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          setError('User not authenticated');
+          setLoading(false);
+          return;
+        }
+        const orgId = user?.user_metadata?.org_id || user?.app_metadata?.org_id;
+        if (!orgId) {
+          setError('Missing org_id in user metadata.');
+          setLoading(false);
+          return;
+        }
+        const { data, error: eventsError } = await supabase
+          .from('events')
+          .select('*')
+          .eq('org_id', orgId)
+          .order('event_date', { ascending: true });
+        if (eventsError) {
+          setError('Error loading events: ' + eventsError.message);
+        } else {
+          setEvents(data || []);
+        }
+      } catch (err) {
+        setError('Unexpected error: ' + err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchEvents();
+  }, []);
 
   // Button handlers
   const handleCreateManually = () => {
@@ -56,59 +97,20 @@ const EventsDashboard = () => {
     navigate('/events/create');
   };
 
-  // Sample events data
-  const events = [
-    {
-      id: 1,
-      name: 'Fall Festival 2024',
-      date: '2024-10-15',
-      status: 'planning',
-      attendees: 300,
-      budget: 3000,
-      profit: 1800,
-      progress: 65,
-      type: 'stella-generated',
-      description: 'Community celebration with games, food, and family fun'
-    },
-    {
-      id: 2,
-      name: 'Book Fair',
-      date: '2024-11-20',
-      status: 'active',
-      attendees: 150,
-      budget: 1500,
-      profit: 800,
-      progress: 85,
-      type: 'manual',
-      description: 'Annual book fair to promote reading'
-    },
-    {
-      id: 3,
-      name: 'Science Night',
-      date: '2024-12-05',
-      status: 'draft',
-      attendees: 200,
-      budget: 2000,
-      profit: 1200,
-      progress: 25,
-      type: 'manual',
-      description: 'Interactive science demonstrations and experiments'
-    }
-  ];
-
   // Mini calendar events format
   const calendarEvents = events.map(event => ({
     id: event.id,
-    title: event.name,
-    start: new Date(event.date),
-    end: new Date(event.date),
+    title: event.title,
+    start: new Date(event.event_date),
+    end: new Date(event.event_date),
     allDay: true,
   }));
 
   // Get next three upcoming events
+  const now = new Date();
   const upcomingEvents = [...events]
-    .filter(e => new Date(e.date) >= new Date())
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .filter(e => new Date(e.event_date) >= now)
+    .sort((a, b) => new Date(a.event_date) - new Date(b.event_date))
     .slice(0, 3);
 
   // Handler for mini calendar click
@@ -143,7 +145,7 @@ const EventsDashboard = () => {
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-2">
-              <h3 className="text-lg font-semibold text-gray-900">{event.name}</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
               {event.type === 'stella-generated' && (
                 <Sparkles className="w-4 h-4 text-purple-500" title="Stella Generated" />
               )}
@@ -152,7 +154,7 @@ const EventsDashboard = () => {
             <div className="flex items-center space-x-4 text-sm text-gray-500">
               <div className="flex items-center space-x-1">
                 <Calendar className="w-4 h-4" />
-                <span>{new Date(event.date).toLocaleDateString()}</span>
+                <span>{new Date(event.event_date).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Users className="w-4 h-4" />
@@ -183,7 +185,7 @@ const EventsDashboard = () => {
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="text-center p-3 bg-gray-50 rounded-lg">
             <div className="text-sm text-gray-600">Budget</div>
-            <div className="text-lg font-semibold text-gray-900">${event.budget}</div>
+            <div className="text-lg font-semibold text-gray-900">${event.estimated_budget || 'N/A'}</div>
           </div>
           <div className="text-center p-3 bg-green-50 rounded-lg">
             <div className="text-sm text-green-600">Projected Profit</div>
@@ -218,7 +220,7 @@ const EventsDashboard = () => {
         <div className="flex items-center space-x-4 flex-1">
           <div className="flex-1">
             <div className="flex items-center space-x-2">
-              <h3 className="font-medium text-gray-900">{event.name}</h3>
+              <h3 className="font-medium text-gray-900">{event.title}</h3>
               {event.type === 'stella-generated' && (
                 <Sparkles className="w-4 h-4 text-purple-500" />
               )}
@@ -231,7 +233,7 @@ const EventsDashboard = () => {
           
           <div className="text-center">
             <div className="text-sm text-gray-500">Date</div>
-            <div className="font-medium">{new Date(event.date).toLocaleDateString()}</div>
+            <div className="font-medium">{new Date(event.event_date).toLocaleDateString()}</div>
           </div>
           
           <div className="text-center">
@@ -241,7 +243,7 @@ const EventsDashboard = () => {
           
           <div className="text-center">
             <div className="text-sm text-gray-500">Budget</div>
-            <div className="font-medium">${event.budget}</div>
+            <div className="font-medium">${event.estimated_budget || 'N/A'}</div>
           </div>
           
           <div className="text-center">
@@ -366,34 +368,39 @@ const EventsDashboard = () => {
       {/* Upcoming Events Preview */}
       <div>
         <h2 className="text-lg font-semibold mb-2">Upcoming Events</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {upcomingEvents.length > 0 ? (
-            upcomingEvents.map(event => (
-              <div
-                key={event.id}
-                className="bg-white border border-blue-100 rounded-lg shadow p-4 cursor-pointer hover:shadow-md transition min-h-[170px] flex flex-col justify-between"
-                onClick={() => handleViewEvent(event.id)}
-                tabIndex={0}
-                aria-label={`View details for ${event.name}`}
-                onKeyDown={e => { if (e.key === 'Enter') handleViewEvent(event.id); }}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-blue-700 text-lg">{event.name}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>{event.status}</span>
+        {loading ? (
+          <div className="text-gray-500 py-8 text-center text-base">Loading events...</div>
+        ) : error ? (
+          <div className="text-red-500 py-8 text-center text-base">{error}</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {upcomingEvents.length > 0 ? (
+              upcomingEvents.map(event => (
+                <div
+                  key={event.id}
+                  className="bg-white border border-blue-100 rounded-lg shadow p-4 cursor-pointer hover:shadow-md transition min-h-[170px] flex flex-col justify-between"
+                  onClick={() => handleViewEvent(event.id)}
+                  tabIndex={0}
+                  aria-label={`View details for ${event.title}`}
+                  onKeyDown={e => { if (e.key === 'Enter') handleViewEvent(event.id); }}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium text-blue-700 text-lg">{event.title}</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>{event.status}</span>
+                  </div>
+                  <div className="text-sm text-gray-600 mb-1 font-medium">{new Date(event.event_date).toLocaleDateString()}</div>
+                  <div className="mb-2 text-xs text-gray-500 flex-1">{event.description}</div>
+                  <div className="flex items-center gap-2 text-xs mt-2">
+                    <span>Budget:</span>
+                    <span className="font-semibold text-gray-800">${event.estimated_budget || 'N/A'}</span>
+                  </div>
                 </div>
-                <div className="text-sm text-gray-600 mb-1 font-medium">{new Date(event.date).toLocaleDateString()}</div>
-                <div className="mb-2 text-xs text-gray-500 flex-1">{event.description}</div>
-                <div className="flex items-center gap-2 text-xs mt-2">
-                  <span>Progress:</span>
-                  <span className="font-semibold text-gray-800">{event.progress}%</span>
-                  {event.progress < 100 && <span className="text-red-500 ml-2">Action Needed</span>}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-gray-500 col-span-full py-8 text-center text-base">No upcoming events. <button onClick={handleCreateManually} className="text-blue-600 underline ml-2">Create one now</button></div>
-          )}
-        </div>
+              ))
+            ) : (
+              <div className="text-gray-500 col-span-full py-8 text-center text-base">No upcoming events. <button onClick={handleCreateManually} className="text-blue-600 underline ml-2">Create one now</button></div>
+            )}
+          </div>
+        )}
       </div>
       {/* Mini Calendar - below cards on laptop/desktop */}
       <div className="w-full max-w-xl mx-auto mt-8">
@@ -410,10 +417,7 @@ const EventsDashboard = () => {
           <div className="cursor-pointer" onClick={handleMiniCalendarClick}>
             <BigCalendar
               localizer={localizer}
-              events={calendarEvents.map(ev => ({ ...ev, 
-                // Add a color for event dots
-                resource: { dotColor: '#2563eb' } 
-              }))}
+              events={calendarEvents.map(ev => ({ ...ev, resource: { dotColor: '#2563eb' } }))}
               startAccessor="start"
               endAccessor="end"
               views={['month']}
@@ -449,11 +453,17 @@ const EventsDashboard = () => {
       </div>
       {/* Event Grid/List (existing code) */}
       <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-8' : 'space-y-4 mt-8'}>
-        {events.map(event => (
-          viewMode === 'grid' ? 
-            <EventCard key={event.id} event={event} /> : 
-            <EventRow key={event.id} event={event} />
-        ))}
+        {loading ? (
+          <div className="text-gray-500 py-8 text-center text-base col-span-full">Loading events...</div>
+        ) : error ? (
+          <div className="text-red-500 py-8 text-center text-base col-span-full">{error}</div>
+        ) : (
+          events.map(event => (
+            viewMode === 'grid' ? 
+              <EventCard key={event.id} event={event} /> : 
+              <EventRow key={event.id} event={event} />
+          ))
+        )}
       </div>
     </div>
   );
