@@ -18,6 +18,18 @@ import { supabase } from '@/utils/supabaseClient';
 const locales = { 'en-US': enUS };
 const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
 
+// Pastel color palette
+const pastelBg = 'bg-gradient-to-br from-pink-100 via-purple-100 to-teal-100';
+const pastelBox = 'bg-white bg-opacity-80 rounded-2xl shadow-lg border border-purple-100';
+
+const stellaTipsFallback = [
+  'Send event reminders 3-5 days before your event for best attendance.',
+  'Offer small incentives (like a raffle) to boost volunteer signups.',
+  'Use themed dress-up days to increase student engagement.',
+  'Share event photos on social media to build excitement for next year.',
+  'Partner with local businesses for sponsorships and donations.'
+];
+
 const EventsDashboard = () => {
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('grid');
@@ -27,11 +39,27 @@ const EventsDashboard = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [stellaTips, setStellaTips] = useState([]);
+  const [stellaLoading, setStellaLoading] = useState(true);
+  const [stellaError, setStellaError] = useState(null);
 
+  // Local storage cache key
+  const CACHE_KEY = 'pto_events_dashboard_cache_v1';
+
+  // Fetch events with localStorage caching
   useEffect(() => {
     async function fetchEvents() {
       setLoading(true);
       setError(null);
+      // Try to load from cache first
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          setEvents(parsed.events || []);
+          setLoading(false);
+        } catch {}
+      }
       try {
         // Get current user/org context
         const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -55,6 +83,8 @@ const EventsDashboard = () => {
           setError('Error loading events: ' + eventsError.message);
         } else {
           setEvents(data || []);
+          // Save to cache
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ events: data, ts: Date.now() }));
         }
       } catch (err) {
         setError('Unexpected error: ' + err.message);
@@ -63,6 +93,27 @@ const EventsDashboard = () => {
       }
     }
     fetchEvents();
+  }, []);
+
+  // Fetch Stella Insights (placeholder for backend call)
+  useEffect(() => {
+    async function fetchStellaTips() {
+      setStellaLoading(true);
+      setStellaError(null);
+      try {
+        // TODO: Replace with backend orchestrator call
+        // const response = await fetch('/api/ai/stella-insights?...');
+        // const data = await response.json();
+        // setStellaTips(data.tips || stellaTipsFallback);
+        setStellaTips(stellaTipsFallback.sort(() => 0.5 - Math.random()).slice(0, 3));
+      } catch (err) {
+        setStellaError('Could not load Stella Insights.');
+        setStellaTips(stellaTipsFallback.slice(0, 3));
+      } finally {
+        setStellaLoading(false);
+      }
+    }
+    fetchStellaTips();
   }, []);
 
   // Button handlers
@@ -276,178 +327,84 @@ const EventsDashboard = () => {
     </div>
   );
 
-  const CreateEventOptions = () => (
-    <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">Create New Event</h2>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Manual Creation */}
-        <div className="border-2 border-gray-200 rounded-lg p-6 hover:border-blue-300 transition-colors">
-          <div className="flex items-center space-x-3 mb-4">
-            <User className="w-8 h-8 text-gray-600" />
-            <div>
-              <h3 className="font-semibold text-gray-900">Manual Creation</h3>
-              <p className="text-sm text-gray-600">Full control over every detail</p>
-            </div>
-          </div>
-          <ul className="text-sm text-gray-600 space-y-2 mb-4">
-            <li>• Step-by-step event setup</li>
-            <li>• Custom timeline creation</li>
-            <li>• Manual budget planning</li>
-            <li>• Individual task assignment</li>
-          </ul>
-          <button 
-            onClick={handleCreateManually}
-            className="w-full py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-          >
-            Create Manually
-          </button>
-        </div>
-
-        {/* Stella Assisted */}
-        <div className="border-2 border-purple-200 rounded-lg p-6 hover:border-purple-400 transition-colors bg-purple-50">
-          <div className="flex items-center space-x-3 mb-4">
-            <Sparkles className="w-8 h-8 text-purple-600" />
-            <div>
-              <h3 className="font-semibold text-purple-900">Stella Assisted</h3>
-              <p className="text-sm text-purple-700">Stella's suggestions with your control</p>
-            </div>
-          </div>
-          <ul className="text-sm text-purple-700 space-y-2 mb-4">
-            <li>• Stella-generated suggestions</li>
-            <li>• Smart template recommendations</li>
-            <li>• Automated task suggestions</li>
-            <li>• Budget estimation help</li>
-          </ul>
-          <button 
-            onClick={handleCreateWithStella}
-            className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            Create with Stella's Help
-          </button>
-        </div>
-
-        {/* Stella Automated */}
-        <div className="border-2 border-pink-200 rounded-lg p-6 hover:border-pink-400 transition-colors bg-pink-50">
-          <div className="flex items-center space-x-3 mb-4">
-            <Sparkles className="w-8 h-8 text-pink-600" />
-            <div>
-              <h3 className="font-semibold text-pink-900">Stella Automated</h3>
-              <p className="text-sm text-pink-700">Complete workflow generation</p>
-            </div>
-          </div>
-          <ul className="text-sm text-pink-700 space-y-2 mb-4">
-            <li>• Complete workflow creation</li>
-            <li>• Automated timeline & tasks</li>
-            <li>• Budget & profit projections</li>
-            <li>• Communication campaigns</li>
-          </ul>
-          <button 
-            onClick={handleGenerateFullWorkflow}
-            className="w-full py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors"
-          >
-            Generate Full Workflow
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <div className="flex flex-col gap-8 p-6 max-w-7xl mx-auto">
-      {/* Header Row */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <h1 className="text-2xl font-bold">Events Dashboard</h1>
-        <button
-          onClick={handleCreateManually}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow min-w-[160px]"
-        >
-          + Create Event
-        </button>
-      </div>
-      {/* Upcoming Events Preview */}
-      <div>
-        <h2 className="text-lg font-semibold mb-2">Upcoming Events</h2>
-        {loading ? (
-          <div className="text-gray-500 py-8 text-center text-base">Loading events...</div>
-        ) : error ? (
-          <div className="text-red-500 py-8 text-center text-base">{error}</div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {upcomingEvents.length > 0 ? (
-              upcomingEvents.map(event => (
-                <div
-                  key={event.id}
-                  className="bg-white border border-blue-100 rounded-lg shadow p-4 cursor-pointer hover:shadow-md transition min-h-[170px] flex flex-col justify-between"
-                  onClick={() => handleViewEvent(event.id)}
-                  tabIndex={0}
-                  aria-label={`View details for ${event.title}`}
-                  onKeyDown={e => { if (e.key === 'Enter') handleViewEvent(event.id); }}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-blue-700 text-lg">{event.title}</span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>{event.status}</span>
-                  </div>
-                  <div className="text-sm text-gray-600 mb-1 font-medium">{new Date(event.event_date).toLocaleDateString()}</div>
-                  <div className="mb-2 text-xs text-gray-500 flex-1">{event.description}</div>
-                  <div className="flex items-center gap-2 text-xs mt-2">
-                    <span>Budget:</span>
-                    <span className="font-semibold text-gray-800">${event.estimated_budget || 'N/A'}</span>
-                  </div>
-                </div>
-              ))
+      {/* Top Row: Stella Insights + Create Event (left), Mini Calendar (right) */}
+      <div className="flex flex-col md:flex-row gap-8">
+        {/* Left: Insights + Create Event */}
+        <div className="flex flex-col gap-4 md:w-1/2 max-w-md">
+          <div className={`${pastelBox} p-6`}>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-purple-600 text-xl">✨</span>
+              <span className="font-bold text-lg text-purple-700">Stella's Event Insights</span>
+            </div>
+            {stellaLoading ? (
+              <div className="text-gray-500">Loading tips...</div>
+            ) : stellaError ? (
+              <div className="text-red-500">{stellaError}</div>
             ) : (
-              <div className="text-gray-500 col-span-full py-8 text-center text-base">No upcoming events. <button onClick={handleCreateManually} className="text-blue-600 underline ml-2">Create one now</button></div>
+              <ul className="list-disc pl-5 text-purple-900 space-y-2">
+                {stellaTips.map((tip, i) => (
+                  <li key={i}>{tip}</li>
+                ))}
+              </ul>
             )}
+            <div className="mt-4 text-xs text-purple-400">Tips powered by Stella AI</div>
           </div>
-        )}
-      </div>
-      {/* Mini Calendar - below cards on laptop/desktop */}
-      <div className="w-full max-w-xl mx-auto mt-8">
-        <div className="bg-white border border-gray-200 rounded-lg shadow p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-semibold">Calendar</h2>
-            <button
-              onClick={handleMiniCalendarClick}
-              className="text-blue-600 hover:underline text-sm"
-            >
-              View Full Calendar
-            </button>
-          </div>
-          <div className="cursor-pointer" onClick={handleMiniCalendarClick}>
-            <BigCalendar
-              localizer={localizer}
-              events={calendarEvents.map(ev => ({ ...ev, resource: { dotColor: '#2563eb' } }))}
-              startAccessor="start"
-              endAccessor="end"
-              views={['month']}
-              style={{ height: 300 }}
-              toolbar={false}
-              selectable={false}
-              popup={false}
-              onSelectEvent={handleSelectEvent}
-              eventPropGetter={(event) => ({
-                style: {
-                  backgroundColor: 'transparent',
-                  color: '#2563eb',
-                  border: 'none',
-                  position: 'relative',
-                },
-                className: 'calendar-event-dot',
-              })}
-              components={{
-                event: ({ event }) => (
-                  <span style={{
-                    display: 'inline-block',
-                    width: 8,
-                    height: 8,
-                    borderRadius: '50%',
-                    backgroundColor: event.resource?.dotColor || '#2563eb',
-                    margin: 2,
-                  }} />
-                )
-              }}
-            />
+          <button
+            onClick={handleCreateManually}
+            className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-400 via-purple-400 to-teal-400 shadow hover:from-pink-500 hover:to-teal-500 transition"
+          >
+            + Create Event
+          </button>
+        </div>
+        {/* Right: Mini Calendar */}
+        <div className="flex-1">
+          <div className={`${pastelBox} p-4`}>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-semibold text-purple-700">Calendar</h2>
+              <button
+                onClick={handleMiniCalendarClick}
+                className="text-purple-600 hover:underline text-sm"
+              >
+                View Full Calendar
+              </button>
+            </div>
+            <div className="cursor-pointer" onClick={handleMiniCalendarClick}>
+              <BigCalendar
+                localizer={localizer}
+                events={calendarEvents.map(ev => ({ ...ev, resource: { dotColor: '#a78bfa' } }))}
+                startAccessor="start"
+                endAccessor="end"
+                views={['month']}
+                style={{ height: 300 }}
+                toolbar={false}
+                selectable={false}
+                popup={false}
+                onSelectEvent={handleSelectEvent}
+                eventPropGetter={(event) => ({
+                  style: {
+                    backgroundColor: 'transparent',
+                    color: '#a78bfa',
+                    border: 'none',
+                    position: 'relative',
+                  },
+                  className: 'calendar-event-dot',
+                })}
+                components={{
+                  event: ({ event }) => (
+                    <span style={{
+                      display: 'inline-block',
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      backgroundColor: event.resource?.dotColor || '#a78bfa',
+                      margin: 2,
+                    }} />
+                  )
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
