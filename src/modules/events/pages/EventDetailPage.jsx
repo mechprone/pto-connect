@@ -207,12 +207,12 @@ const EventDetailPage = () => {
       {/* Main Content */}
       <div className="flex-1 min-w-0">
         {/* Tab Navigation */}
-        <div className="sticky top-0 z-10 bg-white bg-opacity-90 pt-2 pb-1 mb-6 border-b flex gap-2" style={{backdropFilter:'blur(4px)'}}>
+        <div className="sticky top-0 z-10 bg-white bg-opacity-90 pt-2 pb-1 mb-6 border-b flex justify-evenly" style={{backdropFilter:'blur(4px)'}}>
           {TABS.map(tab => (
             <button
               key={tab.key}
               onClick={() => handleTabClick(tab.key)}
-              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab.key ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+              className={`flex-1 text-center whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab.key ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
             >
               {tab.label}
             </button>
