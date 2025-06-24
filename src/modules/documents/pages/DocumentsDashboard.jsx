@@ -3,7 +3,7 @@ import { supabase } from '@/utils/supabaseClient'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 
-const API_BASE_URL = 'https://api.ptoconnect.com'
+const API_BASE_URL = import.meta.env.VITE_API_URL
 
 export default function DocumentsDashboard() {
   const [documents, setDocuments] = useState([])

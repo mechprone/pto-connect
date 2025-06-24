@@ -4,7 +4,7 @@ import { supabase } from '@/utils/supabaseClient'
 import axios from 'axios'
 import { jsPDF } from 'jspdf'
 
-const API_BASE_URL = 'https://api.ptoconnect.com';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function CreateEvent() {
   const [form, setForm] = useState({

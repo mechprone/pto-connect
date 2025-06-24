@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { supabase } from '@/utils/supabaseClient';
 
+console.log('[DEBUG] VITE_API_URL at runtime:', import.meta.env.VITE_API_URL);
+
 // Create axios instance with base configuration
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,

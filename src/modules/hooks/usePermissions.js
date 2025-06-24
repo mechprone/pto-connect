@@ -3,7 +3,7 @@ import { useUserProfile } from './useUserProfile';
 import { supabase } from '@/utils/supabaseClient';
 import axios from 'axios';
 
-const API_BASE_URL = 'https://api.ptoconnect.com';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 /**
  * Core permission checking hook for permission-aware UI
