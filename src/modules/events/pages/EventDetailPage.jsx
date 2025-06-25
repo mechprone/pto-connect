@@ -181,10 +181,12 @@ const EventDetailPage = () => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       let current = 'overview';
-      for (const tab of TABS) {
+      for (let i = TABS.length - 1; i >= 0; i--) {
+        const tab = TABS[i];
         const ref = sectionRefs[tab.key].current;
         if (ref && ref.offsetTop - 80 <= scrollY) {
           current = tab.key;
+          break;
         }
       }
       setActiveTab(current);
