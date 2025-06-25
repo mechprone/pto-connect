@@ -244,17 +244,25 @@ const EventDetailPage = () => {
           ) : error ? (
             <div className="bg-white rounded-xl shadow p-6 text-red-500">{error}</div>
           ) : event ? (
-            <div className="bg-white rounded-xl shadow p-6 mb-4">
-              <div className="mb-2 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                <h3 className="text-xl font-semibold text-gray-900">{event.title}</h3>
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 capitalize">{event.status}</span>
+            <div className="bg-white rounded-xl shadow p-6 mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <div className="mb-2 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                  <h3 className="text-xl font-semibold text-gray-900">{event.title}</h3>
+                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 capitalize">{event.status}</span>
+                </div>
+                <div className="text-gray-600 mb-2">{event.description}</div>
+                <div className="flex flex-wrap gap-6 text-sm text-gray-500 mb-2">
+                  <div><strong>Date:</strong> {event.event_date ? new Date(event.event_date).toLocaleDateString() : 'N/A'}</div>
+                  <div><strong>Location:</strong> {event.location || 'N/A'}</div>
+                  <div><strong>Progress:</strong> {event.progress ? `${event.progress}%` : 'N/A'}</div>
+                </div>
               </div>
-              <div className="text-gray-600 mb-2">{event.description}</div>
-              <div className="flex flex-wrap gap-6 text-sm text-gray-500 mb-2">
-                <div><strong>Date:</strong> {event.event_date ? new Date(event.event_date).toLocaleDateString() : 'N/A'}</div>
-                <div><strong>Location:</strong> {event.location || 'N/A'}</div>
-                <div><strong>Progress:</strong> {event.progress ? `${event.progress}%` : 'N/A'}</div>
-              </div>
+              <button
+                onClick={() => window.location.href = `/events/edit/${event.id}`}
+                className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
+              >
+                Edit Event
+              </button>
             </div>
           ) : null}
           {/* Stella Insights for mobile */}
