@@ -179,18 +179,19 @@ const EventDetailPage = () => {
   // Scrollspy: update active tab on scroll
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      let current = 'overview';
-      for (let i = TABS.length - 1; i >= 0; i--) {
-        const tab = TABS[i];
-        const ref = sectionRefs[tab.key].current;
-        if (ref && ref.offsetTop - 80 <= scrollY) {
-          current = tab.key;
-          break;
+      const threshold = 100; // height of sticky tab bar + margin
+      let current = TABS[0].key;
+      for (let i = 0; i < TABS.length; i++) {
+        const ref = sectionRefs[TABS[i].key].current;
+        if (ref) {
+          const rect = ref.getBoundingClientRect();
+          if (rect.top - threshold <= 0) {
+            current = TABS[i].key;
+          }
         }
       }
       setActiveTab(current);
-      setShowUpArrow(scrollY > 300);
+      setShowUpArrow(window.scrollY > 300);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -203,6 +204,21 @@ const EventDetailPage = () => {
 
   // Responsive: show sidebar on desktop, below overview on mobile
   const isDesktop = window.innerWidth >= 1024;
+
+  // LocalStorage caching for event data and UI state
+  useEffect(() => {
+    if (event) {
+      localStorage.setItem(`event-detail-${event.id}`, JSON.stringify(event));
+    }
+  }, [event]);
+
+  useEffect(() => {
+    const cached = localStorage.getItem(`event-detail-${eventId}`);
+    if (!event && cached) {
+      setEvent(JSON.parse(cached));
+      setLoading(false);
+    }
+  }, [eventId]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
