@@ -295,12 +295,12 @@ const EventsDashboard = () => {
           <div className="text-center">
             <div className="text-sm text-gray-500">Attendees</div>
             <div className="font-medium">{event.attendees}</div>
-          </div>
+              </div>
           
           <div className="text-center">
             <div className="text-sm text-gray-500">Budget</div>
             <div className="font-medium">${event.estimated_budget || 'N/A'}</div>
-          </div>
+            </div>
           
           <div className="text-center">
             <div className="text-sm text-gray-500">Progress</div>
@@ -328,8 +328,8 @@ const EventsDashboard = () => {
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
-      </div>
-    </div>
+            </div>
+              </div>
   );
 
   return (
@@ -426,7 +426,7 @@ const EventsDashboard = () => {
               <EventRow key={event.id} event={event} />
           ))
         )}
-      </div>
+            </div>
     </div>
   );
 };
