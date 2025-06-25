@@ -23,8 +23,8 @@ const stellaTipsFallback = [
 const pastelBox = 'bg-white bg-opacity-80 rounded-2xl shadow-lg border border-purple-100';
 
 const EventDetailPage = () => {
-  // Get eventId from route params (for future data fetching)
-  const { eventId } = useParams();
+  // Get id from route params (for future data fetching)
+  const { id } = useParams();
 
   // Section refs for scrolling
   const sectionRefs = {
@@ -69,7 +69,7 @@ const EventDetailPage = () => {
         const { data, error: fetchError } = await supabase
           .from('events')
           .select('*')
-          .eq('id', eventId)
+          .eq('id', id)
           .single();
         if (fetchError) {
           setError('Event not found.');
@@ -82,20 +82,20 @@ const EventDetailPage = () => {
         setLoading(false);
       }
     }
-    if (eventId) fetchEvent();
-  }, [eventId]);
+    if (id) fetchEvent();
+  }, [id]);
 
   // Fetch expenses for this event
   useEffect(() => {
     async function fetchExpenses() {
-      if (!eventId) return;
+      if (!id) return;
       setBudgetLoading(true);
       setBudgetError(null);
       try {
         const { data, error: fetchError } = await supabase
           .from('expense_submissions')
           .select('*')
-          .eq('event_id', eventId)
+          .eq('event_id', id)
           .order('expense_date', { ascending: false });
         if (fetchError) {
           setBudgetError('Could not load expenses.');
@@ -109,12 +109,12 @@ const EventDetailPage = () => {
       }
     }
     fetchExpenses();
-  }, [eventId]);
+  }, [id]);
 
   // Fetch communications for this event
   useEffect(() => {
     async function fetchCommunications() {
-      if (!eventId) return;
+      if (!id) return;
       setCommLoading(true);
       setCommError(null);
       try {
@@ -143,12 +143,12 @@ const EventDetailPage = () => {
       }
     }
     fetchCommunications();
-  }, [eventId, event?.org_id]);
+  }, [id, event?.org_id]);
 
   // Fetch fundraising campaigns for this event
   useEffect(() => {
     async function fetchFundraising() {
-      if (!eventId) return;
+      if (!id) return;
       setFundraisingLoading(true);
       setFundraisingError(null);
       try {
@@ -169,7 +169,7 @@ const EventDetailPage = () => {
       }
     }
     fetchFundraising();
-  }, [eventId, event?.org_id]);
+  }, [id, event?.org_id]);
 
   // Scroll to section on tab click
   const handleTabClick = (key) => {
@@ -213,12 +213,12 @@ const EventDetailPage = () => {
   }, [event]);
 
   useEffect(() => {
-    const cached = localStorage.getItem(`event-detail-${eventId}`);
+    const cached = localStorage.getItem(`event-detail-${id}`);
     if (!event && cached) {
       setEvent(JSON.parse(cached));
       setLoading(false);
     }
-  }, [eventId]);
+  }, [id]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
