@@ -124,7 +124,7 @@ export default function App() {
           <Route path="/events/create" element={<CreateEvent />} />
           <Route path="/events/create-enhanced" element={<StellaEventWizard />} />
           <Route path="/events/:eventId/workflow" element={<EventWorkflowDashboard />} />
-          <Route path="/events/:eventId/project-management" element={<EventProjectManagement />} />
+          <Route path="/events/:eventId/event-management" element={<EventProjectManagement />} />
           <Route path="/events/edit/:id" element={<EditEventPage />} />
           <Route path="/events/calendar" element={<EventsCalendarPage />} />
           <Route path="/events/detail/:id" element={<EventDetailPage />} />

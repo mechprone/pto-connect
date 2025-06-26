@@ -175,7 +175,7 @@ const EventProjectManagement = () => {
       {/* Progress Overview */}
       {eventSummary && (
         <Card className="p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Project Progress</h2>
+          <h2 className="text-xl font-semibold mb-4">Event Progress</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
               <p className="text-sm text-gray-600 mb-2">Overall Progress</p>

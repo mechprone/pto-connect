@@ -265,6 +265,13 @@ const EventsDashboard = () => {
             <Edit className="w-4 h-4 mr-2" />
             Edit
           </button>
+          <button 
+            onClick={() => navigate(`/events/${event.id}/event-management`)}
+            className="flex-1 flex items-center justify-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            <Users className="w-4 h-4 mr-2" />
+            Event Management
+          </button>
         </div>
       </div>
     </div>

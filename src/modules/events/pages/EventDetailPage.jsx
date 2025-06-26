@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowUp } from 'lucide-react';
 import { supabase } from '@/utils/supabaseClient';
 
@@ -10,6 +10,7 @@ const TABS = [
   { key: 'communications', label: 'Communications' },
   { key: 'fundraising', label: 'Fundraising' },
   { key: 'volunteers', label: 'Volunteers' },
+  { key: 'project-management', label: 'Event Management' },
   { key: 'files', label: 'Files/Docs' },
 ];
 
@@ -25,6 +26,7 @@ const pastelBox = 'bg-white bg-opacity-80 rounded-2xl shadow-lg border border-pu
 const EventDetailPage = () => {
   // Get id from route params (for future data fetching)
   const { id } = useParams();
+  const navigate = useNavigate();
 
   // Section refs for scrolling
   const sectionRefs = {
@@ -33,6 +35,7 @@ const EventDetailPage = () => {
     communications: useRef(null),
     fundraising: useRef(null),
     volunteers: useRef(null),
+    'project-management': useRef(null),
     files: useRef(null),
   };
 
@@ -456,6 +459,20 @@ const EventDetailPage = () => {
         <section ref={sectionRefs.volunteers} id="volunteers" className="mb-12 scroll-mt-24">
           <h2 className="text-2xl font-bold mb-4">Volunteers</h2>
           <div className="bg-white rounded-xl shadow p-6 text-gray-500">Volunteer assignments and signups coming soon.</div>
+        </section>
+        <section ref={sectionRefs['project-management']} id="project-management" className="mb-12 scroll-mt-24">
+          <h2 className="text-2xl font-bold mb-4">Event Management</h2>
+          <div className="bg-white rounded-xl shadow p-6">
+            <div className="mb-4">
+              <p className="text-gray-600 mb-4">Manage tasks, milestones, and event progress for this event.</p>
+              <button
+                onClick={() => navigate(`/events/${id}/event-management`)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Open Event Management
+              </button>
+            </div>
+          </div>
         </section>
         <section ref={sectionRefs.files} id="files" className="mb-12 scroll-mt-24">
           <h2 className="text-2xl font-bold mb-4">Files & Documents</h2>
