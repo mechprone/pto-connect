@@ -5,21 +5,21 @@ const IS_PREVIEW = import.meta.env.VITE_IS_PREVIEW === 'true' || ENV === 'previe
 // Environment-specific configurations
 const ENV_CONFIG = {
   development: {
-    apiUrl: 'http://localhost:3000/api',
+    apiUrl: import.meta.env.VITE_API_URL,
     clientUrl: 'http://localhost:5173',
     supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
     supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
     stripePublishableKey: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
   },
   preview: {
-    apiUrl: 'https://preview-api.ptoconnect.com/api',
+    apiUrl: import.meta.env.VITE_API_URL,
     clientUrl: 'https://preview.ptoconnect.com',
     supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
     supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
     stripePublishableKey: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
   },
   production: {
-    apiUrl: 'https://api.ptoconnect.com/api',
+    apiUrl: import.meta.env.VITE_API_URL,
     clientUrl: 'https://app.ptoconnect.com',
     supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
     supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
