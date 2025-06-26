@@ -14,6 +14,7 @@ import getDay from 'date-fns/getDay';
 import enUS from 'date-fns/locale/en-US';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { supabase } from '@/utils/supabaseClient';
+import { Button } from '@/components/ui/button';
 
 const locales = { 'en-US': enUS };
 const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
@@ -250,28 +251,33 @@ const EventsDashboard = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex space-x-2">
-          <button 
-            onClick={() => handleViewEvent(event.id)}
-            className="flex-1 flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Eye className="w-4 h-4 mr-2" />
-            View
-          </button>
-          <button 
-            onClick={() => handleEditEvent(event.id)}
-            className="flex-1 flex items-center justify-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-          >
-            <Edit className="w-4 h-4 mr-2" />
-            Edit
-          </button>
-          <button 
+        <div className="flex flex-col gap-2 mt-4">
+          <div className="flex gap-2">
+            <Button
+              onClick={() => handleViewEvent(event.id)}
+              className="flex-1 flex items-center justify-center rounded-lg"
+              variant="default"
+            >
+              <Eye className="w-6 h-6 mr-2" />
+              View
+            </Button>
+            <Button
+              onClick={() => handleEditEvent(event.id)}
+              className="flex-1 flex items-center justify-center rounded-lg"
+              variant="outline"
+            >
+              <Edit className="w-6 h-6 mr-2" />
+              Edit
+            </Button>
+          </div>
+          <Button
             onClick={() => navigate(`/events/${event.id}/event-management`)}
-            className="flex-1 flex items-center justify-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="mt-2 flex items-center justify-center rounded-lg text-lg font-semibold bg-purple-600 hover:bg-purple-700"
+            fullWidth
           >
-            <Users className="w-4 h-4 mr-2" />
+            <Users className="w-7 h-7 mr-3" />
             Event Management
-          </button>
+          </Button>
         </div>
       </div>
     </div>
