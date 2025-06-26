@@ -8,7 +8,7 @@ import Input from '@/components/common/Input';
 import Card from '@/components/common/Card';
 import Select from '@/components/common/Select';
 import { Plus, Trash2, Edit2, Check, X } from 'lucide-react';
-import { Chart, PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 export default function DonationTierManager() {
   const { id } = useParams();

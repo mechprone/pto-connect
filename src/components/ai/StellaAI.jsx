@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Card, Button, Input, Textarea, Badge, Spinner } from '@/components/common';
+import { Card, Button, Input, Textarea, Badge, LoadingSpinner } from '@/components/common';
 import { getFeatureFlags } from '@/config/environment.js';
 import api from '@/utils/api';
 
@@ -282,7 +282,7 @@ const StellaAI = ({
                 disabled={isLoading || !input.trim()}
                 className="self-end"
               >
-                {isLoading ? <Spinner size="sm" /> : 'Send'}
+                {isLoading ? <LoadingSpinner size="sm" /> : 'Send'}
               </Button>
             </div>
           </form>

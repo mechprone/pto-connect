@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Select } from '@/components/ui';
+import { Card, Select } from '@/components/common';
 import { api } from '@/utils/api';
 
 const TaskProgressChart = ({ eventId }) => {

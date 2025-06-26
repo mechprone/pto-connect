@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Badge, Select, Input, Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui';
+import { Card, Button, Badge, Select, Input, Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common';
 import { Plus, Filter, Search, Edit, Trash2, MessageSquare, Paperclip, Calendar, User, Flag } from 'lucide-react';
 import { api } from '@/utils/api';
 import TaskDetailModal from './TaskDetailModal';

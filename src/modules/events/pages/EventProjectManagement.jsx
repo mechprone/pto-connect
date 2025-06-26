@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Button, Badge, Progress, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
+import { Card, Button, Badge, Progress, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common';
 import { Calendar, CheckCircle, Clock, AlertTriangle, Users, FileText, MessageSquare, Paperclip } from 'lucide-react';
 import { api } from '@/utils/api';
 import EventTasksList from '../components/EventTasksList';

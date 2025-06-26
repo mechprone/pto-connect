@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Badge, Progress, Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui';
+import { Card, Button, Badge, Progress, Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common';
 import { Plus, Calendar, CheckCircle, Clock, AlertTriangle, Edit, Trash2, Flag } from 'lucide-react';
 import { api } from '@/utils/api';
 import AddMilestoneModal from './AddMilestoneModal';

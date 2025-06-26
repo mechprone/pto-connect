@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, Button, Input, Textarea, Label } from '@/components/ui';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, Button, Input, Textarea, Label } from '@/components/common';
 import { X, Calendar, Clock, DollarSign } from 'lucide-react';
 import { api } from '@/utils/api';
 

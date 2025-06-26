@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Badge, Progress } from '@/components/ui';
+import { Card, Button, Badge, Progress } from '@/components/common';
 import { Plus, Building, DollarSign, Calendar, User, CheckCircle } from 'lucide-react';
 import { api } from '@/utils/api';
 
