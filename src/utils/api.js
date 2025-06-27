@@ -11,17 +11,15 @@ console.log('[DEBUG] Environment config:', {
   isPreview: import.meta.env.VITE_IS_PREVIEW === 'true'
 });
 
-if (!import.meta.env.VITE_API_URL) {
-  throw new Error('VITE_API_URL is not set! Please check your environment variables.');
+if (!config.baseURL) {
+  throw new Error('API URL is not configured! Please check your environment variables.');
 }
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  baseURL: config.baseURL,
+  timeout: config.timeout,
+  headers: config.headers,
 });
 
 // Request interceptor to add auth token
