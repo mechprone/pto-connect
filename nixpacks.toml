@@ -8,4 +8,4 @@ cmds = ['npm ci --production=false --include=optional']
 cmds = ['npm run build']
 
 [start]
-cmd = 'npx serve dist -s -l 10000'
+cmd = 'npx serve dist -s -l $PORT -H 0.0.0.0'

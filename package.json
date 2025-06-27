@@ -10,7 +10,7 @@
     "dev": "vite",
     "build": "vite build --outDir dist",
     "preview": "vite preview",
-    "start": "serve dist -s -l 3000"
+    "start": "serve dist -s -l ${PORT:-3000}"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
