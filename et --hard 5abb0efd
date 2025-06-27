@@ -1,0 +1,10 @@
+[33m0bfa8c3b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mpreview[m[33m, [m[1;31morigin/preview[m[33m)[m Update EventsDashboard.jsx
+[33m5abb0efd[m Fix API URL configuration: use environment config instead of direct env vars
+[33ma382b088[m Fix rollup native module issue: update nixpacks config and add optional dependency
+[33mee1e4079[m Add railway.json and nixpacks.toml to force Nixpacks builder
+[33mc968c4ef[m docker rename
+[33m51d9a938[m Merge branch 'preview' of https://github.com/mechprone/pto-connect into preview
+[33m4177a31f[m Dockerfile remove from build
+[33mb7d2f791[m Delete .env
+[33m4aa030d9[m Update .env
+[33mb3ffc9a7[m Update api.js
