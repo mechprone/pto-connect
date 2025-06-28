@@ -15,7 +15,7 @@ const TaskProgressChart = ({ eventId }) => {
   const loadChartData = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/events/${eventId}/task-progress?timeframe=${timeframe}`);
+      const response = await api.get(`/api/events/${eventId}/task-progress?timeframe=${timeframe}`);
       setChartData(response.data);
     } catch (err) {
       setError('Failed to load chart data');

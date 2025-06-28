@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Button, Badge, Progress, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common';
 import { Calendar, CheckCircle, Clock, AlertTriangle, Users, FileText, MessageSquare, Paperclip } from 'lucide-react';
-import { api } from '@/utils/api';
+import { eventsAPI } from '@/utils/api';
 import EventTasksList from '../components/EventTasksList';
 import EventMilestones from '../components/EventMilestones';
 import EventIssues from '../components/EventIssues';
@@ -30,8 +30,8 @@ const EventProjectManagement = () => {
     try {
       setLoading(true);
       const [eventResponse, summaryResponse] = await Promise.all([
-        api.get(`/events/${eventId}`),
-        api.get(`/events/${eventId}/summary`)
+        eventsAPI.getEvent(eventId),
+        eventsAPI.getEventSummary(eventId)
       ]);
 
       setEvent(eventResponse.data);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Badge, Select, Input, Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common';
 import { Plus, Filter, Search, Edit, Trash2, MessageSquare, Paperclip, Calendar, User, Flag } from 'lucide-react';
-import { api } from '@/utils/api';
+import { eventsAPI } from '@/utils/api';
 import TaskDetailModal from './TaskDetailModal';
 import AddTaskModal from './AddTaskModal';
 
@@ -28,7 +28,7 @@ const EventTasksList = ({ eventId, onTaskUpdated }) => {
   const loadTasks = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/events/${eventId}/tasks`);
+      const response = await eventsAPI.getEventTasks(eventId);
       setTasks(response.data);
     } catch (err) {
       setError('Failed to load tasks');

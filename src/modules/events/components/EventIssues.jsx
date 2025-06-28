@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Badge, Select, Input, Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common';
 import { Plus, Search, Edit, Trash2, AlertTriangle, CheckCircle, Clock, User, MessageSquare } from 'lucide-react';
-import { api } from '@/utils/api';
+import { eventsAPI } from '@/utils/api';
 
 const EventIssues = ({ eventId, onIssueUpdated }) => {
   const [issues, setIssues] = useState([]);
@@ -23,7 +23,7 @@ const EventIssues = ({ eventId, onIssueUpdated }) => {
   const loadIssues = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/events/${eventId}/issues`);
+      const response = await eventsAPI.getEventIssues(eventId);
       setIssues(response.data);
     } catch (err) {
       setError('Failed to load issues');

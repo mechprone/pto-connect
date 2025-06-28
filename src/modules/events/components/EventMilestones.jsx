@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Badge, Progress, Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common';
 import { Plus, Calendar, CheckCircle, Clock, AlertTriangle, Edit, Trash2, Flag } from 'lucide-react';
-import { api } from '@/utils/api';
+import { eventsAPI } from '@/utils/api';
 import AddMilestoneModal from './AddMilestoneModal';
 
 const EventMilestones = ({ eventId, onMilestoneUpdated }) => {
@@ -18,7 +18,7 @@ const EventMilestones = ({ eventId, onMilestoneUpdated }) => {
   const loadMilestones = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/events/${eventId}/milestones`);
+      const response = await eventsAPI.getEventMilestones(eventId);
       setMilestones(response.data);
     } catch (err) {
       setError('Failed to load milestones');

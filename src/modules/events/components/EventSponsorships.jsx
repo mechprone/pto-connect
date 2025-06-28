@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Badge, Progress } from '@/components/common';
 import { Plus, Building, DollarSign, Calendar, User, CheckCircle } from 'lucide-react';
-import { api } from '@/utils/api';
+import { eventsAPI } from '@/utils/api';
 
 const EventSponsorships = ({ eventId, onSponsorshipUpdated }) => {
   const [sponsorships, setSponsorships] = useState([]);
@@ -15,7 +15,7 @@ const EventSponsorships = ({ eventId, onSponsorshipUpdated }) => {
   const loadSponsorships = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/events/${eventId}/sponsorships`);
+      const response = await eventsAPI.getEventSponsorships(eventId);
       setSponsorships(response.data);
     } catch (err) {
       setError('Failed to load sponsorships');

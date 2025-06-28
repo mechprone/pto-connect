@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, Button, Input, Textarea, Select, Label } from '@/components/common';
 import { X, Calendar, User, Clock, DollarSign, Flag } from 'lucide-react';
-import { api } from '@/utils/api';
+import { eventsAPI } from '@/utils/api';
 
 const AddTaskModal = ({ eventId, onClose, onTaskAdded }) => {
   const [formData, setFormData] = useState({
@@ -38,7 +38,7 @@ const AddTaskModal = ({ eventId, onClose, onTaskAdded }) => {
 
   const loadParentTasks = async () => {
     try {
-      const response = await api.get(`/events/${eventId}/tasks`);
+      const response = await eventsAPI.getEventTasks(eventId);
       setParentTasks(response.data.filter(task => task.status !== 'completed'));
     } catch (err) {
       console.error('Error loading parent tasks:', err);
