@@ -3,9 +3,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, Button, Input, Textar
 import { X, Calendar, Clock, DollarSign } from 'lucide-react';
 import { eventsAPI } from '@/utils/api';
 
+console.log('🔥🔥🔥 [AddMilestoneModal] MODULE LOADED - UPDATED VERSION');
+
 const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
-  console.log('🔥 [AddMilestoneModal] COMPONENT MOUNTED');
-  console.log('🔥 [AddMilestoneModal] Props:', { eventId, onClose: !!onClose, onMilestoneAdded: !!onMilestoneAdded });
+  console.log('🔥🔥🔥 [AddMilestoneModal] COMPONENT FUNCTION CALLED');
+  console.log('🔥🔥🔥 [AddMilestoneModal] Props received:', { 
+    eventId, 
+    hasOnClose: !!onClose, 
+    hasOnMilestoneAdded: !!onMilestoneAdded 
+  });
 
   const [formData, setFormData] = useState({
     title: '',
@@ -17,8 +23,10 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  console.log('🔥🔥🔥 [AddMilestoneModal] State initialized');
+
   const handleInputChange = (field, value) => {
-    console.log('📝 [AddMilestoneModal] Input changed:', { field, value });
+    console.log('🔥🔥🔥 [AddMilestoneModal] Input changed:', { field, value });
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -26,9 +34,9 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
   };
 
   const handleSubmit = async (e) => {
-    console.log('🔥 [AddMilestoneModal] HANDLE SUBMIT CALLED');
-    console.log('🔥 [AddMilestoneModal] Event:', e);
-    console.log('🔥 [AddMilestoneModal] Event type:', e.type);
+    console.log('🔥🔥🔥 [AddMilestoneModal] HANDLE SUBMIT CALLED - FORM SUBMITTED!!!');
+    console.log('🔥🔥🔥 [AddMilestoneModal] Event:', e);
+    console.log('🔥🔥🔥 [AddMilestoneModal] Event type:', e?.type);
     
     e.preventDefault();
     
@@ -79,20 +87,20 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
   };
 
   const handleClose = () => {
-    console.log('🚪 [AddMilestoneModal] Handle close called');
+    console.log('🔥🔥🔥 [AddMilestoneModal] Handle close called');
     if (!loading) {
       onClose();
     }
   };
 
-  console.log('🎨 [AddMilestoneModal] Rendering component');
+  console.log('🔥🔥🔥 [AddMilestoneModal] About to render component');
 
   return (
     <Dialog open={true} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
-            <span>Add New Milestone</span>
+            <span>Add New Milestone - UPDATED VERSION</span>
             <Button variant="ghost" size="sm" onClick={handleClose} disabled={loading}>
               <X className="h-4 w-4" />
             </Button>
@@ -189,12 +197,12 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
               type="submit" 
               disabled={loading}
               onClick={(e) => {
-                console.log('🔥 [AddMilestoneModal] SUBMIT BUTTON CLICKED');
-                console.log('🔥 [AddMilestoneModal] Button event:', e);
+                console.log('🔥🔥🔥 [AddMilestoneModal] SUBMIT BUTTON CLICKED!!!');
+                console.log('🔥🔥🔥 [AddMilestoneModal] Button click event:', e);
                 // Don't prevent default here - let the form handle it
               }}
             >
-              {loading ? 'Creating...' : 'Create Milestone'}
+              {loading ? 'Creating...' : 'Create Milestone - UPDATED'}
             </Button>
           </div>
         </form>
@@ -202,5 +210,7 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
     </Dialog>
   );
 };
+
+console.log('🔥🔥🔥 [AddMilestoneModal] Component function defined, about to export');
 
 export default AddMilestoneModal; 
