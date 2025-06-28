@@ -143,6 +143,44 @@ export const eventsAPI = {
   deleteEvent: (id) => apiRequest('DELETE', `/event/${id}`),
   rsvpEvent: (eventId, status) => apiRequest('POST', `/event/${eventId}/rsvp`, { status }),
   getEventRSVPs: (eventId) => apiRequest('GET', `/event/${eventId}/rsvps`),
+  
+  // Event Project Management API calls
+  getEventSummary: (eventId) => apiRequest('GET', `/events/${eventId}/summary`),
+  
+  // Tasks
+  getEventTasks: (eventId) => apiRequest('GET', `/events/${eventId}/tasks`),
+  createTask: (eventId, taskData) => apiRequest('POST', `/events/${eventId}/tasks`, taskData),
+  updateTask: (eventId, taskId, taskData) => apiRequest('PUT', `/events/${eventId}/tasks/${taskId}`, taskData),
+  deleteTask: (eventId, taskId) => apiRequest('DELETE', `/events/${eventId}/tasks/${taskId}`),
+  
+  // Milestones
+  getEventMilestones: (eventId) => apiRequest('GET', `/events/${eventId}/milestones`),
+  createMilestone: (eventId, milestoneData) => apiRequest('POST', `/events/${eventId}/milestones`, milestoneData),
+  updateMilestone: (eventId, milestoneId, milestoneData) => apiRequest('PUT', `/events/${eventId}/milestones/${milestoneId}`, milestoneData),
+  deleteMilestone: (eventId, milestoneId) => apiRequest('DELETE', `/events/${eventId}/milestones/${milestoneId}`),
+  
+  // Issues
+  getEventIssues: (eventId) => apiRequest('GET', `/events/${eventId}/issues`),
+  createIssue: (eventId, issueData) => apiRequest('POST', `/events/${eventId}/issues`, issueData),
+  updateIssue: (eventId, issueId, issueData) => apiRequest('PUT', `/events/${eventId}/issues/${issueId}`, issueData),
+  deleteIssue: (eventId, issueId) => apiRequest('DELETE', `/events/${eventId}/issues/${issueId}`),
+  
+  // Sponsorships
+  getEventSponsorships: (eventId) => apiRequest('GET', `/events/${eventId}/sponsorships`),
+  createSponsorship: (eventId, sponsorshipData) => apiRequest('POST', `/events/${eventId}/sponsorships`, sponsorshipData),
+  updateSponsorship: (eventId, sponsorshipId, sponsorshipData) => apiRequest('PUT', `/events/${eventId}/sponsorships/${sponsorshipId}`, sponsorshipData),
+  deleteSponsorship: (eventId, sponsorshipId) => apiRequest('DELETE', `/events/${eventId}/sponsorships/${sponsorshipId}`),
+  
+  // Task Dependencies
+  getTaskDependencies: (eventId, taskId) => apiRequest('GET', `/events/${eventId}/tasks/${taskId}/dependencies`),
+  createTaskDependency: (eventId, taskId, dependencyData) => apiRequest('POST', `/events/${eventId}/tasks/${taskId}/dependencies`, dependencyData),
+  deleteTaskDependency: (eventId, taskId, dependencyId) => apiRequest('DELETE', `/events/${eventId}/tasks/${taskId}/dependencies/${dependencyId}`),
+  
+  // Task Comments
+  getTaskComments: (eventId, taskId) => apiRequest('GET', `/events/${eventId}/tasks/${taskId}/comments`),
+  createTaskComment: (eventId, taskId, commentData) => apiRequest('POST', `/events/${eventId}/tasks/${taskId}/comments`, commentData),
+  updateTaskComment: (eventId, taskId, commentId, commentData) => apiRequest('PUT', `/events/${eventId}/tasks/${taskId}/comments/${commentId}`, commentData),
+  deleteTaskComment: (eventId, taskId, commentId) => apiRequest('DELETE', `/events/${eventId}/tasks/${taskId}/comments/${commentId}`),
 };
 
 // Fundraisers API calls
