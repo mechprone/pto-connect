@@ -4,6 +4,9 @@ import { X, Calendar, Clock, DollarSign } from 'lucide-react';
 import { eventsAPI } from '@/utils/api';
 
 const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
+  console.log('🔥 [AddMilestoneModal] COMPONENT MOUNTED');
+  console.log('🔥 [AddMilestoneModal] Props:', { eventId, onClose: !!onClose, onMilestoneAdded: !!onMilestoneAdded });
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -15,6 +18,7 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
   const [error, setError] = useState(null);
 
   const handleInputChange = (field, value) => {
+    console.log('📝 [AddMilestoneModal] Input changed:', { field, value });
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -22,6 +26,10 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
   };
 
   const handleSubmit = async (e) => {
+    console.log('🔥 [AddMilestoneModal] HANDLE SUBMIT CALLED');
+    console.log('🔥 [AddMilestoneModal] Event:', e);
+    console.log('🔥 [AddMilestoneModal] Event type:', e.type);
+    
     e.preventDefault();
     
     console.log('🚀 [AddMilestoneModal] Form submitted');
@@ -29,10 +37,12 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
     console.log('🆔 [AddMilestoneModal] Event ID:', eventId);
     
     if (!formData.title.trim()) {
+      console.log('❌ [AddMilestoneModal] Validation failed - no title');
       setError('Milestone title is required');
       return;
     }
 
+    console.log('⏳ [AddMilestoneModal] Setting loading to true');
     setLoading(true);
     setError(null);
 
@@ -46,6 +56,8 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
 
       console.log('📊 [AddMilestoneModal] Prepared milestone data:', milestoneData);
       console.log('🔗 [AddMilestoneModal] About to call eventsAPI.createMilestone...');
+      console.log('🔗 [AddMilestoneModal] eventsAPI available:', !!eventsAPI);
+      console.log('🔗 [AddMilestoneModal] createMilestone function:', !!eventsAPI.createMilestone);
       
       const result = await eventsAPI.createMilestone(eventId, milestoneData);
       
@@ -61,15 +73,19 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
       console.error('❌ [AddMilestoneModal] Error data:', err.response?.data);
       setError(err.response?.data?.message || 'Failed to create milestone');
     } finally {
+      console.log('🔄 [AddMilestoneModal] Setting loading to false');
       setLoading(false);
     }
   };
 
   const handleClose = () => {
+    console.log('🚪 [AddMilestoneModal] Handle close called');
     if (!loading) {
       onClose();
     }
   };
+
+  console.log('🎨 [AddMilestoneModal] Rendering component');
 
   return (
     <Dialog open={true} onOpenChange={handleClose}>
@@ -169,7 +185,15 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
             <Button type="button" variant="outline" onClick={handleClose} disabled={loading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button 
+              type="submit" 
+              disabled={loading}
+              onClick={(e) => {
+                console.log('🔥 [AddMilestoneModal] SUBMIT BUTTON CLICKED');
+                console.log('🔥 [AddMilestoneModal] Button event:', e);
+                // Don't prevent default here - let the form handle it
+              }}
+            >
               {loading ? 'Creating...' : 'Create Milestone'}
             </Button>
           </div>
