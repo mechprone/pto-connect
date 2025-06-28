@@ -18,10 +18,13 @@ const EventMilestones = ({ eventId, onMilestoneUpdated }) => {
   const loadMilestones = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await eventsAPI.getEventMilestones(eventId);
-      setMilestones(response.data);
+      // Ensure we always set an array, even if response.data is null/undefined
+      setMilestones(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       setError('Failed to load milestones');
+      setMilestones([]); // Reset to empty array on error
       console.error('Error loading milestones:', err);
     } finally {
       setLoading(false);
@@ -42,7 +45,7 @@ const EventMilestones = ({ eventId, onMilestoneUpdated }) => {
     if (!confirm('Are you sure you want to delete this milestone?')) return;
     
     try {
-      await api.delete(`/milestones/${milestoneId}`);
+      await eventsAPI.deleteMilestone(eventId, milestoneId);
       loadMilestones();
       if (onMilestoneUpdated) onMilestoneUpdated();
     } catch (err) {
@@ -70,15 +73,18 @@ const EventMilestones = ({ eventId, onMilestoneUpdated }) => {
     }
   };
 
-  const sortedMilestones = [...milestones].sort((a, b) => {
+  // Defensive check to ensure milestones is always an array
+  const safeMilestones = Array.isArray(milestones) ? milestones : [];
+  
+  const sortedMilestones = [...safeMilestones].sort((a, b) => {
     if (!a.target_date && !b.target_date) return 0;
     if (!a.target_date) return 1;
     if (!b.target_date) return -1;
     return new Date(a.target_date) - new Date(b.target_date);
   });
 
-  const completedMilestones = milestones.filter(m => m.status === 'completed').length;
-  const totalMilestones = milestones.length;
+  const completedMilestones = safeMilestones.filter(m => m.status === 'completed').length;
+  const totalMilestones = safeMilestones.length;
   const progressPercentage = totalMilestones > 0 ? (completedMilestones / totalMilestones) * 100 : 0;
 
   if (loading) {
@@ -104,7 +110,7 @@ const EventMilestones = ({ eventId, onMilestoneUpdated }) => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Milestones ({milestones.length})</h2>
+        <h2 className="text-2xl font-bold">Milestones ({safeMilestones.length})</h2>
         <Button onClick={() => setShowAddMilestone(true)} className="bg-blue-600 hover:bg-blue-700">
           <Plus className="h-4 w-4 mr-2" />
           Add Milestone

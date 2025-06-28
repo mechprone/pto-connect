@@ -169,29 +169,29 @@ const EventProjectManagement = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Enhanced Header with Event Name */}
+      {/* Enhanced Header with Event Management Title */}
       <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
         <div className="flex items-center justify-between mb-4">
           <div className="flex-1">
-            <div className="flex items-center mb-2">
-              <FileText className="h-6 w-6 text-blue-600 mr-2" />
-              <span className="text-sm font-medium text-blue-600 uppercase tracking-wide">Event Management</span>
+            <div className="flex items-center mb-3">
+              <FileText className="h-7 w-7 text-blue-600 mr-3" />
+              <h1 className="text-3xl font-bold text-gray-900">Event Management</h1>
             </div>
             {isEditing ? (
               <Input
                 value={editedEvent.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                className="text-3xl font-bold text-gray-900 border-2 border-blue-300 mb-2"
+                className="text-2xl font-semibold text-blue-700 border-2 border-blue-300 mb-2 bg-white"
                 placeholder="Event Title"
               />
             ) : (
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">{currentEvent.title}</h1>
+              <h2 className="text-2xl font-semibold text-blue-700 mb-2">{currentEvent.title}</h2>
             )}
             {isEditing ? (
               <textarea
                 value={editedEvent.description || ''}
                 onChange={(e) => handleInputChange('description', e.target.value)}
-                className="w-full text-gray-600 border border-gray-300 rounded-md p-2 resize-none"
+                className="w-full text-gray-600 border border-gray-300 rounded-md p-2 resize-none bg-white"
                 rows="2"
                 placeholder="Event Description"
               />

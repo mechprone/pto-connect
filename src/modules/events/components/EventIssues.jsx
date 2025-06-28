@@ -23,10 +23,13 @@ const EventIssues = ({ eventId, onIssueUpdated }) => {
   const loadIssues = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await eventsAPI.getEventIssues(eventId);
-      setIssues(response.data);
+      // Ensure we always set an array, even if response.data is null/undefined
+      setIssues(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       setError('Failed to load issues');
+      setIssues([]); // Reset to empty array on error
       console.error('Error loading issues:', err);
     } finally {
       setLoading(false);
@@ -47,7 +50,7 @@ const EventIssues = ({ eventId, onIssueUpdated }) => {
     if (!confirm('Are you sure you want to delete this issue?')) return;
     
     try {
-      await api.delete(`/issues/${issueId}`);
+      await eventsAPI.deleteIssue(eventId, issueId);
       loadIssues();
       if (onIssueUpdated) onIssueUpdated();
     } catch (err) {
@@ -86,7 +89,10 @@ const EventIssues = ({ eventId, onIssueUpdated }) => {
     }
   };
 
-  const filteredIssues = issues.filter(issue => {
+  // Defensive check to ensure issues is always an array
+  const safeIssues = Array.isArray(issues) ? issues : [];
+  
+  const filteredIssues = safeIssues.filter(issue => {
     const matchesSearch = issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          issue.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filters.status === 'all' || issue.status === filters.status;
@@ -128,7 +134,7 @@ const EventIssues = ({ eventId, onIssueUpdated }) => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Issues ({issues.length})</h2>
+        <h2 className="text-2xl font-bold">Issues ({safeIssues.length})</h2>
         <Button onClick={() => setShowAddIssue(true)} className="bg-blue-600 hover:bg-blue-700">
           <Plus className="h-4 w-4 mr-2" />
           Report Issue

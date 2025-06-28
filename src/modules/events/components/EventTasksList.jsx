@@ -28,10 +28,13 @@ const EventTasksList = ({ eventId, onTaskUpdated }) => {
   const loadTasks = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await eventsAPI.getEventTasks(eventId);
-      setTasks(response.data);
+      // Ensure we always set an array, even if response.data is null/undefined
+      setTasks(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       setError('Failed to load tasks');
+      setTasks([]); // Reset to empty array on error
       console.error('Error loading tasks:', err);
     } finally {
       setLoading(false);
@@ -54,7 +57,7 @@ const EventTasksList = ({ eventId, onTaskUpdated }) => {
     if (!confirm('Are you sure you want to delete this task?')) return;
     
     try {
-      await api.delete(`/tasks/${taskId}`);
+      await eventsAPI.deleteTask(eventId, taskId);
       loadTasks();
       if (onTaskUpdated) onTaskUpdated();
     } catch (err) {
@@ -93,7 +96,7 @@ const EventTasksList = ({ eventId, onTaskUpdated }) => {
     }
   };
 
-  const filteredTasks = tasks.filter(task => {
+  const filteredTasks = safeTasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          task.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filters.status === 'all' || task.status === filters.status;
@@ -145,11 +148,14 @@ const EventTasksList = ({ eventId, onTaskUpdated }) => {
     );
   }
 
+  // Defensive check to ensure tasks is always an array
+  const safeTasks = Array.isArray(tasks) ? tasks : [];
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Tasks ({tasks.length})</h2>
+        <h2 className="text-2xl font-bold">Tasks ({safeTasks.length})</h2>
         <Button onClick={() => setShowAddTask(true)} className="bg-blue-600 hover:bg-blue-700">
           <Plus className="h-4 w-4 mr-2" />
           Add Task
@@ -213,7 +219,7 @@ const EventTasksList = ({ eventId, onTaskUpdated }) => {
           </Select>
         </div>
         <span className="text-sm text-gray-600">
-          {filteredTasks.length} of {tasks.length} tasks
+          {filteredTasks.length} of {safeTasks.length} tasks
         </span>
       </div>
 

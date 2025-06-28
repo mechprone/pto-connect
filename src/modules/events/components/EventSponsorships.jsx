@@ -15,10 +15,13 @@ const EventSponsorships = ({ eventId, onSponsorshipUpdated }) => {
   const loadSponsorships = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await eventsAPI.getEventSponsorships(eventId);
-      setSponsorships(response.data);
+      // Ensure we always set an array, even if response.data is null/undefined
+      setSponsorships(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       setError('Failed to load sponsorships');
+      setSponsorships([]); // Reset to empty array on error
       console.error('Error loading sponsorships:', err);
     } finally {
       setLoading(false);
@@ -64,11 +67,14 @@ const EventSponsorships = ({ eventId, onSponsorshipUpdated }) => {
     );
   }
 
+  // Defensive check to ensure sponsorships is always an array
+  const safeSponsorships = Array.isArray(sponsorships) ? sponsorships : [];
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Sponsorships ({sponsorships.length})</h2>
+        <h2 className="text-2xl font-bold">Sponsorships ({safeSponsorships.length})</h2>
         <Button className="bg-blue-600 hover:bg-blue-700">
           <Plus className="h-4 w-4 mr-2" />
           Add Sponsorship
@@ -81,25 +87,25 @@ const EventSponsorships = ({ eventId, onSponsorshipUpdated }) => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="text-center">
             <p className="text-2xl font-bold text-green-600">
-              ${sponsorships.reduce((sum, s) => sum + (s.amount || 0), 0).toLocaleString()}
+              ${safeSponsorships.reduce((sum, s) => sum + (s.amount || 0), 0).toLocaleString()}
             </p>
             <p className="text-sm text-gray-600">Total Raised</p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-blue-600">
-              {sponsorships.filter(s => s.status === 'confirmed').length}
+              {safeSponsorships.filter(s => s.status === 'confirmed').length}
             </p>
             <p className="text-sm text-gray-600">Confirmed</p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-yellow-600">
-              {sponsorships.filter(s => s.status === 'pending').length}
+              {safeSponsorships.filter(s => s.status === 'pending').length}
             </p>
             <p className="text-sm text-gray-600">Pending</p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-gray-600">
-              {sponsorships.length}
+              {safeSponsorships.length}
             </p>
             <p className="text-sm text-gray-600">Total Sponsors</p>
           </div>
@@ -108,7 +114,7 @@ const EventSponsorships = ({ eventId, onSponsorshipUpdated }) => {
 
       {/* Sponsorships List */}
       <div className="space-y-3">
-        {sponsorships.length === 0 ? (
+        {safeSponsorships.length === 0 ? (
           <Card className="p-8 text-center">
             <Building className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-600 mb-4">No sponsorships found for this event.</p>
@@ -117,7 +123,7 @@ const EventSponsorships = ({ eventId, onSponsorshipUpdated }) => {
             </Button>
           </Card>
         ) : (
-          sponsorships.map((sponsorship) => (
+          safeSponsorships.map((sponsorship) => (
             <Card key={sponsorship.id} className="p-4 hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
