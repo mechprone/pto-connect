@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, Button, Input, Textarea, Label } from '@/components/common';
 import { X, Calendar, Clock, DollarSign } from 'lucide-react';
-import { api } from '@/utils/api';
+import { eventsAPI } from '@/utils/api';
 
 const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    target_date: '',
+    due_date: '',
     estimated_hours: '',
     estimated_cost: ''
   });
@@ -40,7 +40,7 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
         estimated_cost: formData.estimated_cost ? parseFloat(formData.estimated_cost) : null
       };
 
-      await api.post('/milestones', milestoneData);
+      await eventsAPI.createMilestone(eventId, milestoneData);
       onMilestoneAdded();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create milestone');
@@ -102,15 +102,15 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
 
           {/* Target Date */}
           <div>
-            <Label htmlFor="target_date" className="flex items-center">
+            <Label htmlFor="due_date" className="flex items-center">
               <Calendar className="h-4 w-4 mr-2" />
               Target Date
             </Label>
             <Input
-              id="target_date"
+              id="due_date"
               type="date"
-              value={formData.target_date}
-              onChange={(e) => handleInputChange('target_date', e.target.value)}
+              value={formData.due_date}
+              onChange={(e) => handleInputChange('due_date', e.target.value)}
             />
           </div>
 

@@ -77,10 +77,10 @@ const EventMilestones = ({ eventId, onMilestoneUpdated }) => {
   const safeMilestones = Array.isArray(milestones) ? milestones : [];
   
   const sortedMilestones = [...safeMilestones].sort((a, b) => {
-    if (!a.target_date && !b.target_date) return 0;
-    if (!a.target_date) return 1;
-    if (!b.target_date) return -1;
-    return new Date(a.target_date) - new Date(b.target_date);
+    if (!a.due_date && !b.due_date) return 0;
+    if (!a.due_date) return 1;
+    if (!b.due_date) return -1;
+    return new Date(a.due_date) - new Date(b.due_date);
   });
 
   const completedMilestones = safeMilestones.filter(m => m.status === 'completed').length;
@@ -186,10 +186,10 @@ const EventMilestones = ({ eventId, onMilestoneUpdated }) => {
                   )}
 
                   <div className="flex items-center space-x-6 text-sm text-gray-500">
-                    {milestone.target_date && (
+                    {milestone.due_date && (
                       <div className="flex items-center">
                         <Calendar className="h-4 w-4 mr-1" />
-                        Target: {new Date(milestone.target_date).toLocaleDateString()}
+                        Target: {new Date(milestone.due_date).toLocaleDateString()}
                       </div>
                     )}
                     {milestone.completed_date && (
@@ -265,11 +265,11 @@ const EventMilestones = ({ eventId, onMilestoneUpdated }) => {
               )}
 
               <div className="grid grid-cols-2 gap-4">
-                {selectedMilestone.target_date && (
+                {selectedMilestone.due_date && (
                   <div>
                     <h4 className="font-medium mb-1">Target Date</h4>
                     <p className="text-gray-600">
-                      {new Date(selectedMilestone.target_date).toLocaleDateString()}
+                      {new Date(selectedMilestone.due_date).toLocaleDateString()}
                     </p>
                   </div>
                 )}

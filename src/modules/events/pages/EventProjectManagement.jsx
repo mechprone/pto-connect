@@ -15,13 +15,11 @@ const EventProjectManagement = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
   
-  // Get initial tab from localStorage or default to 'overview'
-  const getInitialTab = () => {
+  // Get initial tab from localStorage or default to 'overview' - use lazy initial state
+  const [activeTab, setActiveTab] = useState(() => {
     const savedTab = localStorage.getItem(`eventManagement_${eventId}_activeTab`);
     return savedTab || 'overview';
-  };
-
-  const [activeTab, setActiveTab] = useState(getInitialTab());
+  });
   const [event, setEvent] = useState(null);
   const [eventSummary, setEventSummary] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +33,26 @@ const EventProjectManagement = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    loadEventData();
+    if (eventId && !event) {
+      loadEventData();
+    }
+  }, [eventId]);
+
+  // Prevent data reload on window focus if we already have data
+  useEffect(() => {
+    const handleFocus = () => {
+      // Only reload if the data is stale (more than 5 minutes old)
+      const lastLoad = localStorage.getItem(`eventManagement_${eventId}_lastLoad`);
+      const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+      
+      if (!lastLoad || parseInt(lastLoad) < fiveMinutesAgo) {
+        console.log('🔄 Reloading stale event data on window focus');
+        loadEventData();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, [eventId]);
 
   // Save tab state to localStorage when it changes
@@ -54,6 +71,9 @@ const EventProjectManagement = () => {
       setEvent(eventResponse.data);
       setEventSummary(summaryResponse.data);
       setEditedEvent(eventResponse.data); // Initialize edit state
+      
+      // Store timestamp to prevent unnecessary reloads
+      localStorage.setItem(`eventManagement_${eventId}_lastLoad`, Date.now().toString());
     } catch (err) {
       setError('Failed to load event data');
       console.error('Error loading event data:', err);
