@@ -24,6 +24,10 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    console.log('🚀 [AddMilestoneModal] Form submitted');
+    console.log('📋 [AddMilestoneModal] Form data:', formData);
+    console.log('🆔 [AddMilestoneModal] Event ID:', eventId);
+    
     if (!formData.title.trim()) {
       setError('Milestone title is required');
       return;
@@ -40,11 +44,22 @@ const AddMilestoneModal = ({ eventId, onClose, onMilestoneAdded }) => {
         estimated_cost: formData.estimated_cost ? parseFloat(formData.estimated_cost) : null
       };
 
-      await eventsAPI.createMilestone(eventId, milestoneData);
+      console.log('📊 [AddMilestoneModal] Prepared milestone data:', milestoneData);
+      console.log('🔗 [AddMilestoneModal] About to call eventsAPI.createMilestone...');
+      
+      const result = await eventsAPI.createMilestone(eventId, milestoneData);
+      
+      console.log('✅ [AddMilestoneModal] API call successful:', result);
+      console.log('🔄 [AddMilestoneModal] Calling onMilestoneAdded callback...');
+      
       onMilestoneAdded();
+      
+      console.log('🎉 [AddMilestoneModal] Milestone creation process completed');
     } catch (err) {
+      console.error('❌ [AddMilestoneModal] Error creating milestone:', err);
+      console.error('❌ [AddMilestoneModal] Error response:', err.response);
+      console.error('❌ [AddMilestoneModal] Error data:', err.response?.data);
       setError(err.response?.data?.message || 'Failed to create milestone');
-      console.error('Error creating milestone:', err);
     } finally {
       setLoading(false);
     }
