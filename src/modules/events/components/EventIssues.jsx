@@ -155,28 +155,40 @@ const EventIssues = ({ eventId, onIssueUpdated }) => {
               />
             </div>
           </div>
-          <Select value={filters.status} onValueChange={(value) => setFilters({...filters, status: value})}>
-            <option value="all">All Status</option>
-            <option value="open">Open</option>
-            <option value="in_progress">In Progress</option>
-            <option value="resolved">Resolved</option>
-            <option value="blocked">Blocked</option>
-          </Select>
-          <Select value={filters.priority} onValueChange={(value) => setFilters({...filters, priority: value})}>
-            <option value="all">All Priorities</option>
-            <option value="critical">Critical</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </Select>
-          <Select value={filters.type} onValueChange={(value) => setFilters({...filters, type: value})}>
-            <option value="all">All Types</option>
-            <option value="blocker">Blocker</option>
-            <option value="bug">Bug</option>
-            <option value="feature_request">Feature Request</option>
-            <option value="improvement">Improvement</option>
-            <option value="question">Question</option>
-          </Select>
+          <Select 
+            value={filters.status} 
+            onChange={(e) => setFilters({...filters, status: e.target.value})}
+            options={[
+              { value: 'all', label: 'All Status' },
+              { value: 'open', label: 'Open' },
+              { value: 'in_progress', label: 'In Progress' },
+              { value: 'resolved', label: 'Resolved' },
+              { value: 'blocked', label: 'Blocked' }
+            ]}
+          />
+          <Select 
+            value={filters.priority} 
+            onChange={(e) => setFilters({...filters, priority: e.target.value})}
+            options={[
+              { value: 'all', label: 'All Priorities' },
+              { value: 'critical', label: 'Critical' },
+              { value: 'high', label: 'High' },
+              { value: 'medium', label: 'Medium' },
+              { value: 'low', label: 'Low' }
+            ]}
+          />
+          <Select 
+            value={filters.type} 
+            onChange={(e) => setFilters({...filters, type: e.target.value})}
+            options={[
+              { value: 'all', label: 'All Types' },
+              { value: 'blocker', label: 'Blocker' },
+              { value: 'bug', label: 'Bug' },
+              { value: 'feature_request', label: 'Feature Request' },
+              { value: 'improvement', label: 'Improvement' },
+              { value: 'question', label: 'Question' }
+            ]}
+          />
         </div>
       </Card>
 

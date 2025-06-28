@@ -96,6 +96,9 @@ const EventTasksList = ({ eventId, onTaskUpdated }) => {
     }
   };
 
+  // Defensive check to ensure tasks is always an array - MOVED TO TOP
+  const safeTasks = Array.isArray(tasks) ? tasks : [];
+
   const filteredTasks = safeTasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          task.description?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -148,9 +151,6 @@ const EventTasksList = ({ eventId, onTaskUpdated }) => {
     );
   }
 
-  // Defensive check to ensure tasks is always an array
-  const safeTasks = Array.isArray(tasks) ? tasks : [];
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -176,34 +176,50 @@ const EventTasksList = ({ eventId, onTaskUpdated }) => {
               />
             </div>
           </div>
-          <Select value={filters.status} onValueChange={(value) => setFilters({...filters, status: value})}>
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="in_progress">In Progress</option>
-            <option value="completed">Completed</option>
-            <option value="blocked">Blocked</option>
-          </Select>
-          <Select value={filters.priority} onValueChange={(value) => setFilters({...filters, priority: value})}>
-            <option value="all">All Priorities</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </Select>
-          <Select value={filters.category} onValueChange={(value) => setFilters({...filters, category: value})}>
-            <option value="all">All Categories</option>
-            <option value="marketing">Marketing</option>
-            <option value="volunteers">Volunteers</option>
-            <option value="budget">Budget</option>
-            <option value="logistics">Logistics</option>
-            <option value="venue">Venue</option>
-            <option value="supplies">Supplies</option>
-            <option value="other">Other</option>
-          </Select>
-          <Select value={filters.assigned} onValueChange={(value) => setFilters({...filters, assigned: value})}>
-            <option value="all">All Assignments</option>
-            <option value="assigned">Assigned</option>
-            <option value="unassigned">Unassigned</option>
-          </Select>
+          <Select 
+            value={filters.status} 
+            onChange={(e) => setFilters({...filters, status: e.target.value})}
+            options={[
+              { value: 'all', label: 'All Status' },
+              { value: 'pending', label: 'Pending' },
+              { value: 'in_progress', label: 'In Progress' },
+              { value: 'completed', label: 'Completed' },
+              { value: 'blocked', label: 'Blocked' }
+            ]}
+          />
+          <Select 
+            value={filters.priority} 
+            onChange={(e) => setFilters({...filters, priority: e.target.value})}
+            options={[
+              { value: 'all', label: 'All Priorities' },
+              { value: 'high', label: 'High' },
+              { value: 'medium', label: 'Medium' },
+              { value: 'low', label: 'Low' }
+            ]}
+          />
+          <Select 
+            value={filters.category} 
+            onChange={(e) => setFilters({...filters, category: e.target.value})}
+            options={[
+              { value: 'all', label: 'All Categories' },
+              { value: 'marketing', label: 'Marketing' },
+              { value: 'volunteers', label: 'Volunteers' },
+              { value: 'budget', label: 'Budget' },
+              { value: 'logistics', label: 'Logistics' },
+              { value: 'venue', label: 'Venue' },
+              { value: 'supplies', label: 'Supplies' },
+              { value: 'other', label: 'Other' }
+            ]}
+          />
+          <Select 
+            value={filters.assigned} 
+            onChange={(e) => setFilters({...filters, assigned: e.target.value})}
+            options={[
+              { value: 'all', label: 'All Assignments' },
+              { value: 'assigned', label: 'Assigned' },
+              { value: 'unassigned', label: 'Unassigned' }
+            ]}
+          />
         </div>
       </Card>
 
@@ -211,12 +227,16 @@ const EventTasksList = ({ eventId, onTaskUpdated }) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <span className="text-sm text-gray-600">Sort by:</span>
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <option value="due_date">Due Date</option>
-            <option value="priority">Priority</option>
-            <option value="status">Status</option>
-            <option value="title">Title</option>
-          </Select>
+          <Select 
+            value={sortBy} 
+            onChange={(e) => setSortBy(e.target.value)}
+            options={[
+              { value: 'due_date', label: 'Due Date' },
+              { value: 'priority', label: 'Priority' },
+              { value: 'status', label: 'Status' },
+              { value: 'title', label: 'Title' }
+            ]}
+          />
         </div>
         <span className="text-sm text-gray-600">
           {filteredTasks.length} of {safeTasks.length} tasks

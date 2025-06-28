@@ -178,34 +178,46 @@ const TaskDetailModal = ({ task, onClose, onTaskUpdated }) => {
 
               <div>
                 <Label htmlFor="status">Status</Label>
-                <Select value={formData.status} onValueChange={(value) => handleInputChange('status', value)}>
-                  <option value="pending">Pending</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                  <option value="blocked">Blocked</option>
-                </Select>
+                <Select 
+                  value={formData.status} 
+                  onChange={(e) => handleInputChange('status', e.target.value)}
+                  options={[
+                    { value: 'pending', label: 'Pending' },
+                    { value: 'in_progress', label: 'In Progress' },
+                    { value: 'completed', label: 'Completed' },
+                    { value: 'blocked', label: 'Blocked' }
+                  ]}
+                />
               </div>
 
               <div>
                 <Label htmlFor="priority">Priority</Label>
-                <Select value={formData.priority} onValueChange={(value) => handleInputChange('priority', value)}>
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </Select>
+                <Select 
+                  value={formData.priority} 
+                  onChange={(e) => handleInputChange('priority', e.target.value)}
+                  options={[
+                    { value: 'low', label: 'Low' },
+                    { value: 'medium', label: 'Medium' },
+                    { value: 'high', label: 'High' }
+                  ]}
+                />
               </div>
 
               <div>
                 <Label htmlFor="category">Category</Label>
-                <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
-                  <option value="marketing">Marketing</option>
-                  <option value="volunteers">Volunteers</option>
-                  <option value="budget">Budget</option>
-                  <option value="logistics">Logistics</option>
-                  <option value="venue">Venue</option>
-                  <option value="supplies">Supplies</option>
-                  <option value="other">Other</option>
-                </Select>
+                <Select 
+                  value={formData.category} 
+                  onChange={(e) => handleInputChange('category', e.target.value)}
+                  options={[
+                    { value: 'marketing', label: 'Marketing' },
+                    { value: 'volunteers', label: 'Volunteers' },
+                    { value: 'budget', label: 'Budget' },
+                    { value: 'logistics', label: 'Logistics' },
+                    { value: 'venue', label: 'Venue' },
+                    { value: 'supplies', label: 'Supplies' },
+                    { value: 'other', label: 'Other' }
+                  ]}
+                />
               </div>
 
               <div>

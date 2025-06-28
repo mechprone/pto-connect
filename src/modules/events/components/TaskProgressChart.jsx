@@ -57,11 +57,15 @@ const TaskProgressChart = ({ eventId }) => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Task Completion Trend</h3>
-        <Select value={timeframe} onValueChange={setTimeframe}>
-          <option value="week">Last Week</option>
-          <option value="month">Last Month</option>
-          <option value="quarter">Last Quarter</option>
-        </Select>
+        <Select 
+          value={timeframe} 
+          onChange={(e) => setTimeframe(e.target.value)}
+          options={[
+            { value: 'week', label: 'Last Week' },
+            { value: 'month', label: 'Last Month' },
+            { value: 'quarter', label: 'Last Quarter' }
+          ]}
+        />
       </div>
 
       {/* Chart */}
