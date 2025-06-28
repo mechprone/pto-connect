@@ -29,7 +29,7 @@ const AddTaskModal = ({ eventId, onClose, onTaskAdded }) => {
 
   const loadUsers = async () => {
     try {
-      const response = await api.get('/profiles');
+      const response = await api.get('/api/profiles');
       setUsers(response.data);
     } catch (err) {
       console.error('Error loading users:', err);

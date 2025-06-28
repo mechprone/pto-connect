@@ -42,7 +42,7 @@ export const reconciliationAPI = {
   // Get all reconciliations for the organization
   getReconciliations: async () => {
     try {
-      const response = await api.get('/budget/reconciliation');
+      const response = await api.get('/api/budget/reconciliation');
       return {
         success: response.data.success,
         data: response.data.data,

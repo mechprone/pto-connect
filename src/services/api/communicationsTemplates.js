@@ -5,7 +5,7 @@ export const communicationsTemplatesAPI = {
   // Get all templates for the current org and shared
   getTemplates: async () => {
     try {
-      const { data, error } = await api.get('/communications/templates');
+      const { data, error } = await api.get('/api/communications/templates');
       if (error) throw new Error(error);
       return data;
     } catch (error) {
