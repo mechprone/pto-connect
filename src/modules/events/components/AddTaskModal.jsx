@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, Button, Input, Textarea, Select, Label } from '@/components/common';
 import { X, Calendar, User, Clock, DollarSign, Flag } from 'lucide-react';
-import { eventsAPI } from '@/utils/api';
+import { eventsAPI, profileAPI } from '@/utils/api';
 
 const AddTaskModal = ({ eventId, onClose, onTaskAdded }) => {
   const [formData, setFormData] = useState({
@@ -29,19 +29,33 @@ const AddTaskModal = ({ eventId, onClose, onTaskAdded }) => {
 
   const loadUsers = async () => {
     try {
-      const response = await api.get('/api/profiles');
-      setUsers(response.data);
+      const response = await profileAPI.getUsers();
+      // Handle the response structure from /api/profiles endpoint
+      const userList = Array.isArray(response.data?.profiles) ? response.data.profiles : 
+                      Array.isArray(response.data) ? response.data : [];
+      
+      // Sort alphabetically by name
+      const sortedUsers = userList.sort((a, b) => {
+        const nameA = a.full_name || (a.first_name && a.last_name ? `${a.first_name} ${a.last_name}` : a.email) || '';
+        const nameB = b.full_name || (b.first_name && b.last_name ? `${b.first_name} ${b.last_name}` : b.email) || '';
+        return nameA.localeCompare(nameB);
+      });
+      setUsers(sortedUsers);
     } catch (err) {
       console.error('Error loading users:', err);
+      setUsers([]); // Set empty array on error to prevent crashes
     }
   };
 
   const loadParentTasks = async () => {
     try {
       const response = await eventsAPI.getEventTasks(eventId);
-      setParentTasks(response.data.filter(task => task.status !== 'completed'));
+      // Ensure we have an array and filter out completed tasks
+      const taskList = Array.isArray(response.data) ? response.data : [];
+      setParentTasks(taskList.filter(task => task.status !== 'completed'));
     } catch (err) {
       console.error('Error loading parent tasks:', err);
+      setParentTasks([]); // Set empty array on error to prevent crashes
     }
   };
 
@@ -66,14 +80,13 @@ const AddTaskModal = ({ eventId, onClose, onTaskAdded }) => {
     try {
       const taskData = {
         ...formData,
-        event_id: eventId,
         estimated_hours: formData.estimated_hours ? parseFloat(formData.estimated_hours) : null,
         estimated_cost: formData.estimated_cost ? parseFloat(formData.estimated_cost) : null,
         assigned_to: formData.assigned_to || null,
         parent_task_id: formData.parent_task_id || null
       };
 
-      await api.post('/tasks', taskData);
+      await eventsAPI.createTask(eventId, taskData);
       onTaskAdded();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create task');
@@ -149,7 +162,7 @@ const AddTaskModal = ({ eventId, onClose, onTaskAdded }) => {
                 <option value="">Select a member...</option>
                 {users.map(user => (
                   <option key={user.id} value={user.id}>
-                    {user.full_name || user.email}
+                    {user.full_name || (user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.email)}
                   </option>
                 ))}
               </Select>
