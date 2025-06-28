@@ -13,7 +13,7 @@ export default function NotificationBell() {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get('/notifications');
+      const { data } = await api.get('/api/notifications');
       setNotifications(data);
       setError(null);
     } catch (error) {

@@ -27,8 +27,8 @@ export default function PermissionsConsole() {
       setLoading(true)
       setError('')
       const [{ data: permData, error: permError }, { data: userData, error: userError }] = await Promise.all([
-        apiRequest('GET', '/admin/organization-permissions'),
-        apiRequest('GET', '/admin-users'),
+              apiRequest('GET', '/api/admin/organization-permissions'),
+      apiRequest('GET', '/api/admin-users'),
       ])
       console.log('[PermissionsConsole] /admin/organization-permissions response:', permData)
       console.log('[PermissionsConsole] /admin-users response:', userData)

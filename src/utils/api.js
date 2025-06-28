@@ -118,31 +118,31 @@ export const apiRequest = async (method, endpoint, data = null, config = {}) => 
 
 // Auth API calls
 export const authAPI = {
-  login: (credentials) => apiRequest('POST', '/auth/login', credentials),
-  signup: (userData) => apiRequest('POST', '/signup', userData),
-  logout: () => apiRequest('POST', '/auth/logout'),
-  refreshToken: () => apiRequest('POST', '/auth/refresh'),
+  login: (credentials) => apiRequest('POST', '/api/auth/login', credentials),
+  signup: (userData) => apiRequest('POST', '/api/signup', userData),
+  logout: () => apiRequest('POST', '/api/auth/logout'),
+  refreshToken: () => apiRequest('POST', '/api/auth/refresh'),
 };
 
 // Profile API calls
 export const profileAPI = {
-  getProfile: () => apiRequest('GET', '/profiles/me'),
-  updateProfile: (data) => apiRequest('PUT', '/profiles/me', data),
-  getUsers: () => apiRequest('GET', '/admin-users'),
-  createUser: (userData) => apiRequest('POST', '/admin-users', userData),
-  updateUser: (userId, data) => apiRequest('PUT', `/admin-users/${userId}`, data),
-  deleteUser: (userId) => apiRequest('DELETE', `/admin-users/${userId}`),
+  getProfile: () => apiRequest('GET', '/api/profiles/me'),
+  updateProfile: (data) => apiRequest('PUT', '/api/profiles/me', data),
+  getUsers: () => apiRequest('GET', '/api/admin-users'),
+  createUser: (userData) => apiRequest('POST', '/api/admin-users', userData),
+  updateUser: (userId, data) => apiRequest('PUT', `/api/admin-users/${userId}`, data),
+  deleteUser: (userId) => apiRequest('DELETE', `/api/admin-users/${userId}`),
 };
 
 // Events API calls
 export const eventsAPI = {
-  getEvents: () => apiRequest('GET', '/event'),
-  getEvent: (id) => apiRequest('GET', `/event/${id}`),
-  createEvent: (eventData) => apiRequest('POST', '/event', eventData),
-  updateEvent: (id, eventData) => apiRequest('PUT', `/event/${id}`, eventData),
-  deleteEvent: (id) => apiRequest('DELETE', `/event/${id}`),
-  rsvpEvent: (eventId, status) => apiRequest('POST', `/event/${eventId}/rsvp`, { status }),
-  getEventRSVPs: (eventId) => apiRequest('GET', `/event/${eventId}/rsvps`),
+  getEvents: () => apiRequest('GET', '/api/event'),
+  getEvent: (id) => apiRequest('GET', `/api/event/${id}`),
+  createEvent: (eventData) => apiRequest('POST', '/api/event', eventData),
+  updateEvent: (id, eventData) => apiRequest('PUT', `/api/event/${id}`, eventData),
+  deleteEvent: (id) => apiRequest('DELETE', `/api/event/${id}`),
+  rsvpEvent: (eventId, status) => apiRequest('POST', `/api/event/${eventId}/rsvp`, { status }),
+  getEventRSVPs: (eventId) => apiRequest('GET', `/api/event/${eventId}/rsvps`),
   
   // Event Project Management API calls
   getEventSummary: (eventId) => apiRequest('GET', `/events/${eventId}/summary`),
@@ -384,7 +384,7 @@ export const stripeAPI = {
 
 // Notifications API calls
 export const notificationsAPI = {
-  getNotifications: () => apiRequest('GET', '/notifications'),
+  getNotifications: () => apiRequest('GET', '/api/notifications'),
   markAsRead: (id) => apiRequest('PUT', `/notifications/${id}/read`),
   markAllAsRead: () => apiRequest('PUT', '/notifications/read-all'),
   deleteNotification: (id) => apiRequest('DELETE', `/notifications/${id}`),
