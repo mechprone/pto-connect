@@ -106,12 +106,35 @@ export const apiRequest = async (method, endpoint, data = null, config = {}) => 
       data,
       ...config,
     });
-    return { data: response.data, error: null };
+    
+    // Handle standardized backend response structure
+    if (response.data && typeof response.data === 'object' && 'success' in response.data) {
+      // Backend uses response standardization middleware
+      if (response.data.success) {
+        return { data: response.data.data, error: null };
+      } else {
+        // Extract error from standardized error response
+        const errorMessage = response.data.errors?.[0]?.message || 'An error occurred';
+        return { data: null, error: errorMessage };
+      }
+    } else {
+      // Legacy/direct response format
+      return { data: response.data, error: null };
+    }
   } catch (error) {
     console.error(`API Error (${method} ${endpoint}):`, error);
+    
+    // Handle standardized error responses
+    let errorMessage = 'An error occurred';
+    if (error.response?.data && typeof error.response.data === 'object' && 'success' in error.response.data) {
+      errorMessage = error.response.data.errors?.[0]?.message || errorMessage;
+    } else {
+      errorMessage = error.response?.data?.message || error.message || errorMessage;
+    }
+    
     return { 
       data: null, 
-      error: error.response?.data?.message || error.message || 'An error occurred' 
+      error: errorMessage
     };
   }
 };

@@ -185,7 +185,7 @@ const EventProjectManagement = () => {
                 placeholder="Event Title"
               />
             ) : (
-              <h2 className="text-2xl font-semibold text-blue-700 mb-2">{currentEvent.title}</h2>
+              <h2 className="text-2xl font-semibold text-blue-700 mb-2">{currentEvent?.title || 'Loading event...'}</h2>
             )}
             {isEditing ? (
               <textarea
@@ -196,7 +196,7 @@ const EventProjectManagement = () => {
                 placeholder="Event Description"
               />
             ) : (
-              <p className="text-gray-600 text-lg">{currentEvent.description}</p>
+              <p className="text-gray-600 text-lg">{currentEvent?.description || 'No description available'}</p>
             )}
           </div>
           <div className="flex items-center space-x-3 ml-6">
