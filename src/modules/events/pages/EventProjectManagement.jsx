@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Button, Badge, Progress, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common';
-import { Calendar, CheckCircle, Clock, AlertTriangle, Users, FileText, MessageSquare, Paperclip } from 'lucide-react';
+import { Card, Button, Badge, Progress, Tabs, TabsContent, TabsList, TabsTrigger, Input } from '@/components/common';
+import { Calendar, CheckCircle, Clock, AlertTriangle, Users, FileText, MessageSquare, Paperclip, Edit2, Save, X, MapPin, DollarSign } from 'lucide-react';
 import { eventsAPI } from '@/utils/api';
 import EventTasksList from '../components/EventTasksList';
 import EventMilestones from '../components/EventMilestones';
@@ -14,17 +14,34 @@ import AddMilestoneModal from '../components/AddMilestoneModal';
 const EventProjectManagement = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('overview');
+  
+  // Get initial tab from localStorage or default to 'overview'
+  const getInitialTab = () => {
+    const savedTab = localStorage.getItem(`eventManagement_${eventId}_activeTab`);
+    return savedTab || 'overview';
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab());
   const [event, setEvent] = useState(null);
   const [eventSummary, setEventSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAddTask, setShowAddTask] = useState(false);
   const [showAddMilestone, setShowAddMilestone] = useState(false);
+  
+  // Inline editing state
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedEvent, setEditedEvent] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     loadEventData();
   }, [eventId]);
+
+  // Save tab state to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem(`eventManagement_${eventId}_activeTab`, activeTab);
+  }, [activeTab, eventId]);
 
   const loadEventData = async () => {
     try {
@@ -36,12 +53,50 @@ const EventProjectManagement = () => {
 
       setEvent(eventResponse.data);
       setEventSummary(summaryResponse.data);
+      setEditedEvent(eventResponse.data); // Initialize edit state
     } catch (err) {
       setError('Failed to load event data');
       console.error('Error loading event data:', err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEdit = () => {
+    setEditedEvent({ ...event });
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setEditedEvent({ ...event });
+    setIsEditing(false);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      setSaving(true);
+      await eventsAPI.updateEvent(eventId, editedEvent);
+      setEvent(editedEvent);
+      setIsEditing(false);
+      // Reload summary in case any changes affect it
+      loadEventData();
+    } catch (err) {
+      console.error('Error saving event:', err);
+      alert('Failed to save changes. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditedEvent(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleTabChange = (value) => {
+    setActiveTab(value);
   };
 
   const handleTaskAdded = () => {
@@ -110,16 +165,62 @@ const EventProjectManagement = () => {
     }
   };
 
+  const currentEvent = isEditing ? editedEvent : event;
+
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="mb-8">
+      {/* Enhanced Header with Event Name */}
+      <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{event.title}</h1>
-            <p className="text-gray-600 mt-2">{event.description}</p>
+          <div className="flex-1">
+            <div className="flex items-center mb-2">
+              <FileText className="h-6 w-6 text-blue-600 mr-2" />
+              <span className="text-sm font-medium text-blue-600 uppercase tracking-wide">Event Management</span>
+            </div>
+            {isEditing ? (
+              <Input
+                value={editedEvent.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                className="text-3xl font-bold text-gray-900 border-2 border-blue-300 mb-2"
+                placeholder="Event Title"
+              />
+            ) : (
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">{currentEvent.title}</h1>
+            )}
+            {isEditing ? (
+              <textarea
+                value={editedEvent.description || ''}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                className="w-full text-gray-600 border border-gray-300 rounded-md p-2 resize-none"
+                rows="2"
+                placeholder="Event Description"
+              />
+            ) : (
+              <p className="text-gray-600 text-lg">{currentEvent.description}</p>
+            )}
           </div>
-          <div className="flex space-x-3">
+          <div className="flex items-center space-x-3 ml-6">
+            {isEditing ? (
+              <>
+                <Button 
+                  onClick={handleSaveEdit} 
+                  disabled={saving}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {saving ? 'Saving...' : 'Save'}
+                </Button>
+                <Button onClick={handleCancelEdit} variant="outline">
+                  <X className="h-4 w-4 mr-2" />
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <Button onClick={handleEdit} variant="outline">
+                <Edit2 className="h-4 w-4 mr-2" />
+                Edit Event
+              </Button>
+            )}
             <Button onClick={() => setShowAddTask(true)} className="bg-blue-600 hover:bg-blue-700">
               Add Task
             </Button>
@@ -128,48 +229,92 @@ const EventProjectManagement = () => {
             </Button>
           </div>
         </div>
+      </div>
 
-        {/* Event Details */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card className="p-4">
-            <div className="flex items-center">
-              <Calendar className="h-5 w-5 text-gray-500 mr-2" />
-              <div>
-                <p className="text-sm text-gray-600">Event Date</p>
-                <p className="font-semibold">{new Date(event.event_date).toLocaleDateString()}</p>
-              </div>
+      {/* Enhanced Event Details Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <Card className="p-4">
+          <div className="flex items-center">
+            <Calendar className="h-5 w-5 text-gray-500 mr-2" />
+            <div className="flex-1">
+              <p className="text-sm text-gray-600">Event Date</p>
+              {isEditing ? (
+                <Input
+                  type="date"
+                  value={editedEvent.event_date}
+                  onChange={(e) => handleInputChange('event_date', e.target.value)}
+                  className="font-semibold"
+                />
+              ) : (
+                <p className="font-semibold">
+                  {currentEvent.event_date === 'Invalid Date' || !currentEvent.event_date 
+                    ? 'Invalid Date' 
+                    : new Date(currentEvent.event_date).toLocaleDateString()}
+                </p>
+              )}
             </div>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center">
-              <Clock className="h-5 w-5 text-gray-500 mr-2" />
-              <div>
-                <p className="text-sm text-gray-600">Start Time</p>
-                <p className="font-semibold">{event.start_time || 'TBD'}</p>
-              </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center">
+            <Clock className="h-5 w-5 text-gray-500 mr-2" />
+            <div className="flex-1">
+              <p className="text-sm text-gray-600">Start Time</p>
+              {isEditing ? (
+                <Input
+                  type="time"
+                  value={editedEvent.start_time || ''}
+                  onChange={(e) => handleInputChange('start_time', e.target.value)}
+                  className="font-semibold"
+                />
+              ) : (
+                <p className="font-semibold">{currentEvent.start_time || 'TBD'}</p>
+              )}
             </div>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center">
-              <Users className="h-5 w-5 text-gray-500 mr-2" />
-              <div>
-                <p className="text-sm text-gray-600">Event Lead</p>
-                <p className="font-semibold">{event.event_lead ? 'Assigned' : 'Unassigned'}</p>
-              </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center">
+            <MapPin className="h-5 w-5 text-gray-500 mr-2" />
+            <div className="flex-1">
+              <p className="text-sm text-gray-600">Location</p>
+              {isEditing ? (
+                <Input
+                  value={editedEvent.location || ''}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  className="font-semibold"
+                  placeholder="Event Location"
+                />
+              ) : (
+                <p className="font-semibold">{currentEvent.location || 'TBD'}</p>
+              )}
             </div>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center">
-              <CheckCircle className="h-5 w-5 text-gray-500 mr-2" />
-              <div>
-                <p className="text-sm text-gray-600">Status</p>
-                <Badge className={getStatusColor(event.status)}>
-                  {event.status}
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center">
+            <CheckCircle className="h-5 w-5 text-gray-500 mr-2" />
+            <div className="flex-1">
+              <p className="text-sm text-gray-600">Status</p>
+              {isEditing ? (
+                <select
+                  value={editedEvent.status}
+                  onChange={(e) => handleInputChange('status', e.target.value)}
+                  className="font-semibold border border-gray-300 rounded-md px-2 py-1"
+                >
+                  <option value="planning">Planning</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              ) : (
+                <Badge className={getStatusColor(currentEvent.status)}>
+                  {currentEvent.status}
                 </Badge>
-              </div>
+              )}
             </div>
-          </Card>
-        </div>
+          </div>
+        </Card>
       </div>
 
       {/* Progress Overview */}
@@ -210,8 +355,8 @@ const EventProjectManagement = () => {
         </Card>
       )}
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      {/* Enhanced Tabs with State Persistence */}
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
@@ -224,7 +369,9 @@ const EventProjectManagement = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">Task Progress Chart</h3>
-              <TaskProgressChart eventId={eventId} />
+              <div className="min-h-[300px]">
+                <TaskProgressChart eventId={eventId} />
+              </div>
             </Card>
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
@@ -255,20 +402,44 @@ const EventProjectManagement = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="tasks">
-          <EventTasksList eventId={eventId} onTaskUpdated={loadEventData} />
+        <TabsContent value="tasks" className="space-y-6">
+          <div className="min-h-[400px]">
+            <EventTasksList 
+              eventId={eventId} 
+              onTaskUpdated={loadEventData}
+              key={`tasks-${eventId}`} 
+            />
+          </div>
         </TabsContent>
 
-        <TabsContent value="milestones">
-          <EventMilestones eventId={eventId} onMilestoneUpdated={loadEventData} />
+        <TabsContent value="milestones" className="space-y-6">
+          <div className="min-h-[400px]">
+            <EventMilestones 
+              eventId={eventId} 
+              onMilestoneUpdated={loadEventData}
+              key={`milestones-${eventId}`}
+            />
+          </div>
         </TabsContent>
 
-        <TabsContent value="issues">
-          <EventIssues eventId={eventId} onIssueUpdated={loadEventData} />
+        <TabsContent value="issues" className="space-y-6">
+          <div className="min-h-[400px]">
+            <EventIssues 
+              eventId={eventId} 
+              onIssueUpdated={loadEventData}
+              key={`issues-${eventId}`}
+            />
+          </div>
         </TabsContent>
 
-        <TabsContent value="sponsorships">
-          <EventSponsorships eventId={eventId} onSponsorshipUpdated={loadEventData} />
+        <TabsContent value="sponsorships" className="space-y-6">
+          <div className="min-h-[400px]">
+            <EventSponsorships 
+              eventId={eventId} 
+              onSponsorshipUpdated={loadEventData}
+              key={`sponsorships-${eventId}`}
+            />
+          </div>
         </TabsContent>
       </Tabs>
 
