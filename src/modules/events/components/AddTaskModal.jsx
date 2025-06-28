@@ -29,10 +29,15 @@ const AddTaskModal = ({ eventId, onClose, onTaskAdded }) => {
 
   const loadUsers = async () => {
     try {
+      console.log('🔍 [AddTaskModal] Loading users...');
       const response = await profileAPI.getUsers();
+      console.log('📊 [AddTaskModal] Users response:', response);
+      
       // Handle the response structure from /api/profiles endpoint
       const userList = Array.isArray(response.data?.profiles) ? response.data.profiles : 
                       Array.isArray(response.data) ? response.data : [];
+      
+      console.log('👥 [AddTaskModal] User list:', userList);
       
       // Sort alphabetically by name
       const sortedUsers = userList.sort((a, b) => {
@@ -40,9 +45,11 @@ const AddTaskModal = ({ eventId, onClose, onTaskAdded }) => {
         const nameB = b.full_name || (b.first_name && b.last_name ? `${b.first_name} ${b.last_name}` : b.email) || '';
         return nameA.localeCompare(nameB);
       });
+      
+      console.log('✅ [AddTaskModal] Sorted users:', sortedUsers);
       setUsers(sortedUsers);
     } catch (err) {
-      console.error('Error loading users:', err);
+      console.error('❌ [AddTaskModal] Error loading users:', err);
       setUsers([]); // Set empty array on error to prevent crashes
     }
   };
@@ -157,15 +164,15 @@ const AddTaskModal = ({ eventId, onClose, onTaskAdded }) => {
               </Label>
               <Select
                 value={formData.assigned_to}
-                onValueChange={(value) => handleInputChange('assigned_to', value)}
-              >
-                <option value="">Select a member...</option>
-                {users.map(user => (
-                  <option key={user.id} value={user.id}>
-                    {user.full_name || (user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.email)}
-                  </option>
-                ))}
-              </Select>
+                onChange={(e) => handleInputChange('assigned_to', e.target.value)}
+                options={[
+                  { value: '', label: 'Select a member...' },
+                  ...users.map(user => ({
+                    value: user.id,
+                    label: user.full_name || (user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.email)
+                  }))
+                ]}
+              />
             </div>
 
             <div>
@@ -188,25 +195,27 @@ const AddTaskModal = ({ eventId, onClose, onTaskAdded }) => {
               </Label>
               <Select
                 value={formData.priority}
-                onValueChange={(value) => handleInputChange('priority', value)}
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </Select>
+                onChange={(e) => handleInputChange('priority', e.target.value)}
+                options={[
+                  { value: 'low', label: 'Low' },
+                  { value: 'medium', label: 'Medium' },
+                  { value: 'high', label: 'High' }
+                ]}
+              />
             </div>
 
             <div>
               <Label htmlFor="status">Status</Label>
               <Select
                 value={formData.status}
-                onValueChange={(value) => handleInputChange('status', value)}
-              >
-                <option value="pending">Pending</option>
-                <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
-                <option value="blocked">Blocked</option>
-              </Select>
+                onChange={(e) => handleInputChange('status', e.target.value)}
+                options={[
+                  { value: 'pending', label: 'Pending' },
+                  { value: 'in_progress', label: 'In Progress' },
+                  { value: 'completed', label: 'Completed' },
+                  { value: 'blocked', label: 'Blocked' }
+                ]}
+              />
             </div>
           </div>
 
@@ -216,31 +225,32 @@ const AddTaskModal = ({ eventId, onClose, onTaskAdded }) => {
               <Label htmlFor="category">Category</Label>
               <Select
                 value={formData.category}
-                onValueChange={(value) => handleInputChange('category', value)}
-              >
-                <option value="marketing">Marketing</option>
-                <option value="volunteers">Volunteers</option>
-                <option value="budget">Budget</option>
-                <option value="logistics">Logistics</option>
-                <option value="venue">Venue</option>
-                <option value="supplies">Supplies</option>
-                <option value="other">Other</option>
-              </Select>
+                onChange={(e) => handleInputChange('category', e.target.value)}
+                options={[
+                  { value: 'marketing', label: 'Marketing' },
+                  { value: 'volunteers', label: 'Volunteers' },
+                  { value: 'budget', label: 'Budget' },
+                  { value: 'logistics', label: 'Logistics' },
+                  { value: 'venue', label: 'Venue' },
+                  { value: 'supplies', label: 'Supplies' },
+                  { value: 'other', label: 'Other' }
+                ]}
+              />
             </div>
 
             <div>
               <Label htmlFor="parent_task_id">Parent Task (Optional)</Label>
               <Select
                 value={formData.parent_task_id}
-                onValueChange={(value) => handleInputChange('parent_task_id', value)}
-              >
-                <option value="">No parent task</option>
-                {parentTasks.map(task => (
-                  <option key={task.id} value={task.id}>
-                    {task.title}
-                  </option>
-                ))}
-              </Select>
+                onChange={(e) => handleInputChange('parent_task_id', e.target.value)}
+                options={[
+                  { value: '', label: 'No parent task' },
+                  ...parentTasks.map(task => ({
+                    value: task.id,
+                    label: task.title
+                  }))
+                ]}
+              />
             </div>
           </div>
 
