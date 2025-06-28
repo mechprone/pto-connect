@@ -4,6 +4,7 @@ import { Plus, Filter, Search, Edit, Trash2, MessageSquare, Paperclip, Calendar,
 import { eventsAPI } from '@/utils/api';
 import TaskDetailModal from './TaskDetailModal';
 import AddTaskModal from './AddTaskModal';
+import { supabase } from '@/utils/supabaseClient';
 
 const EventTasksList = ({ eventId, onTaskUpdated }) => {
   const [tasks, setTasks] = useState([]);
@@ -29,13 +30,37 @@ const EventTasksList = ({ eventId, onTaskUpdated }) => {
     try {
       setLoading(true);
       setError(null);
+      
+      // Try to refresh session before making API call
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      console.log('🔍 [DEBUG] Session check before API call:', {
+        hasSession: !!session,
+        hasToken: !!session?.access_token,
+        tokenLength: session?.access_token?.length,
+        sessionError
+      });
+      
+      if (!session?.access_token) {
+        console.warn('⚠️ [DEBUG] No valid session found, attempting refresh...');
+        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+        console.log('🔍 [DEBUG] Session refresh result:', {
+          hasRefreshSession: !!refreshData?.session,
+          refreshError
+        });
+      }
+      
       const response = await eventsAPI.getEventTasks(eventId);
       // Ensure we always set an array, even if response.data is null/undefined
       setTasks(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
-      setError('Failed to load tasks');
+      console.error('❌ [DEBUG] Full error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+        stack: err.stack
+      });
+      setError('Failed to load tasks - Authentication issue. Please try refreshing the page.');
       setTasks([]); // Reset to empty array on error
-      console.error('Error loading tasks:', err);
     } finally {
       setLoading(false);
     }
