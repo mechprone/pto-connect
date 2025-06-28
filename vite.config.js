@@ -4,6 +4,13 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    // Explicitly define environment variables for Railway build
+    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL),
+    'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY),
+    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL),
+    'import.meta.env.VITE_IS_PREVIEW': JSON.stringify(process.env.VITE_IS_PREVIEW),
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
