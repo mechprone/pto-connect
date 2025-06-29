@@ -176,12 +176,6 @@ export const eventsAPI = {
   updateTask: (eventId, taskId, taskData) => apiRequest('PUT', `/api/events/${eventId}/tasks/${taskId}`, taskData),
   deleteTask: (eventId, taskId) => apiRequest('DELETE', `/api/events/${eventId}/tasks/${taskId}`),
   
-  // Milestones
-  getEventMilestones: (eventId) => apiRequest('GET', `/api/events/${eventId}/milestones`),
-  createMilestone: (eventId, milestoneData) => apiRequest('POST', `/api/events/${eventId}/milestones`, milestoneData),
-  updateMilestone: (eventId, milestoneId, milestoneData) => apiRequest('PUT', `/api/events/${eventId}/milestones/${milestoneId}`, milestoneData),
-  deleteMilestone: (eventId, milestoneId) => apiRequest('DELETE', `/api/events/${eventId}/milestones/${milestoneId}`),
-  
   // Issues
   getEventIssues: (eventId) => apiRequest('GET', `/api/events/${eventId}/issues`),
   createIssue: (eventId, issueData) => apiRequest('POST', `/api/events/${eventId}/issues`, issueData),

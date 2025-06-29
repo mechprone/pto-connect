@@ -323,35 +323,6 @@ const EventWorkflowOrchestrator = () => {
           </div>
         </div>
 
-        {/* Workflow Timeline */}
-        {workflow?.keyMilestones && (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">📅 Project Timeline</h4>
-            <div className="space-y-4">
-              {workflow.keyMilestones.map((milestone, index) => (
-                <div key={index} className="flex items-start space-x-4 p-4 border-l-4 border-blue-500 bg-blue-50">
-                  <div className="bg-blue-500 text-white text-sm font-medium px-2 py-1 rounded">
-                    Week {milestone.week}
-                  </div>
-                  <div>
-                    <h5 className="font-medium text-gray-900">{milestone.milestone}</h5>
-                    {milestone.tasks && (
-                      <ul className="text-sm text-gray-600 mt-1">
-                        {milestone.tasks.map((task, taskIndex) => (
-                          <li key={taskIndex} className="flex items-center space-x-2">
-                            <CheckCircle className="w-3 h-3 text-green-500" />
-                            <span>{task}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Action Buttons */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h4 className="text-lg font-semibold text-gray-900 mb-4">🚀 Next Steps</h4>

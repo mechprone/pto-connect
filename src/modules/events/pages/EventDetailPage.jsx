@@ -464,7 +464,6 @@ const EventDetailPage = () => {
           <h2 className="text-2xl font-bold mb-4">Event Management</h2>
           <div className="bg-white rounded-xl shadow p-6">
             <div className="mb-4">
-              <p className="text-gray-600 mb-4">Manage tasks, milestones, and event progress for this event.</p>
               <button
                 onClick={() => navigate(`/events/${id}/event-management`)}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"

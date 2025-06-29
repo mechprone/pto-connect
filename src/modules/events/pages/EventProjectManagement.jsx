@@ -4,12 +4,10 @@ import { Card, Button, Badge, Progress, Tabs, TabsContent, TabsList, TabsTrigger
 import { Calendar, CheckCircle, Clock, AlertTriangle, Users, FileText, MessageSquare, Paperclip, Edit2, Save, X, MapPin, DollarSign } from 'lucide-react';
 import { eventsAPI } from '@/utils/api';
 import EventTasksList from '../components/EventTasksList';
-import EventMilestones from '../components/EventMilestones';
 import EventIssues from '../components/EventIssues';
 import EventSponsorships from '../components/EventSponsorships';
 import TaskProgressChart from '../components/TaskProgressChart';
 import AddTaskModal from '../components/AddTaskModal';
-import AddMilestoneModal from '../components/AddMilestoneModal';
 
 const EventProjectManagement = () => {
   const { eventId } = useParams();
@@ -21,11 +19,9 @@ const EventProjectManagement = () => {
     return savedTab || 'overview';
   });
   const [event, setEvent] = useState(null);
-  const [eventSummary, setEventSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAddTask, setShowAddTask] = useState(false);
-  const [showAddMilestone, setShowAddMilestone] = useState(false);
   
   // Inline editing state
   const [isEditing, setIsEditing] = useState(false);
@@ -63,13 +59,11 @@ const EventProjectManagement = () => {
   const loadEventData = async () => {
     try {
       setLoading(true);
-      const [eventResponse, summaryResponse] = await Promise.all([
-        eventsAPI.getEvent(eventId),
-        eventsAPI.getEventSummary(eventId)
+      const [eventResponse] = await Promise.all([
+        eventsAPI.getEvent(eventId)
       ]);
 
       setEvent(eventResponse.data);
-      setEventSummary(summaryResponse.data);
       setEditedEvent(eventResponse.data); // Initialize edit state
       
       // Store timestamp to prevent unnecessary reloads
@@ -121,11 +115,6 @@ const EventProjectManagement = () => {
 
   const handleTaskAdded = () => {
     setShowAddTask(false);
-    loadEventData();
-  };
-
-  const handleMilestoneAdded = () => {
-    setShowAddMilestone(false);
     loadEventData();
   };
 
@@ -219,7 +208,7 @@ const EventProjectManagement = () => {
               <p className="text-gray-600 text-lg">{currentEvent?.description || 'No description available'}</p>
             )}
           </div>
-          <div className="flex items-center space-x-3 ml-6">
+          <div className="flex flex-wrap items-center gap-3 ml-6">
             {isEditing ? (
               <>
                 <Button 
@@ -244,15 +233,12 @@ const EventProjectManagement = () => {
             <Button onClick={() => setShowAddTask(true)} className="bg-blue-600 hover:bg-blue-700">
               Add Task
             </Button>
-            <Button onClick={() => setShowAddMilestone(true)} variant="outline">
-              Add Milestone
-            </Button>
           </div>
         </div>
       </div>
 
       {/* Enhanced Event Details Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <Card className="p-4">
           <div className="flex items-center">
             <Calendar className="h-5 w-5 text-gray-500 mr-2" />
@@ -338,49 +324,38 @@ const EventProjectManagement = () => {
       </div>
 
       {/* Progress Overview */}
-      {eventSummary && (
-        <Card className="p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Event Progress</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div>
-              <p className="text-sm text-gray-600 mb-2">Overall Progress</p>
-              <div className="flex items-center">
-                <Progress value={eventSummary.progress_percentage} className="flex-1 mr-3" />
-                <span className="text-lg font-semibold">{eventSummary.progress_percentage}%</span>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 mb-2">Tasks</p>
-              <div className="flex items-center space-x-4">
-                <span className="text-2xl font-bold text-green-600">{eventSummary.completed_tasks}</span>
-                <span className="text-gray-400">/</span>
-                <span className="text-2xl font-bold">{eventSummary.total_tasks}</span>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 mb-2">Milestones</p>
-              <div className="flex items-center space-x-4">
-                <span className="text-2xl font-bold text-blue-600">{eventSummary.completed_milestones}</span>
-                <span className="text-gray-400">/</span>
-                <span className="text-2xl font-bold">{eventSummary.milestones_count}</span>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 mb-2">Open Issues</p>
-              <div className="flex items-center">
-                <span className="text-2xl font-bold text-red-600">{eventSummary.open_issues}</span>
-              </div>
+      <Card className="p-6 mb-8">
+        <h2 className="text-xl font-semibold mb-4">Event Progress</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div>
+            <p className="text-sm text-gray-600 mb-2">Overall Progress</p>
+            <div className="flex items-center">
+              <Progress value={eventSummary.progress_percentage} className="flex-1 mr-3" />
+              <span className="text-lg font-semibold">{eventSummary.progress_percentage}%</span>
             </div>
           </div>
-        </Card>
-      )}
+          <div>
+            <p className="text-sm text-gray-600 mb-2">Tasks</p>
+            <div className="flex items-center space-x-4">
+              <span className="text-2xl font-bold text-green-600">{eventSummary.completed_tasks}</span>
+              <span className="text-gray-400">/</span>
+              <span className="text-2xl font-bold">{eventSummary.total_tasks}</span>
+            </div>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600 mb-2">Open Issues</p>
+            <div className="flex items-center">
+              <span className="text-2xl font-bold text-red-600">{eventSummary.open_issues}</span>
+            </div>
+          </div>
+        </div>
+      </Card>
 
       {/* Enhanced Tabs with State Persistence */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="flex flex-wrap gap-2 w-full justify-start border-b border-gray-200 mb-4 bg-white rounded-t-lg px-2 py-1">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
-          <TabsTrigger value="milestones">Milestones</TabsTrigger>
           <TabsTrigger value="issues">Issues</TabsTrigger>
           <TabsTrigger value="sponsorships">Sponsorships</TabsTrigger>
         </TabsList>
@@ -432,16 +407,6 @@ const EventProjectManagement = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="milestones" className="space-y-6">
-          <div className="min-h-[400px]">
-            <EventMilestones 
-              eventId={eventId} 
-              onMilestoneUpdated={loadEventData}
-              key={`milestones-${eventId}`}
-            />
-          </div>
-        </TabsContent>
-
         <TabsContent value="issues" className="space-y-6">
           <div className="min-h-[400px]">
             <EventIssues 
@@ -469,14 +434,6 @@ const EventProjectManagement = () => {
           eventId={eventId}
           onClose={() => setShowAddTask(false)}
           onTaskAdded={handleTaskAdded}
-        />
-      )}
-
-      {showAddMilestone && (
-        <AddMilestoneModal
-          eventId={eventId}
-          onClose={() => setShowAddMilestone(false)}
-          onMilestoneAdded={handleMilestoneAdded}
         />
       )}
     </div>
