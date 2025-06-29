@@ -9,6 +9,8 @@ import {
 import { toast } from 'react-toastify';
 import { aiAPI, eventsAPI, budgetAPI, communicationsAPI } from '@/utils/api';
 import { supabase } from '@/utils/supabaseClient';
+import MiniCalendar from '@/components/calendar/MiniCalendar';
+import EventTasksList from '@/modules/events/components/EventTasksList';
 
 const EventWorkflowDashboard = () => {
   const { eventId } = useParams();
@@ -81,6 +83,10 @@ const EventWorkflowDashboard = () => {
 
   const EventOverview = () => (
     <div className="space-y-6">
+      {/* Mini Calendar for quick reference */}
+      <div className="mb-6">
+        <MiniCalendar />
+      </div>
       {/* Event Header */}
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
         <div className="flex items-start justify-between">
@@ -107,6 +113,11 @@ const EventWorkflowDashboard = () => {
             <span className="text-sm font-medium text-purple-700">Stella Workflow</span>
           </div>
         </div>
+      </div>
+
+      {/* Task Checklist */}
+      <div className="mt-8">
+        <EventTasksList eventId={event.id} />
       </div>
 
       {/* Workflow Complexity Analysis */}

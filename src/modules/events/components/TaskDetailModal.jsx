@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, Button, Input, Textarea, Select, Label, Badge } from '@/components/common';
 import { X, Edit, Trash2, MessageSquare, Paperclip, Calendar, User, Flag, CheckCircle } from 'lucide-react';
 import { api } from '@/utils/api';
+import { toast } from 'react-toastify';
 
 const TaskDetailModal = ({ task, onClose, onTaskUpdated }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -63,6 +64,9 @@ const TaskDetailModal = ({ task, onClose, onTaskUpdated }) => {
 
       await api.put(`/tasks/${task.id}`, taskData);
       setIsEditing(false);
+      if (taskData.assigned_to) {
+        toast.success(`Task assigned to ${taskData.assigned_to}`);
+      }
       if (onTaskUpdated) onTaskUpdated();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update task');

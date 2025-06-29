@@ -30,6 +30,9 @@ import EventsCalendarPage from './modules/events/pages/EventsCalendarPage'
 import EventDetailPage from './modules/events/pages/EventDetailPage'
 import EventProjectManagement from './modules/events/pages/EventProjectManagement'
 
+// Calendar
+import CalendarPage from './modules/calendar/CalendarPage'
+
 // Fundraisers
 import FundraiserManager from './modules/fundraisers/pages/FundraiserManager'
 import FundraiserForm from './modules/fundraisers/pages/FundraiserForm'
@@ -128,6 +131,7 @@ export default function App() {
           <Route path="/events/edit/:id" element={<EditEventPage />} />
           <Route path="/events/calendar" element={<EventsCalendarPage />} />
           <Route path="/events/detail/:id" element={<EventDetailPage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
 
           <Route path="/fundraisers" element={<FundraiserManager />} />
           <Route path="/fundraisers/create" element={<FundraiserForm />} />

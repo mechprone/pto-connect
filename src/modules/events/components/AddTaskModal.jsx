@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, Button, Input, Textarea, Select, Label } from '@/components/common';
 import { X, Calendar, User, Clock, DollarSign, Flag } from 'lucide-react';
 import { eventsAPI, profileAPI } from '@/utils/api';
+import { toast } from 'react-toastify';
 
 const AddTaskModal = ({ eventId, onClose, onTaskAdded }) => {
   const [formData, setFormData] = useState({
@@ -94,6 +95,9 @@ const AddTaskModal = ({ eventId, onClose, onTaskAdded }) => {
       };
 
       await eventsAPI.createTask(eventId, taskData);
+      if (taskData.assigned_to) {
+        toast.success(`Task assigned to ${taskData.assigned_to}`);
+      }
       onTaskAdded();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create task');

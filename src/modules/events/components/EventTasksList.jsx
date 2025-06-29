@@ -5,6 +5,7 @@ import { eventsAPI } from '@/utils/api';
 import TaskDetailModal from './TaskDetailModal';
 import AddTaskModal from './AddTaskModal';
 import { supabase } from '@/utils/supabaseClient';
+import { toast } from 'react-toastify';
 
 const EventTasksList = ({ eventId, onTaskUpdated }) => {
   const [tasks, setTasks] = useState([]);
@@ -76,6 +77,10 @@ const EventTasksList = ({ eventId, onTaskUpdated }) => {
     setShowAddTask(false);
     loadTasks();
     if (onTaskUpdated) onTaskUpdated();
+    // Show notification if task was assigned
+    if (selectedTask && selectedTask.assigned_to) {
+      toast.success(`Task assigned to ${selectedTask.assigned_to}`);
+    }
   };
 
   const handleDeleteTask = async (taskId) => {

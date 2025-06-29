@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom'
 const navItems = [
   { to: '/dashboard/admin', label: 'Dashboard', roles: ['admin'] },
   { to: '/events', label: 'Events', roles: ['admin', 'teacher', 'parent_member'] },
+  { to: '/calendar', label: 'Calendar', roles: ['admin', 'teacher', 'parent_member'] },
   { to: '/fundraisers', label: 'Fundraisers', roles: ['admin', 'treasurer'] },
   { to: '/budget', label: 'Budget', roles: ['admin', 'treasurer'] },
   { to: '/communications', label: 'Communications', roles: ['admin', 'committee_lead', 'teacher'] },
