@@ -2,6 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowUp } from 'lucide-react';
 import { supabase } from '@/utils/supabaseClient';
+import EventTasksList from '../components/EventTasksList';
+import AddTaskModal from '../components/AddTaskModal';
 
 // Tab config
 const TABS = [
@@ -62,6 +64,14 @@ const EventDetailPage = () => {
   const [fundraising, setFundraising] = useState([]);
   const [fundraisingLoading, setFundraisingLoading] = useState(true);
   const [fundraisingError, setFundraisingError] = useState(null);
+
+  // 1. Add a useState for expanded/collapsed core details and for edit mode.
+  const [isCoreDetailsExpanded, setIsCoreDetailsExpanded] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  // 1. Add state for editedEvent (copy of event for editing), and saving state.
+  const [editedEvent, setEditedEvent] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   // Fetch event data from Supabase
   useEffect(() => {
@@ -223,6 +233,52 @@ const EventDetailPage = () => {
     }
   }, [id]);
 
+  // 2. When expanding core details, set editedEvent to event.
+  const handleExpandCoreDetails = () => {
+    setEditedEvent(event);
+    setIsCoreDetailsExpanded(true);
+  };
+
+  // 3. When clicking edit, enable edit mode.
+  const handleEditCoreDetails = () => {
+    setIsEditMode(true);
+    setEditedEvent(event);
+  };
+
+  // 4. On input change, update editedEvent.
+  const handleInputChange = (field, value) => {
+    setEditedEvent(prev => ({ ...prev, [field]: value }));
+  };
+
+  // 5. On Save, update event via API, lock fields, and update event state.
+  const handleSaveCoreDetails = async () => {
+    setSaving(true);
+    try {
+      // Update event in Supabase
+      const { data, error } = await supabase
+        .from('events')
+        .update(editedEvent)
+        .eq('id', event.id)
+        .single();
+      if (!error) {
+        setEvent(data);
+        setIsEditMode(false);
+      } else {
+        alert('Failed to save changes.');
+      }
+    } catch (err) {
+      alert('Error saving changes.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // 6. On Cancel, revert changes and lock fields.
+  const handleCancelEdit = () => {
+    setEditedEvent(event);
+    setIsEditMode(false);
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
       {/* Main Content */}
@@ -248,24 +304,132 @@ const EventDetailPage = () => {
             <div className="bg-white rounded-xl shadow p-6 text-red-500">{error}</div>
           ) : event ? (
             <div className="bg-white rounded-xl shadow p-6 mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
+              <div className="flex-1">
                 <div className="mb-2 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                  <h3 className="text-xl font-semibold text-gray-900">{event.title}</h3>
+                  {isEditMode ? (
+                    <input
+                      className="text-xl font-semibold text-gray-900 border-b border-blue-200 focus:outline-none focus:border-blue-500 bg-white px-2 py-1"
+                      value={editedEvent.title}
+                      onChange={e => handleInputChange('title', e.target.value)}
+                    />
+                  ) : (
+                    <h3 className="text-xl font-semibold text-gray-900">{event.title}</h3>
+                  )}
                   <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 capitalize">{event.status}</span>
                 </div>
-                <div className="text-gray-600 mb-2">{event.description}</div>
-                <div className="flex flex-wrap gap-6 text-sm text-gray-500 mb-2">
-                  <div><strong>Date:</strong> {event.event_date ? new Date(event.event_date).toLocaleDateString() : 'N/A'}</div>
-                  <div><strong>Location:</strong> {event.location || 'N/A'}</div>
-                  <div><strong>Progress:</strong> {event.progress ? `${event.progress}%` : 'N/A'}</div>
-                </div>
+                {isCoreDetailsExpanded && (
+                  <>
+                    <div className="mb-2">
+                      {isEditMode ? (
+                        <textarea
+                          className="w-full text-gray-600 border border-gray-300 rounded-md p-2 resize-none bg-white"
+                          rows={2}
+                          value={editedEvent.description}
+                          onChange={e => handleInputChange('description', e.target.value)}
+                          placeholder="Event Description"
+                        />
+                      ) : (
+                        <div className="text-gray-600 mb-2">{event.description}</div>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-6 text-sm text-gray-500 mb-2">
+                      <div>
+                        <strong>Date:</strong>{' '}
+                        {isEditMode ? (
+                          <input
+                            type="date"
+                            className="border-b border-blue-200 focus:outline-none focus:border-blue-500 bg-white px-2 py-1"
+                            value={editedEvent.event_date || ''}
+                            onChange={e => handleInputChange('event_date', e.target.value)}
+                          />
+                        ) : (
+                          event.event_date ? new Date(event.event_date).toLocaleDateString() : 'N/A'
+                        )}
+                      </div>
+                      <div>
+                        <strong>Time:</strong>{' '}
+                        {isEditMode ? (
+                          <input
+                            type="time"
+                            className="border-b border-blue-200 focus:outline-none focus:border-blue-500 bg-white px-2 py-1"
+                            value={editedEvent.start_time || ''}
+                            onChange={e => handleInputChange('start_time', e.target.value)}
+                          />
+                        ) : (
+                          event.start_time || 'N/A'
+                        )}
+                      </div>
+                      <div>
+                        <strong>Location:</strong>{' '}
+                        {isEditMode ? (
+                          <input
+                            className="border-b border-blue-200 focus:outline-none focus:border-blue-500 bg-white px-2 py-1"
+                            value={editedEvent.location || ''}
+                            onChange={e => handleInputChange('location', e.target.value)}
+                            placeholder="Event Location"
+                          />
+                        ) : (
+                          event.location || 'N/A'
+                        )}
+                      </div>
+                      <div>
+                        <strong>Type:</strong>{' '}
+                        {isEditMode ? (
+                          <select
+                            className="border-b border-blue-200 focus:outline-none focus:border-blue-500 bg-white px-2 py-1"
+                            value={editedEvent.type || ''}
+                            onChange={e => handleInputChange('type', e.target.value)}
+                          >
+                            <option value="">Select Type</option>
+                            <option value="fundraiser">Fundraiser</option>
+                            <option value="meeting">Meeting</option>
+                            <option value="social">Social</option>
+                            <option value="other">Other</option>
+                          </select>
+                        ) : (
+                          event.type || 'N/A'
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-2 mt-2">
+                      {isEditMode ? (
+                        <>
+                          <button
+                            onClick={handleSaveCoreDetails}
+                            className="px-4 py-2 rounded-lg bg-green-600 text-white font-semibold shadow hover:bg-green-700 transition"
+                            disabled={saving}
+                          >
+                            {saving ? 'Saving...' : 'Save'}
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold shadow hover:bg-gray-300 transition"
+                            disabled={saving}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={handleEditCoreDetails}
+                          className="px-3 py-2 rounded-lg bg-blue-100 text-blue-700 font-semibold shadow hover:bg-blue-200 transition flex items-center gap-1"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13h3l8-8a2.828 2.828 0 00-4-4l-8 8v3z" /></svg>
+                          Edit
+                        </button>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
-              <button
-                onClick={() => window.location.href = `/events/edit/${event.id}`}
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
-              >
-                Edit Event
-              </button>
+              <div className="flex flex-col items-end">
+                <button
+                  onClick={() => setIsCoreDetailsExpanded(v => !v)}
+                  className="px-2 py-1 text-xs text-blue-600 hover:underline"
+                >
+                  {isCoreDetailsExpanded ? 'Collapse Details' : 'Expand Details'}
+                </button>
+              </div>
             </div>
           ) : null}
           {/* Stella Insights for mobile */}
@@ -282,6 +446,12 @@ const EventDetailPage = () => {
               </ul>
               <div className="mt-4 text-xs text-purple-400">Tips powered by Stella AI</div>
             </div>
+          </div>
+        </section>
+        <section className="mb-12 scroll-mt-24">
+          <h2 className="text-2xl font-bold mb-4">Tasks</h2>
+          <div className="bg-white rounded-xl shadow p-6">
+            <EventTasksList eventId={event?.id} />
           </div>
         </section>
         <section ref={sectionRefs.budget} id="budget" className="mb-12 scroll-mt-24">
