@@ -10,7 +10,8 @@
     "dev": "vite",
     "build": "vite build --outDir dist",
     "preview": "vite preview",
-    "start": "serve dist -s -l ${PORT:-3000}"
+    "start": "serve dist -s -l ${PORT:-3000}",
+    "postinstall": "chmod +x node_modules/.bin/vite"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.10",
