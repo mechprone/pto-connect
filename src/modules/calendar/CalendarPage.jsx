@@ -25,17 +25,41 @@ const CalendarPage = () => {
 
   useEffect(() => {
     async function fetchEvents() {
+      console.log('🔍 [CALENDAR DEBUG] Fetching events...');
       const result = await eventsAPI.getEvents();
-      const mapped = (result.data || result).map(ev => ({
-        id: ev.id,
-        title: ev.title,
-        start: ev.event_date,
-        end: ev.end_date || ev.event_date,
-        allDay: true,
-        color: EVENT_TYPE_COLORS[ev.type] || EVENT_TYPE_COLORS.other,
-        rrule: ev.rrule || undefined,
-        extendedProps: { ...ev },
-      }));
+      console.log('🔍 [CALENDAR DEBUG] Raw API result:', result);
+      
+      if (result.error) {
+        console.error('❌ [CALENDAR DEBUG] API Error:', result.error);
+        return;
+      }
+      
+      const eventsData = result.data || result;
+      console.log('🔍 [CALENDAR DEBUG] Events data:', eventsData);
+      
+      if (!Array.isArray(eventsData)) {
+        console.error('❌ [CALENDAR DEBUG] Events data is not an array:', eventsData);
+        return;
+      }
+      
+      const mapped = eventsData.map(ev => {
+        console.log('🔍 [CALENDAR DEBUG] Mapping event:', ev);
+        const eventType = ev.type || ev.category || 'other';
+        const mappedEvent = {
+          id: ev.id,
+          title: ev.title,
+          start: ev.event_date,
+          end: ev.end_date || ev.event_date,
+          allDay: true,
+          color: EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other,
+          rrule: ev.rrule || undefined,
+          extendedProps: { ...ev, type: eventType },
+        };
+        console.log('🔍 [CALENDAR DEBUG] Mapped event:', mappedEvent);
+        return mappedEvent;
+      });
+      
+      console.log('🔍 [CALENDAR DEBUG] Final mapped events:', mapped);
       setEvents(mapped);
     }
     fetchEvents();
