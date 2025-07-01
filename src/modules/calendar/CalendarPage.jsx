@@ -21,43 +21,93 @@ const CalendarPage = () => {
   const [tooltip, setTooltip] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const tooltipRef = useRef();
 
   useEffect(() => {
     async function fetchEvents() {
       try {
+        setLoading(true);
+        setError(null);
+        console.log('🔍 [Calendar] Fetching events from API...');
+        
         const result = await eventsAPI.getEvents();
         
         if (result.error) {
-          console.error('❌ Error fetching events:', result.error);
+          console.error('❌ [Calendar] Error fetching events:', result.error);
+          setError(result.error);
           return;
         }
         
         const eventsData = result.data || result;
+        console.log('✅ [Calendar] Received events data:', eventsData);
         
         if (!Array.isArray(eventsData)) {
-          console.error('❌ Events data is not an array:', eventsData);
+          console.error('❌ [Calendar] Events data is not an array:', eventsData);
+          setError('Invalid events data received');
           return;
         }
         
+        // Map database fields to calendar format
         const mapped = eventsData.map(ev => {
-          // Map category to type for color coding
-          const eventType = ev.type || ev.category || 'other';
-          return {
+          console.log('🔍 [Calendar] Mapping event:', ev);
+          
+          // Use category as the event type for color coding
+          const eventType = ev.category || 'other';
+          
+          // Handle date and time properly
+          let startDateTime = ev.event_date;
+          let endDateTime = ev.event_date;
+          let isAllDay = true;
+          
+          // If we have start_time, create proper datetime strings
+          if (ev.start_time) {
+            startDateTime = `${ev.event_date}T${ev.start_time}`;
+            isAllDay = false;
+          }
+          
+          if (ev.end_time) {
+            endDateTime = `${ev.event_date}T${ev.end_time}`;
+          } else if (ev.start_time) {
+            // If only start time, make it 1 hour duration
+            const startTime = new Date(`${ev.event_date}T${ev.start_time}`);
+            startTime.setHours(startTime.getHours() + 1);
+            endDateTime = startTime.toISOString();
+          }
+          
+          const mappedEvent = {
             id: ev.id,
             title: ev.title,
-            start: ev.event_date,
-            end: ev.end_date || ev.event_date,
-            allDay: true,
+            start: startDateTime,
+            end: endDateTime,
+            allDay: isAllDay,
             color: EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other,
-            rrule: ev.rrule || undefined,
-            extendedProps: { ...ev, type: eventType },
+            // Map recurrence_rule to rrule for FullCalendar
+            rrule: ev.recurrence_rule || undefined,
+            extendedProps: { 
+              ...ev, 
+              type: eventType,
+              // Include original database fields for reference
+              category: ev.category,
+              status: ev.status,
+              org_id: ev.org_id,
+              start_time: ev.start_time,
+              end_time: ev.end_time
+            },
           };
+          
+          console.log('✅ [Calendar] Mapped event:', mappedEvent);
+          return mappedEvent;
         });
         
+        console.log(`✅ [Calendar] Successfully mapped ${mapped.length} events`);
         setEvents(mapped);
       } catch (error) {
-        console.error('❌ Error in fetchEvents:', error);
+        console.error('❌ [Calendar] Error in fetchEvents:', error);
+        setError('Failed to load events');
+      } finally {
+        setLoading(false);
       }
     }
     fetchEvents();
@@ -66,15 +116,42 @@ const CalendarPage = () => {
   // Tooltip logic
   const handleEventMouseEnter = (info) => {
     const { jsEvent, event } = info;
+    
+    // Format time display
+    let timeDisplay = '';
+    if (!event.allDay && event.extendedProps.start_time) {
+      const startTime = event.extendedProps.start_time;
+      const endTime = event.extendedProps.end_time;
+      timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
+    }
+    
     setTooltip({
       x: jsEvent.clientX,
       y: jsEvent.clientY,
       content: (
         <div style={{ minWidth: 200 }}>
           <div className="font-bold mb-1">{event.title}</div>
-          <div className="text-xs mb-1">{event.extendedProps.type || 'Other'} | {event.startStr} {event.endStr && `- ${event.endStr}`}</div>
-          {event.extendedProps.location && <div className="text-xs">📍 {event.extendedProps.location}</div>}
-          {event.extendedProps.description && <div className="text-xs mt-1">{event.extendedProps.description}</div>}
+          <div className="text-xs mb-1">
+            <span className="capitalize">{event.extendedProps.type || 'Other'}</span>
+            {event.extendedProps.status && (
+              <span className="ml-2 px-1 bg-gray-200 rounded text-xs">
+                {event.extendedProps.status}
+              </span>
+            )}
+          </div>
+          <div className="text-xs mb-1">
+            📅 {event.startStr}
+            {timeDisplay && <div>🕐 {timeDisplay}</div>}
+          </div>
+          {event.extendedProps.location && (
+            <div className="text-xs">📍 {event.extendedProps.location}</div>
+          )}
+          {event.extendedProps.description && (
+            <div className="text-xs mt-1">{event.extendedProps.description}</div>
+          )}
+          <div className="text-xs text-gray-500 mt-1 border-t pt-1">
+            Org: {event.extendedProps.org_id ? event.extendedProps.org_id.substring(0, 8) + '...' : 'Unknown'}
+          </div>
         </div>
       )
     });
@@ -88,18 +165,23 @@ const CalendarPage = () => {
   };
 
   const handleEventClick = (info) => {
+    const event = info.event;
     setSelectedEvent({
-      id: info.event.id,
-      title: info.event.title,
-      type: info.event.extendedProps.type,
-      start: info.event.startStr,
-      end: info.event.endStr,
-      allDay: info.event.allDay,
-      location: info.event.extendedProps.location,
-      description: info.event.extendedProps.description,
-      color: info.event.backgroundColor,
-      recurrence: info.event.extendedProps.rrule ? 'custom' : '',
-      rrule: info.event.extendedProps.rrule || '',
+      id: event.id,
+      title: event.title,
+      type: event.extendedProps.type,
+      category: event.extendedProps.category,
+      start: event.startStr,
+      end: event.endStr,
+      allDay: event.allDay,
+      location: event.extendedProps.location,
+      description: event.extendedProps.description,
+      status: event.extendedProps.status,
+      color: event.backgroundColor,
+      recurrence: event.extendedProps.recurrence_rule ? 'custom' : '',
+      rrule: event.extendedProps.recurrence_rule || '',
+      start_time: event.extendedProps.start_time,
+      end_time: event.extendedProps.end_time,
     });
     setModalOpen(true);
   };
@@ -108,30 +190,36 @@ const CalendarPage = () => {
     try {
       const updated = {
         id: info.event.id,
-        start: info.event.startStr,
-        end: info.event.endStr,
+        event_date: info.event.startStr.split('T')[0], // Extract date part
+        start_time: info.event.allDay ? null : info.event.startStr.split('T')[1]?.substring(0, 8),
+        end_time: info.event.allDay ? null : info.event.endStr?.split('T')[1]?.substring(0, 8),
       };
+      
+      console.log('🔄 [Calendar] Updating event:', updated);
       await eventsAPI.updateEvent(updated.id, updated);
+      
       // Refetch events
       const result = await eventsAPI.getEvents();
       const mapped = (result.data || result).map(ev => ({
         id: ev.id,
         title: ev.title,
-        start: ev.event_date,
-        end: ev.end_date || ev.event_date,
-        allDay: true,
-        color: EVENT_TYPE_COLORS[ev.type] || EVENT_TYPE_COLORS.other,
-        rrule: ev.rrule || undefined,
-        extendedProps: { ...ev },
+        start: ev.start_time ? `${ev.event_date}T${ev.start_time}` : ev.event_date,
+        end: ev.end_time ? `${ev.event_date}T${ev.end_time}` : ev.event_date,
+        allDay: !ev.start_time,
+        color: EVENT_TYPE_COLORS[ev.category] || EVENT_TYPE_COLORS.other,
+        rrule: ev.recurrence_rule || undefined,
+        extendedProps: { ...ev, type: ev.category || 'other' },
       }));
       setEvents(mapped);
     } catch (error) {
-      console.error('Error updating event:', error);
+      console.error('❌ [Calendar] Error updating event:', error);
     }
   };
 
   const handleModalSave = async (form) => {
     try {
+      console.log('💾 [Calendar] Saving event:', form);
+      
       if (form.id) {
         await eventsAPI.updateEvent(form.id, form);
       } else {
@@ -139,21 +227,22 @@ const CalendarPage = () => {
       }
       setModalOpen(false);
       setSelectedEvent(null);
+      
       // Refetch events
       const result = await eventsAPI.getEvents();
       const mapped = (result.data || result).map(ev => ({
         id: ev.id,
         title: ev.title,
-        start: ev.event_date,
-        end: ev.end_date || ev.event_date,
-        allDay: true,
-        color: EVENT_TYPE_COLORS[ev.type] || EVENT_TYPE_COLORS.other,
-        rrule: ev.rrule || undefined,
-        extendedProps: { ...ev },
+        start: ev.start_time ? `${ev.event_date}T${ev.start_time}` : ev.event_date,
+        end: ev.end_time ? `${ev.event_date}T${ev.end_time}` : ev.event_date,
+        allDay: !ev.start_time,
+        color: EVENT_TYPE_COLORS[ev.category] || EVENT_TYPE_COLORS.other,
+        rrule: ev.recurrence_rule || undefined,
+        extendedProps: { ...ev, type: ev.category || 'other' },
       }));
       setEvents(mapped);
     } catch (error) {
-      console.error('Error saving event:', error);
+      console.error('❌ [Calendar] Error saving event:', error);
     }
   };
 
@@ -165,16 +254,65 @@ const CalendarPage = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [tooltip]);
 
+  if (loading) {
+    return (
+      <div className="calendar-page-container flex items-center justify-center p-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+          <p className="text-gray-600">Loading calendar events...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="calendar-page-container flex items-center justify-center p-8">
+        <div className="text-center text-red-600">
+          <p className="font-semibold">Error loading calendar</p>
+          <p className="text-sm">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="calendar-page-container" style={{ position: 'relative' }}>
-      {/* Legend and Calendar */}
-      <div className="flex gap-4 mb-4">
-        <span className="font-semibold">Legend:</span>
-        <span className="inline-flex items-center gap-1"><span style={{background: EVENT_TYPE_COLORS.fundraiser, width: 16, height: 16, borderRadius: 4, display: 'inline-block'}}></span>Fundraiser</span>
-        <span className="inline-flex items-center gap-1"><span style={{background: EVENT_TYPE_COLORS.meeting, width: 16, height: 16, borderRadius: 4, display: 'inline-block'}}></span>Meeting</span>
-        <span className="inline-flex items-center gap-1"><span style={{background: EVENT_TYPE_COLORS.social, width: 16, height: 16, borderRadius: 4, display: 'inline-block'}}></span>Social</span>
-        <span className="inline-flex items-center gap-1"><span style={{background: EVENT_TYPE_COLORS.other, width: 16, height: 16, borderRadius: 4, display: 'inline-block'}}></span>Other</span>
+      {/* Header with event count and legend */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-4">
+          <h2 className="text-lg font-semibold">Organization Calendar</h2>
+          <span className="text-sm text-gray-600">
+            {events.length} event{events.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+        <div className="flex gap-4 text-sm">
+          <span className="font-semibold">Legend:</span>
+          <span className="inline-flex items-center gap-1">
+            <span style={{background: EVENT_TYPE_COLORS.fundraiser, width: 16, height: 16, borderRadius: 4, display: 'inline-block'}}></span>
+            Fundraiser
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span style={{background: EVENT_TYPE_COLORS.meeting, width: 16, height: 16, borderRadius: 4, display: 'inline-block'}}></span>
+            Meeting
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span style={{background: EVENT_TYPE_COLORS.social, width: 16, height: 16, borderRadius: 4, display: 'inline-block'}}></span>
+            Social
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span style={{background: EVENT_TYPE_COLORS.other, width: 16, height: 16, borderRadius: 4, display: 'inline-block'}}></span>
+            Other
+          </span>
+        </div>
       </div>
+      
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin, listPlugin]}
         initialView="dayGridMonth"
@@ -193,13 +331,32 @@ const CalendarPage = () => {
         editable={true}
         eventDrop={handleEventDrop}
         eventResize={handleEventDrop}
+        eventContent={(eventInfo) => {
+          // Custom event content to show time for non-all-day events
+          return (
+            <div className="fc-event-main-frame">
+              <div className="fc-event-title-container">
+                <div className="fc-event-title fc-sticky">
+                  {eventInfo.event.title}
+                  {!eventInfo.event.allDay && eventInfo.event.extendedProps.start_time && (
+                    <div className="text-xs opacity-80">
+                      {eventInfo.event.extendedProps.start_time.substring(0, 5)}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        }}
       />
+      
       <EventModal
         open={modalOpen}
         onClose={() => { setModalOpen(false); setSelectedEvent(null); }}
         onSave={handleModalSave}
         initialEventData={selectedEvent}
       />
+      
       {tooltip && (
         <div
           ref={tooltipRef}
