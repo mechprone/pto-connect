@@ -1,6 +1,15 @@
 // Frontend Environment Configuration
 const ENV = import.meta.env.MODE || 'development';
-const IS_PREVIEW = import.meta.env.VITE_IS_PREVIEW === 'true' || ENV === 'preview';
+const IS_PREVIEW = import.meta.env.VITE_IS_PREVIEW === 'true';
+
+// Determine the actual environment based on flags
+const getEnvironment = () => {
+  if (IS_PREVIEW) return 'preview';
+  if (ENV === 'production') return 'production';
+  return 'development';
+};
+
+const CURRENT_ENV = getEnvironment();
 
 // Environment-specific configurations
 const ENV_CONFIG = {
@@ -29,14 +38,22 @@ const ENV_CONFIG = {
 
 // Get current environment configuration
 const getConfig = () => {
-  const config = ENV_CONFIG[ENV] || ENV_CONFIG.development;
+  const config = ENV_CONFIG[CURRENT_ENV];
+  
+  console.log('[DEBUG] Environment detection:', {
+    MODE: ENV,
+    VITE_IS_PREVIEW: import.meta.env.VITE_IS_PREVIEW,
+    IS_PREVIEW,
+    CURRENT_ENV,
+    selectedConfig: config
+  });
   
   return {
     ...config,
     isPreview: IS_PREVIEW,
-    isProduction: ENV === 'production',
-    isDevelopment: ENV === 'development',
-    environment: ENV
+    isProduction: CURRENT_ENV === 'production',
+    isDevelopment: CURRENT_ENV === 'development',
+    environment: CURRENT_ENV
   };
 };
 
@@ -111,5 +128,6 @@ export {
   getFeatureFlags,
   getLoggingConfig,
   ENV,
+  CURRENT_ENV,
   IS_PREVIEW
 }; 
