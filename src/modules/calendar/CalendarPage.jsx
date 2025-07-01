@@ -10,10 +10,10 @@ import { eventsAPI } from '@/utils/api';
 import EventModal from '@/components/calendar/EventModal';
 
 const EVENT_TYPE_COLORS = {
-  fundraiser: '#f59e42', // orange
-  meeting: '#2563eb',    // blue
-  social: '#10b981',     // green
-  other: '#a78bfa',      // purple
+  fundraiser: '#2563eb', // blue (primary)
+  meeting: '#1e40af',    // darker blue
+  social: '#3b82f6',     // lighter blue
+  other: '#1f2937',      // dark gray/black
 };
 
 const CalendarPage = () => {
@@ -163,7 +163,7 @@ const CalendarPage = () => {
         }}
         events={events}
         height="auto"
-        themeSystem="journal"
+        themeSystem="standard"
         eventMouseEnter={handleEventMouseEnter}
         eventMouseLeave={handleEventMouseLeave}
         eventClick={handleEventClick}
