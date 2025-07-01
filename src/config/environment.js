@@ -12,14 +12,14 @@ const ENV_CONFIG = {
     stripePublishableKey: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
   },
   preview: {
-    apiUrl: import.meta.env.VITE_API_URL || 'https://preview-api.ptoconnect.com',
+    apiUrl: import.meta.env.VITE_API_URL,
     clientUrl: 'https://preview.ptoconnect.com',
     supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
     supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
     stripePublishableKey: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
   },
   production: {
-    apiUrl: import.meta.env.VITE_API_URL || 'https://api.ptoconnect.com',
+    apiUrl: import.meta.env.VITE_API_URL,
     clientUrl: 'https://app.ptoconnect.com',
     supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
     supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
