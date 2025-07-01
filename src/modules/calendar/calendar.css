@@ -64,12 +64,12 @@
   box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.3);
 }
 
-/* Navigation arrows - ensure they're visible */
+/* Navigation arrows - match Week/Day/List buttons (light blue) */
 .calendar-page-container .fc-prev-button,
 .calendar-page-container .fc-next-button {
-  background-color: #1f2937 !important;
-  border-color: #1f2937 !important;
-  color: #ffffff !important;
+  background-color: #dbeafe !important;
+  border-color: #dbeafe !important;
+  color: #1d4ed8 !important;
   font-size: 1rem !important;
   min-width: 44px;
   display: flex;
@@ -79,8 +79,9 @@
 
 .calendar-page-container .fc-prev-button:hover,
 .calendar-page-container .fc-next-button:hover {
-  background-color: #374151 !important;
-  border-color: #374151 !important;
+  background-color: #bfdbfe !important;
+  border-color: #bfdbfe !important;
+  color: #1e40af !important;
   transform: translateY(-1px);
 }
 
