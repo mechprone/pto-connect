@@ -324,32 +324,32 @@ const EventProjectManagement = () => {
       </div>
 
       {/* Progress Overview */}
-      <Card className="p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-4">Event Progress</h2>
+        <Card className="p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4">Event Progress</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div>
-            <p className="text-sm text-gray-600 mb-2">Overall Progress</p>
-            <div className="flex items-center">
-              <Progress value={eventSummary.progress_percentage} className="flex-1 mr-3" />
-              <span className="text-lg font-semibold">{eventSummary.progress_percentage}%</span>
+            <div>
+              <p className="text-sm text-gray-600 mb-2">Overall Progress</p>
+              <div className="flex items-center">
+                <Progress value={eventSummary.progress_percentage} className="flex-1 mr-3" />
+                <span className="text-lg font-semibold">{eventSummary.progress_percentage}%</span>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-2">Tasks</p>
+              <div className="flex items-center space-x-4">
+                <span className="text-2xl font-bold text-green-600">{eventSummary.completed_tasks}</span>
+                <span className="text-gray-400">/</span>
+                <span className="text-2xl font-bold">{eventSummary.total_tasks}</span>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-2">Open Issues</p>
+              <div className="flex items-center">
+                <span className="text-2xl font-bold text-red-600">{eventSummary.open_issues}</span>
+              </div>
             </div>
           </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-2">Tasks</p>
-            <div className="flex items-center space-x-4">
-              <span className="text-2xl font-bold text-green-600">{eventSummary.completed_tasks}</span>
-              <span className="text-gray-400">/</span>
-              <span className="text-2xl font-bold">{eventSummary.total_tasks}</span>
-            </div>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-2">Open Issues</p>
-            <div className="flex items-center">
-              <span className="text-2xl font-bold text-red-600">{eventSummary.open_issues}</span>
-            </div>
-          </div>
-        </div>
-      </Card>
+        </Card>
 
       {/* Enhanced Tabs with State Persistence */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">

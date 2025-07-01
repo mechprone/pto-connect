@@ -313,7 +313,7 @@ const EventDetailPage = () => {
                       onChange={e => handleInputChange('title', e.target.value)}
                     />
                   ) : (
-                    <h3 className="text-xl font-semibold text-gray-900">{event.title}</h3>
+                  <h3 className="text-xl font-semibold text-gray-900">{event.title}</h3>
                   )}
                   <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 capitalize">{event.status}</span>
                 </div>
@@ -329,10 +329,10 @@ const EventDetailPage = () => {
                           placeholder="Event Description"
                         />
                       ) : (
-                        <div className="text-gray-600 mb-2">{event.description}</div>
+                <div className="text-gray-600 mb-2">{event.description}</div>
                       )}
                     </div>
-                    <div className="flex flex-wrap gap-6 text-sm text-gray-500 mb-2">
+                <div className="flex flex-wrap gap-6 text-sm text-gray-500 mb-2">
                       <div>
                         <strong>Date:</strong>{' '}
                         {isEditMode ? (
@@ -418,17 +418,17 @@ const EventDetailPage = () => {
                           Edit
                         </button>
                       )}
-                    </div>
+                </div>
                   </>
                 )}
               </div>
               <div className="flex flex-col items-end">
-                <button
+              <button
                   onClick={() => setIsCoreDetailsExpanded(v => !v)}
                   className="px-2 py-1 text-xs text-blue-600 hover:underline"
-                >
+              >
                   {isCoreDetailsExpanded ? 'Collapse Details' : 'Expand Details'}
-                </button>
+              </button>
               </div>
             </div>
           ) : null}
