@@ -2,9 +2,19 @@
 const ENV = import.meta.env.MODE || 'development';
 const IS_PREVIEW = import.meta.env.VITE_IS_PREVIEW === 'true';
 
-// Determine the actual environment based on flags
+// Determine the actual environment based on flags and domain
 const getEnvironment = () => {
+  // First check explicit environment variable
   if (IS_PREVIEW) return 'preview';
+  
+  // Fallback: check domain if we're in the browser
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'preview.ptoconnect.com') return 'preview';
+    if (hostname === 'app.ptoconnect.com') return 'production';
+  }
+  
+  // Final fallback based on MODE
   if (ENV === 'production') return 'production';
   return 'development';
 };
@@ -21,14 +31,14 @@ const ENV_CONFIG = {
     stripePublishableKey: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
   },
   preview: {
-    apiUrl: import.meta.env.VITE_API_URL,
+    apiUrl: import.meta.env.VITE_API_URL || 'https://preview-api.ptoconnect.com',
     clientUrl: 'https://preview.ptoconnect.com',
     supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
     supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
     stripePublishableKey: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
   },
   production: {
-    apiUrl: import.meta.env.VITE_API_URL,
+    apiUrl: import.meta.env.VITE_API_URL || 'https://api.ptoconnect.com',
     clientUrl: 'https://app.ptoconnect.com',
     supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
     supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
@@ -44,6 +54,7 @@ const getConfig = () => {
     MODE: ENV,
     VITE_IS_PREVIEW: import.meta.env.VITE_IS_PREVIEW,
     IS_PREVIEW,
+    hostname: typeof window !== 'undefined' ? window.location.hostname : 'server',
     CURRENT_ENV,
     selectedConfig: config
   });
