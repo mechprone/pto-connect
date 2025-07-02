@@ -61,14 +61,18 @@ export function useUserProfile() {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('🔐 [useUserProfile] Auth state change:', event, !!session);
+      
+      // Only act on significant auth changes, not INITIAL_SESSION
       if (event === 'SIGNED_OUT') {
         console.log('👋 [useUserProfile] User signed out, clearing profile');
         setProfile(null);
         setOrganization(null);
+        setLoading(false);
       } else if (event === 'SIGNED_IN' && session) {
         console.log('👤 [useUserProfile] User signed in, fetching profile');
         fetchUserProfile();
       }
+      // Ignore INITIAL_SESSION, TOKEN_REFRESHED, and other non-actionable events
     });
 
     return () => {

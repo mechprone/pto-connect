@@ -13,6 +13,7 @@ class EventsStore {
     this.cacheKey = 'pto_events_store_v2'; // Updated version
     this.cacheDuration = 10 * 60 * 1000; // 10 minutes
     this.subscribers = new Set();
+    this.visibilityListenerSetup = false;
     
     // Load from localStorage on initialization
     this.loadFromStorage();
@@ -52,13 +53,17 @@ class EventsStore {
   }
 
   setupVisibilityListener() {
-    if (typeof document !== 'undefined') {
+    if (typeof document !== 'undefined' && !this.visibilityListenerSetup) {
+      this.visibilityListenerSetup = true;
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden && this.rawData) {
-          // Extend cache when page becomes visible
-          this.lastFetch = Date.now();
-          this.saveToStorage();
-          console.log('🔄 [EventsStore] Extended cache on visibility change');
+          // Only extend cache if it's been more than 30 seconds since last activity
+          const timeSinceLastFetch = Date.now() - this.lastFetch;
+          if (timeSinceLastFetch > 30000) { // 30 seconds
+            this.lastFetch = Date.now();
+            this.saveToStorage();
+            console.log('🔄 [EventsStore] Extended cache on visibility change');
+          }
         }
       });
     }

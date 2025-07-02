@@ -11,6 +11,7 @@ const DEFAULT_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes default
 
 class GlobalCache {
   constructor() {
+    this.visibilityListenerSetup = false;
     this.setupVisibilityListener();
   }
 
@@ -100,13 +101,20 @@ class GlobalCache {
    * Setup visibility change listener to prevent unnecessary reloads
    */
   setupVisibilityListener() {
-    if (typeof document !== 'undefined') {
+    if (typeof document !== 'undefined' && !this.visibilityListenerSetup) {
+      this.visibilityListenerSetup = true;
+      let lastVisibilityChange = 0;
       document.addEventListener('visibilitychange', () => {
+        const now = Date.now();
         console.log('👁️ [Cache] Visibility changed, hidden:', document.hidden);
+        
         if (!document.hidden) {
-          console.log('🔄 [Cache] Page visible again, extending caches');
-          // Page became visible again - extend cache expiration for active data
-          this.extendActiveCaches();
+          // Only extend caches if it's been more than 30 seconds since last visibility change
+          if (now - lastVisibilityChange > 30000) {
+            console.log('🔄 [Cache] Page visible again, extending caches');
+            this.extendActiveCaches();
+          }
+          lastVisibilityChange = now;
         }
       });
     }

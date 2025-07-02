@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -24,12 +24,17 @@ const CalendarPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const tooltipRef = useRef();
+  const renderCountRef = useRef(0);
 
   // Use the persistent events store
   const { events, loading, error, refresh: refreshEvents } = useEventsStore();
 
-  // Status styling function to match event page
-  const getStatusStyle = (status) => {
+  // Track renders to identify excessive re-rendering
+  renderCountRef.current++;
+  console.log('📊 [Calendar] Render count:', renderCountRef.current);
+
+  // Memoize status styling function to prevent unnecessary re-renders
+  const getStatusStyle = useCallback((status) => {
     const styles = {
       draft: 'bg-gray-100 text-gray-800',
       planning: 'bg-blue-100 text-blue-800',
@@ -38,18 +43,30 @@ const CalendarPage = () => {
       cancelled: 'bg-red-100 text-red-800'
     };
     return styles[status] || styles.draft;
-  };
+  }, []);
 
-  // Track component mounting
+  // Track component mounting with stability check
   useEffect(() => {
     console.log('🏗️ [Calendar] Component mounted');
+    const mountTime = Date.now();
+    
+    // Add stability marker to prevent rapid unmount/remount cycles
+    window._calendarMountTime = mountTime;
+    
     return () => {
-      console.log('💀 [Calendar] Component unmounting');
+      const unmountTime = Date.now();
+      const timeAlive = unmountTime - mountTime;
+      console.log(`💀 [Calendar] Component unmounting after ${timeAlive}ms`);
+      
+      // Log warning if component was alive for less than 1 second (abnormal)
+      if (timeAlive < 1000) {
+        console.warn('⚠️ [Calendar] Component unmounted very quickly - this may indicate an issue');
+      }
     };
   }, []);
 
-  // Tooltip logic
-  const handleEventMouseEnter = (info) => {
+  // Memoize tooltip logic to prevent unnecessary re-computations
+  const handleEventMouseEnter = useCallback((info) => {
     const { jsEvent, event } = info;
     
     // Format time display in 12-hour AM/PM format
@@ -105,16 +122,16 @@ const CalendarPage = () => {
         </div>
       )
     });
-  };
+  }, [getStatusStyle]);
 
-  const handleEventMouseLeave = () => setTooltip(null);
+  const handleEventMouseLeave = useCallback(() => setTooltip(null), []);
 
-  const handleDateClick = (arg) => {
+  const handleDateClick = useCallback((arg) => {
     setSelectedEvent({ start: arg.dateStr, end: arg.dateStr });
     setModalOpen(true);
-  };
+  }, []);
 
-  const handleEventClick = (info) => {
+  const handleEventClick = useCallback((info) => {
     const event = info.event;
     setSelectedEvent({
       id: event.id,
@@ -134,9 +151,9 @@ const CalendarPage = () => {
       end_time: event.extendedProps.end_time,
     });
     setModalOpen(true);
-  };
+  }, []);
 
-  const handleEventDrop = async (info) => {
+  const handleEventDrop = useCallback(async (info) => {
     try {
       const updated = {
         id: info.event.id,
@@ -153,9 +170,9 @@ const CalendarPage = () => {
     } catch (error) {
       console.error('❌ [Calendar] Error updating event:', error);
     }
-  };
+  }, [refreshEvents]);
 
-  const handleModalSave = async (form) => {
+  const handleModalSave = useCallback(async (form) => {
     try {
       console.log('💾 [Calendar] Saving event:', form);
       
@@ -172,8 +189,14 @@ const CalendarPage = () => {
     } catch (error) {
       console.error('❌ [Calendar] Error saving event:', error);
     }
-  };
+  }, [refreshEvents]);
 
+  const handleModalClose = useCallback(() => {
+    setModalOpen(false);
+    setSelectedEvent(null);
+  }, []);
+
+  // Memoize click outside handler
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (tooltipRef.current && !tooltipRef.current.contains(e.target)) setTooltip(null);
@@ -181,6 +204,40 @@ const CalendarPage = () => {
     if (tooltip) document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [tooltip]);
+
+  // Memoize the FullCalendar event content to prevent re-renders
+  const eventContent = useCallback((eventInfo) => {
+    return (
+      <div className="fc-event-main-frame">
+        <div className="fc-event-title-container">
+          <div className="fc-event-title fc-sticky">
+            {eventInfo.event.title}
+            {!eventInfo.event.allDay && eventInfo.event.extendedProps.start_time && (
+              <div className="text-xs opacity-80">
+                {eventInfo.event.extendedProps.start_time.substring(0, 5)}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }, []);
+
+  // Memoize the calendar plugins array to prevent re-initialization
+  const calendarPlugins = useMemo(() => [
+    dayGridPlugin, 
+    timeGridPlugin, 
+    interactionPlugin, 
+    rrulePlugin, 
+    listPlugin
+  ], []);
+
+  // Memoize the header toolbar configuration
+  const headerToolbar = useMemo(() => ({
+    left: 'prev,next today',
+    center: 'title',
+    right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+  }), []);
 
   if (loading) {
     return (
@@ -242,13 +299,9 @@ const CalendarPage = () => {
       </div>
       
       <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin, listPlugin]}
+        plugins={calendarPlugins}
         initialView="dayGridMonth"
-        headerToolbar={{
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
-        }}
+        headerToolbar={headerToolbar}
         events={events}
         height="auto"
         themeSystem="standard"
@@ -259,28 +312,12 @@ const CalendarPage = () => {
         editable={true}
         eventDrop={handleEventDrop}
         eventResize={handleEventDrop}
-        eventContent={(eventInfo) => {
-          // Custom event content to show time for non-all-day events
-          return (
-            <div className="fc-event-main-frame">
-              <div className="fc-event-title-container">
-                <div className="fc-event-title fc-sticky">
-                  {eventInfo.event.title}
-                  {!eventInfo.event.allDay && eventInfo.event.extendedProps.start_time && (
-                    <div className="text-xs opacity-80">
-                      {eventInfo.event.extendedProps.start_time.substring(0, 5)}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        }}
+        eventContent={eventContent}
       />
       
       <EventModal
         open={modalOpen}
-        onClose={() => { setModalOpen(false); setSelectedEvent(null); }}
+        onClose={handleModalClose}
         onSave={handleModalSave}
         initialEventData={selectedEvent}
       />
