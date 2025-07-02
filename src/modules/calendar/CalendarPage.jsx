@@ -25,6 +25,18 @@ const CalendarPage = () => {
   const [error, setError] = useState(null);
   const tooltipRef = useRef();
 
+  // Status styling function to match event page
+  const getStatusStyle = (status) => {
+    const styles = {
+      draft: 'bg-gray-100 text-gray-800',
+      planning: 'bg-blue-100 text-blue-800',
+      active: 'bg-green-100 text-green-800',
+      completed: 'bg-purple-100 text-purple-800',
+      cancelled: 'bg-red-100 text-red-800'
+    };
+    return styles[status] || styles.draft;
+  };
+
   useEffect(() => {
     async function fetchEvents() {
       try {
@@ -137,10 +149,10 @@ const CalendarPage = () => {
       content: (
         <div style={{ minWidth: 200 }}>
           <div className="font-bold mb-1">{event.title}</div>
-          <div className="text-xs mb-1">
-            <span className="capitalize">{event.extendedProps.type || 'Other'}</span>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs capitalize">{event.extendedProps.type || 'Other'}</span>
             {event.extendedProps.status && (
-              <span className="ml-2 px-1 bg-gray-200 rounded text-xs">
+              <span className={`px-2 py-1 rounded text-xs font-medium capitalize ${getStatusStyle(event.extendedProps.status)}`}>
                 {event.extendedProps.status}
               </span>
             )}
@@ -155,9 +167,6 @@ const CalendarPage = () => {
           {event.extendedProps.description && (
             <div className="text-xs mt-1">{event.extendedProps.description}</div>
           )}
-          <div className="text-xs text-gray-500 mt-1 border-t pt-1">
-            Org: {event.extendedProps.org_id ? event.extendedProps.org_id.substring(0, 8) + '...' : 'Unknown'}
-          </div>
         </div>
       )
     });
