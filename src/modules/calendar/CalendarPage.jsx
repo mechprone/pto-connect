@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -18,8 +18,6 @@ const EVENT_TYPE_COLORS = {
 };
 
 const CalendarPage = () => {
-  console.log('🏗️ [Calendar] Component mounting/re-mounting');
-  
   const [events, setEvents] = useState([]);
   const [tooltip, setTooltip] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -40,29 +38,22 @@ const CalendarPage = () => {
     return styles[status] || styles.draft;
   };
 
-  // Use global cache for events data to prevent unnecessary reloads
-  const fetchEventsData = async () => {
-    console.log('🔍 [Calendar] Fetching events from API...');
-    
+  // Memoize the fetch function to prevent infinite re-renders
+  const fetchEventsData = useCallback(async () => {
     const result = await eventsAPI.getEvents();
     
     if (result.error) {
-      console.error('❌ [Calendar] Error fetching events:', result.error);
       throw new Error(result.error);
     }
     
     const eventsData = result.data || result;
-    console.log('✅ [Calendar] Received events data:', eventsData);
     
     if (!Array.isArray(eventsData)) {
-      console.error('❌ [Calendar] Events data is not an array:', eventsData);
       throw new Error('Invalid events data received');
     }
     
     // Map database fields to calendar format
     const mapped = eventsData.map(ev => {
-      console.log('🔍 [Calendar] Mapping event:', ev);
-      
       // Use category as the event type for color coding
       const eventType = ev.category || 'other';
       const eventColor = EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other;
@@ -102,7 +93,7 @@ const CalendarPage = () => {
 
       const textColor = getDarkerColor(eventColor);
 
-      const mappedEvent = {
+      return {
         id: ev.id,
         title: ev.title,
         start: startDateTime,
@@ -126,14 +117,10 @@ const CalendarPage = () => {
           end_time: ev.end_time
         },
       };
-      
-      console.log('✅ [Calendar] Mapped event:', mappedEvent);
-      return mappedEvent;
     });
     
-    console.log(`✅ [Calendar] Successfully mapped ${mapped.length} events`);
     return mapped;
-  };
+  }, []); // Empty dependency array since eventsAPI.getEvents is stable
 
   // Use global cache with 10 minute expiration for calendar data
   const { data: cachedEvents, loading: cacheLoading, error: cacheError, refresh } = useGlobalCache(
@@ -144,11 +131,6 @@ const CalendarPage = () => {
 
   // Update local state when cached data changes
   useEffect(() => {
-    console.log('🔄 [Calendar] Cache data changed:', { 
-      cachedEvents: cachedEvents?.length, 
-      cacheLoading, 
-      cacheError 
-    });
     if (cachedEvents) {
       setEvents(cachedEvents);
     }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Calendar, Plus, Search, Filter, Grid, List, 
   Sparkles, User, Clock, DollarSign, Users,
@@ -50,8 +50,8 @@ const EventsDashboard = () => {
   const [stellaLoading, setStellaLoading] = useState(true);
   const [stellaError, setStellaError] = useState(null);
 
-  // Fetch events data function for global cache
-  const fetchEventsData = async () => {
+  // Memoize fetch events data function for global cache to prevent infinite re-renders
+  const fetchEventsData = useCallback(async () => {
     // Get current user/org context
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
@@ -70,7 +70,7 @@ const EventsDashboard = () => {
       throw new Error('Error loading events: ' + eventsError.message);
     }
     return data || [];
-  };
+  }, []); // Empty dependency array since supabase calls are stable
 
   // Use global cache with 8 minute expiration for events dashboard
   const { data: cachedEvents, loading: cacheLoading, error: cacheError, refresh } = useGlobalCache(

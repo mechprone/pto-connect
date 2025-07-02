@@ -42,21 +42,16 @@ class GlobalCache {
   get(key) {
     try {
       const item = localStorage.getItem(CACHE_PREFIX + key);
-      if (!item) {
-        console.log(`🔍 [GlobalCache] No cache found for key: ${key}`);
-        return null;
-      }
+      if (!item) return null;
 
       const cacheItem = JSON.parse(item);
       
       // Check if expired
       if (Date.now() > cacheItem.expiration) {
-        console.log(`⏰ [GlobalCache] Cache expired for key: ${key}`);
         this.remove(key);
         return null;
       }
 
-      console.log(`✅ [GlobalCache] Cache hit for key: ${key}`);
       return cacheItem.data;
     } catch (error) {
       console.warn('Failed to retrieve cached data:', error);
@@ -106,12 +101,9 @@ class GlobalCache {
    */
   setupVisibilityListener() {
     if (typeof document !== 'undefined') {
-      console.log('🔧 [GlobalCache] Setting up visibility listener');
       document.addEventListener('visibilitychange', () => {
-        console.log('👁️ [GlobalCache] Visibility changed, hidden:', document.hidden);
         if (!document.hidden) {
           // Page became visible again - extend cache expiration for active data
-          console.log('🔄 [GlobalCache] Extending active caches');
           this.extendActiveCaches();
         }
       });
@@ -208,22 +200,18 @@ export const useGlobalCache = (key, fetchFunction, duration = DEFAULT_CACHE_DURA
   const [error, setError] = React.useState(null);
 
   const refresh = React.useCallback(async () => {
-    console.log(`🔄 [useGlobalCache] Refreshing data for key: ${key}`);
     setLoading(true);
     setError(null);
     
     try {
       const freshData = await fetchFunction();
-      console.log(`💾 [useGlobalCache] Caching fresh data for key: ${key}`);
       globalCache.set(key, freshData, duration);
       setData(freshData);
     } catch (err) {
-      console.error(`❌ [useGlobalCache] Error fetching data for key: ${key}`, err);
       setError(err.message || 'Failed to fetch data');
       // Try to use stale cache data if available
       const staleData = globalCache.get(key);
       if (staleData) {
-        console.log(`📦 [useGlobalCache] Using stale cache data for key: ${key}`);
         setData(staleData);
       }
     } finally {
@@ -232,16 +220,13 @@ export const useGlobalCache = (key, fetchFunction, duration = DEFAULT_CACHE_DURA
   }, [key, fetchFunction, duration]);
 
   React.useEffect(() => {
-    console.log(`🚀 [useGlobalCache] Initializing cache for key: ${key}`);
     // Try to get cached data first
     const cachedData = globalCache.get(key);
     
     if (cachedData) {
-      console.log(`📦 [useGlobalCache] Using cached data for key: ${key}`);
       setData(cachedData);
       setLoading(false);
     } else {
-      console.log(`🔄 [useGlobalCache] No cache, fetching fresh data for key: ${key}`);
       refresh();
     }
   }, [key, refresh]);
