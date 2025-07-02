@@ -21,23 +21,16 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Supabase configuration is incomplete. Check environment variables.');
 }
 
-// Singleton pattern for Supabase client
-let supabaseInstance = null;
+// Debug session state before client creation
+logSessionDebug('supabaseClient.js:before-create');
 
-export function getSupabaseClient() {
-  if (!supabaseInstance) {
-    console.log('[DEBUG] Creating Supabase client with session persistence options');
-    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-      },
-    });
-    logSessionDebug('supabaseClient.js');
-  }
-  return supabaseInstance;
-}
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+  },
+});
 
-// For legacy imports
-export const supabase = getSupabaseClient();
+// Debug session state after client creation
+logSessionDebug('supabaseClient.js:after-create');
