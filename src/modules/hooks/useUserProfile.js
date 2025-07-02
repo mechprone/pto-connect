@@ -18,11 +18,29 @@ export function useUserProfile() {
       setLoading(true);
       setError(null);
       try {
+        // Check current session before making API call
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        console.log('🔍 [useUserProfile] Current session:', !!session, sessionError);
+        
+        if (!session) {
+          console.log('❌ [useUserProfile] No valid session found');
+          setLoading(false);
+          return;
+        }
+
+        console.log('✅ [useUserProfile] Valid session found, making profiles API call');
         const { data, error: fetchError } = await supabase.from('profiles').select('*').single();
-        if (fetchError) throw fetchError;
+        
+        if (fetchError) {
+          console.error('❌ [useUserProfile] Profiles API error:', fetchError);
+          throw fetchError;
+        }
+        
+        console.log('✅ [useUserProfile] Profiles API success:', data);
         setProfile(data);
         setOrganization(data?.org_id || null);
       } catch (err) {
+        console.error('❌ [useUserProfile] fetchUserProfile error:', err);
         setError(err.message || 'Failed to fetch user profile');
       } finally {
         setLoading(false);
@@ -48,6 +66,7 @@ export function useUserProfile() {
 
     // On mount, fetch profile if session exists
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('🔍 [useUserProfile] Initial session check:', !!session);
       if (session) {
         fetchUserProfile();
       } else {
