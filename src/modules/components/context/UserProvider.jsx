@@ -5,6 +5,7 @@ import { logSessionDebug } from '@/utils/debugSession';
 const UserContext = createContext();
 
 export function UserProvider({ children }) {
+  console.log('🔄 [UserProvider] Initializing...');
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
   const [organization, setOrganization] = useState(null);
@@ -13,6 +14,7 @@ export function UserProvider({ children }) {
 
   // Helper: fetch profile and org
   const fetchProfileAndOrg = useCallback(async (supabaseSession) => {
+    console.log('🔄 [UserProvider] Fetching profile and org...');
     setLoading(true);
     setError(null);
     try {
@@ -29,6 +31,7 @@ export function UserProvider({ children }) {
         .eq('id', supabaseSession.user.id)
         .single();
       if (profileError) throw profileError;
+      console.log('✅ [UserProvider] Profile loaded:', profileData);
       setProfile(profileData);
       // Fetch organization (if org_id present)
       if (profileData?.org_id) {
@@ -38,11 +41,13 @@ export function UserProvider({ children }) {
           .eq('id', profileData.org_id)
           .single();
         if (orgError) throw orgError;
+        console.log('✅ [UserProvider] Organization loaded:', orgData);
         setOrganization(orgData);
       } else {
         setOrganization(null);
       }
     } catch (err) {
+      console.error('❌ [UserProvider] Error:', err);
       setError(err.message || 'Failed to fetch user profile or organization');
       setProfile(null);
       setOrganization(null);
@@ -53,6 +58,7 @@ export function UserProvider({ children }) {
 
   // On mount: get session and fetch profile/org
   useEffect(() => {
+    console.log('🔄 [UserProvider] Mounting...');
     logSessionDebug('UserProvider:mount');
     let mounted = true;
     supabase.auth.getSession().then(({ data: { session: supaSession } }) => {
@@ -62,6 +68,7 @@ export function UserProvider({ children }) {
     });
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, supaSession) => {
+      console.log('🔄 [UserProvider] Auth state change:', event);
       logSessionDebug(`UserProvider:auth-change:${event}`);
       setSession(supaSession);
       fetchProfileAndOrg(supaSession);
@@ -113,6 +120,8 @@ export function UserProvider({ children }) {
     showRenewalBanner,
     // Optionally expose updateProfile, etc.
   };
+
+  console.log('🔄 [UserProvider] Rendering with value:', { loading, isAuthenticated, profile: !!profile, organization: !!organization });
 
   return (
     <UserContext.Provider value={value}>
