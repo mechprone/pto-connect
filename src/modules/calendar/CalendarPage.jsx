@@ -8,7 +8,7 @@ import listPlugin from '@fullcalendar/list';
 import './calendar.css';
 import { eventsAPI } from '@/utils/api';
 import EventModal from '@/components/calendar/EventModal';
-import { useGlobalCache } from '@/utils/globalCache';
+import { useEventsStore } from '@/utils/eventsStore';
 
 const EVENT_TYPE_COLORS = {
   fundraiser: '#f59e42', // orange
@@ -20,13 +20,13 @@ const EVENT_TYPE_COLORS = {
 const CalendarPage = () => {
   console.log('🔄 [Calendar] Component render at:', new Date().toLocaleTimeString());
   
-  const [events, setEvents] = useState([]);
   const [tooltip, setTooltip] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const tooltipRef = useRef();
+
+  // Use the persistent events store
+  const { events, loading, error, refresh: refreshEvents } = useEventsStore();
 
   // Status styling function to match event page
   const getStatusStyle = (status) => {
@@ -40,97 +40,6 @@ const CalendarPage = () => {
     return styles[status] || styles.draft;
   };
 
-  // Memoize the fetch function to prevent infinite re-renders
-  const fetchEventsData = useCallback(async () => {
-    const result = await eventsAPI.getEvents();
-    
-    if (result.error) {
-      throw new Error(result.error);
-    }
-    
-    const eventsData = result.data || result;
-    
-    if (!Array.isArray(eventsData)) {
-      throw new Error('Invalid events data received');
-    }
-    
-    // Map database fields to calendar format
-    const mapped = eventsData.map(ev => {
-      // Use category as the event type for color coding
-      const eventType = ev.category || 'other';
-      const eventColor = EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other;
-      
-      // Handle date and time properly
-      let startDateTime = ev.event_date;
-      let endDateTime = ev.event_date;
-      let isAllDay = true;
-      
-      // If we have start_time, create proper datetime strings
-      if (ev.start_time) {
-        startDateTime = `${ev.event_date}T${ev.start_time}`;
-        isAllDay = false;
-      }
-      
-      if (ev.end_time) {
-        endDateTime = `${ev.event_date}T${ev.end_time}`;
-      } else if (ev.start_time) {
-        // If only start time, make it 1 hour duration
-        const startTime = new Date(`${ev.event_date}T${ev.start_time}`);
-        startTime.setHours(startTime.getHours() + 1);
-        endDateTime = startTime.toISOString();
-      }
-      
-      // Calculate darker text color based on background
-      const getDarkerColor = (hexColor) => {
-        // Convert hex to RGB
-        const r = parseInt(hexColor.slice(1, 3), 16);
-        const g = parseInt(hexColor.slice(3, 5), 16);
-        const b = parseInt(hexColor.slice(5, 7), 16);
-        // Darken by reducing each component by ~60%
-        const darkR = Math.floor(r * 0.4);
-        const darkG = Math.floor(g * 0.4);
-        const darkB = Math.floor(b * 0.4);
-        return `rgb(${darkR}, ${darkG}, ${darkB})`;
-      };
-
-      const textColor = getDarkerColor(eventColor);
-
-      return {
-        id: ev.id,
-        title: ev.title,
-        start: startDateTime,
-        end: endDateTime,
-        allDay: isAllDay,
-        backgroundColor: eventColor,
-        borderColor: eventColor,
-        textColor: textColor,
-        color: eventColor, // Fallback for older FullCalendar versions
-        className: `event-type-${eventType}`, // Add CSS class for styling
-        // Map recurrence_rule to rrule for FullCalendar
-        rrule: ev.recurrence_rule || undefined,
-        extendedProps: { 
-          ...ev, 
-          type: eventType,
-          // Include original database fields for reference
-          category: ev.category,
-          status: ev.status,
-          org_id: ev.org_id,
-          start_time: ev.start_time,
-          end_time: ev.end_time
-        },
-      };
-    });
-    
-    return mapped;
-  }, []); // Empty dependency array since eventsAPI.getEvents is stable
-
-  // Use global cache with 10 minute expiration for calendar data
-  const { data: cachedEvents, loading: cacheLoading, error: cacheError, refresh } = useGlobalCache(
-    'calendar_events', 
-    fetchEventsData, 
-    10 * 60 * 1000 // 10 minutes
-  );
-
   // Track component mounting
   useEffect(() => {
     console.log('🏗️ [Calendar] Component mounted');
@@ -138,15 +47,6 @@ const CalendarPage = () => {
       console.log('💀 [Calendar] Component unmounting');
     };
   }, []);
-
-  // Update local state when cached data changes
-  useEffect(() => {
-    if (cachedEvents) {
-      setEvents(cachedEvents);
-    }
-    setLoading(cacheLoading);
-    setError(cacheError);
-  }, [cachedEvents, cacheLoading, cacheError]);
 
   // Tooltip logic
   const handleEventMouseEnter = (info) => {
@@ -249,7 +149,7 @@ const CalendarPage = () => {
       await eventsAPI.updateEvent(updated.id, updated);
       
       // Refresh cache to get updated data
-      refresh();
+      refreshEvents();
     } catch (error) {
       console.error('❌ [Calendar] Error updating event:', error);
     }
@@ -268,7 +168,7 @@ const CalendarPage = () => {
       setSelectedEvent(null);
       
       // Refresh cache to get updated data
-      refresh();
+      refreshEvents();
     } catch (error) {
       console.error('❌ [Calendar] Error saving event:', error);
     }

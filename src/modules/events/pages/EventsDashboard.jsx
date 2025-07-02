@@ -15,7 +15,7 @@ import enUS from 'date-fns/locale/en-US';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { supabase } from '@/utils/supabaseClient';
 import Button from '@/components/common/Button';
-import { useGlobalCache } from '@/utils/globalCache';
+import { useEventsStore } from '@/utils/eventsStore';
 
 const locales = { 'en-US': enUS };
 const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
@@ -43,50 +43,13 @@ const EventsDashboard = () => {
   const [creationMode, setCreationMode] = useState('manual');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Use the persistent events store for consistent data  
+  const { events, loading, error, refresh: refreshEvents } = useEventsStore('dashboard');
   const [stellaTips, setStellaTips] = useState([]);
   const [stellaLoading, setStellaLoading] = useState(true);
   const [stellaError, setStellaError] = useState(null);
 
-  // Memoize fetch events data function for global cache to prevent infinite re-renders
-  const fetchEventsData = useCallback(async () => {
-    // Get current user/org context
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      throw new Error('User not authenticated');
-    }
-    const orgId = user?.user_metadata?.org_id || user?.app_metadata?.org_id;
-    if (!orgId) {
-      throw new Error('Missing org_id in user metadata.');
-    }
-    const { data, error: eventsError } = await supabase
-      .from('events')
-      .select('*')
-      .eq('org_id', orgId)
-      .order('event_date', { ascending: true });
-    if (eventsError) {
-      throw new Error('Error loading events: ' + eventsError.message);
-    }
-    return data || [];
-  }, []); // Empty dependency array since supabase calls are stable
-
-  // Use global cache with 8 minute expiration for events dashboard
-  const { data: cachedEvents, loading: cacheLoading, error: cacheError, refresh } = useGlobalCache(
-    'events_dashboard', 
-    fetchEventsData, 
-    8 * 60 * 1000 // 8 minutes
-  );
-
-  // Update local state when cached data changes
-  useEffect(() => {
-    if (cachedEvents) {
-      setEvents(cachedEvents);
-    }
-    setLoading(cacheLoading);
-    setError(cacheError);
-  }, [cachedEvents, cacheLoading, cacheError]);
+  // Events data is now handled by the persistent store
 
   // Fetch Stella Insights (placeholder for backend call)
   useEffect(() => {
