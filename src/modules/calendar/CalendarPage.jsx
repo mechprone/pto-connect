@@ -357,7 +357,7 @@ const CalendarPage = () => {
       {/* Header with event count and legend */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
-          <h2 className="text-lg font-semibold">Organization Calendar</h2>
+          <h2 className="text-lg font-semibold">PTO Calendar</h2>
           <span className="text-sm text-gray-600">
             {events.length} event{events.length !== 1 ? 's' : ''}
           </span>
