@@ -9,15 +9,18 @@ export function logSessionDebug(context = '') {
     console.log('[DEBUG] localStorage keys:', Object.keys(localStorage));
     console.log('[DEBUG] sessionStorage keys:', Object.keys(sessionStorage));
 
-    // Log Supabase session if available
-    const supabaseSession = localStorage.getItem('sb-\n' + Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token')));
-    if (supabaseSession) {
-      try {
-        const parsed = JSON.parse(supabaseSession);
-        console.log('[DEBUG] Supabase session (from localStorage):', parsed);
-      } catch (e) {
-        console.log('[DEBUG] Supabase session (raw):', supabaseSession);
-      }
+    // Log all Supabase session tokens in localStorage
+    const supabaseKeys = Object.keys(localStorage).filter(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+    if (supabaseKeys.length > 0) {
+      supabaseKeys.forEach(key => {
+        const value = localStorage.getItem(key);
+        try {
+          const parsed = JSON.parse(value);
+          console.log(`[DEBUG] Supabase session (${key}):`, parsed);
+        } catch (e) {
+          console.log(`[DEBUG] Supabase session (${key}) (raw):`, value);
+        }
+      });
     } else {
       console.log('[DEBUG] No Supabase session found in localStorage');
     }

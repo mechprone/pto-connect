@@ -41,6 +41,7 @@ export function useUserProfile() {
         setOrganization(null);
       } else if (event === 'SIGNED_IN' && session) {
         console.log('👤 [useUserProfile] User signed in, fetching profile');
+        logSessionDebug('useUserProfile.js:after-login');
         fetchUserProfile();
       }
     });

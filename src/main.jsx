@@ -21,6 +21,16 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// Log window unload and beforeunload
+window.addEventListener('beforeunload', () => {
+  console.log('[DEBUG] Window beforeunload: App is about to be unloaded or navigated away from.');
+  logSessionDebug('main.jsx:beforeunload');
+});
+window.addEventListener('unload', () => {
+  console.log('[DEBUG] Window unload: App is being unloaded.');
+  logSessionDebug('main.jsx:unload');
+});
+
 const isDevelopment = import.meta.env.DEV;
 
 const AppWithRouter = (
