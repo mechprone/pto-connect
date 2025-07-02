@@ -127,7 +127,7 @@
 /* Event styling */
 .calendar-page-container .fc-event {
   border-radius: 6px;
-  border: none;
+  border: none !important;
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -137,6 +137,37 @@
   max-width: 100%;
   overflow: hidden;
   box-sizing: border-box;
+}
+
+/* Force event background colors to show */
+.calendar-page-container .fc-event-main {
+  background-color: inherit;
+  color: inherit;
+}
+
+/* Event type specific colors - force with !important */
+.calendar-page-container .event-type-fundraiser {
+  background-color: #f59e42 !important;
+  border-color: #f59e42 !important;
+  color: #ffffff !important;
+}
+
+.calendar-page-container .event-type-meeting {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+.calendar-page-container .event-type-social {
+  background-color: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+}
+
+.calendar-page-container .event-type-other {
+  background-color: #a78bfa !important;
+  border-color: #a78bfa !important;
+  color: #ffffff !important;
 }
 
 .calendar-page-container .fc-event:hover {

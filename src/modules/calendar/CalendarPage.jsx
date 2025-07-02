@@ -76,13 +76,19 @@ const CalendarPage = () => {
             endDateTime = startTime.toISOString();
           }
           
+          const eventColor = EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other;
+          
           const mappedEvent = {
             id: ev.id,
             title: ev.title,
             start: startDateTime,
             end: endDateTime,
             allDay: isAllDay,
-            color: EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other,
+            backgroundColor: eventColor,
+            borderColor: eventColor,
+            textColor: '#ffffff',
+            color: eventColor, // Fallback for older FullCalendar versions
+            className: `event-type-${eventType}`, // Add CSS class for styling
             // Map recurrence_rule to rrule for FullCalendar
             rrule: ev.recurrence_rule || undefined,
             extendedProps: { 
@@ -200,16 +206,24 @@ const CalendarPage = () => {
       
       // Refetch events
       const result = await eventsAPI.getEvents();
-      const mapped = (result.data || result).map(ev => ({
-        id: ev.id,
-        title: ev.title,
-        start: ev.start_time ? `${ev.event_date}T${ev.start_time}` : ev.event_date,
-        end: ev.end_time ? `${ev.event_date}T${ev.end_time}` : ev.event_date,
-        allDay: !ev.start_time,
-        color: EVENT_TYPE_COLORS[ev.category] || EVENT_TYPE_COLORS.other,
-        rrule: ev.recurrence_rule || undefined,
-        extendedProps: { ...ev, type: ev.category || 'other' },
-      }));
+      const mapped = (result.data || result).map(ev => {
+        const eventType = ev.category || 'other';
+        const eventColor = EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other;
+        return {
+          id: ev.id,
+          title: ev.title,
+          start: ev.start_time ? `${ev.event_date}T${ev.start_time}` : ev.event_date,
+          end: ev.end_time ? `${ev.event_date}T${ev.end_time}` : ev.event_date,
+          allDay: !ev.start_time,
+          backgroundColor: eventColor,
+          borderColor: eventColor,
+          textColor: '#ffffff',
+          color: eventColor,
+          className: `event-type-${eventType}`,
+          rrule: ev.recurrence_rule || undefined,
+          extendedProps: { ...ev, type: eventType },
+        };
+      });
       setEvents(mapped);
     } catch (error) {
       console.error('❌ [Calendar] Error updating event:', error);
@@ -230,16 +244,24 @@ const CalendarPage = () => {
       
       // Refetch events
       const result = await eventsAPI.getEvents();
-      const mapped = (result.data || result).map(ev => ({
-        id: ev.id,
-        title: ev.title,
-        start: ev.start_time ? `${ev.event_date}T${ev.start_time}` : ev.event_date,
-        end: ev.end_time ? `${ev.event_date}T${ev.end_time}` : ev.event_date,
-        allDay: !ev.start_time,
-        color: EVENT_TYPE_COLORS[ev.category] || EVENT_TYPE_COLORS.other,
-        rrule: ev.recurrence_rule || undefined,
-        extendedProps: { ...ev, type: ev.category || 'other' },
-      }));
+      const mapped = (result.data || result).map(ev => {
+        const eventType = ev.category || 'other';
+        const eventColor = EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other;
+        return {
+          id: ev.id,
+          title: ev.title,
+          start: ev.start_time ? `${ev.event_date}T${ev.start_time}` : ev.event_date,
+          end: ev.end_time ? `${ev.event_date}T${ev.end_time}` : ev.event_date,
+          allDay: !ev.start_time,
+          backgroundColor: eventColor,
+          borderColor: eventColor,
+          textColor: '#ffffff',
+          color: eventColor,
+          className: `event-type-${eventType}`,
+          rrule: ev.recurrence_rule || undefined,
+          extendedProps: { ...ev, type: eventType },
+        };
+      });
       setEvents(mapped);
     } catch (error) {
       console.error('❌ [Calendar] Error saving event:', error);
