@@ -15,6 +15,7 @@ export function UserProvider({ children }) {
   // Helper: fetch profile and org
   const fetchProfileAndOrg = useCallback(async (supabaseSession) => {
     console.log('🔄 [UserProvider] Fetching profile and org...');
+    console.log('🔄 [UserProvider] Session user ID:', supabaseSession?.user?.id);
     setLoading(true);
     setError(null);
     
@@ -27,16 +28,41 @@ export function UserProvider({ children }) {
         return;
       }
 
-      // Fetch profile
-      const { data: profileData, error: profileError } = await supabase
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
+      );
+
+      // Fetch profile with timeout
+      const profilePromise = supabase
         .from('profiles')
         .select('*')
         .eq('id', supabaseSession.user.id)
         .single();
 
+      const { data: profileData, error: profileError } = await Promise.race([
+        profilePromise,
+        timeoutPromise
+      ]);
+
       if (profileError) {
         console.error('❌ [UserProvider] Profile fetch error:', profileError);
+        console.error('❌ [UserProvider] Error details:', {
+          code: profileError.code,
+          message: profileError.message,
+          details: profileError.details,
+          hint: profileError.hint
+        });
         setError(profileError.message);
+        setProfile(null);
+        setOrganization(null);
+        setLoading(false);
+        return;
+      }
+
+      if (!profileData) {
+        console.error('❌ [UserProvider] No profile data returned');
+        setError('No profile found');
         setProfile(null);
         setOrganization(null);
         setLoading(false);
@@ -48,14 +74,27 @@ export function UserProvider({ children }) {
 
       // Fetch organization if profile has org_id
       if (profileData?.org_id) {
-        const { data: orgData, error: orgError } = await supabase
+        console.log('🔄 [UserProvider] Fetching organization for org_id:', profileData.org_id);
+        
+        const orgPromise = supabase
           .from('organizations')
           .select('*')
           .eq('id', profileData.org_id)
           .single();
 
+        const { data: orgData, error: orgError } = await Promise.race([
+          orgPromise,
+          timeoutPromise
+        ]);
+
         if (orgError) {
           console.error('❌ [UserProvider] Organization fetch error:', orgError);
+          console.error('❌ [UserProvider] Org error details:', {
+            code: orgError.code,
+            message: orgError.message,
+            details: orgError.details,
+            hint: orgError.hint
+          });
           setError(orgError.message);
           setOrganization(null);
         } else {
@@ -63,14 +102,17 @@ export function UserProvider({ children }) {
           setOrganization(orgData);
         }
       } else {
+        console.log('⚠️ [UserProvider] No org_id in profile, skipping organization fetch');
         setOrganization(null);
       }
     } catch (err) {
       console.error('❌ [UserProvider] Unexpected error:', err);
+      console.error('❌ [UserProvider] Error stack:', err.stack);
       setError(err.message);
       setProfile(null);
       setOrganization(null);
     } finally {
+      console.log('✅ [UserProvider] Fetch complete, setting loading to false');
       setLoading(false);
     }
   }, []);
