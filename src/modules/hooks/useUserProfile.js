@@ -29,7 +29,11 @@ export function useUserProfile() {
         }
 
         console.log('✅ [useUserProfile] Valid session found, making profiles API call');
-        const { data, error: fetchError } = await supabase.from('profiles').select('*').single();
+        const { data, error: fetchError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
         
         if (fetchError) {
           console.error('❌ [useUserProfile] Profiles API error:', fetchError);
