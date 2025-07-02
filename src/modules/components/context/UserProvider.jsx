@@ -17,38 +17,57 @@ export function UserProvider({ children }) {
     console.log('🔄 [UserProvider] Fetching profile and org...');
     setLoading(true);
     setError(null);
+    
     try {
-      if (!supabaseSession) {
+      if (!supabaseSession?.user?.id) {
+        console.log('❌ [UserProvider] No user ID in session');
         setProfile(null);
         setOrganization(null);
         setLoading(false);
         return;
       }
+
       // Fetch profile
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', supabaseSession.user.id)
         .single();
-      if (profileError) throw profileError;
+
+      if (profileError) {
+        console.error('❌ [UserProvider] Profile fetch error:', profileError);
+        setError(profileError.message);
+        setProfile(null);
+        setOrganization(null);
+        setLoading(false);
+        return;
+      }
+
       console.log('✅ [UserProvider] Profile loaded:', profileData);
       setProfile(profileData);
-      // Fetch organization (if org_id present)
+
+      // Fetch organization if profile has org_id
       if (profileData?.org_id) {
         const { data: orgData, error: orgError } = await supabase
           .from('organizations')
           .select('*')
           .eq('id', profileData.org_id)
           .single();
-        if (orgError) throw orgError;
-        console.log('✅ [UserProvider] Organization loaded:', orgData);
-        setOrganization(orgData);
+
+        if (orgError) {
+          console.error('❌ [UserProvider] Organization fetch error:', orgError);
+          setError(orgError.message);
+          setOrganization(null);
+        } else {
+          console.log('✅ [UserProvider] Organization loaded:', orgData);
+          setOrganization(orgData);
+        }
       } else {
         setOrganization(null);
       }
     } catch (err) {
-      console.error('❌ [UserProvider] Error:', err);
-      setError(err.message || 'Failed to fetch user profile or organization');
+      console.error('❌ [UserProvider] Unexpected error:', err);
+      setError(err.message);
       setProfile(null);
       setOrganization(null);
     } finally {
@@ -56,57 +75,90 @@ export function UserProvider({ children }) {
     }
   }, []);
 
-  // On mount: get session and fetch profile/org
+  // Initialize on mount
   useEffect(() => {
     console.log('🔄 [UserProvider] Mounting...');
     logSessionDebug('UserProvider:mount');
-    let mounted = true;
-    supabase.auth.getSession().then(({ data: { session: supaSession } }) => {
-      if (!mounted) return;
-      setSession(supaSession);
-      fetchProfileAndOrg(supaSession);
-    });
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, supaSession) => {
-      console.log('🔄 [UserProvider] Auth state change:', event);
-      logSessionDebug(`UserProvider:auth-change:${event}`);
-      setSession(supaSession);
-      fetchProfileAndOrg(supaSession);
-    });
+
+    // Get initial session
+    const getInitialSession = async () => {
+      const { data: { session: initialSession } } = await supabase.auth.getSession();
+      setSession(initialSession);
+      
+      if (initialSession) {
+        await fetchProfileAndOrg(initialSession);
+      } else {
+        setLoading(false);
+      }
+    };
+
+    getInitialSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('🔄 [UserProvider] Auth state change:', event);
+        logSessionDebug(`UserProvider:auth-change:${event}`);
+        
+        setSession(session);
+        
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          await fetchProfileAndOrg(session);
+        } else if (event === 'SIGNED_OUT') {
+          setProfile(null);
+          setOrganization(null);
+          setLoading(false);
+        }
+      }
+    );
+
     return () => {
-      mounted = false;
       subscription.unsubscribe();
     };
   }, [fetchProfileAndOrg]);
 
-  // Derived helpers
+  // Computed values
   const isAuthenticated = !!profile;
-  const hasRole = useCallback((requiredRole) => profile?.role === requiredRole, [profile]);
-  const hasAnyRole = useCallback((roles) => roles.includes(profile?.role), [profile]);
+  
   const isSubscriptionActive = useCallback(() => {
     if (!organization) return false;
-    const { subscription_status, trial_ends_at } = organization;
-    return (
-      subscription_status === 'active' ||
-      (subscription_status === 'trial' && trial_ends_at && new Date(trial_ends_at) > new Date())
-    );
-  }, [organization]);
-  const showRenewalBanner = useCallback(() => {
-    if (!organization) return false;
-    const { plan_type, subscription_status, cancel_at_period_end, current_period_end } = organization;
-    if (
-      plan_type === 'annual' &&
-      subscription_status === 'active' &&
-      cancel_at_period_end &&
-      current_period_end &&
-      (new Date(current_period_end) - new Date() < 15 * 24 * 60 * 60 * 1000)
-    ) {
-      return true;
+    
+    // Check if subscription is active or in trial
+    const subscriptionStatus = organization.subscription_status;
+    const trialEnd = organization.trial_end;
+    const currentPeriodEnd = organization.current_period_end;
+    
+    // Active subscription
+    if (subscriptionStatus === 'active') return true;
+    
+    // Trial period
+    if (subscriptionStatus === 'trialing' && trialEnd) {
+      return new Date(trialEnd) > new Date();
     }
+    
+    // Past due but within grace period (7 days)
+    if (subscriptionStatus === 'past_due' && currentPeriodEnd) {
+      const gracePeriod = new Date(currentPeriodEnd);
+      gracePeriod.setDate(gracePeriod.getDate() + 7);
+      return new Date() < gracePeriod;
+    }
+    
     return false;
   }, [organization]);
 
-  // Expose context value
+  const showRenewalBanner = useCallback(() => {
+    if (!organization) return false;
+    
+    const currentPeriodEnd = organization.current_period_end;
+    if (!currentPeriodEnd) return false;
+    
+    // Show banner 30 days before expiration
+    const thirtyDaysFromNow = new Date();
+    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+    
+    return new Date(currentPeriodEnd) <= thirtyDaysFromNow;
+  }, [organization]);
+
   const value = {
     session,
     profile,
@@ -114,14 +166,17 @@ export function UserProvider({ children }) {
     loading,
     error,
     isAuthenticated,
-    hasRole,
-    hasAnyRole,
     isSubscriptionActive,
     showRenewalBanner,
-    // Optionally expose updateProfile, etc.
+    refreshProfile: () => fetchProfileAndOrg(session)
   };
 
-  console.log('🔄 [UserProvider] Rendering with value:', { loading, isAuthenticated, profile: !!profile, organization: !!organization });
+  console.log('🔄 [UserProvider] Rendering with value:', {
+    loading: value.loading,
+    isAuthenticated: value.isAuthenticated,
+    profile: !!value.profile,
+    organization: !!value.organization
+  });
 
   return (
     <UserContext.Provider value={value}>
@@ -131,5 +186,9 @@ export function UserProvider({ children }) {
 }
 
 export function useUser() {
-  return useContext(UserContext);
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error('useUser must be used within a UserProvider');
+  }
+  return context;
 } 

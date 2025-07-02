@@ -124,7 +124,12 @@ export default function App() {
           <Route path="/admin/users" element={<AdminDashboard />} />
           <Route path="/admin/settings" element={<AdminDashboard />} />
           <Route path="/billing" element={<BillingPage />} />
+        </Route>
+      </Route>
 
+      {/* Events Routes - Available to admin, board_member, committee_lead */}
+      <Route element={<ProtectedRoute allowedRoles={['admin', 'board_member', 'committee_lead']} />}>
+        <Route element={<MainLayout />}>
           <Route path="/events" element={<EventsDashboard />} />
           <Route path="/events/legacy" element={<EventsDashboard />} />
           <Route path="/events/create" element={<CreateEvent />} />
@@ -135,32 +140,57 @@ export default function App() {
           <Route path="/events/calendar" element={<EventsCalendarPage />} />
           <Route path="/events/detail/:id" element={<EventDetailPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
+        </Route>
+      </Route>
 
+      {/* Fundraisers Routes - Available to admin, board_member, committee_lead */}
+      <Route element={<ProtectedRoute allowedRoles={['admin', 'board_member', 'committee_lead']} />}>
+        <Route element={<MainLayout />}>
           <Route path="/fundraisers" element={<FundraiserManager />} />
           <Route path="/fundraisers/create" element={<FundraiserForm />} />
           <Route path="/fundraisers/:id/edit" element={<FundraiserEditRedirect />} />
           <Route path="/fundraisers/:id/analytics" element={<FundraiserAnalytics />} />
+        </Route>
+      </Route>
 
+      {/* Budget Routes - Available to admin, board_member, committee_lead */}
+      <Route element={<ProtectedRoute allowedRoles={['admin', 'board_member', 'committee_lead']} />}>
+        <Route element={<MainLayout />}>
           <Route path="/budget" element={<EnhancedBudgetDashboard />} />
           <Route path="/budget/legacy" element={<BudgetDashboard />} />
           <Route path="/budget/create" element={<CreateBudgetEntry />} />
           <Route path="/budget/reconciliation" element={<ReconciliationDashboard />} />
           <Route path="/budget/reconciliation/new" element={<ReconciliationWizard />} />
           <Route path="/budget/reconciliation/:id" element={<ReconciliationReport />} />
+        </Route>
+      </Route>
 
+      {/* Communications Routes - Available to admin, board_member, committee_lead */}
+      <Route element={<ProtectedRoute allowedRoles={['admin', 'board_member', 'committee_lead']} />}>
+        <Route element={<MainLayout />}>
           <Route path="/communications" element={<EnhancedCommunicationsDashboard />} />
           <Route path="/communications/legacy" element={<CommunicationsDashboard />} />
           <Route path="/communications/create" element={<CreateCommunication />} />
           <Route path="/communications/email" element={<UnifiedCommunicationComposer />} />
           <Route path="/communications/sms" element={<SmsComposer />} />
           <Route path="/communications/social" element={<SocialPostComposer />} />
-                      <Route path="/communications/ai" element={<UnifiedCommunicationComposer />} />
-                      <Route path="/communications/design-studio" element={<UnifiedCommunicationComposer />} />
+          <Route path="/communications/ai" element={<UnifiedCommunicationComposer />} />
+          <Route path="/communications/design-studio" element={<UnifiedCommunicationComposer />} />
           <Route path="/communications/template-builder" element={<UnifiedCommunicationComposer />} />
+        </Route>
+      </Route>
 
+      {/* Documents Routes - Available to admin, board_member, committee_lead */}
+      <Route element={<ProtectedRoute allowedRoles={['admin', 'board_member', 'committee_lead']} />}>
+        <Route element={<MainLayout />}>
           <Route path="/documents" element={<DocumentsDashboard />} />
           <Route path="/documents/upload" element={<UploadDocument />} />
+        </Route>
+      </Route>
 
+      {/* Shared Library & AI Routes - Available to admin, board_member, committee_lead */}
+      <Route element={<ProtectedRoute allowedRoles={['admin', 'board_member', 'committee_lead']} />}>
+        <Route element={<MainLayout />}>
           <Route path="/shared-library" element={<SharedLibraryDashboard />} />
           <Route path="/ai-event-ideas" element={<AiEventIdeas />} />
           <Route path="/ai-workflow-orchestrator" element={<EventWorkflowOrchestratorPage />} />
