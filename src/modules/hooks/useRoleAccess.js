@@ -1,8 +1,7 @@
+import { useUser } from '@/modules/components/context/UserProvider';
 
-import { useUserProfile } from './useUserProfile';
-
-export function useRoleAccess() {
-  const { profile, organization, loading } = useUserProfile();
+export default function useRoleAccess() {
+  const { profile, organization, loading } = useUser();
 
   // Role hierarchy for permission checking
   const roleHierarchy = {

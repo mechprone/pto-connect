@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useUserProfile } from '@/modules/hooks/useUserProfile';
+import { useUser } from '@/modules/components/context/UserProvider';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 export default function ProtectedRoute({ allowedRoles }) {
-  const { profile, organization, loading, isAuthenticated, isSubscriptionActive } = useUserProfile();
+  const { profile, organization, loading, isAuthenticated, isSubscriptionActive } = useUser();
 
   // Show loading spinner while checking authentication
   if (loading) {

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useUserProfile } from '../../modules/hooks/useUserProfile';
+import { useUser } from '@/modules/components/context/UserProvider';
 import { supabase } from '../../utils/supabaseClient';
 
 const SmartNotifications = () => {
-  const { userProfile } = useUserProfile();
+  const { profile: userProfile } = useUser();
   const [notifications, setNotifications] = useState([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useUserProfile } from '../../modules/hooks/useUserProfile';
+import { useUser } from '@/modules/components/context/UserProvider';
 import { supabase } from '../../utils/supabaseClient';
 
 const AnalyticsCharts = () => {
-  const { userProfile } = useUserProfile();
+  const { profile: userProfile } = useUser();
   const [activeChart, setActiveChart] = useState('membership');
   const [timeRange, setTimeRange] = useState('6months');
   const [chartData, setChartData] = useState({

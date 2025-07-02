@@ -1,9 +1,9 @@
 import React from 'react';
-import { useUserProfile } from '@/modules/hooks/useUserProfile';
+import { useUser } from '@/modules/components/context/UserProvider';
 import { useRoleAccess } from '@/modules/hooks/useRoleAccess';
 
 export default function OrganizationInfo({ showDetails = true, className = '' }) {
-  const { organization, profile, loading } = useUserProfile();
+  const { organization, profile, loading } = useUser();
   const { getRoleDisplayName, getRoleColor } = useRoleAccess();
 
   if (loading) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom'
-import { useUserProfile } from '@/modules/hooks/useUserProfile'
+import { useUser } from '@/modules/components/context/UserProvider'
 import NotificationBell from '@/modules/components/notifications/NotificationBell'
 import LogoutButton from '@/modules/components/auth/LogoutButton'
 import SidebarNav from '@/modules/components/layout/SidebarNav'
@@ -9,13 +9,13 @@ import RenewalBanner from '@/components/RenewalBanner'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function MainLayout() {
-  console.log('🏗️ [MainLayout] Component render at:', new Date().toLocaleTimeString());
+  console.log('\ud83c\udfd7\ufe0f [MainLayout] Component render at:', new Date().toLocaleTimeString());
   
-  const { profile, loading, isAuthenticated } = useUserProfile();
+  const { profile, loading, isAuthenticated } = useUser();
 
   // Show loading spinner while fetching user data
   if (loading) {
-    console.log('⏳ [MainLayout] Loading user profile...');
+    console.log('\u23f3 [MainLayout] Loading user profile...');
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner size="xl" />
@@ -25,11 +25,11 @@ export default function MainLayout() {
 
   // This should not happen as ProtectedRoute handles auth, but just in case
   if (!isAuthenticated || !profile) {
-    console.log('❌ [MainLayout] User not authenticated or profile missing');
+    console.log('\u274c [MainLayout] User not authenticated or profile missing');
     return null;
   }
 
-  console.log('✅ [MainLayout] Rendering layout for user:', profile.role);
+  console.log('\u2705 [MainLayout] Rendering layout for user:', profile.role);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">

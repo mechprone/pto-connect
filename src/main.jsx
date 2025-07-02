@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
 import { logSessionDebug } from './utils/debugSession';
+import { UserProvider } from './modules/components/context/UserProvider';
 
 // Log session and storage state at app startup
 logSessionDebug('main.jsx');
@@ -35,15 +36,17 @@ const isDevelopment = import.meta.env.DEV;
 
 const AppWithRouter = (
   <BrowserRouter>
-    <App />
+    <UserProvider>
+      <App />
+    </UserProvider>
   </BrowserRouter>
 );
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   isDevelopment ? (
-    <React.StrictMode>
+  <React.StrictMode>
       {AppWithRouter}
-    </React.StrictMode>
+  </React.StrictMode>
   ) : (
     AppWithRouter
   )

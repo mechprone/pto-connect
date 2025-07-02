@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useUserProfile } from './useUserProfile';
+import { useUser } from '@/modules/components/context/UserProvider';
 import { supabase } from '@/utils/supabaseClient';
 import axios from 'axios';
 
@@ -10,7 +10,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
  * Integrates with the flexible permission system implemented in Sprint 2
  */
 export function usePermissions() {
-  const { profile, loading: profileLoading } = useUserProfile();
+  const { profile, loading: profileLoading } = useUser();
   const [permissions, setPermissions] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

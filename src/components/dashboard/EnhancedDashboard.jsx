@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useUserProfile } from '../../modules/hooks/useUserProfile';
+import { useUser } from '@/modules/components/context/UserProvider';
 import { supabase } from '../../utils/supabaseClient';
 import AnalyticsCharts from './AnalyticsCharts';
 import SmartNotifications from './SmartNotifications';
 
 const EnhancedDashboard = () => {
-  const { userProfile, loading: profileLoading } = useUserProfile();
+  const { profile: userProfile, loading: profileLoading } = useUser();
   const [dashboardData, setDashboardData] = useState({
     metrics: {
       totalMembers: 0,

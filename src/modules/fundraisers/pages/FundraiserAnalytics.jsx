@@ -14,13 +14,13 @@ import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
-import { useUserProfile } from '@/modules/hooks/useUserProfile';
+import { useUser } from '@/modules/components/context/UserProvider';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
 export default function FundraiserAnalytics() {
   const { id } = useParams();
-  const { profile, organization, loading: profileLoading } = useUserProfile();
+  const { profile, organization, loading: profileLoading } = useUser();
   const org_id = profile?.org_id;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

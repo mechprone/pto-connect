@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useUserProfile } from '@/modules/hooks/useUserProfile';
+import { useUser } from '@/modules/components/context/UserProvider';
 import { supabase } from '@/utils/supabaseClient';
 import { Calendar, Users, DollarSign, MessageSquare, FileText, AlertCircle } from 'lucide-react';
 
 export default function AdminDashboard() {
-  const { profile, organization } = useUserProfile();
+  const { profile, organization } = useUser();
   const [dashboardData, setDashboardData] = useState({
     upcomingEvents: 0,
     pendingApprovals: 0,
