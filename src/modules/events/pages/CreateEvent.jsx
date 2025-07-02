@@ -198,7 +198,13 @@ export default function CreateEvent() {
           <option value="junior_high">Junior High</option>
           <option value="high">High School</option>
         </select>
-        <input name="category" value={form.category} onChange={handleChange} placeholder="Category (e.g., Fundraiser)" className="w-full border p-2" />
+        <select name="category" value={form.category} onChange={handleChange} className="w-full border p-2" required>
+          <option value="">Select Category</option>
+          <option value="fundraiser">Fundraiser</option>
+          <option value="meeting">Meeting</option>
+          <option value="social">Social Event</option>
+          <option value="other">Other</option>
+        </select>
         <input name="estimated_budget" value={form.estimated_budget} onChange={handleChange} placeholder="Estimated Budget" className="w-full border p-2" />
         <select name="visibility" value={form.visibility} onChange={handleChange} className="w-full border p-2">
           <option value="public">Public</option>
