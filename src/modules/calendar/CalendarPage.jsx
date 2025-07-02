@@ -257,7 +257,7 @@ const CalendarPage = () => {
           <p className="font-semibold">Error loading calendar</p>
           <p className="text-sm">{error}</p>
           <button 
-            onClick={() => window.location.reload()} 
+            onClick={() => refreshEvents()} 
             className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
             Retry

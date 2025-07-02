@@ -79,7 +79,7 @@ api.interceptors.response.use(
     }
     return response;
   },
-  (error) => {
+  async (error) => {
     console.error('❌ [FRONTEND DEBUG] API Response error:', {
       url: error.config?.url,
       status: error.response?.status,
@@ -89,9 +89,31 @@ api.interceptors.response.use(
     });
     
     if (error.response?.status === 401) {
-      console.warn('🚫 [FRONTEND DEBUG] Unauthorized - redirecting to login');
-      // Redirect to login on unauthorized
-      window.location.href = '/login';
+      console.warn('🚫 [FRONTEND DEBUG] Unauthorized response received');
+      console.warn('🔍 [FRONTEND DEBUG] Request details:', {
+        url: error.config?.url,
+        method: error.config?.method,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent
+      });
+      
+      try {
+        // Check if user is actually authenticated before redirecting
+        const { supabase } = await import('@/utils/supabaseClient');
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          console.warn('🚫 [FRONTEND DEBUG] No valid session - redirecting to login');
+          window.location.href = '/login';
+        } else {
+          console.warn('⚠️ [FRONTEND DEBUG] Valid session exists but got 401 - probably a temporary API issue, not redirecting');
+          // Don't redirect if we have a valid session - this might be a temporary API issue
+        }
+      } catch (sessionError) {
+        console.error('Error checking session:', sessionError);
+        // If we can't check the session, redirect to be safe
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
