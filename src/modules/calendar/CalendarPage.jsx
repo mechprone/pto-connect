@@ -18,6 +18,8 @@ const EVENT_TYPE_COLORS = {
 };
 
 const CalendarPage = () => {
+  console.log('🏗️ [Calendar] Component mounting/re-mounting');
+  
   const [events, setEvents] = useState([]);
   const [tooltip, setTooltip] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -142,6 +144,11 @@ const CalendarPage = () => {
 
   // Update local state when cached data changes
   useEffect(() => {
+    console.log('🔄 [Calendar] Cache data changed:', { 
+      cachedEvents: cachedEvents?.length, 
+      cacheLoading, 
+      cacheError 
+    });
     if (cachedEvents) {
       setEvents(cachedEvents);
     }

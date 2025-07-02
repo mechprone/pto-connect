@@ -39,20 +39,92 @@ const EventModal = ({ open, onClose, onSave, initialEventData }) => {
   });
   const [error, setError] = useState('');
 
+  // Helper function to format date/time for datetime-local input
+  const formatDateTimeLocal = (dateStr, timeStr) => {
+    if (!dateStr) return '';
+    
+    const date = new Date(dateStr);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    
+    let time = '09:00'; // Default to 9:00 AM
+    if (timeStr) {
+      time = timeStr.substring(0, 5); // Extract HH:MM from HH:MM:SS
+    }
+    
+    return `${year}-${month}-${day}T${time}`;
+  };
+
+  // Helper function to add hours to a time string
+  const addHoursToTime = (timeStr, hours) => {
+    if (!timeStr) return '10:00'; // Default to 10:00 AM if no start time
+    
+    const [hourStr, minuteStr] = timeStr.split(':');
+    const hour = parseInt(hourStr) + hours;
+    const minute = parseInt(minuteStr);
+    
+    return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+  };
+
   useEffect(() => {
-    setForm({
-      title: '',
-      type: 'other',
-      start: '',
-      end: '',
-      allDay: true,
-      location: '',
-      description: '',
-      color: '#a78bfa',
-      recurrence: '',
-      rrule: '',
-      ...initialEventData
-    });
+    if (initialEventData && open) {
+      // Pre-fill form with proper date/time formatting
+      const startDateTime = formatDateTimeLocal(
+        initialEventData.start || initialEventData.event_date,
+        initialEventData.start_time
+      );
+      
+      // Calculate end time (1 hour after start if no end time provided)
+      let endDateTime = '';
+      if (initialEventData.end_time) {
+        endDateTime = formatDateTimeLocal(
+          initialEventData.end || initialEventData.event_date,
+          initialEventData.end_time
+        );
+      } else if (initialEventData.start_time) {
+        // Add 1 hour to start time
+        const endTime = addHoursToTime(initialEventData.start_time, 1);
+        endDateTime = formatDateTimeLocal(
+          initialEventData.end || initialEventData.event_date,
+          endTime
+        );
+      } else {
+        // Default case: same date, 10:00 AM end time
+        endDateTime = formatDateTimeLocal(
+          initialEventData.end || initialEventData.event_date || initialEventData.start,
+          '10:00'
+        );
+      }
+
+      setForm({
+        title: initialEventData.title || '',
+        type: initialEventData.type || initialEventData.category || 'other',
+        start: startDateTime,
+        end: endDateTime,
+        allDay: !initialEventData.start_time, // All day if no start time
+        location: initialEventData.location || '',
+        description: initialEventData.description || '',
+        color: '#a78bfa', // Will be determined by type, not user selectable
+        recurrence: initialEventData.recurrence || '',
+        rrule: initialEventData.rrule || '',
+        id: initialEventData.id || undefined,
+      });
+    } else {
+      // Reset form for new events
+      setForm({
+        title: '',
+        type: 'other',
+        start: '',
+        end: '',
+        allDay: true,
+        location: '',
+        description: '',
+        color: '#a78bfa',
+        recurrence: '',
+        rrule: '',
+      });
+    }
   }, [initialEventData, open]);
 
   const handleChange = (field, value) => {
@@ -100,15 +172,9 @@ const EventModal = ({ open, onClose, onSave, initialEventData }) => {
             <Label htmlFor="title">Title *</Label>
             <Input id="title" value={form.title} onChange={e => handleChange('title', e.target.value)} required />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="type">Type</Label>
-              <Select id="type" value={form.type} onChange={e => handleChange('type', e.target.value)} options={EVENT_TYPE_OPTIONS} />
-            </div>
-            <div>
-              <Label htmlFor="color">Color</Label>
-              <Select id="color" value={form.color} onChange={e => handleChange('color', e.target.value)} options={COLOR_OPTIONS} />
-            </div>
+          <div>
+            <Label htmlFor="type">Category</Label>
+            <Select id="type" value={form.type} onChange={e => handleChange('type', e.target.value)} options={EVENT_TYPE_OPTIONS} />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
