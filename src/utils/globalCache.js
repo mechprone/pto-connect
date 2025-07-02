@@ -102,7 +102,9 @@ class GlobalCache {
   setupVisibilityListener() {
     if (typeof document !== 'undefined') {
       document.addEventListener('visibilitychange', () => {
+        console.log('👁️ [Cache] Visibility changed, hidden:', document.hidden);
         if (!document.hidden) {
+          console.log('🔄 [Cache] Page visible again, extending caches');
           // Page became visible again - extend cache expiration for active data
           this.extendActiveCaches();
         }
@@ -220,13 +222,16 @@ export const useGlobalCache = (key, fetchFunction, duration = DEFAULT_CACHE_DURA
   }, [key, fetchFunction, duration]);
 
   React.useEffect(() => {
+    console.log(`🔍 [Cache] Checking cache for: ${key}`);
     // Try to get cached data first
     const cachedData = globalCache.get(key);
     
     if (cachedData) {
+      console.log(`✅ [Cache] Using cached data for: ${key}`);
       setData(cachedData);
       setLoading(false);
     } else {
+      console.log(`🔄 [Cache] No cache, fetching for: ${key}`);
       refresh();
     }
   }, [key, refresh]);

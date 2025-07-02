@@ -18,6 +18,8 @@ const EVENT_TYPE_COLORS = {
 };
 
 const CalendarPage = () => {
+  console.log('🔄 [Calendar] Component render at:', new Date().toLocaleTimeString());
+  
   const [events, setEvents] = useState([]);
   const [tooltip, setTooltip] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -128,6 +130,14 @@ const CalendarPage = () => {
     fetchEventsData, 
     10 * 60 * 1000 // 10 minutes
   );
+
+  // Track component mounting
+  useEffect(() => {
+    console.log('🏗️ [Calendar] Component mounted');
+    return () => {
+      console.log('💀 [Calendar] Component unmounting');
+    };
+  }, []);
 
   // Update local state when cached data changes
   useEffect(() => {
