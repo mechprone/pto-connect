@@ -8,7 +8,10 @@ export function useUserProfile() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log('🔄 [useUserProfile] Hook effect triggered');
+    
     const fetchUserProfile = async () => {
+      console.log('🔄 [useUserProfile] Fetching user profile...');
       try {
         setLoading(true);
         setError(null);
@@ -57,15 +60,21 @@ export function useUserProfile() {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔐 [useUserProfile] Auth state change:', event, !!session);
       if (event === 'SIGNED_OUT') {
+        console.log('👋 [useUserProfile] User signed out, clearing profile');
         setProfile(null);
         setOrganization(null);
       } else if (event === 'SIGNED_IN' && session) {
+        console.log('👤 [useUserProfile] User signed in, fetching profile');
         fetchUserProfile();
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log('🧹 [useUserProfile] Cleaning up auth subscription');
+      subscription.unsubscribe();
+    };
   }, []);
 
   const updateProfile = async (updates) => {
