@@ -149,25 +149,25 @@
 .calendar-page-container .event-type-fundraiser {
   background-color: #f59e42 !important;
   border-color: #f59e42 !important;
-  color: #ffffff !important;
+  color: rgb(98, 63, 27) !important; /* Darker orange */
 }
 
 .calendar-page-container .event-type-meeting {
   background-color: #2563eb !important;
   border-color: #2563eb !important;
-  color: #ffffff !important;
+  color: rgb(15, 39, 94) !important; /* Darker blue */
 }
 
 .calendar-page-container .event-type-social {
   background-color: #10b981 !important;
   border-color: #10b981 !important;
-  color: #ffffff !important;
+  color: rgb(6, 74, 51) !important; /* Darker green */
 }
 
 .calendar-page-container .event-type-other {
   background-color: #a78bfa !important;
   border-color: #a78bfa !important;
-  color: #ffffff !important;
+  color: rgb(67, 56, 100) !important; /* Darker purple */
 }
 
 .calendar-page-container .fc-event:hover {
@@ -184,6 +184,7 @@
   max-width: 100% !important;
   overflow: hidden !important;
   display: block !important;
+  font-weight: normal !important;
 }
 
 /* Event title container */

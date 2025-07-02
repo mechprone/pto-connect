@@ -90,6 +90,21 @@ const CalendarPage = () => {
           
           const eventColor = EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other;
           
+          // Calculate darker text color based on background
+          const getDarkerColor = (hexColor) => {
+            // Convert hex to RGB
+            const r = parseInt(hexColor.slice(1, 3), 16);
+            const g = parseInt(hexColor.slice(3, 5), 16);
+            const b = parseInt(hexColor.slice(5, 7), 16);
+            // Darken by reducing each component by ~60%
+            const darkR = Math.floor(r * 0.4);
+            const darkG = Math.floor(g * 0.4);
+            const darkB = Math.floor(b * 0.4);
+            return `rgb(${darkR}, ${darkG}, ${darkB})`;
+          };
+
+          const textColor = getDarkerColor(eventColor);
+
           const mappedEvent = {
             id: ev.id,
             title: ev.title,
@@ -98,7 +113,7 @@ const CalendarPage = () => {
             allDay: isAllDay,
             backgroundColor: eventColor,
             borderColor: eventColor,
-            textColor: '#ffffff',
+            textColor: textColor,
             color: eventColor, // Fallback for older FullCalendar versions
             className: `event-type-${eventType}`, // Add CSS class for styling
             // Map recurrence_rule to rrule for FullCalendar
@@ -218,6 +233,18 @@ const CalendarPage = () => {
       const mapped = (result.data || result).map(ev => {
         const eventType = ev.category || 'other';
         const eventColor = EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other;
+        
+        // Calculate darker text color
+        const getDarkerColor = (hexColor) => {
+          const r = parseInt(hexColor.slice(1, 3), 16);
+          const g = parseInt(hexColor.slice(3, 5), 16);
+          const b = parseInt(hexColor.slice(5, 7), 16);
+          const darkR = Math.floor(r * 0.4);
+          const darkG = Math.floor(g * 0.4);
+          const darkB = Math.floor(b * 0.4);
+          return `rgb(${darkR}, ${darkG}, ${darkB})`;
+        };
+        
         return {
           id: ev.id,
           title: ev.title,
@@ -226,7 +253,7 @@ const CalendarPage = () => {
           allDay: !ev.start_time,
           backgroundColor: eventColor,
           borderColor: eventColor,
-          textColor: '#ffffff',
+          textColor: getDarkerColor(eventColor),
           color: eventColor,
           className: `event-type-${eventType}`,
           rrule: ev.recurrence_rule || undefined,
@@ -256,6 +283,18 @@ const CalendarPage = () => {
       const mapped = (result.data || result).map(ev => {
         const eventType = ev.category || 'other';
         const eventColor = EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other;
+        
+        // Calculate darker text color
+        const getDarkerColor = (hexColor) => {
+          const r = parseInt(hexColor.slice(1, 3), 16);
+          const g = parseInt(hexColor.slice(3, 5), 16);
+          const b = parseInt(hexColor.slice(5, 7), 16);
+          const darkR = Math.floor(r * 0.4);
+          const darkG = Math.floor(g * 0.4);
+          const darkB = Math.floor(b * 0.4);
+          return `rgb(${darkR}, ${darkG}, ${darkB})`;
+        };
+        
         return {
           id: ev.id,
           title: ev.title,
@@ -264,7 +303,7 @@ const CalendarPage = () => {
           allDay: !ev.start_time,
           backgroundColor: eventColor,
           borderColor: eventColor,
-          textColor: '#ffffff',
+          textColor: getDarkerColor(eventColor),
           color: eventColor,
           className: `event-type-${eventType}`,
           rrule: ev.recurrence_rule || undefined,
