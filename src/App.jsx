@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import MainLayout from '@/modules/components/layout/MainLayout'
+import { logSessionDebug } from './utils/debugSession';
 
 // Auth
 import LoginPage from '@/modules/auth/pages/LoginPage'
@@ -85,6 +86,8 @@ import PricingPage from './modules/onboarding/pages/PricingPage'
 import CompleteSignupPage from './modules/onboarding/pages/CompleteSignupPage'
 import SimpleSignupPage from './modules/onboarding/pages/SimpleSignupPage'
 import NextStepPage from './modules/onboarding/pages/NextStepPage'
+
+logSessionDebug('App.jsx:render');
 
 export default function App() {
   return (

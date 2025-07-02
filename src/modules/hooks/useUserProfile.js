@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/utils/supabaseClient';
+import { getSupabaseClient } from '@/utils/supabaseClient';
+import { logSessionDebug } from '@/utils/debugSession';
+
+const supabase = getSupabaseClient();
 
 export function useUserProfile() {
   const [profile, setProfile] = useState(null);
@@ -7,72 +10,50 @@ export function useUserProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Log session debug at hook start
   useEffect(() => {
-    console.log('🔄 [useUserProfile] Hook effect triggered');
-    
-    const fetchUserProfile = async () => {
-      console.log('🔄 [useUserProfile] Fetching user profile...');
+    logSessionDebug('useUserProfile.js:hook-start');
+  }, []);
+
+  useEffect(() => {
+    async function fetchUserProfile() {
+      setLoading(true);
+      setError(null);
       try {
-        setLoading(true);
-        setError(null);
-
-        // Get current user
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
-        if (userError) throw userError;
-        if (!user) {
-          setProfile(null);
-          setOrganization(null);
-          setLoading(false);
-          return;
-        }
-
-        // Get user profile
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select(`*`)
-          .eq('id', user.id)
-          .single();
-
-        if (profileError) throw profileError;
-        setProfile(profileData);
-
-        // Fetch organization using org_id from profile
-        let orgData = null;
-        if (profileData?.org_id) {
-          const { data: org, error: orgError } = await supabase
-            .from('organizations')
-            .select('*')
-            .eq('id', profileData.org_id)
-            .single();
-          if (!orgError) orgData = org;
-        }
-        setOrganization(orgData);
+        const { data, error: fetchError } = await supabase.from('profiles').select('*').single();
+        if (fetchError) throw fetchError;
+        setProfile(data);
+        setOrganization(data?.org_id || null);
       } catch (err) {
-        console.error('Error fetching user profile:', err);
-        setError(err.message);
+        setError(err.message || 'Failed to fetch user profile');
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchUserProfile();
+    }
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('🔐 [useUserProfile] Auth state change:', event, !!session);
+      logSessionDebug(`useUserProfile.js:auth-change:${event}`);
       
       // Only act on significant auth changes, not INITIAL_SESSION
       if (event === 'SIGNED_OUT') {
         console.log('👋 [useUserProfile] User signed out, clearing profile');
         setProfile(null);
         setOrganization(null);
-        setLoading(false);
       } else if (event === 'SIGNED_IN' && session) {
         console.log('👤 [useUserProfile] User signed in, fetching profile');
         fetchUserProfile();
       }
-      // Ignore INITIAL_SESSION, TOKEN_REFRESHED, and other non-actionable events
+    });
+
+    // On mount, fetch profile if session exists
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        fetchUserProfile();
+      } else {
+        setLoading(false);
+      }
     });
 
     return () => {
@@ -146,3 +127,4 @@ export function useUserProfile() {
     isAuthenticated: !!profile,
   };
 }
+

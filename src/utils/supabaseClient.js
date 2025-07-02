@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { logSessionDebug } from './debugSession';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -13,7 +14,6 @@ if (!supabaseAnonKey) {
   console.error('❌ VITE_SUPABASE_ANON_KEY is missing or undefined');
 }
 
-// Only create client if both values are present
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('❌ Cannot initialize Supabase client - missing environment variables');
   console.log('supabaseUrl:', supabaseUrl ? 'present' : 'missing');
@@ -21,4 +21,23 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Supabase configuration is incomplete. Check environment variables.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Singleton pattern for Supabase client
+let supabaseInstance = null;
+
+export function getSupabaseClient() {
+  if (!supabaseInstance) {
+    console.log('[DEBUG] Creating Supabase client with session persistence options');
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
+    });
+    logSessionDebug('supabaseClient.js');
+  }
+  return supabaseInstance;
+}
+
+// For legacy imports
+export const supabase = getSupabaseClient();
