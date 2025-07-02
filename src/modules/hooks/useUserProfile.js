@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
-import { getSupabaseClient } from '@/utils/supabaseClient';
+import { supabase } from '@/utils/supabaseClient';
 import { logSessionDebug } from '@/utils/debugSession';
-
-const supabase = getSupabaseClient();
 
 export function useUserProfile() {
   const [profile, setProfile] = useState(null);
