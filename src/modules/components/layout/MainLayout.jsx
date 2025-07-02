@@ -1,35 +1,35 @@
 import React from 'react';
-import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
-import { supabase } from '@/utils/supabaseClient'
+import { useUserProfile } from '@/modules/hooks/useUserProfile'
 import NotificationBell from '@/modules/components/notifications/NotificationBell'
 import LogoutButton from '@/modules/components/auth/LogoutButton'
 import SidebarNav from '@/modules/components/layout/SidebarNav'
 import Footer from '@/modules/components/layout/Footer'
 import RenewalBanner from '@/components/RenewalBanner'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function MainLayout() {
-  const [user, setUser] = useState(null)
-  const [role, setRole] = useState(null)
+  console.log('🏗️ [MainLayout] Component render at:', new Date().toLocaleTimeString());
+  
+  const { profile, loading, isAuthenticated } = useUserProfile();
 
-  useEffect(() => {
-    async function fetchUser() {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
+  // Show loading spinner while fetching user data
+  if (loading) {
+    console.log('⏳ [MainLayout] Loading user profile...');
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="xl" />
+      </div>
+    );
+  }
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
+  // This should not happen as ProtectedRoute handles auth, but just in case
+  if (!isAuthenticated || !profile) {
+    console.log('❌ [MainLayout] User not authenticated or profile missing');
+    return null;
+  }
 
-      setRole(profile?.role)
-    }
-
-    fetchUser()
-  }, [])
-
-  if (!user || !role) return null // or loading spinner
+  console.log('✅ [MainLayout] Rendering layout for user:', profile.role);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -44,7 +44,7 @@ export default function MainLayout() {
       <RenewalBanner />
       {/* Sidebar + Main content area */}
       <div className="flex flex-1">
-        <SidebarNav role={role} />
+        <SidebarNav role={profile.role} />
 
         <main className="flex-1 p-6">
           <Outlet />
