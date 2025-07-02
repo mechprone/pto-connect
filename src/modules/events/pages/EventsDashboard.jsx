@@ -15,6 +15,7 @@ import enUS from 'date-fns/locale/en-US';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { supabase } from '@/utils/supabaseClient';
 import Button from '@/components/common/Button';
+import { useGlobalCache } from '@/utils/globalCache';
 
 const locales = { 'en-US': enUS };
 const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
@@ -49,57 +50,43 @@ const EventsDashboard = () => {
   const [stellaLoading, setStellaLoading] = useState(true);
   const [stellaError, setStellaError] = useState(null);
 
-  // Local storage cache key
-  const CACHE_KEY = 'pto_events_dashboard_cache_v1';
-
-  // Fetch events with localStorage caching
-  useEffect(() => {
-    async function fetchEvents() {
-      setLoading(true);
-      setError(null);
-      // Try to load from cache first
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        try {
-          const parsed = JSON.parse(cached);
-          setEvents(parsed.events || []);
-          setLoading(false);
-        } catch {}
-      }
-      try {
-        // Get current user/org context
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError || !user) {
-          setError('User not authenticated');
-          setLoading(false);
-          return;
-        }
-        const orgId = user?.user_metadata?.org_id || user?.app_metadata?.org_id;
-        if (!orgId) {
-          setError('Missing org_id in user metadata.');
-          setLoading(false);
-          return;
-        }
-        const { data, error: eventsError } = await supabase
-          .from('events')
-          .select('*')
-          .eq('org_id', orgId)
-          .order('event_date', { ascending: true });
-        if (eventsError) {
-          setError('Error loading events: ' + eventsError.message);
-        } else {
-          setEvents(data || []);
-          // Save to cache
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ events: data, ts: Date.now() }));
-        }
-      } catch (err) {
-        setError('Unexpected error: ' + err.message);
-      } finally {
-        setLoading(false);
-      }
+  // Fetch events data function for global cache
+  const fetchEventsData = async () => {
+    // Get current user/org context
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      throw new Error('User not authenticated');
     }
-    fetchEvents();
-  }, []);
+    const orgId = user?.user_metadata?.org_id || user?.app_metadata?.org_id;
+    if (!orgId) {
+      throw new Error('Missing org_id in user metadata.');
+    }
+    const { data, error: eventsError } = await supabase
+      .from('events')
+      .select('*')
+      .eq('org_id', orgId)
+      .order('event_date', { ascending: true });
+    if (eventsError) {
+      throw new Error('Error loading events: ' + eventsError.message);
+    }
+    return data || [];
+  };
+
+  // Use global cache with 8 minute expiration for events dashboard
+  const { data: cachedEvents, loading: cacheLoading, error: cacheError, refresh } = useGlobalCache(
+    'events_dashboard', 
+    fetchEventsData, 
+    8 * 60 * 1000 // 8 minutes
+  );
+
+  // Update local state when cached data changes
+  useEffect(() => {
+    if (cachedEvents) {
+      setEvents(cachedEvents);
+    }
+    setLoading(cacheLoading);
+    setError(cacheError);
+  }, [cachedEvents, cacheLoading, cacheError]);
 
   // Fetch Stella Insights (placeholder for backend call)
   useEffect(() => {

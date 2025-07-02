@@ -8,6 +8,7 @@ import listPlugin from '@fullcalendar/list';
 import './calendar.css';
 import { eventsAPI } from '@/utils/api';
 import EventModal from '@/components/calendar/EventModal';
+import { useGlobalCache } from '@/utils/globalCache';
 
 const EVENT_TYPE_COLORS = {
   fundraiser: '#f59e42', // orange
@@ -37,126 +38,146 @@ const CalendarPage = () => {
     return styles[status] || styles.draft;
   };
 
-  useEffect(() => {
-    async function fetchEvents() {
-      try {
-        setLoading(true);
-        setError(null);
-        console.log('🔍 [Calendar] Fetching events from API...');
-        
-        const result = await eventsAPI.getEvents();
-        
-        if (result.error) {
-          console.error('❌ [Calendar] Error fetching events:', result.error);
-          setError(result.error);
-          return;
-        }
-        
-        const eventsData = result.data || result;
-        console.log('✅ [Calendar] Received events data:', eventsData);
-        
-        if (!Array.isArray(eventsData)) {
-          console.error('❌ [Calendar] Events data is not an array:', eventsData);
-          setError('Invalid events data received');
-          return;
-        }
-        
-        // Map database fields to calendar format
-        const mapped = eventsData.map(ev => {
-          console.log('🔍 [Calendar] Mapping event:', ev);
-          
-          // Use category as the event type for color coding
-          const eventType = ev.category || 'other';
-          
-          // Handle date and time properly
-          let startDateTime = ev.event_date;
-          let endDateTime = ev.event_date;
-          let isAllDay = true;
-          
-          // If we have start_time, create proper datetime strings
-          if (ev.start_time) {
-            startDateTime = `${ev.event_date}T${ev.start_time}`;
-            isAllDay = false;
-          }
-          
-          if (ev.end_time) {
-            endDateTime = `${ev.event_date}T${ev.end_time}`;
-          } else if (ev.start_time) {
-            // If only start time, make it 1 hour duration
-            const startTime = new Date(`${ev.event_date}T${ev.start_time}`);
-            startTime.setHours(startTime.getHours() + 1);
-            endDateTime = startTime.toISOString();
-          }
-          
-          const eventColor = EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other;
-          
-          // Calculate darker text color based on background
-          const getDarkerColor = (hexColor) => {
-            // Convert hex to RGB
-            const r = parseInt(hexColor.slice(1, 3), 16);
-            const g = parseInt(hexColor.slice(3, 5), 16);
-            const b = parseInt(hexColor.slice(5, 7), 16);
-            // Darken by reducing each component by ~60%
-            const darkR = Math.floor(r * 0.4);
-            const darkG = Math.floor(g * 0.4);
-            const darkB = Math.floor(b * 0.4);
-            return `rgb(${darkR}, ${darkG}, ${darkB})`;
-          };
-
-          const textColor = getDarkerColor(eventColor);
-
-          const mappedEvent = {
-            id: ev.id,
-            title: ev.title,
-            start: startDateTime,
-            end: endDateTime,
-            allDay: isAllDay,
-            backgroundColor: eventColor,
-            borderColor: eventColor,
-            textColor: textColor,
-            color: eventColor, // Fallback for older FullCalendar versions
-            className: `event-type-${eventType}`, // Add CSS class for styling
-            // Map recurrence_rule to rrule for FullCalendar
-            rrule: ev.recurrence_rule || undefined,
-            extendedProps: { 
-              ...ev, 
-              type: eventType,
-              // Include original database fields for reference
-              category: ev.category,
-              status: ev.status,
-              org_id: ev.org_id,
-              start_time: ev.start_time,
-              end_time: ev.end_time
-            },
-          };
-          
-          console.log('✅ [Calendar] Mapped event:', mappedEvent);
-          return mappedEvent;
-        });
-        
-        console.log(`✅ [Calendar] Successfully mapped ${mapped.length} events`);
-        setEvents(mapped);
-      } catch (error) {
-        console.error('❌ [Calendar] Error in fetchEvents:', error);
-        setError('Failed to load events');
-      } finally {
-        setLoading(false);
-      }
+  // Use global cache for events data to prevent unnecessary reloads
+  const fetchEventsData = async () => {
+    console.log('🔍 [Calendar] Fetching events from API...');
+    
+    const result = await eventsAPI.getEvents();
+    
+    if (result.error) {
+      console.error('❌ [Calendar] Error fetching events:', result.error);
+      throw new Error(result.error);
     }
-    fetchEvents();
-  }, []);
+    
+    const eventsData = result.data || result;
+    console.log('✅ [Calendar] Received events data:', eventsData);
+    
+    if (!Array.isArray(eventsData)) {
+      console.error('❌ [Calendar] Events data is not an array:', eventsData);
+      throw new Error('Invalid events data received');
+    }
+    
+    // Map database fields to calendar format
+    const mapped = eventsData.map(ev => {
+      console.log('🔍 [Calendar] Mapping event:', ev);
+      
+      // Use category as the event type for color coding
+      const eventType = ev.category || 'other';
+      const eventColor = EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other;
+      
+      // Handle date and time properly
+      let startDateTime = ev.event_date;
+      let endDateTime = ev.event_date;
+      let isAllDay = true;
+      
+      // If we have start_time, create proper datetime strings
+      if (ev.start_time) {
+        startDateTime = `${ev.event_date}T${ev.start_time}`;
+        isAllDay = false;
+      }
+      
+      if (ev.end_time) {
+        endDateTime = `${ev.event_date}T${ev.end_time}`;
+      } else if (ev.start_time) {
+        // If only start time, make it 1 hour duration
+        const startTime = new Date(`${ev.event_date}T${ev.start_time}`);
+        startTime.setHours(startTime.getHours() + 1);
+        endDateTime = startTime.toISOString();
+      }
+      
+      // Calculate darker text color based on background
+      const getDarkerColor = (hexColor) => {
+        // Convert hex to RGB
+        const r = parseInt(hexColor.slice(1, 3), 16);
+        const g = parseInt(hexColor.slice(3, 5), 16);
+        const b = parseInt(hexColor.slice(5, 7), 16);
+        // Darken by reducing each component by ~60%
+        const darkR = Math.floor(r * 0.4);
+        const darkG = Math.floor(g * 0.4);
+        const darkB = Math.floor(b * 0.4);
+        return `rgb(${darkR}, ${darkG}, ${darkB})`;
+      };
+
+      const textColor = getDarkerColor(eventColor);
+
+      const mappedEvent = {
+        id: ev.id,
+        title: ev.title,
+        start: startDateTime,
+        end: endDateTime,
+        allDay: isAllDay,
+        backgroundColor: eventColor,
+        borderColor: eventColor,
+        textColor: textColor,
+        color: eventColor, // Fallback for older FullCalendar versions
+        className: `event-type-${eventType}`, // Add CSS class for styling
+        // Map recurrence_rule to rrule for FullCalendar
+        rrule: ev.recurrence_rule || undefined,
+        extendedProps: { 
+          ...ev, 
+          type: eventType,
+          // Include original database fields for reference
+          category: ev.category,
+          status: ev.status,
+          org_id: ev.org_id,
+          start_time: ev.start_time,
+          end_time: ev.end_time
+        },
+      };
+      
+      console.log('✅ [Calendar] Mapped event:', mappedEvent);
+      return mappedEvent;
+    });
+    
+    console.log(`✅ [Calendar] Successfully mapped ${mapped.length} events`);
+    return mapped;
+  };
+
+  // Use global cache with 10 minute expiration for calendar data
+  const { data: cachedEvents, loading: cacheLoading, error: cacheError, refresh } = useGlobalCache(
+    'calendar_events', 
+    fetchEventsData, 
+    10 * 60 * 1000 // 10 minutes
+  );
+
+  // Update local state when cached data changes
+  useEffect(() => {
+    if (cachedEvents) {
+      setEvents(cachedEvents);
+    }
+    setLoading(cacheLoading);
+    setError(cacheError);
+  }, [cachedEvents, cacheLoading, cacheError]);
 
   // Tooltip logic
   const handleEventMouseEnter = (info) => {
     const { jsEvent, event } = info;
     
-    // Format time display
+    // Format time display in 12-hour AM/PM format
+    const formatTime12Hour = (time24) => {
+      if (!time24) return '';
+      const [hours, minutes] = time24.split(':');
+      const hour = parseInt(hours);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const hour12 = hour % 12 || 12; // Convert 0 to 12 for midnight
+      return `${hour12}:${minutes} ${ampm}`;
+    };
+
     let timeDisplay = '';
     if (!event.allDay && event.extendedProps.start_time) {
-      const startTime = event.extendedProps.start_time;
-      const endTime = event.extendedProps.end_time;
-      timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
+      const startTime12 = formatTime12Hour(event.extendedProps.start_time);
+      const endTime12 = event.extendedProps.end_time ? formatTime12Hour(event.extendedProps.end_time) : '';
+      timeDisplay = endTime12 ? `${startTime12} - ${endTime12}` : startTime12;
     }
+
+    // Format date in MM-DD-YYYY format
+    const formatUSDate = (dateStr) => {
+      const date = new Date(dateStr);
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const year = date.getFullYear();
+      return `${month}-${day}-${year}`;
+    };
     
     setTooltip({
       x: jsEvent.clientX,
@@ -173,7 +194,7 @@ const CalendarPage = () => {
             )}
           </div>
           <div className="text-xs mb-1">
-            📅 {event.startStr}
+            📅 {formatUSDate(event.start)}
             {timeDisplay && <div>🕐 {timeDisplay}</div>}
           </div>
           {event.extendedProps.location && (
@@ -228,39 +249,8 @@ const CalendarPage = () => {
       console.log('🔄 [Calendar] Updating event:', updated);
       await eventsAPI.updateEvent(updated.id, updated);
       
-      // Refetch events
-      const result = await eventsAPI.getEvents();
-      const mapped = (result.data || result).map(ev => {
-        const eventType = ev.category || 'other';
-        const eventColor = EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other;
-        
-        // Calculate darker text color
-        const getDarkerColor = (hexColor) => {
-          const r = parseInt(hexColor.slice(1, 3), 16);
-          const g = parseInt(hexColor.slice(3, 5), 16);
-          const b = parseInt(hexColor.slice(5, 7), 16);
-          const darkR = Math.floor(r * 0.4);
-          const darkG = Math.floor(g * 0.4);
-          const darkB = Math.floor(b * 0.4);
-          return `rgb(${darkR}, ${darkG}, ${darkB})`;
-        };
-        
-        return {
-          id: ev.id,
-          title: ev.title,
-          start: ev.start_time ? `${ev.event_date}T${ev.start_time}` : ev.event_date,
-          end: ev.end_time ? `${ev.event_date}T${ev.end_time}` : ev.event_date,
-          allDay: !ev.start_time,
-          backgroundColor: eventColor,
-          borderColor: eventColor,
-          textColor: getDarkerColor(eventColor),
-          color: eventColor,
-          className: `event-type-${eventType}`,
-          rrule: ev.recurrence_rule || undefined,
-          extendedProps: { ...ev, type: eventType },
-        };
-      });
-      setEvents(mapped);
+      // Refresh cache to get updated data
+      refresh();
     } catch (error) {
       console.error('❌ [Calendar] Error updating event:', error);
     }
@@ -278,39 +268,8 @@ const CalendarPage = () => {
       setModalOpen(false);
       setSelectedEvent(null);
       
-      // Refetch events
-      const result = await eventsAPI.getEvents();
-      const mapped = (result.data || result).map(ev => {
-        const eventType = ev.category || 'other';
-        const eventColor = EVENT_TYPE_COLORS[eventType] || EVENT_TYPE_COLORS.other;
-        
-        // Calculate darker text color
-        const getDarkerColor = (hexColor) => {
-          const r = parseInt(hexColor.slice(1, 3), 16);
-          const g = parseInt(hexColor.slice(3, 5), 16);
-          const b = parseInt(hexColor.slice(5, 7), 16);
-          const darkR = Math.floor(r * 0.4);
-          const darkG = Math.floor(g * 0.4);
-          const darkB = Math.floor(b * 0.4);
-          return `rgb(${darkR}, ${darkG}, ${darkB})`;
-        };
-        
-        return {
-          id: ev.id,
-          title: ev.title,
-          start: ev.start_time ? `${ev.event_date}T${ev.start_time}` : ev.event_date,
-          end: ev.end_time ? `${ev.event_date}T${ev.end_time}` : ev.event_date,
-          allDay: !ev.start_time,
-          backgroundColor: eventColor,
-          borderColor: eventColor,
-          textColor: getDarkerColor(eventColor),
-          color: eventColor,
-          className: `event-type-${eventType}`,
-          rrule: ev.recurrence_rule || undefined,
-          extendedProps: { ...ev, type: eventType },
-        };
-      });
-      setEvents(mapped);
+      // Refresh cache to get updated data
+      refresh();
     } catch (error) {
       console.error('❌ [Calendar] Error saving event:', error);
     }
