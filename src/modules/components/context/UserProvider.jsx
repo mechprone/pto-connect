@@ -31,78 +31,92 @@ export function UserProvider({ children }) {
         return;
       }
 
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Profile fetch timeout - database connection issue')), 5000)
-      );
+      // Fetch profile with timeout using AbortController
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // Increased to 10 seconds
+      
+      try {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', supabaseSession.user.id)
+          .abortSignal(controller.signal)
+          .single();
+        
+        clearTimeout(timeoutId);
 
-      // Fetch profile with timeout
-      const profilePromise = supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', supabaseSession.user.id)
-        .single();
+        if (profileError) {
+          console.error('❌ [UserProvider] Profile fetch error:', profileError);
+          console.error('❌ [UserProvider] Error details:', {
+            code: profileError.code,
+            message: profileError.message,
+            details: profileError.details,
+            hint: profileError.hint
+          });
+          setError(profileError.message);
+          setProfile(null);
+          setOrganization(null);
+          setLoading(false);
+          return;
+        }
 
-      const { data: profileData, error: profileError } = await Promise.race([
-        profilePromise,
-        timeoutPromise
-      ]);
+        if (!profileData) {
+          console.error('❌ [UserProvider] No profile data returned');
+          setError('No profile found');
+          setProfile(null);
+          setOrganization(null);
+          setLoading(false);
+          return;
+        }
 
-      if (profileError) {
-        console.error('❌ [UserProvider] Profile fetch error:', profileError);
-        console.error('❌ [UserProvider] Error details:', {
-          code: profileError.code,
-          message: profileError.message,
-          details: profileError.details,
-          hint: profileError.hint
-        });
-        setError(profileError.message);
+        console.log('✅ [UserProvider] Profile loaded:', profileData);
+        setProfile(profileData);
+      } catch (profileFetchError) {
+        clearTimeout(timeoutId);
+        console.error('❌ [UserProvider] Profile fetch timeout/error:', profileFetchError);
+        setError('Profile fetch timeout - please try again');
         setProfile(null);
         setOrganization(null);
         setLoading(false);
         return;
       }
-
-      if (!profileData) {
-        console.error('❌ [UserProvider] No profile data returned');
-        setError('No profile found');
-        setProfile(null);
-        setOrganization(null);
-        setLoading(false);
-        return;
-      }
-
-      console.log('✅ [UserProvider] Profile loaded:', profileData);
-      setProfile(profileData);
 
       // Fetch organization if profile has org_id
       if (profileData?.org_id) {
         console.log('🔄 [UserProvider] Fetching organization for org_id:', profileData.org_id);
         
-        const orgPromise = supabase
-          .from('organizations')
-          .select('*')
-          .eq('id', profileData.org_id)
-          .single();
+        const orgController = new AbortController();
+        const orgTimeoutId = setTimeout(() => orgController.abort(), 10000);
+        
+        try {
+          const { data: orgData, error: orgError } = await supabase
+            .from('organizations')
+            .select('*')
+            .eq('id', profileData.org_id)
+            .abortSignal(orgController.signal)
+            .single();
+          
+          clearTimeout(orgTimeoutId);
 
-        const { data: orgData, error: orgError } = await Promise.race([
-          orgPromise,
-          timeoutPromise
-        ]);
-
-        if (orgError) {
-          console.error('❌ [UserProvider] Organization fetch error:', orgError);
-          console.error('❌ [UserProvider] Org error details:', {
-            code: orgError.code,
-            message: orgError.message,
-            details: orgError.details,
-            hint: orgError.hint
-          });
-          setError(orgError.message);
+          if (orgError) {
+            console.error('❌ [UserProvider] Organization fetch error:', orgError);
+            console.error('❌ [UserProvider] Org error details:', {
+              code: orgError.code,
+              message: orgError.message,
+              details: orgError.details,
+              hint: orgError.hint
+            });
+            setError(orgError.message);
+            setOrganization(null);
+          } else {
+            console.log('✅ [UserProvider] Organization loaded:', orgData);
+            setOrganization(orgData);
+          }
+        } catch (orgFetchError) {
+          clearTimeout(orgTimeoutId);
+          console.error('❌ [UserProvider] Organization fetch timeout/error:', orgFetchError);
+          setError('Organization fetch timeout');
           setOrganization(null);
-        } else {
-          console.log('✅ [UserProvider] Organization loaded:', orgData);
-          setOrganization(orgData);
         }
       } else {
         console.log('⚠️ [UserProvider] No org_id in profile, skipping organization fetch');

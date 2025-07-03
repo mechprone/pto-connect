@@ -14,6 +14,12 @@ const getEnvironment = () => {
     if (hostname === 'app.ptoconnect.com') return 'production';
   }
   
+  // Check for explicit API URL environment variable
+  if (import.meta.env.VITE_API_URL) {
+    if (import.meta.env.VITE_API_URL.includes('preview-api')) return 'preview';
+    if (import.meta.env.VITE_API_URL.includes('api.ptoconnect.com')) return 'production';
+  }
+  
   // Final fallback based on MODE
   if (ENV === 'production') return 'production';
   return 'development';
@@ -50,6 +56,11 @@ const ENV_CONFIG = {
 const getConfig = () => {
   const config = ENV_CONFIG[CURRENT_ENV] || ENV_CONFIG.development;
   
+  // Override API URL if explicitly set via environment variable
+  if (import.meta.env.VITE_API_URL) {
+    config.apiUrl = import.meta.env.VITE_API_URL;
+  }
+  
   console.log('[DEBUG] Environment detection:', {
     MODE: ENV,
     VITE_API_URL: import.meta.env.VITE_API_URL,
@@ -58,15 +69,16 @@ const getConfig = () => {
     hostname: typeof window !== 'undefined' ? window.location.hostname : 'server',
     CURRENT_ENV,
     selectedConfig: config,
-    finalApiUrl: config.apiUrl
+    finalApiUrl: config.apiUrl,
+    overrideApplied: !!import.meta.env.VITE_API_URL
   });
   
   return {
     ...config,
-    isPreview: IS_PREVIEW,
+    isPreview: IS_PREVIEW || CURRENT_ENV === 'preview',
     isProduction: ENV === 'production',
     isDevelopment: ENV === 'development',
-    environment: ENV
+    environment: CURRENT_ENV
   };
 };
 
