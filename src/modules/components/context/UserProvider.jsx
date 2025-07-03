@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/utils/supabaseClient';
 import { logSessionDebug } from '@/utils/debugSession';
 
@@ -11,6 +11,9 @@ export function UserProvider({ children }) {
   const [organization, setOrganization] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Use ref to track current session for comparison
+  const currentSessionRef = useRef(null);
 
   // Helper: fetch profile and org
   const fetchProfileAndOrg = useCallback(async (supabaseSession) => {
@@ -126,6 +129,7 @@ export function UserProvider({ children }) {
     const getInitialSession = async () => {
       const { data: { session: initialSession } } = await supabase.auth.getSession();
       setSession(initialSession);
+      currentSessionRef.current = initialSession;
       
       if (initialSession) {
         await fetchProfileAndOrg(initialSession);
@@ -142,8 +146,8 @@ export function UserProvider({ children }) {
         console.log('🔄 [UserProvider] Auth state change:', event);
         logSessionDebug(`UserProvider:auth-change:${event}`);
         
-        // Only process if session actually changed
-        const currentUserId = session?.user?.id;
+        // Compare with current session using ref
+        const currentUserId = currentSessionRef.current?.user?.id;
         const newUserId = newSession?.user?.id;
         const sessionChanged = currentUserId !== newUserId;
         
@@ -154,20 +158,24 @@ export function UserProvider({ children }) {
           event
         });
         
+        // Only process if session actually changed
         if (event === 'SIGNED_IN' && newSession && sessionChanged) {
+          console.log('🔄 [UserProvider] Processing SIGNED_IN with session change');
           setSession(newSession);
+          currentSessionRef.current = newSession;
           await fetchProfileAndOrg(newSession);
         } else if (event === 'TOKEN_REFRESHED' && newSession && sessionChanged) {
+          console.log('🔄 [UserProvider] Processing TOKEN_REFRESHED with session change');
           setSession(newSession);
+          currentSessionRef.current = newSession;
           await fetchProfileAndOrg(newSession);
         } else if (event === 'SIGNED_OUT') {
+          console.log('🔄 [UserProvider] Processing SIGNED_OUT');
           setSession(null);
+          currentSessionRef.current = null;
           setProfile(null);
           setOrganization(null);
           setLoading(false);
-        } else if (event === 'INITIAL_SESSION' && newSession && !sessionChanged) {
-          // Don't re-fetch on INITIAL_SESSION if session hasn't changed
-          console.log('🔄 [UserProvider] Skipping INITIAL_SESSION - session unchanged');
         } else {
           console.log('🔄 [UserProvider] Ignoring auth event:', event, 'sessionChanged:', sessionChanged);
         }
