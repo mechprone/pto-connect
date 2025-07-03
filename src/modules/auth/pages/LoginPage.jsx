@@ -57,22 +57,44 @@ export default function LoginPage() {
 
     // Get role from profiles table instead of user metadata
     console.log('🔍 [LOGIN DEBUG] Fetching user profile...');
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('role, org_id, approved')
-      .eq('id', user.id)
-      .single();
+    
+    let profile, profileError;
+    
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        console.log('⚠️ [LOGIN DEBUG] Profile fetch timeout - aborting query');
+        controller.abort();
+      }, 8000);
+      
+      const result = await supabase
+        .from('profiles')
+        .select('role, org_id, approved')
+        .eq('id', user.id)
+        .abortSignal(controller.signal)
+        .single();
+      
+      profile = result.data;
+      profileError = result.error;
+      
+      clearTimeout(timeoutId);
+      
+      console.log('🔍 [LOGIN DEBUG] Profile query result:', {
+        profile,
+        profileError
+      });
 
-    console.log('🔍 [LOGIN DEBUG] Profile query result:', {
-      profile,
-      profileError
-    });
-
-    if (profileError || !profile) {
-      console.error('❌ [LOGIN DEBUG] Profile fetch error:', profileError);
-      setError('Unable to load user profile. Please contact support.');
-      setLoading(false)
-      return
+      if (profileError || !profile) {
+        console.error('❌ [LOGIN DEBUG] Profile fetch error:', profileError);
+        setError('Unable to load user profile. Please contact support.');
+        setLoading(false);
+        return;
+      }
+    } catch (fetchError) {
+      console.error('❌ [LOGIN DEBUG] Profile fetch timeout/error:', fetchError);
+      setError('Login timeout - please try again. If this persists, there may be a database connectivity issue.');
+      setLoading(false);
+      return;
     }
 
     if (!profile.approved) {
