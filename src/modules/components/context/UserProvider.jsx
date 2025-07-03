@@ -30,7 +30,7 @@ export function UserProvider({ children }) {
 
       // Add timeout to prevent hanging
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
+        setTimeout(() => reject(new Error('Profile fetch timeout - database connection issue')), 5000)
       );
 
       // Fetch profile with timeout
@@ -138,18 +138,38 @@ export function UserProvider({ children }) {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (event, newSession) => {
         console.log('🔄 [UserProvider] Auth state change:', event);
         logSessionDebug(`UserProvider:auth-change:${event}`);
         
-        setSession(session);
+        // Only process if session actually changed
+        const currentUserId = session?.user?.id;
+        const newUserId = newSession?.user?.id;
+        const sessionChanged = currentUserId !== newUserId;
         
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          await fetchProfileAndOrg(session);
+        console.log('🔄 [UserProvider] Session comparison:', {
+          currentUserId,
+          newUserId,
+          sessionChanged,
+          event
+        });
+        
+        if (event === 'SIGNED_IN' && newSession && sessionChanged) {
+          setSession(newSession);
+          await fetchProfileAndOrg(newSession);
+        } else if (event === 'TOKEN_REFRESHED' && newSession && sessionChanged) {
+          setSession(newSession);
+          await fetchProfileAndOrg(newSession);
         } else if (event === 'SIGNED_OUT') {
+          setSession(null);
           setProfile(null);
           setOrganization(null);
           setLoading(false);
+        } else if (event === 'INITIAL_SESSION' && newSession && !sessionChanged) {
+          // Don't re-fetch on INITIAL_SESSION if session hasn't changed
+          console.log('🔄 [UserProvider] Skipping INITIAL_SESSION - session unchanged');
+        } else {
+          console.log('🔄 [UserProvider] Ignoring auth event:', event, 'sessionChanged:', sessionChanged);
         }
       }
     );
