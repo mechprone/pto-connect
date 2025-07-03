@@ -105,7 +105,7 @@ const EventsDashboard = () => {
   };
 
   // Mini calendar events format
-  const calendarEvents = events.map(event => ({
+  const calendarEvents = (events || []).map(event => ({
     id: event.id,
     title: event.title,
     start: new Date(event.event_date),
@@ -115,7 +115,7 @@ const EventsDashboard = () => {
 
   // Get next three upcoming events
   const now = new Date();
-  const upcomingEvents = [...events]
+  const upcomingEvents = [...(events || [])]
     .filter(e => new Date(e.event_date) >= now)
     .sort((a, b) => new Date(a.event_date) - new Date(b.event_date))
     .slice(0, 3);

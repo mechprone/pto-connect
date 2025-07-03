@@ -221,7 +221,7 @@ export default eventsStore;
 
 // React hook for easy integration
 export const useEventsStore = (format = 'calendar') => {
-  const [events, setEvents] = React.useState(null);
+  const [events, setEvents] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
 
@@ -234,11 +234,12 @@ export const useEventsStore = (format = 'calendar') => {
         setError(null);
         const data = await eventsStore.getEvents(format);
         if (mounted) {
-          setEvents(data);
+          setEvents(data || []);
         }
       } catch (err) {
         if (mounted) {
           setError(err.message || 'Failed to load events');
+          setEvents([]);
         }
       } finally {
         if (mounted) {
@@ -251,7 +252,7 @@ export const useEventsStore = (format = 'calendar') => {
     const unsubscribe = eventsStore.subscribe((rawData) => {
       if (mounted && rawData) {
         const formattedData = eventsStore.getFormattedEvents(rawData, format);
-        setEvents(formattedData);
+        setEvents(formattedData || []);
       }
     });
 
@@ -269,9 +270,10 @@ export const useEventsStore = (format = 'calendar') => {
       setLoading(true);
       setError(null);
       const data = await eventsStore.getEvents(format);
-      setEvents(data);
+      setEvents(data || []);
     } catch (err) {
       setError(err.message || 'Failed to refresh events');
+      setEvents([]);
     } finally {
       setLoading(false);
     }
