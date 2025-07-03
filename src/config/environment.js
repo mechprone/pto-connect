@@ -48,15 +48,17 @@ const ENV_CONFIG = {
 
 // Get current environment configuration
 const getConfig = () => {
-  const config = ENV_CONFIG[ENV] || ENV_CONFIG.development;
+  const config = ENV_CONFIG[CURRENT_ENV] || ENV_CONFIG.development;
   
   console.log('[DEBUG] Environment detection:', {
     MODE: ENV,
+    VITE_API_URL: import.meta.env.VITE_API_URL,
     VITE_IS_PREVIEW: import.meta.env.VITE_IS_PREVIEW,
     IS_PREVIEW,
     hostname: typeof window !== 'undefined' ? window.location.hostname : 'server',
     CURRENT_ENV,
-    selectedConfig: config
+    selectedConfig: config,
+    finalApiUrl: config.apiUrl
   });
   
   return {
