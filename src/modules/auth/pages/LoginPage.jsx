@@ -63,10 +63,10 @@ export default function LoginPage() {
     try {
       console.log('🔍 [LOGIN DEBUG] Starting profile query...');
       console.log('🔍 [LOGIN DEBUG] User ID:', user.id);
-      console.log('🔍 [LOGIN DEBUG] Supabase URL:', import.meta.env.VITE_SUPABASE_URL ? 'present' : 'missing');
-      console.log('🔍 [LOGIN DEBUG] Supabase Key:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'present' : 'missing');
+      console.log('🔍 [LOGIN DEBUG] Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+      console.log('🔍 [LOGIN DEBUG] Supabase Key:', import.meta.env.VITE_SUPABASE_ANON_KEY ? '[PRESENT]' : '[MISSING]');
       
-      // Test basic connectivity first
+      // Test basic connectivity first WITHOUT AbortController
       console.log('🔍 [LOGIN DEBUG] Testing basic Supabase connectivity...');
       try {
         const connectTest = await supabase.from('profiles').select('count').limit(1);
@@ -75,20 +75,14 @@ export default function LoginPage() {
         console.error('❌ [LOGIN DEBUG] Connectivity test failed:', connectError);
       }
       
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => {
-        console.log('⚠️ [LOGIN DEBUG] Profile fetch timeout - aborting query');
-        controller.abort();
-      }, 8000);
-      
-      console.log('🔍 [LOGIN DEBUG] Executing Supabase query...');
+      console.log('🔍 [LOGIN DEBUG] Executing Supabase query WITHOUT AbortController...');
       const queryStart = Date.now();
       
+      // Remove AbortController to test if that's causing the hang
       const result = await supabase
         .from('profiles')
         .select('role, org_id, approved')
         .eq('id', user.id)
-        .abortSignal(controller.signal)
         .single();
       
       const queryDuration = Date.now() - queryStart;
