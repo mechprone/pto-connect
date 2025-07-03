@@ -1,6 +1,6 @@
 // Frontend Environment Configuration
 const ENV = import.meta.env.MODE || 'development';
-const IS_PREVIEW = import.meta.env.VITE_IS_PREVIEW === 'true';
+const IS_PREVIEW = import.meta.env.VITE_IS_PREVIEW === 'true' || ENV === 'preview';
 
 // Determine the actual environment based on flags and domain
 const getEnvironment = () => {
@@ -48,7 +48,7 @@ const ENV_CONFIG = {
 
 // Get current environment configuration
 const getConfig = () => {
-  const config = ENV_CONFIG[CURRENT_ENV];
+  const config = ENV_CONFIG[ENV] || ENV_CONFIG.development;
   
   console.log('[DEBUG] Environment detection:', {
     MODE: ENV,
@@ -62,18 +62,22 @@ const getConfig = () => {
   return {
     ...config,
     isPreview: IS_PREVIEW,
-    isProduction: CURRENT_ENV === 'production',
-    isDevelopment: CURRENT_ENV === 'development',
-    environment: CURRENT_ENV
+    isProduction: ENV === 'production',
+    isDevelopment: ENV === 'development',
+    environment: ENV
   };
 };
 
 // API configuration
 const getApiConfig = () => {
   const config = getConfig();
-  
+  let baseURL = config.apiUrl;
+  // Ensure baseURL ends with /api (no double slashes)
+  if (!baseURL.endsWith('/api')) {
+    baseURL = baseURL.replace(/\/$/, '') + '/api';
+  }
   return {
-    baseURL: config.apiUrl,
+    baseURL,
     timeout: 30000,
     headers: {
       'Content-Type': 'application/json',
