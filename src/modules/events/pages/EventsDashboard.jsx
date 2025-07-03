@@ -104,14 +104,18 @@ const EventsDashboard = () => {
     navigate('/events/create');
   };
 
-  // Mini calendar events format
-  const calendarEvents = (events || []).map(event => ({
-    id: event.id,
-    title: event.title,
-    start: new Date(event.event_date),
-    end: new Date(event.event_date),
-    allDay: true,
-  }));
+  // Mini calendar events format - ensure dates are treated as local dates
+  const calendarEvents = (events || []).map(event => {
+    // Parse the date string and create a local date to avoid timezone issues
+    const eventDate = new Date(event.event_date + 'T00:00:00');
+    return {
+      id: event.id,
+      title: event.title,
+      start: eventDate,
+      end: eventDate,
+      allDay: true,
+    };
+  });
 
   // Get next three upcoming events
   const now = new Date();
