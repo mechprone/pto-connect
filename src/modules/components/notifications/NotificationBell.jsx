@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
-import { api } from '@/utils/api';
+import { notificationsAPI } from '@/utils/api';
 import { handleError, handleSuccess } from '@/utils/errorHandling';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 
@@ -13,9 +13,14 @@ export default function NotificationBell() {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get('/api/notifications');
-      setNotifications(data);
-      setError(null);
+      const { data, error } = await notificationsAPI.getNotifications();
+      if (error) {
+        setError('Failed to fetch notifications');
+        handleError(new Error(error), 'Failed to fetch notifications');
+      } else {
+        setNotifications(data || []);
+        setError(null);
+      }
     } catch (error) {
       setError('Failed to fetch notifications');
       handleError(error, 'Failed to fetch notifications');
@@ -27,11 +32,15 @@ export default function NotificationBell() {
   const handleNotificationClick = async (notificationId) => {
     try {
       setLoading(true);
-      await api.put(`/notifications/${notificationId}/read`);
-      setNotifications(notifications.map(n => 
-        n.id === notificationId ? { ...n, read: true } : n
-      ));
-      handleSuccess('Notification marked as read');
+      const { error } = await notificationsAPI.markAsRead(notificationId);
+      if (error) {
+        handleError(new Error(error), 'Failed to update notification');
+      } else {
+        setNotifications(notifications.map(n => 
+          n.id === notificationId ? { ...n, read: true } : n
+        ));
+        handleSuccess('Notification marked as read');
+      }
     } catch (error) {
       handleError(error, 'Failed to update notification');
     } finally {
@@ -42,9 +51,13 @@ export default function NotificationBell() {
   const handleClearAll = async () => {
     try {
       setLoading(true);
-      await api.delete('/notifications/clear-all');
-      setNotifications([]);
-      handleSuccess('All notifications cleared');
+      const { error } = await notificationsAPI.markAllAsRead();
+      if (error) {
+        handleError(new Error(error), 'Failed to clear notifications');
+      } else {
+        setNotifications([]);
+        handleSuccess('All notifications cleared');
+      }
     } catch (error) {
       handleError(error, 'Failed to clear notifications');
     } finally {

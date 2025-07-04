@@ -33,7 +33,7 @@ export function UserProvider({ children }) {
 
       // Add timeout to prevent hanging - using Promise.race instead of AbortController
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Profile fetch timeout - database connection issue')), 10000)
+        setTimeout(() => reject(new Error('Profile fetch timeout - database connection issue')), 15000)
       );
 
       // Fetch profile with timeout

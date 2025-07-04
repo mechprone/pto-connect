@@ -423,7 +423,7 @@ export const stripeAPI = {
 
 // Notifications API calls
 export const notificationsAPI = {
-  getNotifications: () => apiRequest('GET', '/api/notifications'),
+  getNotifications: () => apiRequest('GET', '/notifications'),
   markAsRead: (id) => apiRequest('PUT', `/notifications/${id}/read`),
   markAllAsRead: () => apiRequest('PUT', '/notifications/read-all'),
   deleteNotification: (id) => apiRequest('DELETE', `/notifications/${id}`),
